@@ -5,10 +5,10 @@ const board = [
         role: "Editor-in-Chief",
         members: [
             {
-                name: "Dr. Rajesh V. Patil",
-                designation: "Professor & Head, Department of Technology",
-                affiliation: "IIT Bombay, India",
-                email: "editor@ijitest.com"
+                name: "Dr. Ravibabu T.",
+                designation: "Associate Professor, Dept. of ECE",
+                affiliation: "MES Group of Institutions, Vizianagaram, AP, India",
+                email: "support@ijitest.com"
             }
         ]
     },
@@ -16,39 +16,22 @@ const board = [
         role: "Editorial Board Members",
         members: [
             {
-                name: "Dr. Sarah Thompson",
-                designation: "Associate Professor",
-                affiliation: "Stanford University, USA",
-                email: "sarah.t@stanford.edu"
+                name: "Dr. Y. Prasanna Kumar",
+                designation: "Professor of Mining Engineering",
+                affiliation: "Papua New Guinea University of Technology, Papua New Guinea",
+                email: "support@ijitest.com"
             },
             {
-                name: "Dr. Ming Huang",
-                designation: "Research Director",
-                affiliation: "Tsinghua University, China",
-                email: "huang.m@tsinghua.edu.cn"
+                name: "Dr. Cheekatla Swapna Priya",
+                designation: "Associate Professor, Dept. of CSE",
+                affiliation: "Vignan's Institute of Information Technology (A), Visakhapatnam, AP, India",
+                email: "support@ijitest.com"
             },
             {
-                name: "Dr. Elena Rodriguez",
-                designation: "Department Chair",
-                affiliation: "University of Madrid, Spain",
-                email: "elena.r@uom.es"
-            }
-        ]
-    },
-    {
-        role: "Technical Reviewers",
-        members: [
-            {
-                name: "Dr. Amit Verma",
-                designation: "Assistant Professor",
-                affiliation: "NIT Warangal, India",
-                email: "amit.v@nitw.ac.in"
-            },
-            {
-                name: "Dr. Kevin Lee",
-                designation: "Senior Scientist",
-                affiliation: "National University of Singapore",
-                email: "kevin.lee@nus.edu.sg"
+                name: "Dr. Mahendra Narla",
+                designation: "Associate Professor, Dept. of AI",
+                affiliation: "G. Pullaiah College of Engineering and Technology, Kurnool, India",
+                email: "support@ijitest.com"
             }
         ]
     }
@@ -90,6 +73,17 @@ export default function EditorialBoard() {
                             </div>
                         </section>
                     ))}
+
+                    <section className="bg-primary/5 p-12 rounded-[3rem] border border-primary/10 text-center">
+                        <h2 className="text-3xl font-serif font-black text-primary mb-4">Technical Reviewers</h2>
+                        <p className="text-xl text-gray-600 mb-8 font-medium">IJITEST is supported by a global network of more than 50 technical reviewers across diverse disciplines.</p>
+
+                        <div className="bg-white p-8 rounded-3xl shadow-sm max-w-2xl mx-auto">
+                            <h3 className="text-lg font-bold mb-4">Join Our Editorial Team</h3>
+                            <p className="text-gray-600 mb-6 text-sm">We are always looking for experts to join our editorial board. If you are interested, please mail your resume to:</p>
+                            <a href="mailto:support@ijitest.com" className="text-secondary font-black text-xl hover:underline">support@ijitest.com</a>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>

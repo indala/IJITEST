@@ -17,8 +17,7 @@ export default function Contact() {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold mb-1">Email Support</h3>
-                                    <p className="text-gray-600 mb-2">General Queries: editor@ijitest.com</p>
-                                    <p className="text-gray-600">Technical Support: support@ijitest.com</p>
+                                    <p className="text-gray-600">support@ijitest.com</p>
                                 </div>
                             </div>
 
@@ -28,8 +27,8 @@ export default function Contact() {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold mb-1">Phone</h3>
-                                    <p className="text-gray-600 mb-2">+91 XXXXXXXXXX</p>
-                                    <p className="text-gray-600">Office Hours: 09:00 AM - 06:00 PM IST</p>
+                                    <p className="text-gray-600 mb-2">+91 8919643590</p>
+                                    <p className="text-gray-600 font-serif italic text-xs">Available for WhatsApp</p>
                                 </div>
                             </div>
 
@@ -39,20 +38,14 @@ export default function Contact() {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold mb-1">Editorial Office</h3>
-                                    <p className="text-gray-600 leading-relaxed">
+                                    <p className="text-gray-600 font-bold uppercase tracking-tight">Felix Academic Publications</p>
+                                    <p className="text-gray-600 leading-relaxed text-sm">
                                         IJITEST Journal Office,<br />
-                                        Innovation Park, Tech Hub District,<br />
-                                        Maharashtra, India
+                                        Madhurawada, Visakhapatnam,<br />
+                                        Andhra Pradesh, India
                                     </p>
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="bg-secondary/5 p-8 rounded-[2rem] border border-secondary/10">
-                            <h3 className="text-xl font-bold font-serif text-secondary mb-4">Urgent Matters?</h3>
-                            <p className="text-gray-600 text-sm">
-                                If you have an urgent inquiry regarding a published paper or a pending payment, please include your <strong>Paper ID</strong> in the subject line of your email.
-                            </p>
                         </div>
                     </div>
 

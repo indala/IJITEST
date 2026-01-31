@@ -13,7 +13,9 @@ const navigation = [
         children: [
             { name: 'About the Journal', href: '/about' },
             { name: 'Editorial Board', href: '/editorial-board' },
-            { name: 'Ethics & Policy', href: '/ethics' },
+            { name: 'Publication Ethics', href: '/ethics' },
+            { name: 'Peer Review Process', href: '/peer-review' },
+            { name: 'Reviewer Guidelines', href: '/reviewer-guidelines' },
         ]
     },
     { name: 'Guidelines', href: '/guidelines' },
