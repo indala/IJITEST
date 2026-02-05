@@ -1,34 +1,66 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { cookies } from 'next/headers'
+import pool from '@/lib/db'
+import bcrypt from 'bcryptjs'
+import { sign } from 'jsonwebtoken' // I'll need to install jsonwebtoken or use a simple cookie
+
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret'
 
 export async function login(formData: FormData) {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
-    const supabase = await createClient()
+    try {
+        const [rows]: any = await pool.execute(
+            'SELECT * FROM users WHERE email = ?',
+            [email]
+        )
 
-    const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-    })
+        const user = rows[0]
 
-    // For security messages, we can return errors to the form
-    if (error) {
-        return {
-            error: error.message,
+        if (!user) {
+            return { error: 'Invalid email or password' }
         }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password_hash)
+
+        if (!isPasswordValid) {
+            return { error: 'Invalid email or password' }
+        }
+
+        // Create session
+        const token = sign(
+            { id: user.id, email: user.email, role: user.role },
+            JWT_SECRET,
+            { expiresIn: '1d' }
+        )
+
+        const cookieStore = await cookies()
+        cookieStore.set('admin_session', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 // 1 day
+        })
+
+        revalidatePath('/admin', 'layout')
+    } catch (error: any) {
+        if (error.digest?.startsWith('NEXT_REDIRECT')) {
+            throw error;
+        }
+        console.error('Login error:', error)
+        return { error: 'An unexpected error occurred' }
     }
 
-    revalidatePath('/admin', 'layout')
-    redirect('/admin/dashboard')
+    redirect('/admin')
 }
 
 export async function logout() {
-    const supabase = await createClient()
-    await supabase.auth.signOut()
+    const cookieStore = await cookies()
+    cookieStore.delete('admin_session')
 
     revalidatePath('/', 'layout')
     redirect('/admin/login')
