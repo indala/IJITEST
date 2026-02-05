@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, GraduationCap, Globe, Zap, FileText } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const slides = [
     {
@@ -63,13 +64,23 @@ export default function HomeCarousel() {
                     className="absolute inset-0"
                 >
                     {/* Background Image with Cinematic Zoom and Responsive Positioning */}
-                    <motion.div
-                        initial={{ scale: 1.1 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 10, ease: "linear" }}
-                        className="absolute inset-0 bg-cover bg-right md:bg-center bg-no-repeat"
-                        style={{ backgroundImage: `url(${slides[current].image})` }}
-                    />
+                    <div className="absolute inset-0 overflow-hidden">
+                        <motion.div
+                            initial={{ scale: 1.1 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 10, ease: "linear" }}
+                            className="absolute inset-0"
+                        >
+                            <Image
+                                src={slides[current].image}
+                                alt={slides[current].title}
+                                fill
+                                priority
+                                className="object-cover object-right md:object-center"
+                                quality={90}
+                            />
+                        </motion.div>
+                    </div>
 
                     {/* Multi-layered Overlays */}
                     <div className={`absolute inset-0 ${slides[current].overlay} transition-colors duration-1000`} />
