@@ -12,6 +12,8 @@ import {
 import pool from '@/lib/db';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Submissions() {
     // Fetch submissions from MySQL
     const [rows]: any = await pool.execute(

@@ -52,7 +52,7 @@ export default function HomeCarousel() {
     const prev = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
 
     return (
-        <section className="relative h-[500px] md:h-[650px] bg-gray-900 overflow-hidden">
+        <section className="relative h-[500px] md:h-[520px] bg-gray-900 overflow-hidden">
             <AnimatePresence mode="wait">
                 <motion.div
                     key={current}
@@ -62,12 +62,12 @@ export default function HomeCarousel() {
                     transition={{ duration: 1.2 }}
                     className="absolute inset-0"
                 >
-                    {/* Background Image with Cinematic Zoom */}
+                    {/* Background Image with Cinematic Zoom and Responsive Positioning */}
                     <motion.div
                         initial={{ scale: 1.1 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 10, ease: "linear" }}
-                        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                        className="absolute inset-0 bg-cover bg-right md:bg-center bg-no-repeat"
                         style={{ backgroundImage: `url(${slides[current].image})` }}
                     />
 
@@ -77,20 +77,20 @@ export default function HomeCarousel() {
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent" />
 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative z-10 flex items-center">
-                        <div className="max-w-3xl space-y-8">
+                        <div className="max-w-3xl space-y-6 md:space-y-8">
                             <motion.div
                                 initial={{ opacity: 0, x: -30 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.3, duration: 0.8 }}
                             >
-                                <span className="inline-flex items-center gap-2 px-3 py-1 bg-secondary/20 border border-secondary/30 rounded-full text-secondary font-black uppercase tracking-[0.4em] text-[9px] mb-6">
+                                <span className="inline-flex items-center gap-2 px-3 py-1 bg-secondary/20 border border-secondary/30 rounded-full text-secondary font-black uppercase tracking-[0.4em] text-[9px] mb-4 md:mb-6">
                                     <div className="w-1 h-1 bg-secondary rounded-full animate-pulse" />
                                     {slides[current].subtitle}
                                 </span>
-                                <h1 className="text-5xl md:text-8xl font-serif font-black text-white tracking-tighter leading-[0.9] mb-8 italic drop-shadow-2xl">
+                                <h1 className="text-4xl md:text-7xl font-serif font-black text-white tracking-tighter leading-[0.95] md:leading-[0.9] mb-6 md:mb-8 italic drop-shadow-2xl">
                                     {slides[current].title}
                                 </h1>
-                                <p className="text-white/80 text-lg md:text-xl max-w-xl font-medium leading-relaxed italic border-l-4 border-secondary/50 pl-8 drop-shadow-lg">
+                                <p className="text-white/80 text-base md:text-xl max-w-xl font-medium leading-relaxed italic border-l-4 border-secondary/50 pl-6 md:pl-8 drop-shadow-lg">
                                     {slides[current].desc}
                                 </p>
                             </motion.div>
@@ -99,13 +99,13 @@ export default function HomeCarousel() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.6, duration: 0.8 }}
-                                className="flex flex-wrap items-center gap-6"
+                                className="flex flex-wrap items-center gap-4 md:gap-6"
                             >
-                                <Link href={slides[current].link} className="group relative px-10 py-5 overflow-hidden rounded-2xl">
+                                <Link href={slides[current].link} className="group relative px-8 md:px-10 py-4 md:py-5 overflow-hidden rounded-xl md:rounded-2xl">
                                     <div className="absolute inset-0 bg-white transition-transform duration-500 group-hover:scale-105" />
-                                    <span className="relative z-10 text-gray-900 font-black text-xs uppercase tracking-widest">{slides[current].cta}</span>
+                                    <span className="relative z-10 text-gray-900 font-black text-[10px] md:text-xs uppercase tracking-widest">{slides[current].cta}</span>
                                 </Link>
-                                <Link href="/archives" className="text-white/60 font-black text-[10px] uppercase tracking-widest border-b border-white/20 hover:border-white hover:text-white transition-all pb-1">
+                                <Link href="/archives" className="text-white/60 font-black text-[9px] md:text-[10px] uppercase tracking-widest border-b border-white/20 hover:border-white hover:text-white transition-all pb-1">
                                     Explore Archives
                                 </Link>
                             </motion.div>

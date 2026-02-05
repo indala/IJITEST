@@ -2,6 +2,8 @@ import { Download, Calendar, User, FileText } from 'lucide-react';
 import Link from 'next/link';
 import pool from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Archives() {
     // Fetch published papers from MySQL
     // Note: We'll need paper metadata (volume, issue, etc) in the DB eventually.

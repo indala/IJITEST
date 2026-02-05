@@ -10,6 +10,8 @@ import {
 import Link from 'next/link';
 import pool from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
     try {
         // Fetch stats from MySQL
