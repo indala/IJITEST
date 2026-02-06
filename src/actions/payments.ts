@@ -24,6 +24,14 @@ export async function updatePaymentStatus(paymentId: number, status: string, tra
             "UPDATE payments SET status = ?, transaction_id = ?, paid_at = IF(? = 'paid', CURRENT_TIMESTAMP, paid_at) WHERE id = ?",
             [status, transactionId || null, status, paymentId]
         );
+
+        if (status === 'paid') {
+            // Get submission ID
+            const [rows]: any = await pool.execute('SELECT submission_id FROM payments WHERE id = ?', [paymentId]);
+            if (rows[0]) {
+                await pool.execute("UPDATE submissions SET status = 'paid' WHERE id = ?", [rows[0].submission_id]);
+            }
+        }
         revalidatePath('/admin/payments');
         return { success: true };
     } catch (error: any) {
@@ -58,5 +66,25 @@ export async function getAcceptedUnpaidPapers() {
     } catch (error: any) {
         console.error("Get Accepted Unpaid Error:", error);
         return [];
+    }
+}
+
+export async function waivePayment(submissionId: number) {
+    try {
+        await pool.execute(
+            "UPDATE payments SET status = 'waived', paid_at = CURRENT_TIMESTAMP WHERE submission_id = ?",
+            [submissionId]
+        );
+        await pool.execute(
+            "UPDATE submissions SET status = 'paid' WHERE id = ?",
+            [submissionId]
+        );
+        revalidatePath('/admin/submissions');
+        revalidatePath('/admin/submissions/[id]');
+        revalidatePath('/admin/payments');
+        return { success: true };
+    } catch (error: any) {
+        console.error("Waive Payment Error:", error);
+        return { error: "Failed to waive payment: " + error.message };
     }
 }

@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
 
 export async function getSession() {
     const cookieStore = await cookies();
-    const token = cookieStore.get('admin_session')?.value;
+    const token = cookieStore.get('session')?.value;
 
     if (!token) return null;
 

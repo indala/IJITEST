@@ -24,9 +24,10 @@ const navigation = [
     { name: 'Contact', href: '/contact' },
 ];
 
-export default function Navbar() {
+export default function Navbar({ settings }: { settings?: Record<string, string> }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const shortName = settings?.journal_short_name || "IJITEST";
 
     useEffect(() => {
         const handleScroll = () => {
@@ -44,7 +45,7 @@ export default function Navbar() {
                         <Link href="/" className="flex items-center">
                             <img
                                 src="/logo.bmp"
-                                alt="IJITEST Logo"
+                                alt={`${shortName} Logo`}
                                 className={`w-auto object-contain transition-all duration-500 ${isScrolled ? 'h-14' : 'h-20'} hover:scale-105`}
                             />
                         </Link>

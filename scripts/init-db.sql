@@ -4,9 +4,11 @@
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NULL, -- Nullable for pending invitations
     full_name VARCHAR(255),
     role ENUM('admin', 'editor', 'reviewer') DEFAULT 'admin',
+    invitation_token VARCHAR(255) UNIQUE NULL,
+    invitation_expires TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -24,4 +26,3 @@ CREATE TABLE IF NOT EXISTS submissions (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Note: You can run this in Hostinger's phpMyAdmin under the "SQL" tab.

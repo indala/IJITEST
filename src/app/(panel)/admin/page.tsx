@@ -1,7 +1,7 @@
 import {
     FileStack,
-    ShieldCheck,
-    CreditCard,
+    Users,
+    Activity,
     BookOpen,
     AlertCircle,
     TrendingUp,
@@ -12,28 +12,74 @@ import pool from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
+import { getSession } from '@/actions/session';
+
 export default async function AdminDashboard() {
     try {
-        // Fetch stats from MySQL
+        const user = await getSession();
+
+        // Stats for Admin
         const [submissionRows]: any = await pool.execute('SELECT COUNT(*) as count FROM submissions');
         const totalSubmissions = submissionRows[0].count;
 
-        const [reviewRows]: any = await pool.execute("SELECT COUNT(*) as count FROM submissions WHERE status = 'under_review'");
-        const underReview = reviewRows[0].count;
+        const [userRows]: any = await pool.execute('SELECT COUNT(*) as count FROM users');
+        const totalUsers = userRows[0].count;
 
-        const [recentRows]: any = await pool.execute(
+        const [issueRows]: any = await pool.execute(
+            "SELECT year FROM volumes_issues WHERE status = 'open' ORDER BY year DESC LIMIT 1"
+        );
+        const currentIssue = issueRows.length > 0
+            ? `${issueRows[0].year} Edition`
+            : '2026 Edition';
+
+        const stats = [
+            { label: 'System Health', value: '100%', icon: <Activity className="w-6 h-6" />, color: 'bg-green-600', trend: 'Online' },
+            { label: 'Total Staff', value: String(totalUsers), icon: <Users className="w-6 h-6" />, color: 'bg-primary', trend: 'Active' },
+            { label: 'Submissions', value: String(totalSubmissions), icon: <FileStack className="w-6 h-6" />, color: 'bg-blue-600', trend: 'Managed' },
+            { label: 'Edition', value: currentIssue, icon: <BookOpen className="w-6 h-6" />, color: 'bg-secondary', trend: 'Public' },
+        ];
+
+        const [recentSubmissions]: any = await pool.execute(
             'SELECT id, paper_id, title, author_name, status, submitted_at FROM submissions ORDER BY submitted_at DESC LIMIT 3'
         );
 
-        const stats = [
-            { label: 'Total Submissions', value: String(totalSubmissions), icon: <FileStack className="w-6 h-6" />, color: 'bg-primary', trend: '+100%' },
-            { label: 'Under Review', value: String(underReview), icon: <ShieldCheck className="w-6 h-6" />, color: 'bg-blue-600', trend: 'Active' },
-            { label: 'Pending Payment', value: '0', icon: <CreditCard className="w-6 h-6" />, color: 'bg-secondary', trend: 'Stable' },
-            { label: 'Current Issue', value: 'Vol 1, Iss 1', icon: <BookOpen className="w-6 h-6" />, color: 'bg-green-600', trend: 'In Progress' },
-        ];
+        const currentRole = {
+            title: 'Admin',
+            subtitle: 'The Architect',
+            job: 'Infrastructure & Technical Oversight',
+            actions: ['Creating user accounts', 'Managing site security', 'Updating journal metadata (ISSN)', 'Fixing technical bugs']
+        };
 
         return (
             <div className="space-y-12">
+                {/* Role Overview */}
+                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-10 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full translate-x-32 -translate-y-32 group-hover:scale-110 transition-transform duration-700"></div>
+                    <div className="relative z-10">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                            <div>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">
+                                        Active Role: {currentRole.title}
+                                    </span>
+                                    <span className="text-gray-400 font-bold text-sm italic">"{currentRole.subtitle}"</span>
+                                </div>
+                                <h2 className="text-3xl font-serif font-black text-gray-900 mb-2">Welcome Back, {user?.fullName}</h2>
+                                <p className="text-gray-500 font-medium max-w-2xl">
+                                    <span className="font-bold text-gray-900">Main Job:</span> {currentRole.job}
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {currentRole.actions.slice(0, 2).map((action, i) => (
+                                    <span key={i} className="px-4 py-2 rounded-xl bg-gray-50 text-gray-600 text-xs font-bold border border-gray-100 italic">
+                                        • {action}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {stats.map((stat) => (
@@ -53,16 +99,15 @@ export default async function AdminDashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Recent Submissions */}
                     <div className="lg:col-span-2 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-10">
                         <div className="flex items-center justify-between mb-10">
-                            <h2 className="text-2xl font-serif font-black text-gray-900">Recent Submissions</h2>
+                            <h2 className="text-2xl font-serif font-black text-gray-900">Recent Global Activity</h2>
                             <Link href="/admin/submissions" className="text-primary font-bold text-sm flex items-center gap-2 hover:underline">
-                                View All <ArrowRight className="w-4 h-4" />
+                                Full Audit <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
                         <div className="space-y-6">
-                            {recentRows.map((sub: any) => (
+                            {recentSubmissions.map((sub: any) => (
                                 <Link
                                     href={`/admin/submissions/${sub.id}`}
                                     key={sub.paper_id}
@@ -74,7 +119,7 @@ export default async function AdminDashboard() {
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-gray-900 mb-1 line-clamp-1">{sub.title}</h4>
-                                            <p className="text-xs text-gray-500">By {sub.author_name} • {new Date(sub.submitted_at).toLocaleDateString()}</p>
+                                            <p className="text-xs text-gray-500">{sub.author_name} • {new Date(sub.submitted_at).toLocaleDateString()}</p>
                                         </div>
                                     </div>
                                     <span className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
@@ -82,49 +127,33 @@ export default async function AdminDashboard() {
                                     </span>
                                 </Link>
                             ))}
-                            {recentRows.length === 0 && (
-                                <p className="text-center py-10 text-gray-400 font-bold uppercase tracking-widest italic text-sm">No recent submissions</p>
-                            )}
                         </div>
                     </div>
 
-                    {/* System Health / Quick Action */}
-                    <div className="space-y-8">
-                        <div className="bg-secondary p-10 rounded-[2.5rem] text-white relative overflow-hidden h-full flex flex-col justify-between">
-                            <div className="relative z-10">
-                                <TrendingUp className="w-12 h-12 mb-6 opacity-30" />
-                                <h2 className="text-2xl font-serif font-black mb-4">Urgent Tasks</h2>
-                                <div className="space-y-4">
-                                    <div className="bg-white/10 p-4 rounded-xl flex items-center gap-4">
-                                        <AlertCircle className="w-5 h-5 text-white/50" />
-                                        <span className="text-sm font-bold">Review system active</span>
-                                    </div>
-                                    <div className="bg-white/10 p-4 rounded-xl flex items-center gap-4">
-                                        <AlertCircle className="w-5 h-5 text-white/50" />
-                                        <span className="text-sm font-bold">Database connected</span>
-                                    </div>
+                    <div className="bg-secondary p-10 rounded-[2.5rem] text-white relative overflow-hidden h-full flex flex-col justify-between">
+                        <div className="relative z-10">
+                            <TrendingUp className="w-12 h-12 mb-6 opacity-30" />
+                            <h2 className="text-2xl font-serif font-black mb-4">Architect Mode</h2>
+                            <div className="space-y-4">
+                                <div className="bg-white/10 p-4 rounded-xl flex items-center gap-4">
+                                    <AlertCircle className="w-5 h-5 text-white/50" />
+                                    <span className="text-sm font-bold">Manage credentials</span>
+                                </div>
+                                <div className="bg-white/10 p-4 rounded-xl flex items-center gap-4">
+                                    <AlertCircle className="w-5 h-5 text-white/50" />
+                                    <span className="text-sm font-bold">Inspect server logs</span>
                                 </div>
                             </div>
-                            <button className="bg-white text-secondary w-full py-4 rounded-xl font-bold mt-8 shadow-xl shadow-black/10 hover:bg-gray-100 transition-all">
-                                Review Submissions
-                            </button>
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full translate-x-16 -translate-y-16"></div>
                         </div>
+                        <Link href="/admin/users" className="bg-white text-secondary w-full py-4 rounded-xl font-bold mt-8 shadow-xl shadow-black/10 hover:bg-gray-100 transition-all text-center block" >
+                            Manage Users & Access
+                        </Link>
                     </div>
                 </div>
             </div>
         );
     } catch (error: any) {
-        console.error("Dashboard Dashboard Error:", error);
-        return (
-            <div className="p-10 bg-red-50 border border-red-100 rounded-[2.5rem] text-red-600">
-                <h2 className="text-xl font-bold mb-4">Dashboard Error</h2>
-                <p className="mb-4">We encountered an issue while loading the dashboard. This is likely due to a database connection problem.</p>
-                <div className="bg-white/50 p-4 rounded-xl font-mono text-xs">
-                    {error.message}
-                </div>
-                <p className="mt-6 text-sm">Please check your <strong>.env</strong> file and ensure the MySQL credentials are correct.</p>
-            </div>
-        );
+        console.error("Admin Dashboard Error:", error);
+        return <div>Error loading admin dashboard.</div>;
     }
 }

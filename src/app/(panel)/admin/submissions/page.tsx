@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import pool from '@/lib/db';
 import Link from 'next/link';
+import DeleteSubmissionButton from '@/components/DeleteSubmissionButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,7 +45,7 @@ export default async function Submissions() {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden overflow-x-auto">
                 <table className="w-full text-left">
                     <thead className="bg-gray-50/50 border-b border-gray-100">
                         <tr>
@@ -90,9 +91,7 @@ export default async function Submissions() {
                                                 <Download className="w-5 h-5" />
                                             </a>
                                         )}
-                                        <button className="p-3 text-gray-300 hover:text-gray-600 transition-all">
-                                            <MoreVertical className="w-5 h-5" />
-                                        </button>
+                                        <DeleteSubmissionButton submissionId={sub.id} variant="icon" />
                                     </div>
                                 </td>
                             </tr>

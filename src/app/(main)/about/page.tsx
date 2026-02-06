@@ -54,7 +54,7 @@ export default function About() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                                 {[
                                     { label: "Commencement", value: "2026" },
-                                    { label: "Frequency", value: "Monthly (12 Issues/Vol)" },
+                                    { label: "Frequency", value: "Regularly Published" },
                                     { label: "E-ISSN", value: "Applied For" },
                                     { label: "Format", value: "Online, Open Access" }
                                 ].map((item, i) => (
@@ -144,7 +144,7 @@ export default function About() {
                         {/* Quick Guidelines */}
                         <div className="bg-primary/5 p-8 rounded-[2.5rem] border-2 border-primary/10 group">
                             <h4 className="text-lg font-black text-primary mb-2 italic tracking-tight">Call for Papers</h4>
-                            <p className="text-xs text-gray-500 mb-6 font-medium">Submit your manuscript for our inaugural 2026 volume.</p>
+                            <p className="text-xs text-gray-500 mb-6 font-medium">Submit your manuscript for our inaugural 2026 edition.</p>
                             <Link href="/submit" className="flex items-center justify-between p-4 bg-white rounded-2xl border border-primary/10 hover:border-primary transition-all group/link shadow-sm">
                                 <span className="text-[10px] font-black uppercase text-gray-400 group-hover/link:text-primary transition-colors">Submit Now</span>
                                 <ChevronRight className="w-4 h-4 text-primary" />

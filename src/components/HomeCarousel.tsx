@@ -9,7 +9,7 @@ import Image from 'next/image';
 const slides = [
     {
         title: "Advancing Global Innovation",
-        subtitle: "Inaugural Volume 2026",
+        subtitle: "Inaugural Edition 2026",
         desc: "IJITEST provides a high-impact platform for researchers to publish original work in Engineering, Science, and Technology.",
         icon: <GraduationCap className="w-12 h-12" />,
         cta: "Submit Manuscript",

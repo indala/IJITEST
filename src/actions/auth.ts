@@ -33,20 +33,20 @@ export async function login(formData: FormData) {
 
         // Create session
         const token = sign(
-            { id: user.id, email: user.email, role: user.role },
+            { id: user.id, email: user.email, role: user.role, fullName: user.full_name },
             JWT_SECRET,
             { expiresIn: '1d' }
         )
 
         const cookieStore = await cookies()
-        cookieStore.set('admin_session', token, {
+        cookieStore.set('session', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 // 1 day
         })
 
-        revalidatePath('/admin', 'layout')
+        revalidatePath('/', 'layout')
     } catch (error: any) {
         if (error.digest?.startsWith('NEXT_REDIRECT')) {
             throw error;
@@ -55,13 +55,13 @@ export async function login(formData: FormData) {
         return { error: 'An unexpected error occurred' }
     }
 
-    redirect('/admin')
+    redirect('/admin') // Redirect to admin for now, the root page will handle specifics if needed
 }
 
 export async function logout() {
     const cookieStore = await cookies()
-    cookieStore.delete('admin_session')
+    cookieStore.delete('session')
 
     revalidatePath('/', 'layout')
-    redirect('/admin/login')
+    redirect('/login')
 }

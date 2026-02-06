@@ -87,9 +87,9 @@ export default function EditorialBoard() {
                                                     <MapPin className="w-4 h-4 text-secondary mt-0.5" />
                                                     <span className="leading-relaxed">{member.affiliation}</span>
                                                 </div>
-                                                <div className="flex items-center gap-3">
-                                                    <Mail className="w-4 h-4 text-secondary" />
-                                                    <span className="truncate">{member.email}</span>
+                                                <div className="flex items-center gap-3 min-w-0">
+                                                    <Mail className="w-4 h-4 text-secondary flex-shrink-0" />
+                                                    <span className="truncate md:whitespace-nowrap md:overflow-visible md:text-clip block break-all">{member.email}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -146,7 +146,7 @@ export default function EditorialBoard() {
                         {/* Quick Guidelines */}
                         <div className="bg-primary/5 p-8 rounded-[2.5rem] border-2 border-primary/10 group">
                             <h4 className="text-lg font-black text-primary mb-2 italic tracking-tight">Call for Papers</h4>
-                            <p className="text-xs text-gray-500 mb-6 font-medium">Submit your manuscript for our inaugural 2026 volume.</p>
+                            <p className="text-xs text-gray-500 mb-6 font-medium">Submit your manuscript for our inaugural 2026 edition.</p>
                             <Link href="/submit" className="flex items-center justify-between p-4 bg-white rounded-2xl border border-primary/10 hover:border-primary transition-all group/link shadow-sm">
                                 <span className="text-[10px] font-black uppercase text-gray-400 group-hover/link:text-primary transition-colors">Submit Now</span>
                                 <ChevronRight className="w-4 h-4 text-primary" />

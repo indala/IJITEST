@@ -5,7 +5,10 @@ import pool from "@/lib/db";
 export async function trackManuscript(paperId: string, authorEmail: string) {
     try {
         const [rows]: any = await pool.execute(
-            'SELECT paper_id, title, author_name, status, submitted_at FROM submissions WHERE paper_id = ? AND author_email = ?',
+            `SELECT id, paper_id, title, author_name, status, submitted_at, updated_at,
+             (SELECT MIN(assigned_at) FROM reviews WHERE submission_id = submissions.id) as review_started_at
+             FROM submissions 
+             WHERE paper_id = ? AND author_email = ?`,
             [paperId, authorEmail]
         );
 
@@ -13,7 +16,18 @@ export async function trackManuscript(paperId: string, authorEmail: string) {
             return { error: "No manuscript found with these credentials. Please check your Paper ID and Email." };
         }
 
-        return { success: true, manuscript: rows[0] };
+        const manuscript = rows[0];
+
+        // If rejected, fetch reviewer feedback
+        if (manuscript.status === 'rejected') {
+            const [reviews]: any = await pool.execute(
+                'SELECT feedback FROM reviews WHERE submission_id = ? AND status = "completed"',
+                [manuscript.id]
+            );
+            manuscript.reviewer_feedback = reviews.map((r: any) => r.feedback);
+        }
+
+        return { success: true, manuscript };
     } catch (error: any) {
         console.error("Track Manuscript Error:", error);
         return { error: "An error occurred while fetching the status. Please try again later." };

@@ -1,16 +1,88 @@
 "use client";
 
-import { Search, Loader2, CheckCircle2, Clock, ShieldAlert, FileText, Calendar, CreditCard } from 'lucide-react';
+import { Search, Loader2, CheckCircle2, Clock, ShieldAlert, FileText, Calendar, CreditCard, ChevronRight, Check } from 'lucide-react';
 import { trackManuscript } from '@/actions/track';
-import { useState } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function TrackManuscript() {
+function Milestone({ title, date, description, icon: Icon, active, last }: { title: string, date?: string, description: string, icon: any, active: boolean, last?: boolean }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex gap-8 relative items-start"
+        >
+            {!last && (
+                <div className={`absolute left-7 top-14 bottom-0 w-1 ${active ? 'bg-primary' : 'bg-gray-100'} -translate-x-1/2 rounded-full overflow-hidden`}>
+                    {active && <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: '100%' }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="w-full bg-primary"
+                    />}
+                </div>
+            )}
+
+            <div className={`relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg transition-colors duration-500 ${active ? 'bg-primary text-white shadow-primary/20' : 'bg-white text-gray-300 border border-gray-100'
+                }`}>
+                <Icon className="w-6 h-6" />
+                {active && (
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center"
+                    >
+                        <Check className="w-3 h-3 text-white stroke-[4]" />
+                    </motion.div>
+                )}
+            </div>
+
+            <div className="pb-16 pt-2">
+                <div className="flex items-center gap-3 mb-1">
+                    <h3 className={`text-xl font-black font-serif ${active ? 'text-gray-900' : 'text-gray-400'}`}>{title}</h3>
+                    {date && (
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded">
+                            {new Date(date).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                        </span>
+                    )}
+                </div>
+                <p className={`font-medium ${active ? 'text-gray-500' : 'text-gray-300'}`}>{description}</p>
+            </div>
+        </motion.div>
+    );
+}
+
+function TrackContent() {
+    const searchParams = useSearchParams();
     const [paperId, setPaperId] = useState('');
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [manuscript, setManuscript] = useState<any>(null);
     const [errorMessage, setErrorMessage] = useState('');
+    const resultsRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const id = searchParams.get('id');
+        if (id) {
+            setPaperId(id);
+        }
+    }, [searchParams]);
+
+    useEffect(() => {
+        if ((status === 'success' || status === 'error') && resultsRef.current) {
+            const offset = 100; // Header height offset
+            const elementPosition = resultsRef.current.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    }, [status]);
 
     async function handleTrack(e: React.FormEvent) {
         e.preventDefault();
@@ -27,15 +99,13 @@ export default function TrackManuscript() {
         }
     }
 
-    const getStatusStyles = (status: string) => {
-        switch (status) {
-            case 'submitted': return { bg: 'bg-blue-50', text: 'text-blue-600', icon: <Clock className="w-6 h-6" /> };
-            case 'under_review': return { bg: 'bg-orange-50', text: 'text-orange-600', icon: <Search className="w-6 h-6" /> };
-            case 'accepted': return { bg: 'bg-green-50', text: 'text-green-600', icon: <CheckCircle2 className="w-6 h-6" /> };
-            case 'rejected': return { bg: 'bg-red-50', text: 'text-red-600', icon: <ShieldAlert className="w-6 h-6" /> };
-            case 'published': return { bg: 'bg-primary/5', text: 'text-primary', icon: <FileText className="w-6 h-6" /> };
-            default: return { bg: 'bg-gray-50', text: 'text-gray-600', icon: <Clock className="w-6 h-6" /> };
-        }
+    const isStepActive = (step: 'submitted' | 'review' | 'decision') => {
+        if (!manuscript) return false;
+        const s = manuscript.status;
+        if (step === 'submitted') return true;
+        if (step === 'review') return ['under_review', 'accepted', 'rejected', 'published'].includes(s);
+        if (step === 'decision') return ['accepted', 'rejected', 'published'].includes(s);
+        return false;
     };
 
     return (
@@ -88,57 +158,131 @@ export default function TrackManuscript() {
                 </div>
 
                 {/* Results Section */}
-                <div className="animate-in fade-in slide-in-from-bottom-8 duration-500">
-                    {status === 'success' && manuscript && (
-                        <div className="bg-white p-10 md:p-14 rounded-[3rem] border border-gray-100 shadow-xl overflow-hidden relative">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[5rem] -mr-8 -mt-8"></div>
+                <div id="tracking-results" ref={resultsRef} className="animate-in fade-in slide-in-from-bottom-8 duration-500 min-h-[50px]">
+                    <AnimatePresence mode="wait">
+                        {status === 'success' && manuscript && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                className="bg-white rounded-[3rem] border border-gray-100 shadow-xl overflow-hidden relative"
+                            >
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[5rem] -mr-8 -mt-8"></div>
 
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 relative">
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-3">
+                                <div className="p-10 md:p-14 border-b border-gray-50">
+                                    <div className="flex items-center gap-3 mb-4">
                                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] bg-primary/10 px-3 py-1.5 rounded-full">Manuscript Verified</span>
                                         <span className="text-[10px] font-mono text-gray-400"># {manuscript.paper_id}</span>
                                     </div>
-                                    <h2 className="text-3xl font-serif font-black text-gray-900 leading-tight">
+                                    <h2 className="text-3xl font-serif font-black text-gray-900 leading-tight mb-4">
                                         {manuscript.title}
                                     </h2>
-                                    <p className="text-gray-500 font-bold">Corresponding Author: {manuscript.author_name}</p>
-                                </div>
-                                <div className={`flex flex-col items-center justify-center p-8 rounded-[2rem] min-w-[180px] ${getStatusStyles(manuscript.status).bg} ${getStatusStyles(manuscript.status).text}`}>
-                                    {getStatusStyles(manuscript.status).icon}
-                                    <span className="text-sm font-black uppercase tracking-widest mt-2">{manuscript.status.replace('_', ' ')}</span>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-gray-50 pt-10">
-                                <div className="space-y-4">
-                                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">Submission Timeline</h4>
-                                    <div className="flex items-center gap-4 text-gray-700">
-                                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                                            <Calendar className="w-5 h-5 text-gray-400" />
+                                    <div className="flex flex-wrap gap-6 items-center">
+                                        <div className="flex items-center gap-2 text-gray-500 font-bold">
+                                            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+                                                <FileText className="w-4 h-4 text-gray-400" />
+                                            </div>
+                                            {manuscript.author_name}
                                         </div>
-                                        <div>
-                                            <p className="text-xs font-bold text-gray-400">Submitted On</p>
-                                            <p className="font-black">{new Date(manuscript.submitted_at).toLocaleDateString(undefined, { dateStyle: 'long' })}</p>
+                                        <div className="flex items-center gap-2 text-primary font-black uppercase text-xs tracking-widest">
+                                            <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
+                                            {manuscript.status.replace('_', ' ')}
                                         </div>
                                     </div>
                                 </div>
 
-                                {manuscript.status === 'accepted' && (
-                                    <div className="bg-green-50/50 p-8 rounded-[2rem] border border-green-100/50">
-                                        <h4 className="text-xs font-black text-green-700 uppercase tracking-widest mb-4">Required Action</h4>
-                                        <p className="text-sm text-green-800 font-medium mb-6">Congratulations! Your manuscript has been approved for publication. Please complete the Article Processing Charge (APC) to proceed.</p>
-                                        <Link
-                                            href={`/payment/${manuscript.paper_id}`}
-                                            className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
-                                        >
-                                            Proceed to Payment <CreditCard className="w-4 h-4" />
-                                        </Link>
+                                <div className="p-10 md:p-14 bg-gray-50/30">
+                                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-[0.3em] mb-12 flex items-center gap-3">
+                                        <ChevronRight className="w-4 h-4 text-primary" /> Progress Timeline
+                                    </h4>
+
+                                    <div className="max-w-xl mx-auto md:mx-0">
+                                        <Milestone
+                                            title="Manuscript Submitted"
+                                            date={manuscript.submitted_at}
+                                            description="Initial version received and queued for editorial check."
+                                            icon={FileText}
+                                            active={isStepActive('submitted')}
+                                        />
+                                        <Milestone
+                                            title="Peer Review Started"
+                                            date={manuscript.review_started_at}
+                                            description="Assigned to expert reviewers for technical evaluation."
+                                            icon={Search}
+                                            active={isStepActive('review')}
+                                        />
+                                        <Milestone
+                                            title="Editorial Decision"
+                                            date={manuscript.status !== 'under_review' && manuscript.status !== 'submitted' ? manuscript.updated_at : undefined}
+                                            description={
+                                                manuscript.status === 'accepted' ? "Approved for publication with positive feedback." :
+                                                    manuscript.status === 'rejected' ? "Returned with reviewer feedback for improvement." :
+                                                        "Waiting for final evaluation from the editorial board."
+                                            }
+                                            icon={ShieldAlert}
+                                            active={isStepActive('decision')}
+                                            last
+                                        />
                                     </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
+
+                                    {/* Action Cards based on status */}
+                                    <div className="mt-8">
+                                        {manuscript.status === 'accepted' && (
+                                            <motion.div
+                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                className="bg-green-600 p-10 rounded-[2.5rem] text-white shadow-2xl shadow-green-600/20"
+                                            >
+                                                <div className="flex items-start gap-6">
+                                                    <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0">
+                                                        <CreditCard className="w-8 h-8" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-2xl font-serif font-black mb-2">Final Step: APC Payment</h4>
+                                                        <p className="text-green-50 font-medium mb-8 leading-relaxed max-w-md">Your manuscript is ready for publication. Please complete the Article Processing Charge to finalize the process.</p>
+                                                        <Link
+                                                            href={`/payment/${manuscript.paper_id}`}
+                                                            className="bg-white text-green-700 px-8 py-4 rounded-xl font-black shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-3"
+                                                        >
+                                                            Launch Payment Portal <ChevronRight className="w-5 h-5" />
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+
+                                        {manuscript.status === 'rejected' && (
+                                            <motion.div
+                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                className="bg-white p-10 rounded-[2.5rem] border-2 border-red-50"
+                                            >
+                                                <div className="flex items-start gap-6">
+                                                    <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center shrink-0">
+                                                        <ShieldAlert className="w-8 h-8 text-red-500" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="text-2xl font-serif font-black text-gray-900 mb-2">Editorial Feedback</h4>
+                                                        <p className="text-gray-500 font-medium mb-8 leading-relaxed">The editorial board has reached a decision. You can review the aggregated feedback below.</p>
+
+                                                        {manuscript.reviewer_feedback && manuscript.reviewer_feedback.length > 0 && (
+                                                            <div className="space-y-4">
+                                                                {manuscript.reviewer_feedback.map((feedback: string, i: number) => (
+                                                                    <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-sm text-gray-700 leading-relaxed italic">
+                                                                        "{feedback}"
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {status === 'error' && (
                         <div className="bg-red-50 p-10 rounded-[2.5rem] border border-red-100 flex flex-col items-center text-center">
@@ -156,5 +300,17 @@ export default function TrackManuscript() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function TrackManuscript() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-gray-50/30 flex items-center justify-center">
+                <Loader2 className="w-12 h-12 text-primary animate-spin" />
+            </div>
+        }>
+            <TrackContent />
+        </Suspense>
     );
 }

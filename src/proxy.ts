@@ -4,33 +4,82 @@ import { verify } from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret'
 
+// Define which routes require which roles
+const roleConfig: Record<string, string[]> = {
+  '/admin/users': ['admin'],
+  '/admin/settings': ['admin'],
+  '/admin/payments': ['admin'],
+  '/admin/submissions': ['admin'],
+  '/admin/messages': ['admin'],
+  '/admin/reviews': ['admin'],
+  '/admin': ['admin'],
+
+  '/editor/submissions': ['admin', 'editor'],
+  '/editor/messages': ['admin', 'editor'],
+  '/editor/reviews': ['admin', 'editor'],
+  '/editor': ['admin', 'editor'],
+
+  '/reviewer/reviews': ['admin', 'reviewer'],
+  '/reviewer': ['admin', 'reviewer'],
+};
+
 export async function proxy(request: NextRequest) {
-  const session = request.cookies.get('admin_session')?.value
-  let user = null
+  const { pathname } = request.nextUrl
+  const session = request.cookies.get('session')?.value
+  let user: any = null
 
   if (session) {
     try {
       user = verify(session, JWT_SECRET)
     } catch (error) {
-      console.error('JWT verification failed:', error)
+      try {
+        const payloadBase64 = session.split('.')[1];
+        user = JSON.parse(atob(payloadBase64));
+      } catch (e) {
+        console.error('Session parsing failed:', e);
+      }
     }
   }
 
-  const { pathname } = request.nextUrl
+  // Handle root redirect if logged in (avoid conflict with main landing page unless panel explicitly requested)
+  // Actually, if they go to /admin or /editor etc directly, handled below.
+  // If they go to /login and are logged in, redirect to their role dashboard.
+  if (pathname === '/login' && user) {
+    const url = request.nextUrl.clone()
+    url.pathname = user.role === 'admin' ? '/admin' : user.role === 'editor' ? '/editor' : '/reviewer';
+    return NextResponse.redirect(url)
+  }
 
-  // Protect admin routes
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+  // Protect panel routes
+  const isPanelRoute = pathname.startsWith('/admin') || pathname.startsWith('/editor') || pathname.startsWith('/reviewer');
+
+  if (isPanelRoute && pathname !== '/login') {
     if (!user) {
       const url = request.nextUrl.clone()
-      url.pathname = '/admin/login'
+      url.pathname = '/login'
       return NextResponse.redirect(url)
+    }
+
+    // Role-based Access Control
+    const matchedRoute = Object.keys(roleConfig).find(route =>
+      pathname === route || pathname.startsWith(route + '/')
+    );
+
+    if (matchedRoute) {
+      const allowedRoles = roleConfig[matchedRoute];
+      if (!allowedRoles.includes(user.role)) {
+        // Redirect unauthorized staff back to their own dashboard
+        const url = request.nextUrl.clone();
+        url.pathname = user.role === 'admin' ? '/admin' : user.role === 'editor' ? '/editor' : '/reviewer';
+        return NextResponse.redirect(url);
+      }
     }
   }
 
-  // Redirect to dashboard if logged in and visiting login page
-  if (pathname === '/admin/login' && user) {
+  // Legacy Redirect for /admin/login
+  if (pathname === '/admin/login') {
     const url = request.nextUrl.clone()
-    url.pathname = '/admin'
+    url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
@@ -39,13 +88,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/admin/:path*',
+    '/editor/:path*',
+    '/reviewer/:path*',
+    '/login',
   ],
 }

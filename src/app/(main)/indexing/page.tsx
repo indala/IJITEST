@@ -1,21 +1,11 @@
-'use client'
-import { Globe, ShieldCheck, Database, Award, CheckCircle2, Search, ChevronRight, ShieldAlert } from 'lucide-react';
+import { Search, Database } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import RoadmapSection from '@/components/indexing/RoadmapSection';
+import TrackManuscriptWidget from '@/components/widgets/TrackManuscriptWidget';
+import EthicsWidget from '@/components/widgets/EthicsWidget';
+import ResourceDeskWidget from '@/components/widgets/ResourceDeskWidget';
 
 export default function Indexing() {
-    const [paperId, setPaperId] = useState('');
-    const router = useRouter();
-
-    const handleTrack = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (paperId.trim()) {
-            router.push(`/track?id=${paperId}`);
-        }
-    };
-
     return (
         <div className="bg-white">
             <PageHeader
@@ -57,79 +47,14 @@ export default function Indexing() {
                             </div>
                         </section>
 
-                        <section className="bg-primary p-12 md:p-16 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-                                <div>
-                                    <h2 className="text-3xl font-serif font-black mb-2 italic tracking-tight">Institutional Roadmaps</h2>
-                                    <p className="text-white/60 font-bold uppercase text-[10px] tracking-widest">Our Future Indexing Objectives</p>
-                                </div>
-                                <Globe className="w-12 h-12 text-white/20 hidden md:block" />
-                            </div>
-
-                            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                                {[
-                                    { name: "Google Scholar", status: "Active Processing" },
-                                    { name: "CrossRef", status: "Full Assignment" },
-                                    { name: "ROAD Directory", status: "Verified Entry" },
-                                    { name: "UGC CARE", status: "Upcoming Goal" },
-                                    { name: "Scopus / WOS", status: "Strategic Target" },
-                                    { name: "ResearchGate", status: "Auto-Integration" }
-                                ].map((item, idx) => (
-                                    <li key={idx} className="flex flex-col gap-2 p-6 bg-white/5 rounded-2xl border border-white/10 group hover:bg-white/10 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-1.5 h-1.5 bg-secondary rounded-full shadow-[0_0_8px_rgba(255,255,255,0.5)]"></div>
-                                            <span className="font-serif font-black text-lg tracking-tight italic">{item.name}</span>
-                                        </div>
-                                        <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{item.status}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </section>
+                        <RoadmapSection />
                     </div>
 
                     {/* Sidebar Utilities */}
                     <div className="space-y-10">
-                        {/* Quick Track Widget */}
-                        <div className="bg-white p-8 rounded-[2.5rem] border-2 border-gray-100 shadow-xl shadow-primary/5">
-                            <h3 className="text-xl font-serif font-black mb-6 italic text-gray-900">Track Your Paper</h3>
-                            <form onSubmit={handleTrack} className="space-y-4">
-                                <div>
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Manuscript ID</label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. IJITEST-2026-101"
-                                        value={paperId}
-                                        onChange={(e) => setPaperId(e.target.value)}
-                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:border-primary focus:bg-white transition-all text-sm font-bold outline-none"
-                                    />
-                                </div>
-                                <button type="submit" className="w-full py-4 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-primary/90 transition-all flex items-center justify-center gap-3">
-                                    <Search className="w-4 h-4" /> Track Now
-                                </button>
-                            </form>
-                        </div>
-
-                        {/* Ethics Statements */}
-                        <div className="bg-secondary p-8 rounded-[2.5rem] text-white shadow-xl shadow-secondary/20 group">
-                            <ShieldAlert className="w-8 h-8 mb-6 group-hover:rotate-12 transition-transform" />
-                            <h3 className="text-xl font-serif font-black mb-2 italic">Ethics Statements</h3>
-                            <p className="text-xs text-white/70 mb-8 font-medium leading-relaxed italic">IJITEST follows COPE (Committee on Publication Ethics) guidelines for all research contributions.</p>
-                            <Link href="/ethics" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest border-b-2 border-white/20 hover:border-white transition-all pb-1">
-                                View Policy <ChevronRight className="w-4 h-4" />
-                            </Link>
-                        </div>
-
-                        {/* Quick Guidelines */}
-                        <div className="bg-primary/5 p-8 rounded-[2.5rem] border-2 border-primary/10 group">
-                            <h4 className="text-lg font-black text-primary mb-2 italic tracking-tight">Author Resources</h4>
-                            <p className="text-xs text-gray-500 mb-6 font-medium">Download templates and read formatting rules to ensure acceptance.</p>
-                            <Link href="/guidelines" className="flex items-center justify-between p-4 bg-white rounded-2xl border border-primary/10 hover:border-primary transition-all group/link shadow-sm">
-                                <span className="text-[10px] font-black uppercase text-gray-400 group-hover/link:text-primary transition-colors">View Guidelines</span>
-                                <ChevronRight className="w-4 h-4 text-primary" />
-                            </Link>
-                        </div>
+                        <TrackManuscriptWidget />
+                        <EthicsWidget />
+                        <ResourceDeskWidget />
                     </div>
                 </div>
             </div>

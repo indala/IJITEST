@@ -73,20 +73,20 @@ export default function Contact() {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div className="space-y-4">
                                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Full Name</label>
-                                                <input name="name" required className="w-full px-8 py-5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all outline-none font-bold placeholder:text-gray-300" placeholder="Author Name" />
+                                                <input name="name" required className="w-full px-8 py-5 rounded-2xl bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none font-bold placeholder:text-gray-400" placeholder="Author Name" />
                                             </div>
                                             <div className="space-y-4">
                                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Email Address</label>
-                                                <input name="email" type="email" required className="w-full px-8 py-5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all outline-none font-bold placeholder:text-gray-300" placeholder="researcher@university.edu" />
+                                                <input name="email" type="email" required className="w-full px-8 py-5 rounded-2xl bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none font-bold placeholder:text-gray-400" placeholder="researcher@university.edu" />
                                             </div>
                                         </div>
                                         <div className="space-y-4">
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Subject</label>
-                                            <input name="subject" required className="w-full px-8 py-5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all outline-none font-bold placeholder:text-gray-300" placeholder="e.g., Status Inquiry for Paper ID: IJITEST-X" />
+                                            <input name="subject" required className="w-full px-8 py-5 rounded-2xl bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none font-bold placeholder:text-gray-400" placeholder="e.g., Status Inquiry for Paper ID: IJITEST-X" />
                                         </div>
                                         <div className="space-y-4">
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Message Content</label>
-                                            <textarea name="message" rows={6} required className="w-full px-8 py-5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all outline-none font-bold resize-none placeholder:text-gray-300" placeholder="Provide details of your inquiry here..."></textarea>
+                                            <textarea name="message" rows={6} required className="w-full px-8 py-5 rounded-2xl bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none font-bold resize-none placeholder:text-gray-400" placeholder="Provide details of your inquiry here..."></textarea>
                                         </div>
                                         <button
                                             type="submit"

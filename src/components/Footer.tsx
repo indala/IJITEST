@@ -1,7 +1,13 @@
 import Link from 'next/link';
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Globe, Shield } from 'lucide-react';
 
-export default function Footer() {
+export default function Footer({ settings }: { settings?: Record<string, string> }) {
+    const name = settings?.journal_name || "International Journal of Innovative Trends in Engineering Science and Technology";
+    const shortName = settings?.journal_short_name || "IJITEST";
+    const email = settings?.support_email || "editor@ijitest.org";
+    const phone = settings?.support_phone || "+91 8919643590";
+    const address = settings?.office_address || "Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India";
+
     return (
         <footer className="bg-[#0f172a] text-gray-400 border-t border-white/5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -9,9 +15,9 @@ export default function Footer() {
                     {/* Journal Info */}
                     <div className="space-y-8">
                         <div>
-                            <h3 className="text-white text-2xl font-serif font-black mb-4 tracking-tighter italic">IJITEST</h3>
+                            <h3 className="text-white text-2xl font-serif font-black mb-4 tracking-tighter italic">{shortName}</h3>
                             <p className="text-xs leading-relaxed opacity-60 font-medium italic">
-                                International Journal of Innovative Trends in Engineering Science and Technology (IJITEST) is a peer-reviewed scholarly journal dedicated to elite research dissemination.
+                                {name} ({shortName}) is a peer-reviewed scholarly journal dedicated to elite research dissemination.
                             </p>
                         </div>
                         <div className="space-y-3">
@@ -65,16 +71,16 @@ export default function Footer() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Editorial Email</p>
-                                    <p className="text-white font-bold">editor@ijitest.org</p>
+                                    <p className="text-white font-bold">{email}</p>
                                 </div>
                             </li>
                             <li className="flex items-start space-x-4">
                                 <div className="p-2.5 bg-white/5 rounded-xl text-emerald-500 shrink-0">
                                     <Phone className="w-4 h-4" />
                                 </div>
-                                <div>
+                                box-sizing<div>
                                     <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Direct Line</p>
-                                    <p className="text-white font-bold">+91 8919643590</p>
+                                    <p className="text-white font-bold">{phone}</p>
                                 </div>
                             </li>
                             <li className="flex items-start space-x-4">
@@ -83,7 +89,7 @@ export default function Footer() {
                                 </div>
                                 <div className="text-xs leading-relaxed font-medium">
                                     <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Office Location</p>
-                                    <p className="text-white/80 italic">Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India</p>
+                                    <p className="text-white/80 italic">{address}</p>
                                 </div>
                             </li>
                         </ul>

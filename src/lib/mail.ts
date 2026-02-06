@@ -30,9 +30,14 @@ export async function sendEmail({ to, subject, text, html }: SendEmailProps) {
 
         console.log("Message sent: %s", info.messageId);
         return { success: true, messageId: info.messageId };
-    } catch (error) {
-        console.error("Error sending email:", error);
-        return { success: false, error };
+    } catch (error: any) {
+        console.error("--- SMTP Error Diagnosis ---");
+        console.error("Host:", process.env.SMTP_HOST);
+        console.error("User:", process.env.SMTP_USER);
+        console.error("Error Code:", error.code);
+        console.error("SMTP Response:", error.response);
+        console.error("---------------------------");
+        return { success: false, error: error.message };
     }
 }
 
@@ -95,6 +100,49 @@ export const emailTemplates = {
                 <p><strong>Deadline for Feedback:</strong> ${new Date(deadline).toLocaleDateString()}</p>
                 <p>Please review the document and upload your feedback via the reviewer portal or reply to this email.</p>
                 <p>Thank you for your contribution to technical excellence.<br>Editorial Board, IJITEST</p>
+            </div>
+        `
+    }),
+    manuscriptAcceptance: (authorName: string, paperTitle: string, paperId: string) => {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ijitest.com';
+        return {
+            subject: `MANUSCRIPT ACCEPTED: ${paperId}`,
+            html: `
+                <div style="font-family: serif; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f0f0f0; border-radius: 20px;">
+                    <h1 style="color: #6d0202; border-bottom: 2px solid #6d0202; padding-bottom: 10px;">IJITEST</h1>
+                    <p>Dear <strong>${authorName}</strong>,</p>
+                    <p>I am pleased to inform you that your manuscript, "<strong>${paperTitle}</strong>" (ID: ${paperId}), has been <strong>ACCEPTED</strong> for publication in the <em>International Journal of Innovative Trends in Engineering Science and Technology (IJITEST)</em>.</p>
+                    
+                    <div style="background: #f0fdf4; padding: 30px; border-radius: 15px; text-align: center; border: 1px solid #dcfce7; margin: 30px 0;">
+                        <p style="margin-top: 0; font-weight: bold; color: #166534; font-size: 18px;">Congratulations on your achievement!</p>
+                        <p style="font-size: 14px; color: #166534; margin-bottom: 25px;">To finalize the publication and include your paper in the upcoming issue, please complete the Article Processing Charge (APC) payment.</p>
+                        <a href="${baseUrl}/payment/${paperId}" style="background: #16a34a; color: white; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block;">Proceed to Payment & Publish</a>
+                    </div>
+                    
+                    <p>After payment, our technical team will reach out for the final camera-ready copy formatting.</p>
+                    <p>Warm regards,<br><strong>Editor-in-Chief, IJITEST</strong></p>
+                </div>
+            `
+        };
+    },
+    manuscriptRejection: (authorName: string, paperTitle: string, paperId: string, feedback: string) => ({
+        subject: `MANUSCRIPT STATUS: ${paperId}`,
+        html: `
+            <div style="font-family: serif; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f0f0f0; border-radius: 20px;">
+                <h1 style="color: #6d0202; border-bottom: 2px solid #6d0202; padding-bottom: 10px;">IJITEST</h1>
+                <p>Dear <strong>${authorName}</strong>,</p>
+                <p>Thank you for submitting your manuscript, "<strong>${paperTitle}</strong>" (ID: ${paperId}), to IJITEST.</p>
+                <p>After a thorough evaluation by our editorial board and peer reviewers, we regret to inform you that your manuscript has been <strong>REJECTED</strong> for publication in our journal.</p>
+                
+                <div style="background: #f9fafb; padding: 25px; border-radius: 15px; border: 1px solid #e5e7eb; margin: 30px 0;">
+                    <p style="margin-top: 0; font-weight: black; uppercase; font-size: 10px; color: #6b7280; letter-spacing: 0.1em;">Reviewer Comments & Feedback</p>
+                    <div style="color: #374151; line-height: 1.6; font-style: italic;">
+                        ${feedback || 'The submission did not meet the technical criteria for our current focus areas.'}
+                    </div>
+                </div>
+                
+                <p>We appreciate your interest in IJITEST and wish you the best for your future research endeavors.</p>
+                <p>Sincerely,<br><strong>Editorial Board, IJITEST</strong></p>
             </div>
         `
     })

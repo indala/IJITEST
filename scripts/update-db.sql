@@ -20,12 +20,14 @@ ALTER TABLE submissions ADD FOREIGN KEY (issue_id) REFERENCES volumes_issues(id)
 CREATE TABLE IF NOT EXISTS reviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
     submission_id INT NOT NULL,
-    reviewer_name VARCHAR(255) NOT NULL,
+    reviewer_id INT NOT NULL,
     status ENUM('pending', 'in_progress', 'completed') DEFAULT 'pending',
     deadline DATE,
+    feedback TEXT,
     feedback_file_path VARCHAR(500),
     assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (submission_id) REFERENCES submissions(id)
+    FOREIGN KEY (submission_id) REFERENCES submissions(id),
+    FOREIGN KEY (reviewer_id) REFERENCES users(id)
 );
 
 -- 4. Payment Tracking
@@ -51,3 +53,19 @@ CREATE TABLE IF NOT EXISTS contact_messages (
     status ENUM('unread', 'read', 'archived') DEFAULT 'unread',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 6. System Settings
+CREATE TABLE IF NOT EXISTS settings (
+    setting_key VARCHAR(100) PRIMARY KEY,
+    setting_value TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Initial Settings
+INSERT INTO settings (setting_key, setting_value) VALUES 
+('journal_name', 'International Journal of Innovative Trends in Engineering Science and Technology'),
+('journal_short_name', 'IJITEST'),
+('issn_number', 'XXXX-XXXX'),
+('apc_inr', '2500'),
+('apc_usd', '50')
+ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
