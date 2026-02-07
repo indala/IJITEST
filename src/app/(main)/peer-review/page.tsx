@@ -1,21 +1,9 @@
-"use client";
-
-import { ShieldCheck, UserCheck, Clock, CheckCircle, Search, ChevronRight, ShieldAlert } from 'lucide-react';
-import PageHeader from '@/components/PageHeader';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { ShieldCheck, Clock, ChevronRight, ShieldAlert } from 'lucide-react';
+import PageHeader from "@/components/layout/PageHeader";
 import Link from 'next/link';
+import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 
 export default function PeerReview() {
-    const [paperId, setPaperId] = useState('');
-    const router = useRouter();
-
-    const handleTrack = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (paperId.trim()) {
-            router.push(`/track?id=${paperId}`);
-        }
-    };
 
     return (
         <div className="bg-white">
@@ -84,24 +72,7 @@ export default function PeerReview() {
                     {/* Sidebar Utilities */}
                     <div className="space-y-10">
                         {/* Quick Track Widget */}
-                        <div className="bg-white p-8 rounded-[2.5rem] border-2 border-gray-100 shadow-xl shadow-primary/5">
-                            <h3 className="text-xl font-serif font-black mb-6 italic text-gray-900">Track Your Paper</h3>
-                            <form onSubmit={handleTrack} className="space-y-4">
-                                <div>
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Manuscript ID</label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. IJITEST-2026-101"
-                                        value={paperId}
-                                        onChange={(e) => setPaperId(e.target.value)}
-                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:border-primary focus:bg-white transition-all text-sm font-bold outline-none"
-                                    />
-                                </div>
-                                <button type="submit" className="w-full py-4 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-primary/90 transition-all flex items-center justify-center gap-3">
-                                    <Search className="w-4 h-4" /> Track Now
-                                </button>
-                            </form>
-                        </div>
+                        <TrackManuscriptWidget />
 
                         {/* Reviewer Resources */}
                         <div className="bg-gray-900 p-8 rounded-[2.5rem] text-white group relative overflow-hidden">

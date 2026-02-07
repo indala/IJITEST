@@ -49,13 +49,13 @@ export default function PanelLayout({
 
             <aside className={`w-72 bg-white border-r border-gray-100 flex flex-col fixed lg:sticky top-0 h-screen z-30 transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                 <div className="p-8 border-b border-gray-50 mb-6 flex justify-between items-center">
-                    <Link href="/admin" className="flex items-center gap-3">
-                        <div className="bg-primary w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                            <span className="text-white font-black text-xl">IJ</span>
+                    <Link href="/admin" className="flex items-center gap-4 group">
+                        <div className="bg-primary w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
+                            <span className="text-white font-black text-2xl tracking-tighter">IJ</span>
                         </div>
                         <div>
-                            <h2 className="font-serif font-black text-gray-900 leading-none">IJITEST</h2>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Editor Panel</span>
+                            <h2 className="font-serif font-black text-gray-900 text-xl leading-none tracking-tight">IJITEST</h2>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Journal Panel</span>
                         </div>
                     </Link>
                     <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden p-2 text-gray-400 hover:text-gray-900">

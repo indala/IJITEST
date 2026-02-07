@@ -13,6 +13,21 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id: idStr } = await params;
+    const id = parseInt(idStr);
+    if (isNaN(id)) return { title: 'Invalid Submission | Editor' };
+
+    const submission = await getSubmissionById(id);
+    if (!submission) return { title: 'Submission Not Found | Editor' };
+
+    return {
+        title: `Editor View: ${submission.paper_id} | IJITEST`,
+        description: `Editorial review management for manuscript ${submission.paper_id}: ${submission.title}`,
+    };
+}
 
 export default async function SubmissionDetails({ params }: { params: Promise<{ id: string }> }) {
     const { id: idStr } = await params;

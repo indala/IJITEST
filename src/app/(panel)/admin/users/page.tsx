@@ -2,10 +2,12 @@
 
 import { Users, UserPlus, Shield, Mail, Trash2, X, ShieldCheck, UserCog } from 'lucide-react';
 import { getUsers, createUser, deleteUser } from '@/actions/users';
+import { getSession } from '@/actions/session';
 import { useState, useEffect } from 'react';
 
 export default function UserManagement() {
     const [users, setUsers] = useState<any[]>([]);
+    const [currentUser, setCurrentUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
 
@@ -15,8 +17,12 @@ export default function UserManagement() {
 
     async function fetchData() {
         setLoading(true);
-        const data = await getUsers();
-        setUsers(data);
+        const [usersData, sessionData] = await Promise.all([
+            getUsers(),
+            getSession()
+        ]);
+        setUsers(usersData);
+        setCurrentUser(sessionData);
         setLoading(false);
     }
 
@@ -105,21 +111,27 @@ export default function UserManagement() {
 
                         <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
                             <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Employee #{user.id}</span>
-                            <button
-                                onClick={async () => {
-                                    if (confirm("Are you sure you want to revoke access for this user?")) {
-                                        const result = await deleteUser(user.id);
-                                        if (result?.error) {
-                                            alert(result.error);
-                                        } else {
-                                            fetchData();
+                            {currentUser && Number(currentUser.id) !== Number(user.id) ? (
+                                <button
+                                    onClick={async () => {
+                                        if (confirm("Are you sure you want to revoke access for this user?")) {
+                                            const result = await deleteUser(user.id);
+                                            if (result?.error) {
+                                                alert(result.error);
+                                            } else {
+                                                fetchData();
+                                            }
                                         }
-                                    }
-                                }}
-                                className="p-3 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                            >
-                                <Trash2 className="w-5 h-5" />
-                            </button>
+                                    }}
+                                    className="p-3 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                                >
+                                    <Trash2 className="w-5 h-5" />
+                                </button>
+                            ) : (
+                                <div className="p-3 bg-primary/10 text-primary rounded-xl" title="Self-Account Security Lock">
+                                    <ShieldCheck className="w-5 h-5" />
+                                </div>
+                            )}
                         </div>
 
                         {user.role === 'admin' && (

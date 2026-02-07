@@ -1,28 +1,15 @@
-"use client";
-
-import { Download, FileText, CheckCircle, Search, ShieldAlert, ChevronRight } from 'lucide-react';
-import PageHeader from '@/components/PageHeader';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Download, FileText, CheckCircle, ShieldAlert, ChevronRight } from 'lucide-react';
+import PageHeader from "@/components/layout/PageHeader";
 import Link from 'next/link';
+import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 
 interface GuidelinesContentProps {
     settings: Record<string, string>;
 }
 
 export default function GuidelinesContent({ settings }: GuidelinesContentProps) {
-    const [paperId, setPaperId] = useState('');
-    const router = useRouter();
-
     const shortName = settings.journal_short_name || "IJITEST";
     const supportEmail = settings.support_email || "editor@ijitest.org";
-
-    const handleTrack = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (paperId.trim()) {
-            router.push(`/track?id=${paperId}`);
-        }
-    };
 
     return (
         <div className="bg-white">
@@ -78,6 +65,16 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                                             Download DOCX
                                         </a>
                                     </div>
+                                    <div className="p-8 bg-secondary text-white rounded-[2.5rem] shadow-xl shadow-secondary/20 flex flex-col items-center text-center group">
+                                        <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:rotate-12">
+                                            <Download className="w-7 h-7" />
+                                        </div>
+                                        <h4 className="font-black text-xl mb-1 italic">Copyright Form</h4>
+                                        <p className="text-[10px] opacity-70 uppercase font-bold tracking-widest mb-8">Mandatory Submission</p>
+                                        <a href="/docs/copyright-form.pdf" download className="w-full py-4 bg-white text-secondary rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors shadow-lg shadow-black/10">
+                                            Download PDF
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -109,24 +106,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                     {/* Sidebar Utilities */}
                     <div className="space-y-10">
                         {/* Quick Track Widget */}
-                        <div className="bg-white p-8 rounded-[2.5rem] border-2 border-gray-100 shadow-xl shadow-primary/5">
-                            <h3 className="text-xl font-serif font-black mb-6 italic text-gray-900">Track Your Paper</h3>
-                            <form onSubmit={handleTrack} className="space-y-4">
-                                <div>
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Manuscript ID</label>
-                                    <input
-                                        type="text"
-                                        placeholder={`e.g. ${shortName}-2026-101`}
-                                        value={paperId}
-                                        onChange={(e) => setPaperId(e.target.value)}
-                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:border-primary focus:bg-white transition-all text-sm font-bold outline-none"
-                                    />
-                                </div>
-                                <button type="submit" className="w-full py-4 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-primary/90 transition-all flex items-center justify-center gap-3">
-                                    <Search className="w-4 h-4" /> Track Now
-                                </button>
-                            </form>
-                        </div>
+                        <TrackManuscriptWidget />
 
                         {/* Ethics Statements */}
                         <div className="bg-secondary p-8 rounded-[2.5rem] text-white shadow-xl shadow-secondary/20 group">

@@ -1,256 +1,100 @@
-"use client";
-
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Upload, Send, User, FileText, CheckCircle, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { submitPaper } from '@/actions/submit-paper';
-
-const submissionSchema = z.object({
-    authorName: z.string().min(2, "Author name is required"),
-    authorEmail: z.string().email("Invalid email address"),
-    affiliation: z.string().min(2, "Affiliation is required"),
-    paperTitle: z.string().min(10, "Paper title must be at least 10 characters"),
-    abstract: z.string().min(50, "Abstract must be at least 50 characters"),
-    keywords: z.string().min(5, "Keywords are required"),
-});
-
-type SubmissionFormValues = z.infer<typeof submissionSchema>;
+import { ShieldCheck, Info, ChevronRight, Gavel } from 'lucide-react';
+import PageHeader from "@/components/layout/PageHeader";
+import Link from 'next/link';
+import SubmissionForm from '@/features/submissions/components/SubmissionForm';
+import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 
 export default function SubmitPaper() {
-    const [isSubmitted, setIsSubmitted] = useState(false);
-    const [manuscript, setManuscript] = useState<File | null>(null);
-    const [submissionId, setSubmissionId] = useState<string>('');
-    const [isUploading, setIsUploading] = useState(false);
-
-    const { register, handleSubmit, formState: { errors } } = useForm<SubmissionFormValues>({
-        resolver: zodResolver(submissionSchema)
-    });
-
-    const onSubmit = async (values: SubmissionFormValues) => {
-        if (!manuscript) {
-            alert("Please upload your manuscript");
-            return;
-        }
-
-        setIsUploading(true);
-        try {
-            // Create FormData for the server action
-            const formData = new FormData();
-            formData.append("authorName", values.authorName);
-            formData.append("authorEmail", values.authorEmail);
-            formData.append("affiliation", values.affiliation);
-            formData.append("paperTitle", values.paperTitle);
-            formData.append("abstract", values.abstract);
-            formData.append("keywords", values.keywords);
-            formData.append("manuscript", manuscript);
-
-            // Submit to MySQL-based server action
-            const result = await submitPaper(formData);
-
-            if (result.error) {
-                throw new Error(result.error);
-            }
-
-            setSubmissionId(result.paperId || 'UNKNOWN');
-            setIsSubmitted(true);
-
-        } catch (error: any) {
-            console.error(error);
-            alert("Submission failed: " + error.message);
-        } finally {
-            setIsUploading(false);
-        }
-    };
-
-    if (isSubmitted) {
-        return (
-            <div className="py-32 flex flex-col items-center justify-center text-center px-4">
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="bg-green-100 p-4 rounded-full mb-6"
-                >
-                    <CheckCircle className="w-16 h-16 text-green-600" />
-                </motion.div>
-                <h1 className="text-3xl font-serif font-black mb-4">Submission Successful!</h1>
-                <p className="text-gray-600 max-w-md mb-8">
-                    Your paper has been received and assigned ID: <strong>{submissionId}</strong>. A confirmation email has been sent to your inbox.
-                </p>
-                <div className="flex gap-4">
-                    <button onClick={() => window.location.href = '/'} className="btn-primary">Return Home</button>
-                    <button className="btn-outline">Download Confirmation</button>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className="py-20 bg-gray-50/50">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
-                    <div className="bg-primary p-8 text-white relative overflow-hidden">
-                        <div className="relative z-10">
-                            <h1 className="text-3xl font-serif font-bold">Paper Submission</h1>
-                            <p className="text-white/70">Complete the form below to submit your research for review.</p>
+        <div className="bg-white min-h-screen">
+            <PageHeader
+                title="Manuscript Submission"
+                description="Join our global community of researchers and innovators. Submit your technical research for world-class indexing and impact."
+                breadcrumbs={[
+                    { name: 'Home', href: '/' },
+                    { name: 'Submit Paper', href: '/submit' },
+                ]}
+            />
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+                    {/* Main Content */}
+                    <div className="lg:col-span-2">
+                        <div className="bg-white rounded-[3.5rem] border border-gray-100 shadow-2xl shadow-gray-200/50 overflow-hidden">
+                            <div className="bg-gray-900 p-12 text-white relative overflow-hidden">
+                                <div className="relative z-10 space-y-2">
+                                    <h2 className="text-3xl font-serif font-black italic">Ready to Publish?</h2>
+                                    <p className="text-white/50 text-xs font-black uppercase tracking-[0.3em]">Scientific Excellence Starts Here</p>
+                                </div>
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                            </div>
+
+                            <div className="p-12">
+                                <SubmissionForm />
+                            </div>
                         </div>
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-8">
-                        {/* Author Information */}
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-2 text-primary font-bold border-b border-gray-100 pb-2">
-                                <User className="w-5 h-5" />
-                                <span>Author Details</span>
+                    {/* Sidebar Utilities */}
+                    <div className="space-y-10">
+                        {/* Status Check */}
+                        <TrackManuscriptWidget />
+
+                        {/* Submission Checklist */}
+                        <div className="bg-primary/5 p-10 rounded-[3rem] border border-primary/10">
+                            <h3 className="text-xl font-serif font-black text-primary mb-8 italic">Submission Guide</h3>
+                            <div className="space-y-6">
+                                {[
+                                    { title: "Formatting", desc: "Follow IEEE standards" },
+                                    { title: "Originality", desc: "Zero-tolerance plagiarism" },
+                                    { title: "Ethics", desc: "COPE compliance required" },
+                                    { title: "Copyright", desc: "Include signed form" }
+                                ].map((item, i) => (
+                                    <div key={i} className="flex gap-4 group">
+                                        <div className="w-10 h-10 rounded-xl bg-white border border-primary/10 flex items-center justify-center shrink-0 shadow-sm group-hover:bg-primary group-hover:text-white transition-all">
+                                            <ShieldCheck className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-900 mb-1">{item.title}</h4>
+                                            <p className="text-xs text-gray-500 font-medium italic">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Corresponding Author Name*</label>
-                                    <input
-                                        {...register("authorName")}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                                        placeholder="e.g. Dr. John Doe"
-                                    />
-                                    {errors.authorName && <p className="text-red-500 text-xs mt-1">{errors.authorName.message}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address*</label>
-                                    <input
-                                        {...register("authorEmail")}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                                        placeholder="john@university.edu"
-                                    />
-                                    {errors.authorEmail && <p className="text-red-500 text-xs mt-1">{errors.authorEmail.message}</p>}
-                                </div>
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Affiliation / Organization*</label>
-                                    <input
-                                        {...register("affiliation")}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                                        placeholder="e.g. Department of CSE, IIT Bombay"
-                                    />
-                                    {errors.affiliation && <p className="text-red-500 text-xs mt-1">{errors.affiliation.message}</p>}
-                                </div>
-                            </div>
+
+                            <Link href="/guidelines" className="mt-10 block w-full py-4 bg-white border border-primary/10 rounded-2xl text-center text-[10px] font-black uppercase tracking-widest text-primary hover:bg-primary hover:text-white transition-all shadow-sm">
+                                Full Author Guidelines
+                            </Link>
                         </div>
 
-                        {/* Paper Metadata */}
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-2 text-primary font-bold border-b border-gray-100 pb-2">
-                                <FileText className="w-5 h-5" />
-                                <span>Paper Metadata</span>
+                        {/* Related Policy Widget */}
+                        <div className="bg-gray-50 p-10 rounded-[3rem] border border-gray-100">
+                            <div className="flex items-center gap-3 text-gray-900 font-black mb-6">
+                                <Info className="w-6 h-6 text-secondary" />
+                                <span className="uppercase tracking-[0.2em] text-xs">Policy Links</span>
                             </div>
                             <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Paper Title*</label>
-                                    <input
-                                        {...register("paperTitle")}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                                        placeholder="Enter full title of your research"
-                                    />
-                                    {errors.paperTitle && <p className="text-red-500 text-xs mt-1">{errors.paperTitle.message}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Abstract* (50-250 words)</label>
-                                    <textarea
-                                        {...register("abstract")}
-                                        rows={4}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"
-                                        placeholder="Summarize your research objectives and findings..."
-                                    />
-                                    {errors.abstract && <p className="text-red-500 text-xs mt-1">{errors.abstract.message}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Keywords* (comma separated)</label>
-                                    <input
-                                        {...register("keywords")}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                                        placeholder="e.g. Machine Learning, Cloud Computing, IoT"
-                                    />
-                                    {errors.keywords && <p className="text-red-500 text-xs mt-1">{errors.keywords.message}</p>}
-                                </div>
+                                <Link href="/ethics" className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100 hover:border-secondary group transition-all">
+                                    <span className="text-[10px] font-black text-gray-400 group-hover:text-gray-900 uppercase tracking-widest transition-colors">Publication Ethics</span>
+                                    <ChevronRight className="w-4 h-4 text-secondary" />
+                                </Link>
+                                <Link href="/terms" className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100 hover:border-secondary group transition-all">
+                                    <span className="text-[10px] font-black text-gray-400 group-hover:text-gray-900 uppercase tracking-widest transition-colors">Copyright Policy</span>
+                                    <ChevronRight className="w-4 h-4 text-secondary" />
+                                </Link>
                             </div>
                         </div>
 
-                        {/* File Upload */}
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-2 text-primary font-bold border-b border-gray-100 pb-2">
-                                <Upload className="w-5 h-5" />
-                                <span>Manuscript Upload</span>
-                            </div>
-                            <div
-                                className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all ${manuscript ? 'border-green-300 bg-green-50' : 'border-gray-200 hover:border-primary/50 hover:bg-primary/5'
-                                    }`}
-                            >
-                                {!manuscript ? (
-                                    <>
-                                        <input
-                                            type="file"
-                                            id="file-upload"
-                                            className="hidden"
-                                            accept=".pdf,.doc,.docx"
-                                            onChange={(e) => setManuscript(e.target.files?.[0] || null)}
-                                        />
-                                        <label htmlFor="file-upload" className="cursor-pointer">
-                                            <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                <Upload className="w-8 h-8 text-gray-400" />
-                                            </div>
-                                            <p className="text-gray-900 font-bold">Click to upload or drag and drop</p>
-                                            <p className="text-gray-500 text-sm mt-1">Accepts PDF, DOCX (Max 10MB)</p>
-                                        </label>
-                                    </>
-                                ) : (
-                                    <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-green-100">
-                                        <div className="flex items-center gap-3">
-                                            <div className="bg-green-100 p-2 rounded-lg">
-                                                <FileText className="text-green-600 w-6 h-6" />
-                                            </div>
-                                            <div className="text-left">
-                                                <p className="text-sm font-bold text-gray-900">{manuscript.name}</p>
-                                                <p className="text-xs text-gray-500">{(manuscript.size / 1024 / 1024).toFixed(2)} MB</p>
-                                            </div>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => setManuscript(null)}
-                                            className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+                        {/* Quick Contact */}
+                        <div className="bg-secondary p-8 rounded-[2.5rem] text-white shadow-xl shadow-secondary/20 group">
+                            <h3 className="text-xl font-serif font-black mb-1 italic">Technical Issue?</h3>
+                            <p className="text-xs text-white/70 mb-8 font-medium italic mb-8">Reach our support desk for immediate assistance with submissions.</p>
+                            <Link href="/contact" className="flex items-center justify-between p-4 bg-white/10 rounded-2xl border border-white/20 hover:bg-white/20 transition-all group/link">
+                                <span className="text-[10px] font-black uppercase text-white tracking-widest">Contact Support</span>
+                                <ChevronRight className="w-4 h-4 text-white" />
+                            </Link>
                         </div>
-
-                        {/* Ethics & Policy Agreement */}
-                        <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                            <label className="flex items-start gap-4 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    required
-                                    className="w-5 h-5 mt-1 text-primary border-gray-300 rounded focus:ring-primary items-start"
-                                />
-                                <span className="text-sm text-gray-600 leading-relaxed">
-                                    I confirm that this manuscript is <strong>original</strong>, has not been published elsewhere, and I have read and agree to the <a href="/guidelines" className="text-primary font-bold underline hover:text-primary/80">Author Guidelines</a> and <a href="/ethics" className="text-primary font-bold underline hover:text-primary/80">Ethics & Publication Policy</a>.
-                                </span>
-                            </label>
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={isUploading}
-                            className="w-full btn-primary py-4 rounded-2xl text-lg font-bold flex items-center justify-center gap-3 shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isUploading ? (
-                                <>Uploading & Submitting... <Loader2 className="w-5 h-5 animate-spin" /></>
-                            ) : (
-                                <>Submit Manuscript <Send className="w-5 h-5" /></>
-                            )}
-                        </button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

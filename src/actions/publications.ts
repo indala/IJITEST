@@ -35,7 +35,7 @@ export async function getVolumesIssues() {
 export async function assignPaperToIssue(submissionId: number, issueId: number) {
     try {
         await pool.execute(
-            'UPDATE submissions SET issue_id = ? WHERE id = ?',
+            "UPDATE submissions SET issue_id = ?, status = 'published' WHERE id = ?",
             [issueId, submissionId]
         );
         revalidatePath('/admin/submissions');

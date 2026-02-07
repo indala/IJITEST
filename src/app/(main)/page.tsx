@@ -1,14 +1,14 @@
-import HomeCarousel from '@/components/HomeCarousel';
-import WelcomeSection from '@/components/home/WelcomeSection';
-import HomeStats from '@/components/home/HomeStats';
-import AimAndScope from '@/components/home/AimAndScope';
-import IndexingLogos from '@/components/home/IndexingLogos';
-import PublisherSection from '@/components/home/PublisherSection';
-import TrackManuscriptWidget from '@/components/widgets/TrackManuscriptWidget';
-import AnnouncementsWidget from '@/components/widgets/AnnouncementsWidget';
-import CallForPapersWidget from '@/components/widgets/CallForPapersWidget';
-import ResourceDeskWidget from '@/components/widgets/ResourceDeskWidget';
-import EthicsWidget from '@/components/widgets/EthicsWidget';
+import HomeCarousel from '@/features/home/components/HomeCarousel';
+import WelcomeSection from '@/features/home/components/WelcomeSection';
+import HomeStats from '@/features/home/components/HomeStats';
+import AimAndScope from '@/features/home/components/AimAndScope';
+import IndexingLogos from '@/features/home/components/IndexingLogos';
+import PublisherSection from '@/features/home/components/PublisherSection';
+import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import AnnouncementsWidget from '@/features/shared/widgets/AnnouncementsWidget';
+import CallForPapersWidget from '@/features/shared/widgets/CallForPapersWidget';
+import ResourceDeskWidget from '@/features/shared/widgets/ResourceDeskWidget';
+import EthicsWidget from '@/features/shared/widgets/EthicsWidget';
 import { getSettings } from '@/actions/settings';
 
 export default async function Home() {

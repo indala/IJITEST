@@ -11,15 +11,32 @@ import {
 } from 'lucide-react';
 import pool from '@/lib/db';
 import Link from 'next/link';
+import SubmissionTabs from '@/features/submissions/components/SubmissionTabs';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Submissions() {
-    // Fetch submissions from MySQL
-    const [rows]: any = await pool.execute(
-        'SELECT * FROM submissions ORDER BY submitted_at DESC'
-    );
+export default async function Submissions({
+    searchParams
+}: {
+    searchParams: Promise<{ status?: string }>
+}) {
+    const { status } = await searchParams;
+    const currentStatus = status || 'all';
 
+    // Fetch submissions from MySQL with optional status filtering
+    let query = 'SELECT * FROM submissions';
+    let params: any[] = [];
+
+    if (currentStatus === 'pending') {
+        query += ' WHERE status IN ("under_review", "accepted")';
+    } else if (currentStatus !== 'all') {
+        query += ' WHERE status = ?';
+        params.push(currentStatus);
+    }
+
+    query += ' ORDER BY submitted_at DESC';
+
+    const [rows]: any = await pool.execute(query, params);
     const submissions = rows;
 
     return (
@@ -42,6 +59,9 @@ export default async function Submissions() {
                     </Link>
                 </div>
             </div>
+
+            {/* Status Tabs */}
+            <SubmissionTabs currentStatus={currentStatus} />
 
             {/* Table */}
             <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden overflow-x-auto">
@@ -73,9 +93,11 @@ export default async function Submissions() {
                                     </div>
                                 </td>
                                 <td className="px-8 py-8">
-                                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${sub.status === 'submitted' ? 'bg-blue-50 text-blue-600' :
-                                        sub.status === 'under_review' ? 'bg-orange-50 text-orange-600' :
-                                            sub.status === 'rejected' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'
+                                    <span className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.25em] shadow-sm border ${sub.status === 'submitted' ? 'bg-indigo-50 text-indigo-900 border-indigo-100' :
+                                            sub.status === 'under_review' ? 'bg-amber-50 text-amber-900 border-amber-100' :
+                                                sub.status === 'accepted' ? 'bg-purple-50 text-purple-900 border-purple-100' :
+                                                    sub.status === 'rejected' ? 'bg-rose-50 text-rose-900 border-rose-100' :
+                                                        sub.status === 'paid' ? 'bg-emerald-50 text-emerald-900 border-emerald-100' : 'bg-cyan-50 text-cyan-900 border-cyan-100'
                                         }`}>
                                         {sub.status.replace('_', ' ')}
                                     </span>

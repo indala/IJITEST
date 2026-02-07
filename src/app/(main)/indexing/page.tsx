@@ -1,9 +1,9 @@
 import { Search, Database } from 'lucide-react';
-import PageHeader from '@/components/PageHeader';
-import RoadmapSection from '@/components/indexing/RoadmapSection';
-import TrackManuscriptWidget from '@/components/widgets/TrackManuscriptWidget';
-import EthicsWidget from '@/components/widgets/EthicsWidget';
-import ResourceDeskWidget from '@/components/widgets/ResourceDeskWidget';
+import PageHeader from "@/components/layout/PageHeader";
+import RoadmapSection from '@/features/indexing/components/RoadmapSection';
+import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import EthicsWidget from '@/features/shared/widgets/EthicsWidget';
+import ResourceDeskWidget from '@/features/shared/widgets/ResourceDeskWidget';
 
 export default function Indexing() {
     return (

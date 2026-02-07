@@ -2,7 +2,7 @@ import { getSubmissionById, updateSubmissionStatus, decideSubmission } from "@/a
 import { getVolumesIssues, assignPaperToIssue } from "@/actions/publications";
 import { waivePayment } from "@/actions/payments";
 import pool from "@/lib/db";
-import DeleteSubmissionButton from "@/components/DeleteSubmissionButton";
+import DeleteSubmissionButton from "@/features/submissions/components/DeleteSubmissionButton";
 import {
     Calendar,
     User,
@@ -14,10 +14,30 @@ import {
     XCircle,
     Clock,
     Shield,
-    BookOpen
+    BookOpen,
+    FileCheck,
+    AlertCircle,
+    ChevronRight,
+    Edit3,
+    Eye,
+    History,
+    MoreVertical,
+    Share2,
+    Lock
 } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+    const submission = await getSubmissionById(parseInt(params.id));
+    if (!submission) return { title: 'Submission Not Found | Admin' };
+
+    return {
+        title: `Manage: ${submission.paper_id} | IJITEST Admin`,
+        description: `Administrative oversight for manuscript ${submission.paper_id}: ${submission.title}`,
+    };
+}
 
 export default async function SubmissionDetails({ params }: { params: Promise<{ id: string }> }) {
     const { id: idStr } = await params;
@@ -55,11 +75,13 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
     // Helper for status colors
     const getStatusStyle = (status: string) => {
         switch (status) {
-            case 'submitted': return 'bg-blue-50 text-blue-600 border-blue-100';
-            case 'under_review': return 'bg-orange-50 text-orange-600 border-orange-100';
-            case 'accepted': return 'bg-green-50 text-green-600 border-green-100';
-            case 'rejected': return 'bg-red-50 text-red-600 border-red-100';
-            default: return 'bg-gray-50 text-gray-600 border-gray-100';
+            case 'submitted': return 'bg-indigo-50 text-indigo-900 border-indigo-200';
+            case 'under_review': return 'bg-amber-50 text-amber-900 border-amber-200';
+            case 'accepted': return 'bg-purple-50 text-purple-900 border-purple-200';
+            case 'paid': return 'bg-emerald-50 text-emerald-900 border-emerald-200';
+            case 'published': return 'bg-cyan-50 text-cyan-900 border-cyan-200';
+            case 'rejected': return 'bg-rose-50 text-rose-900 border-rose-200';
+            default: return 'bg-slate-50 text-slate-600 border-slate-100';
         }
     };
 
@@ -264,8 +286,16 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                 )}
 
                                 <div className="mt-4 pt-4 border-t border-gray-100">
-                                    <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2 px-1">System Actions</h4>
-                                    <DeleteSubmissionButton submissionId={submission.id} variant="full" />
+                                    {submission.status !== 'paid' && submission.status !== 'published' ? (
+                                        <>
+                                            <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2 px-1">System Actions</h4>
+                                            <DeleteSubmissionButton submissionId={submission.id} status={submission.status} variant="full" />
+                                        </>
+                                    ) : (
+                                        <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 italic text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center">
+                                            Deletion Restricted (Paid/Published)
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
