@@ -1,242 +1,315 @@
 "use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Upload, Send, User, FileText, CheckCircle, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { submitPaper } from '@/actions/submit-paper';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useState } from "react";
+import { Loader2, Upload, CheckCircle2, AlertCircle, FileText, User, Mail,ChevronRight, BookOpen, Tag } from "lucide-react";
+import { submitPaper } from "@/actions/submit-paper";
+import { Button } from "@/components/ui/button";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+    FormDescription,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
 
-const submissionSchema = z.object({
-    authorName: z.string().min(2, "Author name is required"),
-    authorEmail: z.string().email("Invalid email address"),
-    affiliation: z.string().min(2, "Affiliation is required"),
-    paperTitle: z.string().min(10, "Paper title must be at least 10 characters"),
-    abstract: z.string().min(50, "Abstract must be at least 50 characters"),
-    keywords: z.string().min(5, "Keywords are required"),
+const formSchema = z.object({
+    title: z.string().min(10, "Title must be at least 10 characters"),
+    author_name: z.string().min(2, "Author name must be at least 2 characters"),
+    author_email: z.string().email("Invalid email address"),
+    affiliation: z.string().min(5, "Affiliation must be at least 5 characters"),
+    abstract: z.string().min(100, "Abstract must be at least 100 words (characters for now)"), // Simplified for demo
+    keywords: z.string().min(10, "Provide at least 4 keywords"),
 });
 
-type SubmissionFormValues = z.infer<typeof submissionSchema>;
-
 export default function SubmissionForm() {
-    const [isSubmitted, setIsSubmitted] = useState(false);
-    const [manuscript, setManuscript] = useState<File | null>(null);
-    const [submissionId, setSubmissionId] = useState<string>('');
-    const [isUploading, setIsUploading] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const { register, handleSubmit, formState: { errors } } = useForm<SubmissionFormValues>({
-        resolver: zodResolver(submissionSchema)
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            title: "",
+            author_name: "",
+            author_email: "",
+            affiliation: "",
+            abstract: "",
+            keywords: "",
+        },
     });
 
-    const onSubmit = async (values: SubmissionFormValues) => {
-        if (!manuscript) {
-            alert("Please upload your manuscript");
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        if (!file) {
+            setError("Please upload your manuscript file");
             return;
         }
 
-        setIsUploading(true);
+        setUploading(true);
+        setError(null);
+
         try {
             const formData = new FormData();
-            formData.append("authorName", values.authorName);
-            formData.append("authorEmail", values.authorEmail);
-            formData.append("affiliation", values.affiliation);
-            formData.append("paperTitle", values.paperTitle);
-            formData.append("abstract", values.abstract);
-            formData.append("keywords", values.keywords);
-            formData.append("manuscript", manuscript);
+            Object.entries(values).forEach(([key, value]) => {
+                formData.append(key, value);
+            });
+            formData.append("file", file);
 
             const result = await submitPaper(formData);
 
-            if (result.error) {
-                throw new Error(result.error);
+            if (result.success) {
+                setSuccess(true);
+                form.reset();
+                setFile(null);
+            } else {
+                setError(result.error || "Submission failed");
             }
-
-            setSubmissionId(result.paperId || 'UNKNOWN');
-            setIsSubmitted(true);
-
-        } catch (error: any) {
-            console.error(error);
-            alert("Submission failed: " + error.message);
+        } catch (err) {
+            setError("An unexpected error occurred");
         } finally {
-            setIsUploading(false);
+            setUploading(false);
         }
-    };
+    }
 
-    if (isSubmitted) {
+    if (success) {
         return (
-            <div className="py-20 flex flex-col items-center justify-center text-center px-4">
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="bg-green-100 p-4 rounded-full mb-6"
-                >
-                    <CheckCircle className="w-16 h-16 text-green-600" />
-                </motion.div>
-                <h2 className="text-3xl font-serif font-black mb-4">Submission Successful!</h2>
-                <p className="text-gray-600 max-w-md mb-8 italic font-medium">
-                    Your paper has been received and assigned ID: <strong className="text-primary">{submissionId}</strong>. A confirmation email has been sent to your inbox.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <button onClick={() => window.location.href = '/'} className="px-8 py-4 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20">Return Home</button>
-                    <button className="px-8 py-4 bg-gray-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-gray-900/20">Track Submission</button>
+            <div className="text-center py-12 animate-in fade-in zoom-in duration-500">
+                <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle2 className="w-10 h-10" />
                 </div>
+                <h3 className="text-2xl font-black text-foreground mb-2">Submission Successful</h3>
+                <p className="text-muted-foreground font-medium mb-8 max-w-sm mx-auto">
+                    Your manuscript has been received. Our editorial team will begin the screening process shortly.
+                </p>
+                <Button onClick={() => setSuccess(false)} variant="outline" className="font-black text-[10px] uppercase tracking-widest h-10 px-8">
+                    Submit Another Paper
+                </Button>
             </div>
         );
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
-            {/* Author Information */}
-            <div className="space-y-8">
-                <div className="flex items-center gap-3 text-primary font-black border-b border-gray-100 pb-3">
-                    <User className="w-6 h-6" />
-                    <span className="uppercase tracking-[0.2em] text-xs">Author Details</span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <label className="block text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3">Corresponding Author Name*</label>
-                        <input
-                            {...register("authorName")}
-                            className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none transition-all font-bold text-sm"
-                            placeholder="e.g. Dr. John Doe"
-                        />
-                        {errors.authorName && <p className="text-red-500 text-[10px] font-black uppercase mt-2 tracking-widest">{errors.authorName.message}</p>}
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+                {error && (
+                    <div className="p-5 bg-destructive/5 border border-destructive/10 rounded-2xl flex items-center gap-4 text-destructive text-xs font-black animate-in slide-in-from-top-2">
+                        <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+                            <AlertCircle className="w-4 h-4" />
+                        </div>
+                        {error}
                     </div>
-                    <div>
-                        <label className="block text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3">Email Address*</label>
-                        <input
-                            {...register("authorEmail")}
-                            className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none transition-all font-bold text-sm"
-                            placeholder="john@university.edu"
-                        />
-                        {errors.authorEmail && <p className="text-red-500 text-[10px] font-black uppercase mt-2 tracking-widest">{errors.authorEmail.message}</p>}
-                    </div>
-                    <div className="md:col-span-2">
-                        <label className="block text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3">Affiliation / Organization*</label>
-                        <input
-                            {...register("affiliation")}
-                            className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none transition-all font-bold text-sm"
-                            placeholder="e.g. Department of CSE, University of Engineering"
-                        />
-                        {errors.affiliation && <p className="text-red-500 text-[10px] font-black uppercase mt-2 tracking-widest">{errors.affiliation.message}</p>}
-                    </div>
-                </div>
-            </div>
+                )}
 
-            {/* Paper Metadata */}
-            <div className="space-y-8">
-                <div className="flex items-center gap-3 text-primary font-black border-b border-gray-100 pb-3">
-                    <FileText className="w-6 h-6" />
-                    <span className="uppercase tracking-[0.2em] text-xs">Paper Metadata</span>
-                </div>
-                <div className="space-y-6">
-                    <div>
-                        <label className="block text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3">Paper Title*</label>
-                        <input
-                            {...register("paperTitle")}
-                            className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none transition-all font-bold text-sm italic"
-                            placeholder="Enter full title of your research"
-                        />
-                        {errors.paperTitle && <p className="text-red-500 text-[10px] font-black uppercase mt-2 tracking-widest">{errors.paperTitle.message}</p>}
-                    </div>
-                    <div>
-                        <label className="block text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3">Abstract* (50-250 words)</label>
-                        <textarea
-                            {...register("abstract")}
-                            rows={4}
-                            className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none transition-all resize-none font-medium text-sm italic"
-                            placeholder="Summarize your research objectives and findings..."
-                        />
-                        {errors.abstract && <p className="text-red-500 text-[10px] font-black uppercase mt-2 tracking-widest">{errors.abstract.message}</p>}
-                    </div>
-                    <div>
-                        <label className="block text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3">Keywords* (comma separated)</label>
-                        <input
-                            {...register("keywords")}
-                            className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none transition-all font-bold text-sm"
-                            placeholder="e.g. Machine Learning, Cloud Computing, IoT"
-                        />
-                        {errors.keywords && <p className="text-red-500 text-[10px] font-black uppercase mt-2 tracking-widest">{errors.keywords.message}</p>}
-                    </div>
-                </div>
-            </div>
+                <div className="space-y-8">
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex items-center gap-3 mb-3 ml-1">
+                                    <div className="w-8 h-8 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
+                                        <FileText className="w-4 h-4 text-primary" />
+                                    </div>
+                                    <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Manuscript Title</FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Enter the full title of your research..."
+                                        {...field}
+                                        className="h-14 bg-primary/5 border-primary/10 rounded-2xl font-bold text-primary focus-visible:ring-primary shadow-inner px-6"
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-[10px] font-bold text-secondary" />
+                            </FormItem>
+                        )}
+                    />
 
-            {/* File Upload */}
-            <div className="space-y-8">
-                <div className="flex items-center gap-3 text-primary font-black border-b border-gray-100 pb-3">
-                    <Upload className="w-6 h-6" />
-                    <span className="uppercase tracking-[0.2em] text-xs">Manuscript Upload</span>
-                </div>
-                <div
-                    className={`border-2 border-dashed rounded-[2.5rem] p-12 text-center transition-all ${manuscript ? 'border-emerald-300 bg-emerald-50' : 'border-gray-100 bg-gray-50 hover:border-primary/50 hover:bg-primary/5'
-                        }`}
-                >
-                    {!manuscript ? (
-                        <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <FormField
+                            control={form.control}
+                            name="author_name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <div className="flex items-center gap-3 mb-3 ml-1">
+                                        <div className="w-8 h-8 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
+                                            <User className="w-4 h-4 text-primary" />
+                                        </div>
+                                        <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Corresponding Author</FormLabel>
+                                    </div>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Full Name"
+                                            {...field}
+                                            className="h-14 bg-primary/5 border-primary/10 rounded-2xl font-bold text-primary focus-visible:ring-primary shadow-inner px-6"
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="text-[10px] font-bold text-secondary" />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="author_email"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <div className="flex items-center gap-3 mb-3 ml-1">
+                                        <div className="w-8 h-8 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
+                                            <Mail className="w-4 h-4 text-primary" />
+                                        </div>
+                                        <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Contact Email</FormLabel>
+                                    </div>
+                                    <FormControl>
+                                        <Input
+                                            type="email"
+                                            placeholder="email@university.edu"
+                                            {...field}
+                                            className="h-14 bg-primary/5 border-primary/10 rounded-2xl font-bold text-primary focus-visible:ring-primary shadow-inner px-6"
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="text-[10px] font-bold text-secondary" />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <FormField
+                        control={form.control}
+                        name="affiliation"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex items-center gap-3 mb-3 ml-1">
+                                    <div className="w-8 h-8 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
+                                        <BookOpen className="w-4 h-4 text-primary" />
+                                    </div>
+                                    <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Institutional Affiliation</FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Department, University, City, Country"
+                                        {...field}
+                                        className="h-14 bg-primary/5 border-primary/10 rounded-2xl font-bold text-primary focus-visible:ring-primary shadow-inner px-6"
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-[10px] font-bold text-secondary" />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="abstract"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex items-center gap-3 mb-3 ml-1">
+                                    <div className="w-8 h-8 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
+                                        <FileText className="w-4 h-4 text-primary" />
+                                    </div>
+                                    <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Manuscript Abstract</FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Textarea
+                                        placeholder="Provide a concise summary of your research objectives, methodology, and results..."
+                                        className="bg-primary/5 border-primary/10 rounded-2xl font-bold text-primary focus-visible:ring-primary shadow-inner p-6 resize-none min-h-[180px]"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormDescription className="text-[10px] font-black uppercase tracking-wider text-primary/30 mt-2 italic px-1">Min 100 characters. Summarize findings for indexing.</FormDescription>
+                                <FormMessage className="text-[10px] font-bold text-secondary" />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="keywords"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex items-center gap-3 mb-3 ml-1">
+                                    <div className="w-8 h-8 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
+                                        <Tag className="w-4 h-4 text-primary" />
+                                    </div>
+                                    <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Index Keywords</FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Keyword 1, Keyword 2, Keyword 3, Keyword 4"
+                                        {...field}
+                                        className="h-14 bg-primary/5 border-primary/10 rounded-2xl font-bold text-primary focus-visible:ring-primary shadow-inner px-6"
+                                    />
+                                </FormControl>
+                                <FormDescription className="text-[10px] font-black uppercase tracking-wider text-primary/30 mt-2 italic px-1">Minimum 4 keywords separated by commas.</FormDescription>
+                                <FormMessage className="text-[10px] font-bold text-secondary" />
+                            </FormItem>
+                        )}
+                    />
+
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-3 mb-3 ml-1">
+                            <div className="w-8 h-8 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
+                                <Upload className="w-4 h-4 text-primary" />
+                            </div>
+                            <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60 italic">Manuscript Dossier</FormLabel>
+                        </div>
+                        <div className="relative group/upload">
                             <input
                                 type="file"
-                                id="file-upload"
+                                onChange={(e) => setFile(e.target.files?.[0] || null)}
                                 className="hidden"
-                                accept=".pdf,.doc,.docx"
-                                onChange={(e) => setManuscript(e.target.files?.[0] || null)}
+                                id="manuscript-upload"
+                                accept=".doc,.docx,.pdf"
                             />
-                            <label htmlFor="file-upload" className="cursor-pointer">
-                                <div className="bg-white w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100 group-hover:scale-110 transition-transform">
-                                    <Upload className="w-8 h-8 text-primary" />
-                                </div>
-                                <p className="text-gray-900 font-black uppercase text-[10px] tracking-widest mb-1">Click to upload or drag and drop</p>
-                                <p className="text-gray-500 text-[9px] font-medium italic">Accepts PDF, DOCX (Max 10MB)</p>
-                            </label>
-                        </>
-                    ) : (
-                        <div className="flex items-center justify-between bg-white p-6 rounded-[2rem] shadow-sm border border-emerald-100 max-w-xl mx-auto">
-                            <div className="flex items-center gap-4">
-                                <div className="bg-emerald-100 p-3 rounded-xl shadow-sm">
-                                    <FileText className="text-emerald-600 w-6 h-6" />
-                                </div>
-                                <div className="text-left">
-                                    <p className="text-xs font-black text-gray-900 truncate max-w-[200px]">{manuscript.name}</p>
-                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{(manuscript.size / 1024 / 1024).toFixed(2)} MB</p>
-                                </div>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => setManuscript(null)}
-                                className="text-red-500 hover:bg-red-50 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors border border-red-50"
+                            <label
+                                htmlFor="manuscript-upload"
+                                className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-[3rem] transition-all duration-500 cursor-pointer shadow-inner relative overflow-hidden ${file
+                                    ? 'bg-emerald-50/20 border-emerald-200'
+                                    : 'bg-primary/5 border-primary/5 hover:bg-primary/10 hover:border-secondary/30'
+                                    }`}
                             >
-                                Remove
-                            </button>
+                                {file ? (
+                                    <div className="text-center px-8 relative z-10 animate-in fade-in zoom-in duration-500">
+                                        <div className="w-16 h-16 bg-white text-emerald-600 rounded-[1.5rem] flex items-center justify-center mx-auto mb-4 border border-emerald-100 shadow-sm">
+                                            <FileText className="w-8 h-8" />
+                                        </div>
+                                        <p className="text-sm font-black text-primary truncate max-w-sm mb-1 italic">{file.name}</p>
+                                        <p className="text-[10px] text-emerald-600/60 font-black uppercase tracking-widest italic">Asset Synchronized • Change Protocol</p>
+                                    </div>
+                                ) : (
+                                    <div className="text-center relative z-10">
+                                        <div className="w-16 h-16 bg-white border border-primary/5 rounded-[1.5rem] shadow-sm flex items-center justify-center mx-auto mb-4 group-hover/upload:scale-110 group-hover/upload:rotate-3 transition-all duration-500">
+                                            <Upload className="w-6 h-6 text-primary" />
+                                        </div>
+                                        <p className="text-sm font-black text-primary uppercase tracking-[0.1em] italic">Transmit Manuscript</p>
+                                        <p className="text-[10px] text-primary/30 font-black uppercase tracking-widest mt-2 italic">DOC, DOCX, or PDF (Encryption Secured)</p>
+                                    </div>
+                                )}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <Button
+                    type="submit"
+                    disabled={uploading}
+                    className="w-full h-18 bg-secondary hover:bg-secondary/95 text-white font-black text-xs uppercase tracking-[0.3em] rounded-[1.5rem] shadow-xl shadow-secondary/20 transition-all hover:scale-[1.01] active:scale-[0.99] group/btn"
+                >
+                    {uploading ? (
+                        <>In-Flight Transmission <Loader2 className="w-5 h-5 ml-3 animate-spin" /></>
+                    ) : (
+                        <div className="flex items-center gap-2">
+                            Transmit To Editorial Council <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                         </div>
                     )}
-                </div>
-            </div>
-
-            {/* Ethics & Policy Agreement */}
-            <div className="bg-primary/5 p-8 rounded-[2.5rem] border border-primary/10">
-                <label className="flex items-start gap-4 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        required
-                        className="w-5 h-5 mt-1 text-primary border-gray-200 rounded-lg focus:ring-primary/20"
-                    />
-                    <span className="text-xs text-slate-950 font-medium leading-relaxed italic">
-                        I confirm that this manuscript is <strong>original</strong>, has not been published elsewhere, and I have read and agree to the <a href="/guidelines" className="text-primary font-black underline decoration-primary/20 hover:decoration-primary transition-all">Author Guidelines</a> and <a href="/ethics" className="text-primary font-black underline decoration-primary/20 hover:decoration-primary transition-all">Ethics & Publication Policy</a>.
-                    </span>
-                </label>
-            </div>
-
-            <button
-                type="submit"
-                disabled={isUploading}
-                className="w-full py-5 bg-primary text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 hover:shadow-primary/30 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {isUploading ? (
-                    <>Processing Submission... <Loader2 className="w-5 h-5 animate-spin" /></>
-                ) : (
-                    <>Submit Manuscript <Send className="w-5 h-5" /></>
-                )}
-            </button>
-        </form>
+                </Button>
+            </form>
+        </Form>
     );
+
 }

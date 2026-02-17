@@ -5,6 +5,7 @@ import pool from "@/lib/db";
 import DeleteSubmissionButton from "@/features/submissions/components/DeleteSubmissionButton";
 import {
     Calendar,
+    ChevronDown,
     User,
     Mail,
     FileText,
@@ -18,19 +19,38 @@ import {
     FileCheck,
     AlertCircle,
     ChevronRight,
+    Globe,
     Edit3,
     Eye,
     History,
     MoreVertical,
     Share2,
-    Lock
+    Lock,
+    ArrowUpRight,
+    MessageSquare,
+    ExternalLink,
+    Briefcase,
+    Tag,
+    ChevronLeft
 } from "lucide-react";
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import type { Metadata } from 'next';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-    const submission = await getSubmissionById(parseInt(params.id));
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const submission = await getSubmissionById(parseInt(id));
     if (!submission) return { title: 'Submission Not Found | Admin' };
 
     return {
@@ -45,12 +65,13 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
 
     if (isNaN(id)) {
         return (
-            <div className="p-20 text-center bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
-                <h2 className="text-2xl font-serif font-black text-gray-900 mb-4">Invalid ID</h2>
-                <p className="text-gray-500 mb-8">The submission ID provided is not a valid number.</p>
-                <Link href="/admin/submissions" className="bg-primary text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/95 transition-all inline-block">
-                    Return to Submissions
-                </Link>
+            <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
+                <AlertCircle className="w-12 h-12 text-muted-foreground/20 mb-4" />
+                <h2 className="text-lg font-black text-foreground tracking-tight mb-2">Invalid Identification</h2>
+                <p className="text-xs font-medium text-muted-foreground mb-6">The manuscript reference provided is not in a valid numerical format.</p>
+                <Button asChild variant="outline" className="h-10 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl">
+                    <Link href="/admin/submissions">Return to Repository</Link>
+                </Button>
             </div>
         );
     }
@@ -59,249 +80,339 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
 
     if (!submission) {
         return (
-            <div className="p-20 text-center bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
-                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <FileText className="w-10 h-10 text-gray-300" />
+            <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6">
+                    <FileText className="w-8 h-8 text-muted-foreground/30" />
                 </div>
-                <h2 className="text-2xl font-serif font-black text-gray-900 mb-2">Submission Not Found</h2>
-                <p className="text-gray-500 mb-8 max-w-sm mx-auto">The manuscript with ID #{id} could not be found in the database. It may have been deleted or the ID is incorrect.</p>
-                <Link href="/admin/submissions" className="bg-primary text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/95 transition-all inline-block">
-                    Back to Submissions List
-                </Link>
+                <h2 className="text-lg font-black text-foreground tracking-tight mb-2">Manuscript Not Found</h2>
+                <p className="text-xs font-medium text-muted-foreground mb-6 max-w-sm">The requested manuscript (Ref: {id}) could not be located in the primary database node.</p>
+                <Button asChild variant="outline" className="h-10 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl">
+                    <Link href="/admin/submissions">Back to Submissions</Link>
+                </Button>
             </div>
         );
     }
 
-    // Helper for status colors
-    const getStatusStyle = (status: string) => {
+    const getStatusVariant = (status: string) => {
         switch (status) {
-            case 'submitted': return 'bg-indigo-50 text-indigo-900 border-indigo-200';
-            case 'under_review': return 'bg-amber-50 text-amber-900 border-amber-200';
-            case 'accepted': return 'bg-purple-50 text-purple-900 border-purple-200';
-            case 'paid': return 'bg-emerald-50 text-emerald-900 border-emerald-200';
-            case 'published': return 'bg-cyan-50 text-cyan-900 border-cyan-200';
-            case 'rejected': return 'bg-rose-50 text-rose-900 border-rose-200';
-            default: return 'bg-slate-50 text-slate-600 border-slate-100';
+            case 'submitted': return 'bg-indigo-500/10 text-indigo-600 border-none';
+            case 'under_review': return 'bg-amber-500/10 text-amber-600 border-none';
+            case 'accepted': return 'bg-purple-500/10 text-purple-600 border-none';
+            case 'paid': return 'bg-emerald-500/10 text-emerald-600 border-none';
+            case 'published': return 'bg-cyan-500/10 text-cyan-600 border-none';
+            case 'rejected': return 'bg-rose-500/10 text-rose-600 border-none';
+            default: return 'bg-muted text-muted-foreground border-none';
         }
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 pb-20">
-            <Link href="/admin/submissions" className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors font-bold text-sm">
-                <ArrowLeft className="w-4 h-4" /> Back to Submissions
-            </Link>
+        <div className="space-y-6 pb-20">
+            {/* Breadcrumb / Top Bar */}
+            <div className="flex items-center justify-between gap-4">
+                <Button asChild variant="ghost" size="sm" className="h-9 gap-2 text-muted-foreground hover:text-primary font-black text-[10px] uppercase tracking-widest -ml-2">
+                    <Link href="/admin/submissions">
+                        <ChevronLeft className="w-4 h-4" /> Submissions Console
+                    </Link>
+                </Button>
+            </div>
 
-            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-10 border-b border-gray-50 bg-gray-50/30">
+            <Card className="border-border/50 shadow-lg overflow-hidden bg-background">
+                <CardHeader className="p-8 bg-muted/20 border-b border-border/50">
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                        <div className="space-y-4">
-                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(submission.status)}`}>
+                        <div className="space-y-4 max-w-2xl">
+                            <Badge className={`h-5 px-1.5 text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${getStatusVariant(submission.status)}`}>
                                 {submission.status.replace('_', ' ')}
-                            </span>
-                            <h1 className="text-3xl font-serif font-black text-gray-900 leading-tight">
+                            </Badge>
+                            <h1 className="text-2xl font-black text-foreground tracking-tight leading-tight">
                                 {submission.title}
                             </h1>
-                            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 font-medium">
+                            <div className="flex flex-wrap items-center gap-6 text-[11px] font-black text-muted-foreground uppercase tracking-widest">
                                 <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4" />
-                                    <span>Submitted: {new Date(submission.submitted_at).toLocaleDateString()}</span>
+                                    <Clock className="w-3.5 h-3.5 opacity-50" />
+                                    <span>{new Date(submission.submitted_at).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Shield className="w-4 h-4" />
-                                    <span>Paper ID: {submission.paper_id}</span>
+                                <div className="flex items-center gap-2 text-primary">
+                                    <Shield className="w-3.5 h-3.5" />
+                                    <span>{submission.paper_id}</span>
                                 </div>
+                                {submission.keywords && (
+                                    <div className="flex items-center gap-2">
+                                        <Tag className="w-3.5 h-3.5 opacity-50" />
+                                        <span className="truncate max-w-[200px]">{submission.keywords}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex flex-col gap-2 shrink-0">
                             {submission.file_path && (
-                                <a
-                                    href={submission.file_path}
-                                    download
-                                    className="flex items-center gap-2 bg-primary text-white px-6 py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/95 transition-all text-sm"
-                                >
-                                    <Download className="w-5 h-5" /> Download Manuscript
-                                </a>
+                                <Button asChild className="h-11 px-6 gap-2 bg-primary text-white font-black text-[11px] uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20">
+                                    <a href={submission.file_path} download>
+                                        <Download className="w-4 h-4" /> Download Manuscript
+                                    </a>
+                                </Button>
+                            )}
+                            <p className="text-[9px] font-bold text-muted-foreground text-center uppercase tracking-widest opacity-60">Authored by {submission.author_name}</p>
+                        </div>
+                    </div>
+                </CardHeader>
+
+                <CardContent className="p-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-border/50">
+                        {/* Main Content (8 cols) */}
+                        <div className="lg:col-span-8 p-8 space-y-12">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">
+                                    <FileText className="w-4 h-4" /> Abstract Overview
+                                </div>
+                                <div className="p-6 bg-muted/5 rounded-2xl border border-border/30">
+                                    <p className="text-sm text-foreground leading-relaxed text-justify font-medium selection:bg-primary/20 italic">
+                                        {submission.abstract || "No abstract provided."}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {submission.status !== 'submitted' && (
+                                <div className="space-y-6 pt-4 border-t border-border/30">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">
+                                            <MessageSquare className="w-4 h-4" /> Reviewer Intelligence
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {(async () => {
+                                            const [reviews]: any = await pool.execute(
+                                                'SELECT r.*, u.full_name as reviewer_name FROM reviews r JOIN users u ON r.reviewer_id = u.id WHERE r.submission_id = ? AND r.status = "completed"',
+                                                [submission.id]
+                                            );
+
+                                            if (reviews.length === 0) return (
+                                                <div className="p-8 text-center bg-muted/10 rounded-2xl border border-dashed border-border/50">
+                                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Awaiting technical evaluation from assigned reviewers</p>
+                                                </div>
+                                            );
+
+                                            return reviews.map((r: any, i: number) => (
+                                                <Card key={r.id} className="border-border/50 shadow-none bg-muted/5 overflow-hidden">
+                                                    <CardHeader className="p-4 bg-muted/20 border-b border-border/30 flex flex-row items-center justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                            <Badge variant="outline" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-background border-border text-primary">Technical Reviewer {i + 1}</Badge>
+                                                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-60">{r.reviewer_name}</span>
+                                                        </div>
+                                                        <CheckCircle className="w-4 h-4 text-emerald-500" />
+                                                    </CardHeader>
+                                                    <CardContent className="p-4">
+                                                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed whitespace-pre-wrap">"{r.feedback}"</p>
+                                                    </CardContent>
+                                                </Card>
+                                            ));
+                                        })()}
+                                    </div>
+                                </div>
                             )}
                         </div>
-                    </div>
-                </div>
 
-                <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-10">
-                    <div className="md:col-span-2 space-y-8">
-                        <div>
-                            <h3 className="text-lg font-serif font-black text-gray-900 mb-4 border-l-4 border-secondary pl-4">Abstract</h3>
-                            <p className="text-gray-600 leading-relaxed text-justify">
-                                {submission.abstract || "No abstract provided."}
-                            </p>
-                        </div>
-
-                        {submission.status !== 'submitted' && (
-                            <div className="mt-12">
-                                <h3 className="text-lg font-serif font-black text-gray-900 mb-6 border-l-4 border-orange-400 pl-4">Reviewer Feedback</h3>
-                                <div className="space-y-6">
-                                    {(async () => {
-                                        const [reviews]: any = await pool.execute(
-                                            'SELECT r.*, u.full_name as reviewer_name FROM reviews r JOIN users u ON r.reviewer_id = u.id WHERE r.submission_id = ? AND r.status = "completed"',
-                                            [submission.id]
-                                        );
-
-                                        if (reviews.length === 0) return <p className="text-gray-400 italic">No feedback submitted yet.</p>;
-
-                                        return reviews.map((r: any, i: number) => (
-                                            <div key={r.id} className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100">
-                                                <div className="flex items-center gap-2 mb-3">
-                                                    <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest bg-orange-50 px-2 py-1 rounded">Reviewer {i + 1}</span>
-                                                    <span className="text-[10px] font-bold text-gray-400">{r.reviewer_name}</span>
-                                                </div>
-                                                <p className="text-sm text-gray-600 italic whitespace-pre-wrap leading-relaxed">"{r.feedback}"</p>
+                        {/* Sidebar (4 cols) */}
+                        <div className="lg:col-span-4 p-8 bg-muted/20 space-y-10">
+                            <div className="space-y-4">
+                                <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">Author Credentials</h3>
+                                <Card className="border-border/50 shadow-sm bg-background">
+                                    <CardContent className="p-5 space-y-4">
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
+                                                <User className="w-4 h-4 text-primary" />
                                             </div>
-                                        ));
-                                    })()}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="space-y-8">
-                        <div>
-                            <h3 className="text-lg font-serif font-black text-gray-900 mb-4 border-l-4 border-secondary pl-4">Author Info</h3>
-                            <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 space-y-4">
-                                <div className="flex items-start gap-3">
-                                    <User className="w-5 h-5 text-primary mt-0.5" />
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Name</p>
-                                        <p className="font-bold text-gray-900">{submission.author_name}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <Mail className="w-5 h-5 text-primary mt-0.5" />
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Email</p>
-                                        <p className="font-bold text-gray-900 break-all">{submission.author_email}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 className="text-lg font-serif font-black text-gray-900 mb-4 border-l-4 border-secondary pl-4">Management</h3>
-                            <div className="grid grid-cols-1 gap-3">
-                                {submission.status === 'submitted' && (
-                                    <>
-                                        <h4 className="text-[10px] font-black uppercase text-orange-600 tracking-widest mb-2 px-1">Stage 1: Reviewing</h4>
-                                        <Link
-                                            href={`/admin/reviews?assign=${submission.id}`}
-                                            className="w-full flex items-center justify-center gap-2 bg-orange-50 text-orange-600 py-4 rounded-2xl font-bold border border-orange-100 hover:bg-orange-100 transition-all text-sm mb-4"
-                                        >
-                                            Assign to Reviewer
-                                        </Link>
-                                    </>
-                                )}
-
-                                {submission.status === 'under_review' && (
-                                    <>
-                                        <h4 className="text-[10px] font-black uppercase text-primary tracking-widest mb-2 px-1">Stage 2: Final Decision</h4>
-                                        <div className="grid grid-cols-1 gap-3 mb-4">
-                                            <form action={async () => {
-                                                'use server';
-                                                await decideSubmission(submission.id, 'accepted');
-                                            }}>
-                                                <button className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-200 hover:bg-green-700 transition-all text-sm">
-                                                    <CheckCircle className="w-5 h-5" /> Final Accept
-                                                </button>
-                                            </form>
-                                            <form action={async () => {
-                                                'use server';
-                                                await decideSubmission(submission.id, 'rejected');
-                                            }}>
-                                                <button className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 py-4 rounded-2xl font-bold border border-red-100 hover:bg-red-100 transition-all text-sm">
-                                                    <XCircle className="w-5 h-5" /> Reject Paper
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </>
-                                )}
-
-                                {submission.status === 'accepted' && (
-                                    <>
-                                        <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-center mb-4">
-                                            <p className="text-[10px] font-black uppercase text-green-600 tracking-widest mb-1">Decision: Accepted</p>
-                                            <p className="text-xs text-gray-500 font-medium mb-3">Waiting for author payment...</p>
-
-                                            <form action={async () => {
-                                                'use server';
-                                                await waivePayment(submission.id);
-                                            }}>
-                                                <button className="w-full py-2 px-4 bg-gray-200 hover:bg-green-100 hover:text-green-700 text-gray-600 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2">
-                                                    <CheckCircle className="w-3 h-3" /> Waive Fee / Free Publish
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </>
-                                )}
-
-                                {(submission.status === 'accepted' || submission.status === 'rejected') && submission.status !== 'accepted' && (
-                                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-center mb-4">
-                                        <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-1">Decision Finalized</p>
-                                        <p className="text-sm font-bold text-gray-900 capitalize">{submission.status}</p>
-                                    </div>
-                                )}
-
-                                {(submission.status === 'paid' || submission.status === 'published') && (
-                                    <>
-                                        <h4 className="text-[10px] font-black uppercase text-green-600 tracking-widest mb-2 px-1">Stage 3: Publication</h4>
-                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 mb-4">
-                                            <div className="flex items-center gap-2 mb-3">
-                                                <CheckCircle className="w-4 h-4 text-green-600" />
-                                                <span className="text-xs font-bold text-green-700">Payment Verified</span>
+                                            <div className="min-w-0">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-60 mb-0.5">Author Name</p>
+                                                <p className="font-black text-xs text-foreground tracking-tight">{submission.author_name}</p>
                                             </div>
-
-                                            <form action={async (formData) => {
-                                                'use server';
-                                                const issueId = parseInt(formData.get('issueId') as string);
-                                                await assignPaperToIssue(submission.id, issueId);
-                                            }} className="space-y-3">
-                                                <div className="space-y-1">
-                                                    <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Assign Issue</label>
-                                                    <select
-                                                        name="issueId"
-                                                        required
-                                                        defaultValue={submission.issue_id || ""}
-                                                        className="w-full bg-white border border-green-200 text-gray-900 text-xs rounded-xl focus:ring-green-500 focus:border-green-500 block p-3 font-bold outline-none appearance-none"
-                                                    >
-                                                        <option value="">Select Volume & Issue...</option>
-                                                        {(await getVolumesIssues()).map((vi: any) => (
-                                                            <option key={vi.id} value={vi.id}>
-                                                                Vol {vi.volume_number}, Issue {vi.issue_number} ({vi.month_range} {vi.year})
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl text-xs transition-colors shadow-lg shadow-green-600/20">
-                                                    Update Assignment
-                                                </button>
-                                            </form>
                                         </div>
-                                    </>
-                                )}
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
+                                                <Mail className="w-4 h-4 text-primary" />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-60 mb-0.5">Email Address</p>
+                                                <p className="font-black text-xs text-foreground tracking-tight truncate">{submission.author_email}</p>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
 
-                                <div className="mt-4 pt-4 border-t border-gray-100">
-                                    {submission.status !== 'paid' && submission.status !== 'published' ? (
-                                        <>
-                                            <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2 px-1">System Actions</h4>
-                                            <DeleteSubmissionButton submissionId={submission.id} status={submission.status} variant="full" />
-                                        </>
-                                    ) : (
-                                        <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 italic text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center">
-                                            Deletion Restricted (Paid/Published)
+                            <Separator className="bg-border/50" />
+
+                            <div className="space-y-4">
+                                <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">Decision Pipeline</h3>
+                                <div className="space-y-3">
+                                    {submission.status === 'submitted' && (
+                                        <div className="space-y-3">
+                                            <div className="p-4 bg-orange-500/5 border border-orange-500/20 rounded-2xl space-y-2">
+                                                <p className="text-[10px] font-black uppercase text-orange-600 tracking-widest">Initial Assessment</p>
+                                                <p className="text-[10px] font-medium text-orange-600/70">Manuscript is ready for reviewer assignment.</p>
+                                            </div>
+                                            <Button asChild className="w-full h-11 gap-2 bg-orange-600 hover:bg-orange-700 text-white font-black text-[11px] uppercase tracking-widest rounded-xl shadow-lg shadow-orange-600/10">
+                                                <Link href={`/admin/reviews?assign=${submission.id}`}>
+                                                    Assign to Reviewer Node
+                                                </Link>
+                                            </Button>
                                         </div>
                                     )}
+
+                                    {submission.status === 'under_review' && (
+                                        <div className="space-y-4">
+                                            <div className="p-4 bg-primary/5 border border-primary/20 rounded-2xl space-y-1">
+                                                <p className="text-[10px] font-black uppercase text-primary tracking-widest">Editorial Threshold</p>
+                                                <p className="text-[10px] font-medium text-primary/70 italic">Final authorization required</p>
+                                            </div>
+                                            <div className="grid grid-cols-1 gap-2">
+                                                <form action={async () => {
+                                                    'use server';
+                                                    await decideSubmission(submission.id, 'accepted');
+                                                }}>
+                                                    <Button className="w-full h-11 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] uppercase tracking-widest rounded-xl shadow-xl shadow-emerald-600/20">
+                                                        <CheckCircle className="w-4 h-4" /> Authorize Acceptance
+                                                    </Button>
+                                                </form>
+                                                <form action={async () => {
+                                                    'use server';
+                                                    await decideSubmission(submission.id, 'rejected');
+                                                }}>
+                                                    <Button variant="outline" className="w-full h-11 gap-2 border-red-500/20 text-red-600 font-black text-[11px] uppercase tracking-widest rounded-xl hover:bg-red-500/5">
+                                                        <XCircle className="w-4 h-4" /> Final Rejection
+                                                    </Button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {submission.status === 'accepted' && (
+                                        <div className="space-y-4">
+                                            <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-[2rem] text-center space-y-3">
+                                                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center mx-auto">
+                                                    <CheckCircle className="w-5 h-5 text-emerald-600" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">Authorized</p>
+                                                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest italic">Awaiting author remittance...</p>
+                                                </div>
+                                                <form action={async () => {
+                                                    'use server';
+                                                    await waivePayment(submission.id);
+                                                }}>
+                                                    <Button variant="outline" className="w-full h-9 gap-2 border-emerald-500/30 text-emerald-600 font-black text-[9px] uppercase tracking-widest rounded-lg hover:bg-emerald-500/5">
+                                                        Waive Transaction Fee
+                                                    </Button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {submission.status === 'published' && (
+                                        <div className="space-y-4">
+                                            <Card className="bg-emerald-950 text-white border-none overflow-hidden rounded-[2.5rem] shadow-2xl">
+                                                <CardContent className="p-8 space-y-6 relative">
+                                                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-400 opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0 border border-white/10">
+                                                            <Globe className="w-5 h-5 text-emerald-400" />
+                                                        </div>
+                                                        <div className="space-y-0.5">
+                                                            <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">In Archive</p>
+                                                            <h3 className="text-xl font-black tracking-tight italic">Live Index</h3>
+                                                        </div>
+                                                    </div>
+                                                    <Separator className="bg-white/10" />
+                                                    <div className="space-y-3">
+                                                        <div className="flex items-center justify-between">
+                                                            <p className="text-[10px] font-black uppercase text-white/40 tracking-widest">Volume Node</p>
+                                                            <p className="text-xs font-black">{submission.volume_number && `Vol ${submission.volume_number}, Issue ${submission.issue_number}`}</p>
+                                                        </div>
+                                                        <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-white/5 hover:bg-white/10 text-white font-black text-[10px] uppercase tracking-widest border border-white/10 rounded-xl">
+                                                            <Link href="/archives">
+                                                                <ExternalLink className="w-3.5 h-3.5" /> View Public Archive
+                                                            </Link>
+                                                        </Button>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        </div>
+                                    )}
+
+                                    {submission.status === 'paid' && (
+                                        <div className="space-y-4">
+                                            <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-[2rem] space-y-6">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-white border border-emerald-100 rounded-xl flex items-center justify-center shrink-0">
+                                                        <CheckCircle className="w-5 h-5 text-emerald-600" />
+                                                    </div>
+                                                    <div className="space-y-0.5">
+                                                        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Ready for Indexing</p>
+                                                        <p className="text-[10px] font-medium text-muted-foreground italic">Payment Verified</p>
+                                                    </div>
+                                                </div>
+
+                                                <form action={async (formData) => {
+                                                    'use server';
+                                                    const issueIdStr = formData.get('issueId') as string;
+                                                    const issueId = parseInt(issueIdStr);
+                                                    if (!isNaN(issueId)) {
+                                                        await assignPaperToIssue(submission.id, issueId);
+                                                    }
+                                                }} className="space-y-4 pt-4 border-t border-emerald-500/10">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest px-1">Target Issue Node</label>
+                                                        {/* We'll use a standard select here due to server action native form handling, but styled */}
+                                                        <div className="relative">
+                                                            <select
+                                                                name="issueId"
+                                                                required
+                                                                defaultValue={submission.issue_id || ""}
+                                                                className="w-full h-11 bg-background border border-emerald-500/20 text-[11px] font-black uppercase tracking-widest rounded-xl px-4 appearance-none outline-none focus:ring-4 focus:ring-emerald-500/5 transition-all text-emerald-900"
+                                                            >
+                                                                <option value="">Select Target...</option>
+                                                                {(await getVolumesIssues()).map((vi: any) => (
+                                                                    <option key={vi.id} value={vi.id}>
+                                                                        V{vi.volume_number} I{vi.issue_number} ({vi.year})
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-600/50 pointer-events-none" />
+                                                        </div>
+                                                    </div>
+
+                                                    <Button type="submit" className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] uppercase tracking-widest rounded-xl shadow-xl shadow-emerald-600/20">
+                                                        <Globe className="w-4 h-4 mr-2" /> Commit to Archive
+                                                    </Button>
+                                                </form>
+
+                                                <Link
+                                                    href="/admin/publications"
+                                                    className="block text-[9px] font-black text-center text-emerald-600 hover:underline uppercase tracking-widest opacity-60"
+                                                >
+                                                    Access Volumes Terminal
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="pt-4 mt-6 border-t border-border/50">
+                                        {submission.status !== 'paid' && submission.status !== 'published' ? (
+                                            <div className="space-y-3">
+                                                <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-50 px-1">Dangerous Territory</h4>
+                                                <DeleteSubmissionButton submissionId={submission.id} status={submission.status} variant="full" />
+                                            </div>
+                                        ) : (
+                                            <div className="bg-muted p-4 rounded-xl border border-border/50 italic text-[9px] text-muted-foreground/60 font-black uppercase tracking-widest text-center">
+                                                Records Locked (Archived)
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }

@@ -1,7 +1,12 @@
-import { GraduationCap, Mail, MapPin, ChevronRight, ShieldAlert } from 'lucide-react';
+import { ChevronRight, ShieldAlert } from 'lucide-react';
 import PageHeader from "@/components/layout/PageHeader";
 import Link from 'next/link';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import EditorialBoardClient from '@/features/shared/components/EditorialBoardClient';
+import { Metadata } from 'next';
+import { getSettings } from '@/actions/settings';
 
 const board = [
     {
@@ -40,10 +45,22 @@ const board = [
     }
 ];
 
-export default function EditorialBoard() {
+export async function generateMetadata(): Promise<Metadata> {
+    const settings = await getSettings();
+    return {
+        title: `Editorial Board | ${settings.journal_name}`,
+        description: `Meet the esteemed editorial board of ${settings.journal_short_name}. Our panel of global academic experts is committed to scientific excellence and rigorous peer review in engineering and technology.`,
+        openGraph: {
+            title: `Editorial Board - ${settings.journal_short_name}`,
+            description: `Global academic experts steering the ${settings.journal_name}.`,
+            type: 'website',
+        }
+    };
+}
 
+export default function EditorialBoard() {
     return (
-        <div className="bg-white">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Editorial Board"
                 description="Our esteemed panel of global academic experts and researchers committed to scientific excellence."
@@ -51,81 +68,54 @@ export default function EditorialBoard() {
                     { name: 'Home', href: '/' },
                     { name: 'Editorial Board', href: '/editorial-board' },
                 ]}
+                scrollOnComplete={true}
             />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-                    {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-20">
-                        {board.map((section, idx) => (
-                            <section key={idx}>
-                                <h2 className="text-3xl font-serif font-black text-gray-900 mb-12 italic border-b-2 border-primary/10 inline-block pb-2">
-                                    {section.role}
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    {section.members.map((member, mIdx) => (
-                                        <div key={mIdx} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 hover:border-primary/20 transition-all hover:shadow-xl hover:shadow-primary/5 group">
-                                            <div className="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-primary transition-colors">
-                                                <GraduationCap className="w-8 h-8 text-primary group-hover:text-white transition-colors" />
-                                            </div>
-                                            <h3 className="text-xl font-bold font-serif text-gray-900 mb-2">{member.name}</h3>
-                                            <p className="text-primary font-black text-[10px] uppercase tracking-widest mb-6">{member.designation}</p>
-                                            <div className="space-y-4 text-sm text-gray-600 font-medium">
-                                                <div className="flex items-start gap-3">
-                                                    <MapPin className="w-4 h-4 text-secondary mt-0.5" />
-                                                    <span className="leading-relaxed">{member.affiliation}</span>
-                                                </div>
-                                                <div className="flex items-center gap-3 min-w-0">
-                                                    <Mail className="w-4 h-4 text-secondary flex-shrink-0" />
-                                                    <span className="truncate md:whitespace-nowrap md:overflow-visible md:text-clip block break-all">{member.email}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        ))}
-
-                        <section className="bg-primary/5 p-12 rounded-[3.5rem] border border-primary/10 text-center relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                            <h2 className="text-3xl font-serif font-black text-primary mb-6 italic">Technical Reviewers</h2>
-                            <p className="text-lg text-gray-600 mb-10 font-medium italic italic">IJITEST is supported by a global network of more than 50 technical reviewers across diverse scientific disciplines.</p>
-
-                            <div className="bg-white p-10 rounded-[2.5rem] shadow-sm max-w-2xl mx-auto border border-gray-100">
-                                <h3 className="text-xl font-serif font-black mb-4 italic">Join Our Editorial Team</h3>
-                                <p className="text-gray-500 mb-8 text-sm font-medium">We seek esteemed experts to help maintain our high standards. Please mail your curriculum vitae to:</p>
-                                <a href="mailto:editor@ijitest.org" className="text-secondary font-black text-2xl hover:underline">editor@ijitest.org</a>
-                            </div>
-                        </section>
-                    </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
+                    {/* Main Content (Client Component handle animations) */}
+                    <EditorialBoardClient board={board} />
 
                     {/* Sidebar Utilities */}
                     <div className="space-y-10">
-                        {/* Quick Track Widget */}
-                        <TrackManuscriptWidget />
-
-                        {/* Ethics Statements */}
-                        <div className="bg-secondary p-8 rounded-[2.5rem] text-white shadow-xl shadow-secondary/20 group">
-                            <ShieldAlert className="w-8 h-8 mb-6 group-hover:rotate-12 transition-transform" />
-                            <h3 className="text-xl font-serif font-black mb-2 italic">Ethics Statements</h3>
-                            <p className="text-xs text-white/70 mb-8 font-medium leading-relaxed italic">IJITEST follows COPE guidelines to ensure scientific integrity.</p>
-                            <Link href="/ethics" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest border-b-2 border-white/20 hover:border-white transition-all pb-1">
-                                View Policy <ChevronRight className="w-4 h-4" />
-                            </Link>
+                        <div className="p-1 rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip">
+                            <div className="bg-white/50 backdrop-blur-sm p-3 rounded-[2.3rem]">
+                                <TrackManuscriptWidget />
+                            </div>
                         </div>
 
-                        {/* Quick Guidelines */}
-                        <div className="bg-primary/5 p-8 rounded-[2.5rem] border-2 border-primary/10 group">
-                            <h4 className="text-lg font-black text-primary mb-2 italic tracking-tight">Call for Papers</h4>
-                            <p className="text-xs text-gray-500 mb-6 font-medium">Submit your manuscript for our inaugural 2026 edition.</p>
-                            <Link href="/submit" className="flex items-center justify-between p-4 bg-white rounded-2xl border border-primary/10 hover:border-primary transition-all group/link shadow-sm">
-                                <span className="text-[10px] font-black uppercase text-gray-400 group-hover/link:text-primary transition-colors">Submit Now</span>
-                                <ChevronRight className="w-4 h-4 text-primary" />
-                            </Link>
-                        </div>
+                        <Card className="bg-secondary border-none text-white shadow-vip-hover rounded-[2.5rem] overflow-hidden relative group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+                            <CardContent className="p-8 relative z-10">
+                                <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/20 group-hover:rotate-12 transition-transform duration-500">
+                                    <ShieldAlert className="w-8 h-8 text-white" />
+                                </div>
+                                <CardTitle className="text-2xl font-black mb-2 text-white tracking-tighter">Ethics Policy</CardTitle>
+                                <p className="text-sm text-white/70 mb-8 font-medium leading-relaxed italic">IJITEST follows COPE guidelines for scientific integrity and global best practices.</p>
+                                <Link href="/ethics" className="group/link inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white">
+                                    <span className="border-b border-white/30 group-hover/link:border-white transition-all pb-1">View Policy</span>
+                                    <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                                </Link>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="bg-white border border-primary/5 shadow-vip rounded-[2.5rem] group overflow-hidden relative">
+                            <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary/5 rounded-full translate-y-1/2 translate-x-1/2 blur-2xl" />
+                            <CardContent className="p-8 relative z-10">
+                                <h4 className="text-2xl font-black text-primary mb-2 tracking-tighter italic">Call for <span className="text-secondary not-italic">Papers</span></h4>
+                                <p className="text-sm text-primary/50 mb-8 font-medium leading-relaxed">Submit your breakthrough research for our upcoming 2026 Monthly edition.</p>
+                                <Button asChild className="w-full h-14 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 rounded-2xl group/btn transition-all duration-500 overflow-hidden relative">
+                                    <Link href="/submit" className="flex items-center justify-center relative z-10">
+                                        <span className="text-xs font-black uppercase tracking-[0.2em]">Submit Manuscript</span>
+                                        <ChevronRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                                    </Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+

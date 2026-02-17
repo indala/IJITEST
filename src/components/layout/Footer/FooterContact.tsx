@@ -35,7 +35,7 @@ export function FooterContact({ email, phone, address }: FooterContactProps) {
                     </div>
                     <div className="text-xs leading-relaxed font-medium">
                         <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Office Location</p>
-                        <p className="text-white/80 italic">{address}</p>
+                        <p className="text-white/80">{address}</p>
                     </div>
                 </li>
             </ul>

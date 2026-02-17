@@ -5,14 +5,15 @@ export const navigation = [
         href: '/about',
         children: [
             { name: 'About the Journal', href: '/about' },
-            { name: 'Editorial Board', href: '/editorial-board' },
             { name: 'Publication Ethics', href: '/ethics' },
             { name: 'Peer Review Process', href: '/peer-review' },
             { name: 'Reviewer Guidelines', href: '/reviewer-guidelines' },
+            { name: 'Join Us', href: '/join-us' },
         ]
     },
+    { name: 'Editorial Board', href: '/editorial-board' },
     { name: 'Guidelines', href: '/guidelines' },
     { name: 'Archives', href: '/archives' },
     { name: 'Indexing', href: '/indexing' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Contact Us', href: '/contact' },
 ];

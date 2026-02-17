@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Merriweather } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const merriweather = Merriweather({
-  variable: "--font-merriweather",
-  weight: ["300", "400", "700", "900"],
+const poppins = Poppins({
+  variable: "--font-poppins",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -20,6 +14,8 @@ export const metadata: Metadata = {
   description: "Academic Journal Website for high-quality research publication in Engineering, Science, and Technology.",
 };
 
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,8 +23,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${merriweather.variable} antialiased`}>
-        {children}
+      <body className={`${poppins.variable} antialiased`}>
+        <TooltipProvider>
+          {children}
+        </TooltipProvider>
       </body>
     </html>
   );

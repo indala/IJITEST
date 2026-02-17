@@ -93,7 +93,7 @@ export async function getActiveReviews(reviewerId?: number) {
         const params = [];
 
         if (reviewerId) {
-            query += " WHERE r.reviewer_id = ? AND s.status NOT IN ('accepted', 'rejected')";
+            query += " WHERE r.reviewer_id = ?";
             params.push(reviewerId);
         } else {
             query += " WHERE s.status NOT IN ('accepted', 'rejected')";

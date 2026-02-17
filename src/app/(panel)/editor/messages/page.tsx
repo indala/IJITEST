@@ -1,8 +1,13 @@
 "use client";
 
-import { MessageSquare, Mail, Calendar, CheckCircle, Eye, Archive, Trash2, User, Clock, AlertCircle } from 'lucide-react';
+import { MessageSquare, Mail, Calendar, CheckCircle, Eye, Archive, Trash2, User, Clock, AlertCircle, ArrowLeft, Send } from 'lucide-react';
 import { getMessages, updateMessageStatus } from '@/actions/messages';
 import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Messages() {
     const [messages, setMessages] = useState<any[]>([]);
@@ -28,118 +33,144 @@ export default function Messages() {
         fetchData();
     }
 
-    if (loading) return <div className="p-20 text-center font-bold text-gray-400 uppercase tracking-widest">Loading Inbox...</div>;
+    if (loading) return <div className="p-20 text-center font-black text-muted-foreground uppercase tracking-widest text-xs animate-pulse italic">Synchronizing with Messaging Node...</div>;
 
     const unreadCount = messages.filter(m => m.status === 'unread').length;
 
     return (
-        <div className="h-[calc(100vh-160px)] flex flex-col lg:flex-row gap-8 pb-10">
+        <div className="h-[calc(100vh-140px)] flex flex-col lg:flex-row gap-6 pb-6">
             {/* Sidebar List */}
-            <div className="lg:w-1/3 flex flex-col bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-sm">
-                <div className="p-8 border-b border-gray-50 flex items-center justify-between">
-                    <h2 className="text-xl font-serif font-black text-gray-900 flex items-center gap-3">
-                        Inbox
-                        {unreadCount > 0 && <span className="bg-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center animate-pulse">{unreadCount}</span>}
-                    </h2>
-                </div>
-                <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
-                    {messages.map((m) => (
-                        <div
-                            key={m.id}
-                            onClick={() => {
-                                setSelectedMessage(m);
-                                if (m.status === 'unread') handleStatusChange(m.id, 'read');
-                            }}
-                            className={`p-6 cursor-pointer transition-all hover:bg-gray-50 ${selectedMessage?.id === m.id ? 'bg-primary/5 border-l-4 border-l-primary' : ''} ${m.status === 'unread' ? 'font-black' : ''}`}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{m.subject || 'No Subject'}</span>
-                                <span className="text-[10px] text-gray-400">{new Date(m.created_at).toLocaleDateString()}</span>
+            <Card className="lg:w-80 flex flex-col border-border/50 shadow-sm overflow-hidden bg-background shrink-0">
+                <CardHeader className="p-4 bg-muted/20 border-b border-border/50 space-y-1">
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm font-black text-foreground uppercase tracking-widest">Inbox</CardTitle>
+                        {unreadCount > 0 && (
+                            <Badge className="h-5 px-1.5 bg-primary text-white text-[9px] font-black border-none animate-pulse">
+                                {unreadCount} New
+                            </Badge>
+                        )}
+                    </div>
+                    <CardDescription className="text-[10px] font-medium text-muted-foreground uppercase tracking-tighter">Editorial inquiries queue</CardDescription>
+                </CardHeader>
+                <ScrollArea className="flex-1">
+                    <div className="divide-y divide-border/30">
+                        {messages.map((m) => (
+                            <div
+                                key={m.id}
+                                onClick={() => {
+                                    setSelectedMessage(m);
+                                    if (m.status === 'unread') handleStatusChange(m.id, 'read');
+                                }}
+                                className={`p-4 cursor-pointer transition-all hover:bg-muted/50 relative overflow-hidden group ${selectedMessage?.id === m.id ? 'bg-primary/5' : ''}`}
+                            >
+                                {selectedMessage?.id === m.id && (
+                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
+                                )}
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-tighter truncate max-w-[120px]">
+                                        {m.subject || 'Editorial Inquiry'}
+                                    </span>
+                                    <span className="text-[8px] font-bold text-muted-foreground opacity-50">
+                                        {new Date(m.created_at).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <h3 className={`text-[11px] tracking-tight mb-0.5 truncate ${m.status === 'unread' ? 'font-black text-foreground' : 'font-bold text-muted-foreground'}`}>
+                                    {m.name}
+                                </h3>
+                                <p className="text-[10px] text-muted-foreground line-clamp-1 italic font-medium opacity-70">
+                                    {m.message}
+                                </p>
                             </div>
-                            <h3 className="text-sm font-bold text-gray-900 line-clamp-1 mb-1">{m.name}</h3>
-                            <p className="text-xs text-gray-500 line-clamp-1 italic">{m.message}</p>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                     {messages.length === 0 && (
-                        <div className="p-20 text-center">
-                            <MessageSquare className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-                            <p className="text-gray-400 font-bold text-sm uppercase tracking-widest">No messages</p>
+                        <div className="p-12 text-center space-y-3">
+                            <MessageSquare className="w-8 h-8 text-muted-foreground/20 mx-auto" />
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Node isolated</p>
                         </div>
                     )}
-                </div>
-            </div>
+                </ScrollArea>
+            </Card>
 
             {/* Message Detail */}
-            <div className="flex-1 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col overflow-hidden">
+            <Card className="flex-1 border-border/50 shadow-sm flex flex-col overflow-hidden bg-background">
                 {selectedMessage ? (
                     <>
-                        <div className="p-10 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
-                            <div className="flex items-center gap-6">
-                                <div className="w-16 h-16 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
-                                    <User className="w-8 h-8 text-primary/40" />
+                        <CardHeader className="p-6 bg-muted/20 border-b border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-background border border-border/50 flex items-center justify-center shadow-sm">
+                                    <User className="w-6 h-6 text-primary/40" />
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl font-serif font-black text-gray-900">{selectedMessage.name}</h2>
-                                    <p className="text-sm font-bold text-primary">{selectedMessage.email}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                {selectedMessage.status !== 'archived' ? (
-                                    <button
-                                        onClick={() => handleStatusChange(selectedMessage.id, 'archived')}
-                                        className="p-4 bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all shadow-sm"
-                                        title="Archive"
-                                    >
-                                        <Archive className="w-5 h-5" />
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() => handleStatusChange(selectedMessage.id, 'read')}
-                                        className="p-4 bg-orange-50 rounded-2xl text-orange-600 hover:bg-orange-100 transition-all shadow-sm"
-                                        title="Unarchive"
-                                    >
-                                        <Archive className="w-5 h-5" />
-                                    </button>
-                                )}
-                                <button className="p-4 bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all shadow-sm" title="Delete">
-                                    <Trash2 className="w-5 h-5" />
-                                </button>
-                            </div>
-                        </div>
-                        <div className="flex-1 p-12 overflow-y-auto space-y-8">
-                            <div className="p-10 bg-gray-50 rounded-[2rem] border border-transparent">
-                                <div className="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest mb-6">
-                                    <AlertCircle className="w-4 h-4" /> Message Content
-                                </div>
-                                <div className="text-lg font-medium text-gray-700 leading-relaxed whitespace-pre-wrap">
-                                    {selectedMessage.message}
+                                <div className="space-y-0.5">
+                                    <h2 className="text-base font-black text-foreground tracking-tight">{selectedMessage.name}</h2>
+                                    <p className="text-[10px] font-black text-primary uppercase tracking-widest">{selectedMessage.email}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-10 text-xs font-bold text-gray-400">
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4" /> Received: {new Date(selectedMessage.created_at).toLocaleString()}
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => handleStatusChange(selectedMessage.id, selectedMessage.status === 'archived' ? 'read' : 'archived')}
+                                    className={`h-9 w-9 rounded-lg border-border/50 ${selectedMessage.status === 'archived' ? 'bg-orange-500/10 text-orange-600' : 'text-muted-foreground hover:text-orange-600'}`}
+                                    title={selectedMessage.status === 'archived' ? "Unarchive" : "Archive"}
+                                >
+                                    <Archive className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-9 w-9 rounded-lg border-border/50 text-muted-foreground hover:text-red-600"
+                                    title="Move to Trash"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <ScrollArea className="flex-1 px-8 py-6">
+                            <div className="space-y-8 max-w-3xl mx-auto">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">
+                                        <AlertCircle className="w-3.5 h-3.5" /> Core Content
+                                    </div>
+                                    <Card className="border-border/30 bg-muted/5 shadow-none overflow-hidden rounded-2xl">
+                                        <CardContent className="p-6">
+                                            <div className="text-sm font-medium text-foreground leading-relaxed whitespace-pre-wrap selection-bg-primary/20">
+                                                {selectedMessage.message}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4" /> Assigned Status: <span className="uppercase text-primary">{selectedMessage.status}</span>
+
+                                <div className="flex flex-wrap items-center gap-8 py-4 px-6 bg-muted/20 rounded-xl border border-border/30">
+                                    <div className="flex items-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                                        <Calendar className="w-3.5 h-3.5 opacity-50" />
+                                        <span>Timestamp: {new Date(selectedMessage.created_at).toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                                        <Clock className="w-3.5 h-3.5 opacity-50" />
+                                        <span>State: <Badge variant="secondary" className="h-4 px-1 text-[8px] bg-primary/10 text-primary border-none">{selectedMessage.status}</Badge></span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="p-10 border-t border-gray-50 bg-white">
-                            <button className="bg-primary text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-primary/20 flex items-center gap-3">
-                                <Mail className="w-5 h-5" /> Reply via Email
-                            </button>
+                        </ScrollArea>
+                        <div className="p-6 border-t border-border/50 bg-muted/5 flex justify-end">
+                            <Button className="h-10 px-6 gap-2 font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-primary/20 rounded-lg">
+                                <Send className="w-4 h-4" /> Compose Reply
+                            </Button>
                         </div>
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center p-20 text-center">
-                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                            <Eye className="w-10 h-10 text-gray-200" />
+                    <div className="flex-1 flex flex-col items-center justify-center p-20 text-center space-y-4">
+                        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                            <Eye className="w-8 h-8 text-muted-foreground/20" />
                         </div>
-                        <h3 className="text-xl font-serif font-black text-gray-300 uppercase tracking-widest">Select a message to read</h3>
-                        <p className="text-gray-400 text-sm mt-2 max-w-xs mx-auto">Click on an inquiry from the inbox sidebar to view its full details and content.</p>
+                        <div className="space-y-1">
+                            <h3 className="text-sm font-black text-muted-foreground uppercase tracking-widest">Feed Standby</h3>
+                            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest italic max-w-xs mx-auto">Click any transmission record to inspect the payload and respond from this interface.</p>
+                        </div>
                     </div>
                 )}
-            </div>
+            </Card>
         </div>
     );
 }

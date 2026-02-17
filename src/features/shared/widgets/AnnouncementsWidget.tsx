@@ -1,26 +1,30 @@
 import { Newspaper } from 'lucide-react';
 import { memo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 function AnnouncementsWidget() {
     return (
-        <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50">
-            <div className="flex items-center gap-3 mb-6">
-                <Newspaper className="w-5 h-5 text-secondary" />
-                <h3 className="text-xl font-serif font-black italic">Announcements</h3>
-            </div>
-            <div className="space-y-6">
-                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100/50">
-                    <p className="text-[10px] font-black uppercase text-emerald-600 tracking-widest mb-1">Latest Update</p>
-                    <p className="text-sm font-bold text-gray-900 leading-tight">
-                        Research papers are now open for submissions in the 2026 Edition.
+        <Card className="border-border/50 shadow-md overflow-hidden">
+            <CardHeader className="p-5 pb-0">
+                <div className="flex items-center gap-2">
+                    <Newspaper className="w-4 h-4 text-secondary" />
+                    <CardTitle className="text-base font-black">Announcements</CardTitle>
+                </div>
+            </CardHeader>
+            <CardContent className="p-5 pt-4 space-y-4">
+                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100/50">
+                    <Badge variant="outline" className="text-[8px] h-4 font-black uppercase text-emerald-600 border-emerald-200 bg-emerald-50/50 mb-1">Latest Update</Badge>
+                    <p className="text-xs font-bold text-gray-900 leading-tight">
+                        Now accepting manuscripts for Volume 1, Issue 1 (2026).
                     </p>
                 </div>
-                <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100/50">
-                    <p className="text-[10px] font-black uppercase text-blue-600 tracking-widest mb-1">Indexing Update</p>
-                    <p className="text-sm font-bold text-gray-900 leading-tight">Google Scholar synchronization active for current year.</p>
+                <div className="p-3 bg-blue-50 rounded-xl border border-blue-100/50">
+                    <Badge variant="outline" className="text-[8px] h-4 font-black uppercase text-blue-600 border-blue-200 bg-blue-50/50 mb-1">Indexing Update</Badge>
+                    <p className="text-xs font-bold text-gray-900 leading-tight">Rolling submissions with continuous online publication.</p>
                 </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
 

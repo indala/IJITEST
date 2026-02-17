@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 
 import { login } from '@/actions/auth';
 import { useFormStatus } from 'react-dom';
+import Link from 'next/link';
 
 function LoadingButton() {
     const { pending } = useFormStatus();
@@ -97,7 +98,7 @@ export default function LoginPage() {
                                 </div>
                                 <span className="text-gray-600 font-medium">Remember me</span>
                             </label>
-                            <button type="button" className="text-primary font-bold hover:underline">Forgot Password?</button>
+                            <Link href="/auth/forgot-password" className="text-primary font-bold hover:underline">Forgot Password?</Link>
                         </div>
 
                         <LoadingButton />

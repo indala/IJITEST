@@ -2,6 +2,8 @@
 
 import pool from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import fs from "fs/promises";
+import path from "path";
 
 export async function getSettings() {
     try {
@@ -14,7 +16,11 @@ export async function getSettings() {
             apc_usd: '50',
             support_email: 'editor@ijitest.org',
             support_phone: '+91 8919643590',
-            office_address: 'Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India'
+            office_address: 'Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India',
+            publisher_name: 'Felix Academic Publications',
+            apc_description: 'APC covers DOI assignment, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.',
+            template_url: '/docs/template.docx',
+            copyright_url: '/docs/copyright-form.docx'
         };
         rows.forEach((row: any) => {
             settings[row.setting_key] = row.setting_value;
@@ -33,9 +39,33 @@ export async function updateSettings(formData: FormData) {
         for (const [key, value] of entries) {
             if (key.startsWith('$')) continue; // Skip Next.js internal fields
 
+            let finalValue: any = value;
+
+            // Handle File Uploads (Template & Copyright Form)
+            if (value instanceof File && value.size > 0) {
+                const bytes = await value.arrayBuffer();
+                const buffer = Buffer.from(bytes);
+
+                // Create a clean filename based on key + original extension
+                const fileExt = value.name.split('.').pop();
+                const fileName = `${key.replace(/_/g, '-')}.${fileExt}`;
+
+                // Ensure directory exists
+                const uploadDir = path.join(process.cwd(), "public/docs");
+                await fs.mkdir(uploadDir, { recursive: true });
+
+                const filePath = path.join(uploadDir, fileName);
+                await fs.writeFile(filePath, buffer);
+
+                finalValue = `/docs/${fileName}`;
+            } else if (value instanceof File && value.size === 0) {
+                // Skip if no new file was uploaded for this field
+                continue;
+            }
+
             await pool.execute(
                 'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?',
-                [key, value, value]
+                [key, finalValue, finalValue]
             );
         }
 

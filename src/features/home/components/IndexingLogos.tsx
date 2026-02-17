@@ -19,7 +19,8 @@ function IndexingLogos() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col items-center mb-16">
                     <p className="text-[10px] font-black uppercase text-secondary tracking-[0.6em] mb-4">Scientific Visibility</p>
-                    <h2 className="text-3xl font-serif font-black italic text-gray-900 border-b-4 border-secondary/20 pb-2">Discovery Hubs</h2>
+                    <h2 className="text-3xl font-sans font-black text-gray-900 border-b-4 border-secondary/20 pb-2">Planned discovery hubs</h2>
+                    <p className="text-[10px] text-gray-400 font-bold mt-4 uppercase tracking-widest">Indexing is in progress for the inaugural 2026 volume.</p>
                 </div>
 
                 <div className="relative group">
@@ -49,7 +50,7 @@ function IndexingLogos() {
                             {[...indexingPartners, ...indexingPartners, ...indexingPartners].map((index, i) => (
                                 <div
                                     key={`${index}-${i}`}
-                                    className="text-center font-serif font-black text-4xl md:text-7xl text-gray-950 lowercase italic tracking-tighter hover:text-secondary opacity-100 transition-all duration-700 cursor-default select-none"
+                                    className="text-center font-sans font-black text-4xl md:text-7xl text-gray-950 lowercase tracking-tighter hover:text-secondary opacity-100 transition-all duration-700 cursor-default select-none"
                                 >
                                     {index}
                                 </div>

@@ -62,8 +62,8 @@ export async function submitPaper(formData: FormData) {
 
         // 4. Insert into MySQL
         await pool.execute(
-            'INSERT INTO submissions (paper_id, title, abstract, author_name, author_email, file_path, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [paperId, data.paperTitle, data.abstract, data.authorName, data.authorEmail, relativePath, 'submitted']
+            'INSERT INTO submissions (paper_id, title, abstract, keywords, affiliation, author_name, author_email, file_path, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [paperId, data.paperTitle, data.abstract, data.keywords, data.affiliation, data.authorName, data.authorEmail, relativePath, 'submitted']
         );
 
         // 5. Send Confirmation Emails

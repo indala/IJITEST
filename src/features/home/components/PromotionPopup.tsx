@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Gift } from 'lucide-react';
+import { X, Sparkles, Gift, Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export default function PromotionPopup() {
     const [isVisible, setIsVisible] = useState(false);
@@ -26,66 +28,71 @@ export default function PromotionPopup() {
     return (
         <AnimatePresence>
             {isVisible && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative max-w-md w-full bg-white rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+                        className="relative max-w-lg w-full bg-white rounded-[3rem] overflow-hidden shadow-vip border border-primary/5 max-h-[90vh] flex flex-col"
                     >
                         {/* Decorative Background */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
                         {/* Close Button */}
-                        <button
+                        <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={closePopup}
-                            className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-gray-400 hover:text-gray-900 transition-colors z-20 bg-gray-50 rounded-full shadow-sm"
-                            aria-label="Close promotion"
+                            className="absolute top-6 right-6 p-2 text-primary/40 hover:text-secondary hover:bg-secondary/10 transition-all z-20 rounded-2xl shadow-inner border border-primary/5"
+                            aria-label="Close protocol"
                         >
                             <X className="w-5 h-5" />
-                        </button>
+                        </Button>
 
-                        <div className="relative z-10 p-6 sm:p-9 text-center space-y-5 sm:space-y-7 overflow-y-auto sm:overflow-y-visible">
-                            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-2xl sm:rounded-3xl text-primary mb-1 mx-auto">
-                                <Sparkles className="w-7 h-7 sm:w-8 sm:h-8" />
+                        <div className="relative z-10 p-10 sm:p-14 text-center space-y-8 overflow-y-auto sm:overflow-y-visible">
+                            <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/5 rounded-[2rem] text-primary mb-2 mx-auto shadow-inner border border-primary/5">
+                                <Sparkles className="w-10 h-10" />
                             </div>
 
-                            <div className="space-y-2 sm:space-y-3">
-                                <span className="inline-block px-3 py-1 bg-secondary text-white text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] rounded-full">
-                                    Special Offer
-                                </span>
-                                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-black text-gray-900 italic leading-tight">
-                                    Publish Your Research <br />
-                                    <span className="text-primary italic">Absolutely Free!</span>
+                            <div className="space-y-4">
+                                <Badge variant="secondary" className="px-4 py-1.5 bg-secondary text-white text-[10px] font-black uppercase tracking-[0.4em] rounded-full shadow-lg shadow-secondary/20 italic">
+                                    Strategic Incentive
+                                </Badge>
+                                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary leading-none tracking-tighter italic">
+                                    Publish Research <br />
+                                    <span className="text-secondary not-italic">Gratis Protocol</span>
                                 </h2>
-                                <p className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed italic border-l-4 border-primary/20 pl-4 sm:pl-6 text-left">
-                                    In our commitment to supporting early-career researchers, the <strong>First Author</strong> will receive <strong>100% Waiver</strong> on Article Processing Charges (APC) for our 2026 issues.
+                                <p className="text-sm text-primary/60 font-medium leading-relaxed border-l-4 border-secondary/50 pl-8 text-left italic">
+                                    In our commitment to supporting the next generation of innovators, the <strong>Primary Investigator</strong> will receive a <strong>100% APC Waiver</strong> for our inaugural 2026 volume.
                                 </p>
                             </div>
 
-                            <div className="bg-gray-50 p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-100 flex items-center gap-4 text-left">
-                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm shrink-0">
-                                    <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
+                            <div className="bg-primary/5 p-6 rounded-[2rem] border border-primary/5 flex items-center gap-6 text-left shadow-inner">
+                                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-primary/5">
+                                    <Gift className="w-7 h-7 text-secondary" />
                                 </div>
-                                <p className="text-[10px] sm:text-xs font-bold text-gray-500 italic">
-                                    Limited time offer. Applicable for high-quality technical papers submitted this month.
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary/40 italic leading-relaxed">
+                                    Limited engagement window. Applicable for high-fidelity technical submissions validated this session.
                                 </p>
                             </div>
 
-                            <div className="flex flex-col gap-3 sm:gap-4 pt-1">
-                                <button
+                            <div className="flex flex-col gap-4 pt-4">
+                                <Button
                                     onClick={closePopup}
-                                    className="w-full py-4 sm:py-4.5 bg-primary text-white rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:shadow-2xl hover:bg-primary/95 transition-all"
+                                    className="w-full h-16 bg-primary text-white rounded-3xl font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all group/btn"
                                 >
-                                    Submit Now
-                                </button>
-                                <button
+                                    <span className="flex items-center gap-2 italic">
+                                        Transmit Submission <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                    </span>
+                                </Button>
+                                <Button
+                                    variant="ghost"
                                     onClick={closePopup}
-                                    className="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors"
+                                    className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] hover:text-primary transition-all italic h-12"
                                 >
-                                    Remind Me Later
-                                </button>
+                                    Deferred Engagement
+                                </Button>
                             </div>
                         </div>
                     </motion.div>

@@ -5,14 +5,19 @@ import {
     BookOpen,
     AlertCircle,
     TrendingUp,
-    ArrowRight
+    ArrowRight,
+    Search,
+    Calendar,
+    CheckCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import pool from '@/lib/db';
+import { getSession } from '@/actions/session';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const dynamic = 'force-dynamic';
-
-import { getSession } from '@/actions/session';
 
 export default async function EditorDashboard() {
     try {
@@ -36,127 +41,157 @@ export default async function EditorDashboard() {
             : '2026 Edition';
 
         const stats = [
-            { label: 'Total Submissions', value: String(totalSubmissions), icon: <FileStack className="w-6 h-6" />, color: 'bg-primary', trend: 'Active' },
-            { label: 'Under Review', value: String(underReview), icon: <ShieldCheck className="w-6 h-6" />, color: 'bg-blue-600', trend: 'Workflow' },
-            { label: 'Pending Payment', value: String(pendingPayments), icon: <CreditCard className="w-6 h-6" />, color: 'bg-secondary', trend: 'Financial' },
-            { label: 'Current Edition', value: currentIssue, icon: <BookOpen className="w-6 h-6" />, color: 'bg-green-600', trend: 'Publication' },
+            { label: 'Total Submissions', value: String(totalSubmissions), icon: <FileStack className="w-5 h-5" />, variant: 'primary', trend: 'Active' },
+            { label: 'Under Review', value: String(underReview), icon: <ShieldCheck className="w-5 h-5" />, variant: 'blue', trend: 'Workflow' },
+            { label: 'Pending Payment', value: String(pendingPayments), icon: <CreditCard className="w-5 h-5" />, variant: 'emerald', trend: 'Financial' },
+            { label: 'Current Edition', value: currentIssue, icon: <BookOpen className="w-5 h-5" />, variant: 'amber', trend: 'Publication' },
         ];
 
-        const [recentRows]: any = await pool.execute(
-            'SELECT id, paper_id, title, author_name, status, submitted_at FROM submissions ORDER BY submitted_at DESC LIMIT 3'
+        const [recentSubmissions]: any = await pool.execute(
+            'SELECT id, paper_id, title, author_name, status, submitted_at FROM submissions ORDER BY submitted_at DESC LIMIT 5'
         );
 
-        const currentRole = {
-            title: 'Editor',
-            subtitle: 'The Decision-Maker',
-            job: 'Content Flow & Life Cycle Management',
-            actions: ['Pre-screening submissions', 'Assigning reviewers', 'Final Accept/Reject decisions', 'Scheduling publication releases']
-        };
-
         return (
-            <div className="space-y-12">
-                {/* Role Overview */}
-                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-10 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full translate-x-32 -translate-y-32 group-hover:scale-110 transition-transform duration-700"></div>
-                    <div className="relative">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                            <div>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <span className="px-4 py-1.5 rounded-full bg-blue-600/10 text-blue-600 text-[10px] font-black uppercase tracking-widest">
-                                        Active Role: {currentRole.title}
-                                    </span>
-                                    <span className="text-gray-400 font-bold text-sm italic">"{currentRole.subtitle}"</span>
-                                </div>
-                                <h2 className="text-3xl font-serif font-black text-gray-900 mb-2">Welcome Back, {user?.fullName}</h2>
-                                <p className="text-gray-500 font-medium max-w-2xl">
-                                    <span className="font-bold text-gray-900">Main Job:</span> {currentRole.job}
-                                </p>
-                            </div>
+            <div className="space-y-6">
+                {/* Header & Status Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
+                            Editor Workspace
+                        </h1>
+                        <p className="text-xs font-medium text-muted-foreground">Manage content lifecycle and review workflows for {user?.fullName}.</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="h-9 px-3 gap-2 text-[10px] font-black uppercase tracking-widest rounded-lg">
+                            <Search className="w-4 h-4" /> Filter Papers
+                        </Button>
+                        <Button size="sm" className="h-9 px-3 gap-2 bg-primary text-white font-black text-[10px] uppercase tracking-widest rounded-lg shadow-lg shadow-primary/20">
+                            <FileStack className="w-4 h-4" /> Screen New
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Role Overview Banner */}
+                <Card className="bg-blue-600/5 border-blue-600/10 overflow-hidden relative">
+                    <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                        <CheckCircle className="w-32 h-32 text-blue-600" />
+                    </div>
+                    <CardContent className="p-6 sm:p-8">
+                        <div className="max-w-3xl space-y-4">
+                            <Badge className="bg-blue-600 text-white uppercase text-[9px] font-black tracking-[0.2em] px-2 py-0.5 border-none">The Decision-Maker</Badge>
+                            <h2 className="text-2xl font-black text-foreground tracking-tight">Focus: Content Flow & Life Cycle Management</h2>
                             <div className="flex flex-wrap gap-2">
-                                {currentRole.actions.slice(0, 2).map((action, i) => (
-                                    <span key={i} className="px-4 py-2 rounded-xl bg-gray-50 text-gray-600 text-xs font-bold border border-gray-100 italic">
-                                        • {action}
-                                    </span>
+                                {['Pre-screening submissions', 'Assigning reviewers', 'Final Accept/Reject decisions', 'Scheduling releases'].map((action, i) => (
+                                    <div key={i} className="flex items-center gap-2 bg-background/50 border border-blue-600/10 px-3 py-1.5 rounded-lg text-[10px] font-bold text-muted-foreground">
+                                        <div className="w-1 h-1 bg-blue-600 rounded-full" />
+                                        {action}
+                                    </div>
                                 ))}
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {stats.map((stat) => (
-                        <div key={stat.label} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all group">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className={`${stat.color} w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                        <Card key={stat.label} className="border-border/50 shadow-sm group">
+                            <CardContent className="p-5 flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{stat.label}</p>
+                                    <h3 className="text-2xl font-black text-foreground tracking-tighter">{stat.value}</h3>
+                                    <Badge variant="outline" className={`h-4 px-1.5 text-[8px] font-black uppercase tracking-tighter bg-muted/50 border-none ${stat.variant === 'primary' ? 'text-primary' : stat.variant === 'blue' ? 'text-blue-500' : stat.variant === 'emerald' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                                        {stat.trend}
+                                    </Badge>
+                                </div>
+                                <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${stat.variant === 'primary' ? 'bg-primary/10 text-primary' : stat.variant === 'blue' ? 'bg-blue-500/10 text-blue-500' : stat.variant === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>
                                     {stat.icon}
                                 </div>
-                                <span className="text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter bg-blue-50 text-blue-600">
-                                    {stat.trend}
-                                </span>
-                            </div>
-                            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                            <h3 className="text-3xl font-serif font-black text-gray-900">{stat.value}</h3>
-                        </div>
+                            </CardContent>
+                        </Card>
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-10">
-                        <div className="flex items-center justify-between mb-10">
-                            <h2 className="text-2xl font-serif font-black text-gray-900">Recent Submissions</h2>
-                            <Link href="/editor/submissions" className="text-primary font-bold text-sm flex items-center gap-2 hover:underline">
-                                View All <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
-                        <div className="space-y-6">
-                            {recentRows.map((sub: any) => (
-                                <Link
-                                    href={`/editor/submissions/${sub.id}`}
-                                    key={sub.paper_id}
-                                    className="flex items-center justify-between p-6 bg-gray-50 rounded-2xl border border-transparent hover:border-primary/10 hover:bg-white transition-all cursor-pointer group/item"
-                                >
-                                    <div className="flex items-center gap-6">
-                                        <div className="w-16 h-12 rounded-xl bg-white flex items-center justify-center font-mono font-black text-[10px] text-gray-400 border border-gray-100 px-2 text-center">
-                                            {sub.paper_id}
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-gray-900 mb-1 line-clamp-1">{sub.title}</h4>
-                                            <p className="text-xs text-gray-500">By {sub.author_name} • {new Date(sub.submitted_at).toLocaleDateString()}</p>
-                                        </div>
-                                    </div>
-                                    <span className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
-                                        {sub.status.replace('_', ' ')}
-                                    </span>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="bg-blue-600 p-10 rounded-[2.5rem] text-white relative overflow-hidden h-full flex flex-col justify-between">
-                        <div className="relative z-10">
-                            <TrendingUp className="w-12 h-12 mb-6 opacity-30" />
-                            <h2 className="text-2xl font-serif font-black mb-4">Editor Tasks</h2>
-                            <div className="space-y-4">
-                                <div className="bg-white/10 p-4 rounded-xl flex items-center gap-4">
-                                    <AlertCircle className="w-5 h-5 text-white/50" />
-                                    <span className="text-sm font-bold">Screen new manuscripts</span>
-                                </div>
-                                <div className="bg-white/10 p-4 rounded-xl flex items-center gap-4">
-                                    <AlertCircle className="w-5 h-5 text-white/50" />
-                                    <span className="text-sm font-bold">Review editorial guidelines</span>
-                                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Recent Submissions List */}
+                    <Card className="lg:col-span-2 border-border/50 shadow-sm flex flex-col">
+                        <CardHeader className="p-6 flex flex-row items-center justify-between space-y-0 pb-4">
+                            <div>
+                                <CardTitle className="text-sm font-black text-foreground uppercase tracking-widest">Recent Submissions</CardTitle>
+                                <CardDescription className="text-[10px] font-medium text-muted-foreground mt-1 text-xs">Awaiting editorial action or review assignment.</CardDescription>
                             </div>
-                        </div>
-                        <Link href="/editor/submissions" className="bg-white text-blue-600 w-full py-4 rounded-xl font-bold mt-8 shadow-xl shadow-black/10 hover:bg-gray-100 transition-all text-center block">
-                            Review Submissions
-                        </Link>
+                            <Button asChild variant="ghost" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-primary/5">
+                                <Link href="/editor/submissions" className="flex items-center gap-2">
+                                    View Queue <ArrowRight className="w-3.5 h-3.5" />
+                                </Link>
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="p-0 flex-1">
+                            <div className="divide-y divide-border/50">
+                                {recentSubmissions.map((sub: any) => (
+                                    <Link
+                                        href={`/editor/submissions/${sub.id}`}
+                                        key={sub.paper_id}
+                                        className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors group"
+                                    >
+                                        <div className="flex items-center gap-4 min-w-0">
+                                            <div className="w-12 h-10 rounded-lg bg-muted flex items-center justify-center font-mono font-black text-[9px] text-muted-foreground border border-border shrink-0">
+                                                {sub.paper_id.split('-').pop()}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h4 className="text-xs font-black text-foreground truncate group-hover:text-primary transition-colors">{sub.title}</h4>
+                                                <p className="text-[10px] font-bold text-muted-foreground mt-0.5">
+                                                    {sub.author_name} • {new Date(sub.submitted_at).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <Badge variant="outline" className="ml-4 h-5 px-1.5 text-[8px] font-black uppercase tracking-widest whitespace-nowrap bg-primary/5 text-primary border-none">
+                                            {sub.status.replace('_', ' ')}
+                                        </Badge>
+                                    </Link>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Operational Tasks */}
+                    <div className="space-y-6 flex flex-col">
+                        <Card className="bg-blue-600 text-white border-none shadow-xl shadow-blue-600/20 flex-1 flex flex-col relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-10">
+                                <TrendingUp className="w-24 h-24" />
+                            </div>
+                            <CardHeader className="p-6">
+                                <CardTitle className="text-xl font-black tracking-tight">Editor Tasks</CardTitle>
+                                <CardDescription className="text-[11px] font-medium text-white/70">Workflow management & screening.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-6 pt-0 space-y-3 flex-1">
+                                <div className="space-y-2">
+                                    {[
+                                        { icon: ShieldCheck, label: 'Screen new manuscripts' },
+                                        { icon: AlertCircle, label: 'Assign expert reviewers' },
+                                        { icon: BookOpen, label: 'Review editorial guidelines' }
+                                    ].map((action, i) => (
+                                        <div key={i} className="flex items-center gap-3 bg-white/10 p-3 rounded-xl hover:bg-white/20 transition-colors cursor-default">
+                                            <action.icon className="w-4 h-4 text-white/60" />
+                                            <span className="text-xs font-bold text-white/90">{action.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                            <div className="p-6 mt-auto">
+                                <Button asChild className="w-full bg-white text-blue-600 hover:bg-white/90 font-black text-[10px] uppercase tracking-widest h-11 rounded-xl shadow-lg shadow-black/10">
+                                    <Link href="/editor/submissions">
+                                        Open Submissions Queue
+                                    </Link>
+                                </Button>
+                            </div>
+                        </Card>
                     </div>
                 </div>
             </div>
         );
     } catch (error: any) {
         console.error("Editor Dashboard Error:", error);
-        return <div>Error loading editor dashboard.</div>;
+        return <div className="p-8 text-center text-muted-foreground font-black uppercase text-xs">Error loading editor dashboard. Check server logs.</div>;
     }
 }

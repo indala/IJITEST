@@ -31,7 +31,11 @@ export default function Footer({ settings }: { settings?: Record<string, string>
         <footer className="bg-[#0f172a] text-gray-400 border-t border-white/5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
-                    <FooterBranding shortName={shortName} name={name} />
+                    <FooterBranding
+                        shortName={shortName}
+                        name={name}
+                        publisherName={settings?.publisher_name}
+                    />
                     <FooterLinks title="Journal Portals" links={journalPortals} />
                     <FooterLinks title="Resources" links={resources} />
                     <FooterContact email={email} phone={phone} address={address} />

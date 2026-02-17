@@ -6,7 +6,9 @@ import {
     CreditCard,
     MessageSquare,
     Users,
-    Settings
+    Settings,
+    UserCog,
+    FileText
 } from 'lucide-react';
 import React from 'react';
 
@@ -30,10 +32,13 @@ export const sidebarItems: NavigationItem[] = [
         }
     },
     { name: 'Submissions', icon: <FileStack />, href: 'submissions', roles: ['admin', 'editor'] },
+    { name: 'Publications', icon: <BookOpen />, href: 'publications', roles: ['admin', 'editor'] },
     { name: 'Peer Review', icon: <ShieldAlert />, href: 'reviews', roles: ['admin', 'editor', 'reviewer'] },
     { name: 'Payments', icon: <CreditCard />, href: 'payments', roles: ['admin'] },
     { name: 'Messages', icon: <MessageSquare />, href: 'messages', roles: ['admin', 'editor'] },
     { name: 'Users & Roles', icon: <Users />, href: 'users', roles: ['admin'] },
+    { name: 'Manage Applications', icon: <FileText />, href: 'applications', roles: ['admin', 'editor'] },
+    { name: 'Account Profile', icon: <UserCog />, href: 'profile', roles: ['admin', 'editor', 'reviewer'] },
     { name: 'System Settings', icon: <Settings />, href: 'settings', roles: ['admin'] },
 ];
 

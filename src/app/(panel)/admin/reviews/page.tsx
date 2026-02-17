@@ -1,11 +1,27 @@
 'use client'
-import { ShieldAlert, User, Mail, FileUp, CheckCircle, Clock, Search, Plus, X, Download, FileText } from 'lucide-react';
+
+import { ShieldAlert, User, Mail, FileUp, CheckCircle, Clock, Search, Plus, X, Download, FileText, AlertCircle, Calendar, ArrowRight, Trash2, Eye, ExternalLink, ChevronDown } from 'lucide-react';
 import { getActiveReviews, getUnassignedAcceptedPapers, assignReviewer, uploadReviewFeedback } from '@/actions/reviews';
 import { decideSubmission } from '@/actions/submissions';
 import { getUsers } from '@/actions/users';
 import { getSession } from '@/actions/session';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter
+} from "@/components/ui/dialog";
 
 function ReviewsContent() {
     const searchParams = useSearchParams();
@@ -45,244 +61,241 @@ function ReviewsContent() {
         setLoading(false);
     }
 
-    if (loading) return <div className="p-20 text-center font-bold text-gray-400 uppercase tracking-widest">Loading Review Tracking...</div>;
+    if (loading) return <div className="p-20 text-center font-black text-muted-foreground uppercase tracking-widest text-xs animate-pulse italic">Synchronizing Review Pipeline...</div>;
 
     const isInternalStaff = user?.role === 'admin' || user?.role === 'editor';
 
     return (
-        <div className="space-y-12 pb-20">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-6 pb-20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-serif font-black text-gray-900 mb-2">
-                        {user?.role === 'reviewer' ? 'My Assigned Reviews' : 'Peer Review Tracking'}
+                    <h1 className="text-xl font-black text-foreground tracking-tight">
+                        {user?.role === 'reviewer' ? 'Deployment Evaluations' : 'Peer Review Oversight'}
                     </h1>
-                    <p className="text-gray-500 font-medium tracking-tight">
+                    <p className="text-xs font-medium text-muted-foreground">
                         {user?.role === 'reviewer'
-                            ? 'Complete your assigned manuscript evaluations below.'
-                            : 'Managing editorial reviews and staff assignments.'}
+                            ? 'Complete your assigned technical evaluations below.'
+                            : 'Managing editorial integrity and reviewer assignments.'}
                     </p>
                 </div>
                 {isInternalStaff && (
-                    <button
-                        onClick={() => setShowAssignModal(true)}
-                        className="bg-secondary text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-secondary/20 flex items-center gap-2 hover:bg-secondary/95 transition-all"
-                    >
-                        <Plus className="w-5 h-5" /> Assign New Reviewer
-                    </button>
+                    <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
+                        <DialogTrigger asChild>
+                            <Button className="h-10 px-4 gap-2 bg-primary text-white font-black text-[10px] uppercase tracking-widest rounded-lg shadow-lg shadow-primary/20">
+                                <Plus className="w-4 h-4" /> Delegate Evaluation
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md rounded-2xl p-6">
+                            <DialogHeader>
+                                <DialogTitle className="text-xl font-black text-foreground tracking-tight">Assignment Console</DialogTitle>
+                                <DialogDescription className="text-xs font-medium text-muted-foreground">
+                                    Strategic delegation of manuscripts to the technical review staff.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <form action={async (formData) => {
+                                const result = await assignReviewer(formData);
+                                if (result.success) {
+                                    setShowAssignModal(false);
+                                    fetchData();
+                                } else {
+                                    alert(result.error);
+                                }
+                            }} className="space-y-4 pt-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Target Manuscript</label>
+                                    <div className="relative">
+                                        <select
+                                            name="submissionId"
+                                            required
+                                            defaultValue={assignId || ""}
+                                            className="w-full h-11 bg-muted/50 border-none rounded-xl px-4 text-[11px] font-bold appearance-none outline-none focus:ring-1 focus:ring-primary/30"
+                                        >
+                                            <option value="">Choose Ref...</option>
+                                            {unassigned.map(paper => (
+                                                <option key={paper.id} value={paper.id}>{paper.paper_id} - {paper.title}</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 pointer-events-none" />
+                                    </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Technical Reviewer</label>
+                                    <div className="relative">
+                                        <select name="reviewerId" required className="w-full h-11 bg-muted/50 border-none rounded-xl px-4 text-[11px] font-bold appearance-none outline-none focus:ring-1 focus:ring-primary/30">
+                                            <option value="">Identify Staff...</option>
+                                            {staff.map(r => (
+                                                <option key={r.id} value={r.id}>{r.full_name} ({r.role})</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 pointer-events-none" />
+                                    </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Hard Deadline</label>
+                                    <Input name="deadline" type="date" required className="h-11 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 font-bold text-xs" />
+                                </div>
+                                <DialogFooter className="pt-2">
+                                    <Button type="submit" className="w-full h-11 font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary/20">
+                                        Commit Assignment
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
                 )}
             </div>
 
-            {showAssignModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-[2.5rem] p-10 max-w-lg w-full shadow-2xl animate-in fade-in zoom-in duration-200">
-                        <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-2xl font-serif font-black text-gray-900">Assign Reviewer</h2>
-                            <button onClick={() => setShowAssignModal(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                                <X className="w-6 h-6 text-gray-400" />
-                            </button>
-                        </div>
-                        <form action={async (formData) => {
-                            const result = await assignReviewer(formData);
-                            if (result.success) {
-                                setShowAssignModal(false);
-                                fetchData();
-                            } else {
-                                alert(result.error);
-                            }
-                        }} className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 pl-2">Select Manuscript</label>
-                                <select
-                                    name="submissionId"
-                                    required
-                                    defaultValue={assignId || ""}
-                                    className="w-full bg-gray-50 p-4 rounded-xl outline-none focus:ring-2 focus:ring-secondary/20 font-bold appearance-none"
-                                >
-                                    <option value="">-- Choose a paper --</option>
-                                    {unassigned.map(paper => (
-                                        <option key={paper.id} value={paper.id}>{paper.paper_id} - {paper.title}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 pl-2">Available Reviewers</label>
-                                <select name="reviewerId" required className="w-full bg-gray-50 p-4 rounded-xl outline-none focus:ring-2 focus:ring-secondary/20 font-bold appearance-none">
-                                    <option value="">-- Choose a staff member --</option>
-                                    {staff.map(r => (
-                                        <option key={r.id} value={r.id}>{r.full_name} ({r.email})</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 pl-2">Review Deadline</label>
-                                <input name="deadline" type="date" required className="w-full bg-gray-50 p-4 rounded-xl outline-none focus:ring-2 focus:ring-secondary/20 font-bold" />
-                            </div>
-                            <button className="w-full bg-secondary text-white py-4 rounded-2xl font-black text-lg shadow-lg hover:shadow-xl transition-all">
-                                Send to Review
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-4">
                 {reviews.map((item) => (
-                    <div key={item.id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 flex flex-col md:flex-row md:items-start justify-between gap-8 hover:shadow-lg transition-all group">
-                        <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-4">
-                                <span className="text-[10px] font-black text-gray-400 font-mono tracking-tighter bg-gray-50 px-2 py-1 rounded">ID: {item.paper_id}</span>
-                                <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${item.status === 'completed' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`}>
-                                    {item.status.replace('_', ' ')}
-                                </span>
+                    <Card key={item.id} className="border-border/50 shadow-sm hover:shadow-md transition-all overflow-hidden bg-background">
+                        <CardContent className="p-0">
+                            <div className="p-6 flex flex-col md:flex-row md:items-start justify-between gap-6">
+                                <div className="space-y-4 flex-1">
+                                    <div className="flex items-center gap-3">
+                                        <Badge variant="outline" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-muted/50 border-none text-primary italic">Node: {item.paper_id}</Badge>
+                                        <Badge className={`h-5 px-1.5 text-[8px] font-black uppercase tracking-widest ${item.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-none' : 'bg-blue-500/10 text-blue-600 border-none'}`}>
+                                            {item.status.replace('_', ' ')}
+                                        </Badge>
+                                    </div>
+                                    <h3 className="text-lg font-black text-foreground tracking-tight leading-tight">{item.title}</h3>
+                                    <div className="flex flex-wrap items-center gap-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                                        <div className="flex items-center gap-2">
+                                            <User className="w-3.5 h-3.5 opacity-50" />
+                                            <span>Eval: {item.reviewer_name}</span>
+                                        </div>
+                                        <div className={`flex items-center gap-2 ${item.status === 'completed' ? 'opacity-30' : 'text-orange-600'}`}>
+                                            <Clock className="w-3.5 h-3.5" />
+                                            <span>Due: {new Date(item.deadline).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+
+                                    {item.feedback && (
+                                        <div className="p-4 bg-muted/30 rounded-xl border border-border/20 italic text-[11px] text-muted-foreground font-medium leading-relaxed selection:bg-primary/10">
+                                            "{item.feedback}"
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col gap-2 shrink-0 md:w-56">
+                                    {item.manuscript_path && (
+                                        <Button asChild variant="outline" size="sm" className="h-9 gap-2 font-black text-[9px] uppercase tracking-widest border-border/50">
+                                            <a href={item.manuscript_path} download>
+                                                <Download className="w-3.5 h-3.5 text-primary" /> Download Source
+                                            </a>
+                                        </Button>
+                                    )}
+
+                                    {item.status !== 'completed' && user?.role === 'reviewer' ? (
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button className="h-10 gap-2 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20">
+                                                    <FileUp className="w-3.5 h-3.5" /> Submit Intelligence
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-xl rounded-2xl p-6">
+                                                <DialogHeader>
+                                                    <DialogTitle className="text-xl font-black text-foreground tracking-tight">Final Evaluation</DialogTitle>
+                                                    <DialogDescription className="text-xs font-medium text-muted-foreground"> Commit technical feedback for manuscript {item.paper_id}.</DialogDescription>
+                                                </DialogHeader>
+                                                <form action={async (formData) => {
+                                                    const result = await uploadReviewFeedback(item.id, formData);
+                                                    if (result.success) {
+                                                        fetchData();
+                                                    } else {
+                                                        alert(result.error);
+                                                    }
+                                                }} className="space-y-4 pt-4">
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Summary of Findings</label>
+                                                        <textarea
+                                                            name="feedbackText"
+                                                            required
+                                                            rows={4}
+                                                            className="w-full bg-muted/50 border-none rounded-xl p-4 text-[11px] font-medium outline-none focus:ring-1 focus:ring-primary/30"
+                                                            placeholder="Initial vector of technical feedback..."
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Deep Analysis Node (File)</label>
+                                                        <div className="relative group border-2 border-dashed border-border/50 rounded-xl p-6 transition-all hover:bg-muted/50 hover:border-primary/30">
+                                                            <input
+                                                                name="feedbackFile"
+                                                                type="file"
+                                                                className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                                            />
+                                                            <div className="flex flex-col items-center justify-center pointer-events-none">
+                                                                <FileUp className="w-6 h-6 text-muted-foreground/30 group-hover:text-primary mb-2" />
+                                                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest italic">Upload Evaluation Payload</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <DialogFooter>
+                                                        <Button type="submit" className="w-full h-11 font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary/20">
+                                                            Commit Findings
+                                                        </Button>
+                                                    </DialogFooter>
+                                                </form>
+                                            </DialogContent>
+                                        </Dialog>
+                                    ) : item.feedback_file_path && (
+                                        <Button asChild variant="outline" size="sm" className="h-9 gap-2 font-black text-[9px] uppercase tracking-widest border-emerald-500/20 bg-emerald-500/5 text-emerald-600 hover:bg-emerald-500/10">
+                                            <a href={item.feedback_file_path} download>
+                                                <FileText className="w-3.5 h-3.5" /> Intelligence File
+                                            </a>
+                                        </Button>
+                                    )}
+
+                                    {item.status === 'completed' && isInternalStaff && (
+                                        <div className="grid grid-cols-1 gap-2 mt-2 pt-4 border-t border-border/50">
+                                            <Button
+                                                onClick={async () => {
+                                                    if (confirm('Authorize acceptance for this manuscript?')) {
+                                                        const res = await decideSubmission(item.submission_id, 'accepted');
+                                                        if (res.success) fetchData();
+                                                        else alert(res.error);
+                                                    }
+                                                }}
+                                                className="h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] uppercase tracking-widest rounded-lg shadow-lg shadow-emerald-600/10"
+                                            >
+                                                <CheckCircle className="w-3.5 h-3.5 mr-2" /> Authorize Accept
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                onClick={async () => {
+                                                    if (confirm('Commit final rejection?')) {
+                                                        const res = await decideSubmission(item.submission_id, 'rejected');
+                                                        if (res.success) fetchData();
+                                                        else alert(res.error);
+                                                    }
+                                                }}
+                                                className="h-9 font-black text-[10px] uppercase tracking-widest border-red-500/20 text-red-600 hover:bg-red-500/5"
+                                            >
+                                                <X className="w-3.5 h-3.5 mr-2" /> Commit Reject
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                            <h3 className="text-xl font-bold font-serif text-gray-900 mb-4">{item.title}</h3>
-                            <div className="flex flex-wrap gap-6 text-sm mb-6">
-                                <div className="flex items-center gap-2 text-gray-500">
-                                    <User className="w-4 h-4 text-gray-300" />
-                                    <span className="font-medium">Reviewer: {item.reviewer_name}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-500 font-bold">
-                                    <Clock className="w-4 h-4 text-gray-300" />
-                                    <span className={item.status === 'completed' ? 'text-gray-300 line-through' : 'text-orange-600'}>
-                                        Due: {new Date(item.deadline).toLocaleDateString()}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {item.feedback && (
-                                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-sm text-gray-600 italic">
-                                    "{item.feedback}"
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="flex flex-col gap-3 min-w-[200px]">
-                            {item.manuscript_path && (
-                                <a
-                                    href={item.manuscript_path}
-                                    download
-                                    className="flex items-center justify-center gap-2 bg-gray-50 text-gray-600 py-3 rounded-xl font-bold text-xs hover:bg-gray-100 transition-all border border-transparent"
-                                >
-                                    <Download className="w-4 h-4 text-primary" /> Download Manuscript
-                                </a>
-                            )}
-
-                            {item.status !== 'completed' && user?.role === 'reviewer' ? (
-                                <button
-                                    onClick={() => setSelectedReview(item)}
-                                    className="bg-primary text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
-                                >
-                                    <FileUp className="w-4 h-4" /> Submit Review
-                                </button>
-                            ) : item.feedback_file_path && (
-                                <a
-                                    href={item.feedback_file_path}
-                                    download
-                                    className="flex items-center justify-center gap-2 bg-green-50 text-green-600 py-3 rounded-xl font-bold text-xs border border-green-100 hover:bg-green-100 transition-all"
-                                >
-                                    <FileText className="w-4 h-4" /> View Feedback File
-                                </a>
-                            )}
-
-                            {item.status === 'completed' && isInternalStaff && (
-                                <div className="grid grid-cols-2 gap-2 mt-2 pt-4 border-t border-gray-50">
-                                    <button
-                                        onClick={async () => {
-                                            if (confirm('Are you sure you want to FINAL ACCEPT this paper? Authors will be notified.')) {
-                                                const res = await decideSubmission(item.submission_id, 'accepted');
-                                                if (res.success) fetchData();
-                                                else alert(res.error);
-                                            }
-                                        }}
-                                        className="bg-green-600 text-white py-3 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-green-700 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-green-200"
-                                    >
-                                        <CheckCircle className="w-3.5 h-3.5" /> Accept
-                                    </button>
-                                    <button
-                                        onClick={async () => {
-                                            if (confirm('Are you sure you want to REJECT this paper? Feedback will be sent, and manuscript file will be deleted.')) {
-                                                const res = await decideSubmission(item.submission_id, 'rejected');
-                                                if (res.success) fetchData();
-                                                else alert(res.error);
-                                            }
-                                        }}
-                                        className="bg-red-50 text-red-600 py-3 rounded-xl font-bold text-[10px] uppercase tracking-wider border border-red-100 hover:bg-red-100 transition-all flex items-center justify-center gap-1.5"
-                                    >
-                                        <X className="w-3.5 h-3.5" /> Reject
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                 ))}
 
                 {reviews.length === 0 && !loading && (
-                    <div className="bg-gray-50 rounded-[3rem] p-12 flex flex-col items-center justify-center text-center border border-dashed border-gray-200">
-                        <ShieldAlert className="w-16 h-16 text-gray-200 mb-6" />
-                        <h3 className="text-xl font-serif font-black text-gray-400 mb-2">No Reviews Found</h3>
-                        <p className="text-gray-400 max-w-sm">There are no peer reviews assigned to you at this time.</p>
+                    <div className="py-20 bg-muted/20 border border-dashed border-border/50 rounded-2xl flex flex-col items-center justify-center text-center">
+                        <ShieldAlert className="w-10 h-10 text-muted-foreground/20 mb-4" />
+                        <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-1">Queue Empty</h3>
+                        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest italic">No technical evaluations active in this sector</p>
                     </div>
                 )}
             </div>
-
-            {selectedReview && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-[2.5rem] p-10 max-w-2xl w-full shadow-2xl animate-in fade-in zoom-in duration-200">
-                        <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-2xl font-serif font-black text-gray-900">Submit Evaluation</h2>
-                            <button onClick={() => setSelectedReview(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                                <X className="w-6 h-6 text-gray-400" />
-                            </button>
-                        </div>
-                        <form action={async (formData) => {
-                            const result = await uploadReviewFeedback(selectedReview.id, formData);
-                            if (result.success) {
-                                setSelectedReview(null);
-                                fetchData();
-                            } else {
-                                alert(result.error);
-                            }
-                        }} className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 pl-2">Feedback Summary</label>
-                                <textarea
-                                    name="feedbackText"
-                                    required
-                                    rows={4}
-                                    className="w-full bg-gray-50 p-4 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 font-medium text-sm leading-relaxed"
-                                    placeholder="Provide your initial thoughts or a summary of your review here..."
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 pl-2">Deep Review File (Optional)</label>
-                                <div className="relative group">
-                                    <input
-                                        name="feedbackFile"
-                                        type="file"
-                                        className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                                    />
-                                    <div className="w-full bg-gray-50 border-2 border-dashed border-gray-200 p-8 rounded-2xl flex flex-col items-center justify-center group-hover:bg-primary/5 group-hover:border-primary/20 transition-all">
-                                        <FileUp className="w-8 h-8 text-gray-300 group-hover:text-primary mb-2" />
-                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Click to upload evaluation file</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <button className="w-full bg-primary text-white py-5 rounded-2xl font-black text-lg shadow-lg hover:shadow-xl transition-all">
-                                Finalize & Submit Review
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
 
 export default function Reviews() {
     return (
-        <Suspense fallback={<div className="p-20 text-center font-bold text-gray-400 uppercase tracking-widest">Initialising Portal...</div>}>
+        <Suspense fallback={<div className="p-20 text-center font-black text-muted-foreground uppercase tracking-widest text-xs animate-pulse">Initializing Portal...</div>}>
             <ReviewsContent />
         </Suspense>
     );
 }
-

@@ -43,18 +43,23 @@ export async function createUser(formData: FormData) {
 
         await sendEmail({
             to: email,
-            subject: 'Invitation to join IJITEST Editorial Team',
+            subject: 'Account Verification | IJITEST Hub',
             html: `
-                <div style="font-family: serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f0f0f0; border-radius: 20px;">
-                    <h1 style="color: #6d0202;">Welcome to IJITEST</h1>
-                    <p>Dear ${fullName},</p>
-                    <p>You have been invited to join the <strong>IJITEST</strong> editorial team as a <strong>${role}</strong>.</p>
-                    <p>Please click the button below to set up your account password and access the editorial hub:</p>
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="${setupUrl}" style="background: #6d0202; color: white; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block;">Set Up My Account</a>
+                <div style="font-family: serif; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f0f0f0; border-radius: 20px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #6d0202; margin-bottom: 10px;">IJITEST</h1>
+                        <p style="color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 0.2em;">Editorial Management Hub</p>
                     </div>
-                    <p>This invitation link will expire in 24 hours.</p>
-                    <p>Best regards,<br>IJITEST Administration</p>
+                    <p>Dear ${fullName},</p>
+                    <p>You have been invited to join the <strong>IJITEST</strong> editorial team as <strong>${role}</strong>.</p>
+                    <p>To finalize your account setup, please click the button below to secure your account:</p>
+                    <div style="text-align: center; margin: 40px 0;">
+                        <a href="${setupUrl}" style="background: #6d0202; color: white; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px; box-shadow: 0 10px 20px -5px rgba(109,2,2,0.3);">Secure My Account</a>
+                    </div>
+                    <p style="color: #666; font-size: 12px; font-style: italic;">This invitation link will expire in 24 hours.</p>
+                    <div style="margin-top: 40px; border-top: 1px solid #eee; pt: 30px; text-align: center;">
+                        <p style="color: #999; font-size: 11px;">International Journal of Innovative Trends in Engineering Science and Technology</p>
+                    </div>
                 </div>
             `
         });
@@ -109,6 +114,62 @@ export async function setupPassword(formData: FormData) {
 
 import { getSession } from "@/actions/session";
 
+export async function requestPasswordReset(formData: FormData) {
+    const email = formData.get('email') as string;
+
+    try {
+        const [users]: any = await pool.execute(
+            'SELECT id, full_name FROM users WHERE email = ?',
+            [email]
+        );
+
+        if (users.length === 0) {
+            // Success even if not found for security, but we can log internally
+            return { success: true };
+        }
+
+        const user = users[0];
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const expires = new Date();
+        expires.setHours(expires.getHours() + 1); // 1 hour for reset
+
+        await pool.execute(
+            'UPDATE users SET invitation_token = ?, invitation_expires = ? WHERE id = ?',
+            [resetToken, expires, user.id]
+        );
+
+        const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/setup-password?token=${resetToken}&ctx=reset`;
+
+        await sendEmail({
+            to: email,
+            subject: 'Reset Your Password | IJITEST',
+            html: `
+                <div style="font-family: serif; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f0f0f0; border-radius: 20px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #6d0202; margin-bottom: 10px;">IJITEST</h1>
+                        <p style="color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 0.2em;">Password Recovery</p>
+                    </div>
+                    <p>Dear ${user.full_name},</p>
+                    <p>We received a request to reset your password for the <strong>IJITEST</strong> editorial portal.</p>
+                    <p>To set a new password, please click the button below:</p>
+                    <div style="text-align: center; margin: 40px 0;">
+                        <a href="${resetUrl}" style="background: #6d0202; color: white; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px; box-shadow: 0 10px 20px -5px rgba(109,2,2,0.3);">Create New Password</a>
+                    </div>
+                    <p style="color: #666; font-size: 12px; font-style: italic;">This recovery link will expire in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+                    <div style="margin-top: 40px; border-top: 1px solid #eee; pt: 30px; text-align: center;">
+                        <p style="color: #999; font-size: 11px;">International Journal of Innovative Trends in Engineering Science and Technology</p>
+                    </div>
+                </div>
+            `
+        });
+
+        return { success: true };
+    } catch (error: any) {
+        console.error("Reset Request Error:", error);
+        return { error: "Failed to process reset request" };
+    }
+}
+
 export async function deleteUser(id: number) {
     try {
         const session = await getSession();
@@ -133,5 +194,74 @@ export async function deleteUser(id: number) {
     } catch (error: any) {
         console.error("Delete User Error:", error);
         return { error: "Failed to delete user" };
+    }
+}
+
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
+
+export async function getUserProfile() {
+    try {
+        const session = await getSession();
+        if (!session) return null;
+
+        const [rows]: any = await pool.execute(
+            'SELECT id, email, full_name, designation, institute, phone, bio, photo_url, role FROM users WHERE id = ?',
+            [session.id]
+        );
+
+        return rows[0] || null;
+    } catch (error) {
+        console.error("Get User Profile Error:", error);
+        return null;
+    }
+}
+
+export async function updateUserProfile(formData: FormData) {
+    try {
+        const session = await getSession();
+        if (!session) return { error: "Unauthorized" };
+
+        const fullName = formData.get('fullName') as string;
+        const designation = formData.get('designation') as string;
+        const institute = formData.get('institute') as string;
+        const phone = formData.get('phone') as string;
+        const bio = formData.get('bio') as string;
+        const photo = formData.get('photo') as File;
+
+        let photoUrl = formData.get('existingPhotoUrl') as string;
+
+        if (photo && photo.size > 0) {
+            const uploadsDir = path.join(process.cwd(), "public", "uploads", "profiles");
+            await mkdir(uploadsDir, { recursive: true });
+
+            const fileName = `${session.id}-${Date.now()}-${photo.name.replace(/\s/g, '-')}`;
+            await writeFile(path.join(uploadsDir, fileName), Buffer.from(await photo.arrayBuffer()));
+            photoUrl = `/uploads/profiles/${fileName}`;
+        }
+
+        await pool.execute(
+            'UPDATE users SET full_name = ?, designation = ?, institute = ?, phone = ?, bio = ?, photo_url = ? WHERE id = ?',
+            [fullName, designation, institute, phone, bio, photoUrl, session.id]
+        );
+
+        revalidatePath(`/${session.role}/profile`);
+        return { success: true };
+    } catch (error: any) {
+        console.error("Update User Profile Error:", error);
+        return { error: "Failed to update profile: " + error.message };
+    }
+}
+
+export async function checkUserEmail(email: string) {
+    try {
+        const [rows]: any = await pool.execute(
+            'SELECT id FROM users WHERE email = ?',
+            [email]
+        );
+        return { exists: rows.length > 0 };
+    } catch (error) {
+        console.error("Check User Email Error:", error);
+        return { error: "Check failed" };
     }
 }

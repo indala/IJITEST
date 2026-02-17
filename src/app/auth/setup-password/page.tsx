@@ -10,6 +10,7 @@ function SetupContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const token = searchParams.get('token');
+    const ctx = searchParams.get('ctx'); // 'reset' or null (setup)
 
     const [info, setInfo] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -47,7 +48,7 @@ function SetupContent() {
         if (result.success) {
             setStatus('success');
             setTimeout(() => {
-                router.push('/admin/login');
+                router.push('/login');
             }, 3000);
         } else {
             setErrorMessage(result.error || "Failed to setup password");
@@ -85,9 +86,13 @@ function SetupContent() {
                 <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
                     <CheckCircle2 className="w-10 h-10 text-green-500" />
                 </div>
-                <h1 className="text-3xl font-serif font-black text-gray-900 mb-4">Account Ready!</h1>
-                <p className="text-gray-500 mb-10 font-medium">Your password has been set successfully. You are now being redirected to the login portal.</p>
-                <Link href="/admin/login" className="flex items-center justify-center gap-2 text-primary font-black uppercase tracking-widest text-sm hover:gap-4 transition-all">
+                <h1 className="text-3xl font-serif font-black text-gray-900 mb-4">{ctx === 'reset' ? 'Password Reset!' : 'Account Ready!'}</h1>
+                <p className="text-gray-500 mb-10 font-medium">
+                    {ctx === 'reset'
+                        ? 'Your password has been reset successfully. You can now log in with your new credentials.'
+                        : 'Your password has been set successfully. You are now being redirected to the login portal.'}
+                </p>
+                <Link href="/login" className="flex items-center justify-center gap-2 text-primary font-black uppercase tracking-widest text-sm hover:gap-4 transition-all">
                     Go to Login <ArrowRight className="w-5 h-5" />
                 </Link>
             </div>
@@ -101,7 +106,9 @@ function SetupContent() {
                     <div className="bg-primary w-16 h-16 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-primary/30 mx-auto mb-8">
                         <span className="text-white font-black text-2xl">IJ</span>
                     </div>
-                    <h1 className="text-4xl font-serif font-black text-gray-900 mb-4">Complete Your Setup</h1>
+                    <h1 className="text-4xl font-serif font-black text-gray-900 mb-4">
+                        {ctx === 'reset' ? 'Reset Your Password' : 'Complete Your Setup'}
+                    </h1>
                     <p className="text-gray-500 font-medium">Welcome to the IJITEST editorial hub, {info.full_name}.</p>
                 </div>
 
@@ -111,7 +118,7 @@ function SetupContent() {
                             <Mail className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Linked Account</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Account Identity</p>
                             <p className="font-bold text-gray-900">{info.email}</p>
                         </div>
                         <div className="ml-auto px-4 py-1.5 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest">
@@ -160,7 +167,9 @@ function SetupContent() {
                             disabled={status === 'loading'}
                             className="w-full bg-primary text-white py-6 rounded-[1.5rem] font-black text-lg shadow-[0_20px_40px_-15px_rgba(109,2,2,0.3)] hover:shadow-[0_25px_50px_-12px_rgba(109,2,2,0.4)] hover:-translate-y-1 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                         >
-                            {status === 'loading' ? 'Securing Account...' : 'Finish Setup & Join'}
+                            {status === 'loading'
+                                ? (ctx === 'reset' ? 'Resetting Password...' : 'Securing Account...')
+                                : (ctx === 'reset' ? 'Update & Login' : 'Finish Setup & Join')}
                         </button>
                     </form>
                 </div>

@@ -2,27 +2,39 @@ import { Mail } from 'lucide-react';
 import Link from 'next/link';
 import { memo } from 'react';
 
-function PublisherSection() {
+interface PublisherSectionProps {
+    settings: Record<string, string>;
+}
+
+function PublisherSection({ settings }: PublisherSectionProps) {
+    const publisherName = settings.publisher_name || "Felix Academic Publications";
+    const supportEmail = settings.support_email || "editor@ijitest.org";
+
     return (
-        <section className="py-24 bg-white relative overflow-hidden">
+        <section className="py-16 bg-background relative overflow-hidden border-t border-primary/5">
+            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2" />
+
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left relative z-10">
                 <div className="max-w-3xl">
-                    <h2 className="text-4xl font-serif font-black text-gray-900 mb-8 italic">About the Publisher</h2>
-                    <p className="text-xl text-slate-900 font-medium italic border-l-4 border-secondary/20 pl-8 mb-12 italic">
-                        International Journal of Innovative Trends in Engineering Science and Technology (IJITEST) is mentored by Felix Academic Publications, aiming to provide a high-quality bedrock for research sharing and academic excellence.
+                    <h2 className="text-3xl sm:text-4xl font-sans font-black text-primary mb-8 tracking-tighter">About the Publisher</h2>
+                    <p className="text-lg sm:text-xl text-primary/80 font-medium border-l-4 border-secondary/30 pl-8 mb-12 italic leading-relaxed">
+                        {settings.journal_short_name || 'IJITEST'} is mentored by <span className="text-primary font-black">{publisherName}</span>, aiming to provide a high-quality bedrock for research sharing and academic excellence.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center gap-8">
-                        <div className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100 flex items-center gap-4">
-                            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white shrink-0">
-                                <Mail className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Support Line</p>
-                                <p className="text-sm font-bold text-gray-900">editor@ijitest.org</p>
+                        <div className="p-1 rounded-[2rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip group">
+                            <div className="bg-white p-5 rounded-[1.8rem] flex items-center gap-5 transition-transform group-hover:scale-[1.02] duration-500">
+                                <div className="w-14 h-14 bg-gradient-to-br from-secondary to-secondary/80 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-secondary/20">
+                                    <Mail className="w-7 h-7" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] mb-1">Support Desk</p>
+                                    <p className="text-base font-black text-primary tracking-tight">{supportEmail}</p>
+                                </div>
                             </div>
                         </div>
-                        <Link href="/guidelines" className="text-primary font-black uppercase text-xs tracking-[0.2em] hover:text-secondary transition-colors">
-                            View Formatting Guidelines 🏛️
+                        <Link href="/guidelines" className="group flex items-center gap-3 text-primary font-black uppercase text-[11px] tracking-[0.2em] transition-all">
+                            <span className="h-[2px] w-8 bg-secondary transition-all group-hover:w-12" />
+                            View Formatting Guidelines
                         </Link>
                     </div>
                 </div>
