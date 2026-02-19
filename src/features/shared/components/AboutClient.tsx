@@ -11,7 +11,7 @@ export default function AboutClient() {
                     <div className="p-3 bg-secondary/5 rounded-2xl text-secondary border border-secondary/10 shadow-vip group-hover:scale-110 transition-transform duration-500">
                         <BookOpen className="w-6 h-6" />
                     </div>
-                    <h2 className="text-3xl font-black text-primary tracking-tighter">Journal <span className="text-secondary italic">Overview</span></h2>
+                    <h2 className="text-3xl font-black text-primary tracking-tighter">Journal <span>Overview</span></h2>
                 </div>
                 <div className="text-base sm:text-lg text-primary/80 space-y-6 font-medium leading-relaxed border-l-[3px] border-primary/10 pl-8">
                     <p>
@@ -50,11 +50,11 @@ export default function AboutClient() {
                     <div className="p-3 bg-primary/5 rounded-2xl text-primary border border-primary/10 shadow-vip">
                         <Target className="w-6 h-6" />
                     </div>
-                    <h2 className="text-3xl font-black text-primary tracking-tighter italic">Aim & <span className="text-secondary not-italic">Scope</span></h2>
+                    <h2 className="text-3xl font-black text-primary tracking-tighter">Aim & <span>Scope</span></h2>
                 </div>
 
-                <div className="p-6 bg-gradient-to-br from-secondary/5 to-transparent border-l-4 border-secondary rounded-r-[2rem] shadow-sm">
-                    <p className="text-base sm:text-lg text-primary/70 font-bold leading-relaxed italic">
+                <div className="p-6 bg-slate-50 border-l-4 border-secondary rounded-r-2xl shadow-sm">
+                    <p className="text-base sm:text-lg text-primary/70 font-bold leading-relaxed">
                         "Interdisciplinary work combining engineering with management, sustainability, and data-driven innovation."
                     </p>
                 </div>
@@ -85,23 +85,23 @@ export default function AboutClient() {
                 </div>
             </section>
 
-            <section className="bg-primary p-10 sm:p-12 rounded-[4rem] text-white relative overflow-hidden shadow-vip border border-white/5">
-                <div className="absolute -top-20 -right-20 w-80 h-80 bg-secondary/20 rounded-full blur-[100px] animate-pulse" />
-                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-accent/20 rounded-full blur-[80px]" />
+            <section className="bg-primary p-10 sm:p-12 rounded-[2rem] text-white relative overflow-hidden shadow-lg border border-white/5">
+                <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/5 rounded-full blur-[100px]" />
+                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-white/5 rounded-full blur-[80px]" />
 
                 <div className="relative z-10">
                     <div className="flex items-center gap-5 mb-8">
                         <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20">
                             <Building2 className="w-9 h-9 text-secondary" />
                         </div>
-                        <h2 className="text-3xl font-black tracking-tighter">About <span className="text-secondary italic">Publisher</span></h2>
+                        <h2 className="text-3xl font-black tracking-tighter">About <span>Publisher</span></h2>
                     </div>
                     <div className="space-y-6">
                         <div>
                             <p className="text-2xl font-black text-white tracking-tight mb-1">Felix Academic Publications</p>
                             <p className="text-[10px] text-white/50 font-black uppercase tracking-[0.3em]">Foundation for Education, Innovation & Excellence</p>
                         </div>
-                        <div className="text-base sm:text-lg text-white/70 leading-relaxed font-medium space-y-6 max-w-2xl border-l-2 border-white/10 pl-8 italic">
+                        <div className="text-base sm:text-lg text-white/70 leading-relaxed font-medium space-y-6 max-w-2xl border-l-2 border-white/10 pl-8">
                             <p>
                                 Felix Academic Publications is a mission-driven organization dedicated to bridging the gap between theoretical research and industrial application.
                             </p>

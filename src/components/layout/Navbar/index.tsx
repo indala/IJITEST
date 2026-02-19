@@ -21,7 +21,7 @@ export default function Navbar({ settings }: { settings?: Record<string, string>
     }, []);
 
     return (
-        <nav className={`sticky top-0 z-50 w-full transition-all duration-500 ${isScrolled ? 'bg-background/95 shadow-vip py-1' : 'bg-background/90 backdrop-blur-xl border-b border-primary/10 py-0'}`}>
+        <nav className={`sticky top-0 z-50 w-full transition-all duration-500 ${isScrolled ? 'bg-background/95 shadow-lg py-1' : 'bg-background/90 backdrop-blur-xl border-b border-primary/10 py-0'}`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className={`flex justify-between transition-all duration-500 ${isScrolled ? 'h-16' : 'h-20'}`}>
                     <NavbarBrand shortName={shortName} isScrolled={isScrolled} />
@@ -29,7 +29,7 @@ export default function Navbar({ settings }: { settings?: Record<string, string>
                     <NavbarLinks isScrolled={isScrolled} />
 
                     <div className="flex items-center gap-4">
-                        <Link href="/submit" className={`flex items-center px-4 sm:px-6 rounded-xl bg-gradient-to-r from-secondary to-secondary/90 text-white font-black hover:scale-105 hover:shadow-vip-hover transition-all duration-500 shadow-xl shadow-secondary/20 ${isScrolled ? 'py-1.5 sm:py-2 text-[9px] sm:text-[10px]' : 'py-2 sm:py-3 text-[10px] sm:text-xs'} uppercase tracking-[0.15em]`}>
+                        <Link href="/submit" className={`flex items-center px-4 sm:px-6 rounded-xl bg-gradient-to-r from-secondary to-secondary/90 text-white font-black hover:scale-105 hover:shadow-xl transition-all duration-500 shadow-xl shadow-secondary/20 ${isScrolled ? 'py-1.5 sm:py-2 text-[9px] sm:text-[10px]' : 'py-2 sm:py-3 text-[10px] sm:text-xs'} uppercase tracking-[0.15em]`}>
                             Submit Paper
                         </Link>
 

@@ -55,7 +55,7 @@ function Milestone({ title, date, description, icon: Icon, active, last }: { tit
                         </Badge>
                     )}
                 </div>
-                <p className={`text-[11px] font-medium leading-relaxed italic border-l-2 pl-4 ${active ? 'text-primary/60 border-secondary/50' : 'text-primary/20 border-primary/5'}`}>{description}</p>
+                <p className={`text-[11px] font-medium leading-relaxed border-l-2 pl-4 ${active ? 'text-primary/60 border-secondary/50' : 'text-primary/20 border-primary/5'}`}>{description}</p>
             </div>
         </motion.div>
     );
@@ -124,7 +124,7 @@ export default function TrackClient() {
                             <Search className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                            <CardTitle className="text-2xl font-black tracking-tighter italic">Search <span className="text-secondary not-italic">Database</span></CardTitle>
+                            <CardTitle className="text-2xl font-black tracking-tighter">Search Database</CardTitle>
                             <CardDescription className="text-xs font-black uppercase tracking-[0.2em] text-primary/30">Enter your paper credentials</CardDescription>
                         </div>
                     </div>
@@ -194,7 +194,7 @@ export default function TrackClient() {
                                         </Badge>
                                         <span className="text-[11px] font-black text-primary/40 uppercase tracking-widest bg-white/50 px-3 py-1 rounded-lg border border-primary/5"># {manuscript.paper_id}</span>
                                     </div>
-                                    <h2 className="text-2xl md:text-4xl font-black text-primary leading-tight tracking-tighter mb-8 italic">
+                                    <h2 className="text-2xl md:text-4xl font-black text-primary leading-tight tracking-tighter mb-8">
                                         {manuscript.title}
                                     </h2>
                                     <div className="flex flex-wrap gap-6 items-center">
@@ -204,7 +204,7 @@ export default function TrackClient() {
                                             </div>
                                             {manuscript.author_name}
                                         </div>
-                                        <Badge variant="outline" className="h-10 border-primary/10 text-primary uppercase text-[10px] font-black tracking-[0.2em] flex items-center gap-3 px-5 rounded-2xl bg-white shadow-sm italic">
+                                        <Badge variant="outline" className="h-10 border-primary/10 text-primary uppercase text-[10px] font-black tracking-[0.2em] flex items-center gap-3 px-5 rounded-2xl bg-white shadow-sm">
                                             <div className="w-2 h-2 bg-secondary rounded-full animate-pulse shadow-glow" />
                                             {manuscript.status.replace('_', ' ')}
                                         </Badge>
@@ -253,8 +253,8 @@ export default function TrackClient() {
                                                     <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/30 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover/pay:scale-150 transition-transform duration-700" />
                                                     <div className="flex flex-col md:items-center justify-between gap-8 relative z-10">
                                                         <div className="text-center space-y-2">
-                                                            <h3 className="text-2xl font-black text-white tracking-tighter italic">Final Step: <span className="text-secondary not-italic">APC Payment</span></h3>
-                                                            <p className="text-sm text-white/60 font-medium italic max-w-md mx-auto">
+                                                            <h3 className="text-2xl font-black text-white tracking-tighter">Final Step: APC Payment</h3>
+                                                            <p className="text-sm text-white/60 font-medium max-w-md mx-auto">
                                                                 "Your research is approved. Complete the hosting fee to finalize global indexing and DOI registry."
                                                             </p>
                                                         </div>
@@ -269,7 +269,7 @@ export default function TrackClient() {
                                         )}
 
                                         {manuscript.status === 'rejected' && (
-                                            <Card className="bg-white border-2 border-destructive/10 p-8 md:p-10 rounded-[2.5rem] shadow-sm italic">
+                                            <Card className="bg-white border-2 border-destructive/10 p-8 md:p-10 rounded-[2.5rem] shadow-sm">
                                                 <div className="flex items-start gap-6">
                                                     <div className="w-14 h-14 rounded-2xl bg-destructive/5 flex items-center justify-center shrink-0 border border-destructive/10">
                                                         <ShieldAlert className="w-8 h-8 text-destructive" />
@@ -305,8 +305,8 @@ export default function TrackClient() {
                             <div className="w-20 h-20 bg-destructive/5 rounded-[2rem] flex items-center justify-center mb-6 group-hover:bg-destructive group-hover:text-white transition-all duration-500">
                                 <ShieldAlert className="w-10 h-10 text-destructive group-hover:text-white" />
                             </div>
-                            <h3 className="text-2xl font-black text-primary tracking-tighter mb-2 italic">Tracking <span className="text-destructive not-italic">Failed</span></h3>
-                            <p className="text-sm text-primary/40 font-medium max-w-sm mb-10 italic">"{errorMessage}"</p>
+                            <h3 className="text-2xl font-black text-primary tracking-tighter mb-2">Tracking Failed</h3>
+                            <p className="text-sm text-primary/40 font-medium max-w-sm mb-10">"{errorMessage}"</p>
                             <Button
                                 onClick={() => setStatus('idle')}
                                 className="h-14 px-10 bg-primary hover:bg-primary/90 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg transition-all"

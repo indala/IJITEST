@@ -5,6 +5,7 @@ import WelcomeSection from '@/features/home/components/WelcomeSection';
 import HomeStats from '@/features/home/components/HomeStats';
 import AimAndScope from '@/features/home/components/AimAndScope';
 import AnnouncementsWidget from '@/features/shared/widgets/AnnouncementsWidget';
+import CurrentIssueWidget from '@/features/shared/widgets/CurrentIssueWidget';
 import PublisherSection from '@/features/home/components/PublisherSection';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import AuthorQuickLinks from '@/features/home/components/AuthorQuickLinks';
@@ -59,6 +60,7 @@ export default async function Home() {
             </div>
 
             <div className="space-y-8">
+              <CurrentIssueWidget />
               <AnnouncementsWidget />
               <AuthorQuickLinks />
               <CallForPapersWidget />

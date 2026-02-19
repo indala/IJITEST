@@ -56,14 +56,14 @@ export default function PromotionPopup() {
                             </div>
 
                             <div className="space-y-4">
-                                <Badge variant="secondary" className="px-4 py-1.5 bg-secondary text-white text-[10px] font-black uppercase tracking-[0.4em] rounded-full shadow-lg shadow-secondary/20 italic">
+                                <Badge variant="secondary" className="px-4 py-1.5 bg-secondary text-white text-[10px] font-black uppercase tracking-[0.4em] rounded-full shadow-lg shadow-secondary/20">
                                     Strategic Incentive
                                 </Badge>
-                                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary leading-none tracking-tighter italic">
+                                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary leading-none tracking-tighter">
                                     Publish Research <br />
-                                    <span className="text-secondary not-italic">Gratis Protocol</span>
+                                    <span className="text-secondary">Gratis Protocol</span>
                                 </h2>
-                                <p className="text-sm text-primary/60 font-medium leading-relaxed border-l-4 border-secondary/50 pl-8 text-left italic">
+                                <p className="text-sm text-primary/60 font-medium leading-relaxed border-l-4 border-secondary/50 pl-8 text-left">
                                     In our commitment to supporting the next generation of innovators, the <strong>Primary Investigator</strong> will receive a <strong>100% APC Waiver</strong> for our inaugural 2026 volume.
                                 </p>
                             </div>
@@ -72,7 +72,7 @@ export default function PromotionPopup() {
                                 <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-primary/5">
                                     <Gift className="w-7 h-7 text-secondary" />
                                 </div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-primary/40 italic leading-relaxed">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary/40 leading-relaxed">
                                     Limited engagement window. Applicable for high-fidelity technical submissions validated this session.
                                 </p>
                             </div>
@@ -82,14 +82,14 @@ export default function PromotionPopup() {
                                     onClick={closePopup}
                                     className="w-full h-16 bg-primary text-white rounded-3xl font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all group/btn"
                                 >
-                                    <span className="flex items-center gap-2 italic">
+                                    <span className="flex items-center gap-2">
                                         Transmit Submission <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                     </span>
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     onClick={closePopup}
-                                    className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] hover:text-primary transition-all italic h-12"
+                                    className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] hover:text-primary transition-all h-12"
                                 >
                                     Deferred Engagement
                                 </Button>

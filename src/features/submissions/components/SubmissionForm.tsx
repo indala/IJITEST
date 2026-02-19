@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
-import { Loader2, Upload, CheckCircle2, AlertCircle, FileText, User, Mail,ChevronRight, BookOpen, Tag } from "lucide-react";
+import { Loader2, Upload, CheckCircle2, AlertCircle, FileText, User, Mail, ChevronRight, BookOpen, Tag } from "lucide-react";
 import { submitPaper } from "@/actions/submit-paper";
 import { Button } from "@/components/ui/button";
 import {
@@ -221,7 +221,7 @@ export default function SubmissionForm() {
                                         {...field}
                                     />
                                 </FormControl>
-                                <FormDescription className="text-[10px] font-black uppercase tracking-wider text-primary/30 mt-2 italic px-1">Min 100 characters. Summarize findings for indexing.</FormDescription>
+                                <FormDescription className="text-[10px] font-black uppercase tracking-wider text-primary/30 mt-2 px-1">Min 100 characters. Summarize findings for indexing.</FormDescription>
                                 <FormMessage className="text-[10px] font-bold text-secondary" />
                             </FormItem>
                         )}
@@ -245,7 +245,7 @@ export default function SubmissionForm() {
                                         className="h-14 bg-primary/5 border-primary/10 rounded-2xl font-bold text-primary focus-visible:ring-primary shadow-inner px-6"
                                     />
                                 </FormControl>
-                                <FormDescription className="text-[10px] font-black uppercase tracking-wider text-primary/30 mt-2 italic px-1">Minimum 4 keywords separated by commas.</FormDescription>
+                                <FormDescription className="text-[10px] font-black uppercase tracking-wider text-primary/30 mt-2 px-1">Minimum 4 keywords separated by commas.</FormDescription>
                                 <FormMessage className="text-[10px] font-bold text-secondary" />
                             </FormItem>
                         )}
@@ -256,7 +256,7 @@ export default function SubmissionForm() {
                             <div className="w-8 h-8 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
                                 <Upload className="w-4 h-4 text-primary" />
                             </div>
-                            <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60 italic">Manuscript Dossier</FormLabel>
+                            <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Manuscript Dossier</FormLabel>
                         </div>
                         <div className="relative group/upload">
                             <input
@@ -278,16 +278,16 @@ export default function SubmissionForm() {
                                         <div className="w-16 h-16 bg-white text-emerald-600 rounded-[1.5rem] flex items-center justify-center mx-auto mb-4 border border-emerald-100 shadow-sm">
                                             <FileText className="w-8 h-8" />
                                         </div>
-                                        <p className="text-sm font-black text-primary truncate max-w-sm mb-1 italic">{file.name}</p>
-                                        <p className="text-[10px] text-emerald-600/60 font-black uppercase tracking-widest italic">Asset Synchronized • Change Protocol</p>
+                                        <p className="text-sm font-black text-primary truncate max-w-sm mb-1">{file.name}</p>
+                                        <p className="text-[10px] text-emerald-600/60 font-black uppercase tracking-widest">Asset Synchronized • Change Protocol</p>
                                     </div>
                                 ) : (
                                     <div className="text-center relative z-10">
                                         <div className="w-16 h-16 bg-white border border-primary/5 rounded-[1.5rem] shadow-sm flex items-center justify-center mx-auto mb-4 group-hover/upload:scale-110 group-hover/upload:rotate-3 transition-all duration-500">
                                             <Upload className="w-6 h-6 text-primary" />
                                         </div>
-                                        <p className="text-sm font-black text-primary uppercase tracking-[0.1em] italic">Transmit Manuscript</p>
-                                        <p className="text-[10px] text-primary/30 font-black uppercase tracking-widest mt-2 italic">DOC, DOCX, or PDF (Encryption Secured)</p>
+                                        <p className="text-sm font-black text-primary uppercase tracking-[0.1em]">Transmit Manuscript</p>
+                                        <p className="text-[10px] text-primary/30 font-black uppercase tracking-widest mt-2">DOC, DOCX, or PDF (Encryption Secured)</p>
                                     </div>
                                 )}
                             </label>

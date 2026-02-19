@@ -14,16 +14,16 @@ export default function PeerReviewClient() {
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-12">
                     <section>
-                        <Card className="bg-primary border-none text-white shadow-vip rounded-[3rem] overflow-hidden relative group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-120 transition-transform duration-1000" />
+                        <Card className="bg-primary border-none text-white shadow-lg rounded-[2.5rem] overflow-hidden relative group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
                             <CardContent className="p-10 sm:p-14 flex flex-col md:flex-row items-center gap-10">
-                                <div className="w-24 h-24 bg-white/10 rounded-[2rem] flex items-center justify-center shrink-0 border border-white/10 shadow-inner group-hover:rotate-12 transition-transform duration-700">
+                                <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center shrink-0 border border-white/10 shadow-inner">
                                     <ShieldCheck className="w-12 h-12 text-secondary" />
                                 </div>
                                 <div className="space-y-4">
-                                    <h2 className="text-3xl sm:text-4xl text-white font-black tracking-tighter italic">Double-Blind <span className="text-secondary not-italic">Integrity</span></h2>
-                                    <p className="text-base sm:text-lg text-white/50 leading-relaxed italic">
-                                        "Every manuscript is evaluated under a strict **double-blind protocol**. Author and reviewer identities are fully encrypted to ensure technical objectivity without compromise."
+                                    <h2 className="text-3xl sm:text-4xl text-white font-black tracking-tighter">Double-Blind Integrity</h2>
+                                    <p className="text-base sm:text-lg text-white/50 leading-relaxed">
+                                        "Every manuscript is evaluated under a strict **double-blind protocol**. Author and reviewer identities are fully protected to ensure technical objectivity without compromise."
                                     </p>
                                 </div>
                             </CardContent>
@@ -32,8 +32,8 @@ export default function PeerReviewClient() {
 
                     <section className="space-y-8">
                         <div>
-                            <h2 className="text-3xl font-black text-primary tracking-tighter italic">Evaluation <span className="text-secondary not-italic">Stages</span></h2>
-                            <p className="text-[11px] text-primary/30 font-black uppercase tracking-[0.4em] mt-2 italic">Standardized Review Pipeline</p>
+                            <h2 className="text-3xl font-black text-primary tracking-tighter">Evaluation Stages</h2>
+                            <p className="text-[11px] text-primary/30 font-black uppercase tracking-[0.4em] mt-2">Standardized Review Pipeline</p>
                         </div>
 
                         <Accordion type="single" collapsible className="w-full space-y-4">
@@ -45,13 +45,13 @@ export default function PeerReviewClient() {
                                 <AccordionItem key={i} value={`step-${i}`} className="border-primary/5 shadow-vip rounded-[1.5rem] bg-white px-6 group transition-all duration-300 overflow-hidden">
                                     <AccordionTrigger className="hover:no-underline py-6">
                                         <div className="flex items-center gap-6 text-left">
-                                            <Badge className="h-10 w-10 rounded-xl flex items-center justify-center font-black text-white p-0 bg-primary group-hover:rotate-6 transition-transform">
+                                            <Badge className="h-10 w-10 rounded-xl flex items-center justify-center font-black text-white p-0 bg-primary">
                                                 {item.step}
                                             </Badge>
-                                            <span className="text-xl font-black text-primary tracking-tight italic group-hover:text-secondary transition-colors">{item.title}</span>
+                                            <span className="text-xl font-black text-primary tracking-tight transition-colors">{item.title}</span>
                                         </div>
                                     </AccordionTrigger>
-                                    <AccordionContent className="text-primary/50 text-base font-medium pl-16 pb-6 italic leading-relaxed">
+                                    <AccordionContent className="text-primary/50 text-base font-medium pl-16 pb-6 leading-relaxed">
                                         {item.desc}
                                     </AccordionContent>
                                 </AccordionItem>
@@ -67,8 +67,8 @@ export default function PeerReviewClient() {
                                     <Clock className="w-10 h-10 text-secondary" />
                                 </div>
                                 <div className="space-y-2">
-                                    <h2 className="text-2xl font-black text-primary tracking-tighter italic">High-Speed <span className="text-secondary not-italic">Verdict</span></h2>
-                                    <p className="text-base text-primary/40 font-medium italic leading-relaxed">
+                                    <h2 className="text-2xl font-black text-primary tracking-tighter">High-Speed Verdict</h2>
+                                    <p className="text-base text-primary/40 font-medium leading-relaxed">
                                         "Recognizing the urgency of innovation, IJITEST provides the first peer-review decision **within 3-5 Business Days**."
                                     </p>
                                 </div>
@@ -84,17 +84,17 @@ export default function PeerReviewClient() {
                     <Card className="bg-primary border-none text-white shadow-vip rounded-[2.5rem] overflow-hidden relative group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-120 transition-transform duration-1000" />
                         <CardHeader className="p-8 pb-4">
-                            <CardTitle className="text-2xl font-black text-white tracking-tighter italic">Reviewer <span className="text-secondary not-italic">Panel</span></CardTitle>
-                            <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] italic mt-1">Certified Evaluation</p>
+                            <CardTitle className="text-2xl font-black text-white tracking-tighter">Reviewer Panel</CardTitle>
+                            <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mt-1">Certified Evaluation</p>
                         </CardHeader>
                         <CardContent className="p-8 pt-0 space-y-6">
-                            <Link href="/reviewer-guidelines" className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:border-white/30 transition-all group/link shadow-inner">
+                            <Link href="/join-us" className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:border-white/30 transition-all group/link shadow-inner">
                                 <span className="text-[10px] font-black uppercase text-white/40 group-hover/link:text-white transition-colors tracking-widest">Protocol Manual</span>
                                 <ChevronRight className="w-4 h-4 text-secondary group-hover/link:translate-x-1 transition-transform" />
                             </Link>
                             <div className="space-y-4 pt-4 border-t border-white/5">
-                                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/40 italic">Ethical Standard</h4>
-                                <p className="text-[11px] text-white/60 leading-relaxed font-medium italic">"Adhering to COPE (Committee on Publication Ethics) benchmarks for all scientific evaluations."</p>
+                                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/40">Ethical Standard</h4>
+                                <p className="text-[11px] text-white/60 leading-relaxed font-medium">"Adhering to COPE (Committee on Publication Ethics) benchmarks for all scientific evaluations."</p>
                                 <Link href="/ethics" className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-secondary hover:text-white transition-all pb-1 border-b border-secondary/20 hover:border-white">
                                     View Ethics Matrix <ChevronRight className="w-4 h-4" />
                                 </Link>

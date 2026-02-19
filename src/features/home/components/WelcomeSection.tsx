@@ -18,26 +18,28 @@ function WelcomeSection({ journalName, journalShortName, settings }: WelcomeSect
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative group"
+            className="relative"
         >
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary/5 to-transparent rounded-[2rem] -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-sans font-black text-primary mb-4 tracking-tighter leading-tight">
-                Welcome to <span className="text-secondary inline-block hover:scale-105 transition-transform cursor-default">{shortName}</span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-sans font-black text-primary mb-8 tracking-tight leading-tight uppercase">
+                About the <span className="text-secondary">{shortName}</span>
             </h1>
 
-            <div className="prose prose-sm sm:prose-base text-primary/80 font-medium leading-relaxed border-l-4 border-secondary/30 pl-6 space-y-4">
-                <p className="text-lg text-primary/70 leading-snug font-bold">
-                    {name}
+            <div className="prose prose-sm sm:prose-base text-primary/80 font-medium leading-relaxed border-l-4 border-secondary/30 pl-6 space-y-6 text-justify">
+                <p>
+                    {name} ({shortName}) is an international, peer-reviewed journal that publishes original research articles, review papers, and survey articles in Engineering, Science, Technology, and Management. The journal encourages interdisciplinary, theoretical, and applied research that advances innovation, industrial development, and managerial practices across emerging and established domains.
                 </p>
                 <p>
-                    {shortName} is a scholarly open access online international journal, which aims to publish peer-reviewed original research papers in the field of various Engineering disciplines. Backed by {settings.publisher_name || 'Felix Academic Publications'} and guided by COPE-compliant ethics, {shortName} accelerates high-quality research from submission to global indexing.
+                    {name} ({shortName}) is a peer-reviewed scholarly journal dedicated to the dissemination of high-quality research in Engineering, Science, Technology, and Management. The journal covers fundamental and applied research, interdisciplinary studies, and emerging technologies that contribute to academic knowledge, industrial growth, and sustainable development. {shortName} follows a rigorous peer-review process and adheres to ethical publishing standards.
                 </p>
 
-                <div className="flex items-center gap-4 pt-4">
-                    <div className="px-4 py-2 bg-gradient-to-r from-primary/10 to-transparent border-l-2 border-primary rounded-r-xl">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-primary/50">Rapid Decision</p>
-                        <p className="text-sm font-black text-primary">3&ndash;5 Working Days</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-primary/5">
+                    <div className="px-4 py-3 bg-slate-50 border-l-2 border-primary rounded-r-xl">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary/50 mb-1">Year of Commencement</p>
+                        <p className="text-base font-black text-primary">2026</p>
+                    </div>
+                    <div className="px-4 py-3 bg-slate-50 border-l-2 border-secondary rounded-r-xl">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary/50 mb-1">Publication Frequency</p>
+                        <p className="text-base font-black text-primary">Monthly (12 Issues per Year)</p>
                     </div>
                 </div>
             </div>

@@ -13,13 +13,13 @@ export default function SubmitClient() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
                 {/* Main Content */}
                 <div className="lg:col-span-2">
-                    <Card className="border-primary/5 shadow-vip rounded-[3rem] overflow-hidden bg-white group">
+                    <Card className="border-primary/5 shadow-lg rounded-[3rem] overflow-hidden bg-white group">
                         <div className="bg-primary p-8 sm:p-10 text-white relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-80 h-80 bg-secondary/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700" />
                             <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-accent/20 rounded-full blur-[80px]" />
 
                             <div className="relative z-10 space-y-2">
-                                <h2 className="text-3xl font-black tracking-tighter italic">Ready to <span className="text-secondary not-italic">Publish?</span></h2>
+                                <h2 className="text-3xl font-black tracking-tighter">Ready to Publish?</h2>
                                 <p className="text-white/50 text-xs font-black uppercase tracking-[0.3em] border-l-2 border-white/20 pl-6">Scientific Excellence Starts Here</p>
                             </div>
                         </div>
@@ -38,8 +38,8 @@ export default function SubmitClient() {
                         </div>
                     </div>
 
-                    <Card className="bg-white border border-primary/5 p-8 sm:p-10 rounded-[2.5rem] shadow-vip group">
-                        <h3 className="text-2xl font-black text-primary mb-8 tracking-tighter italic">Submission <span className="text-secondary not-italic">Guide</span></h3>
+                    <Card className="bg-white border border-primary/5 p-8 sm:p-10 rounded-[2.5rem] shadow-lg group">
+                        <h3 className="text-2xl font-black text-primary mb-8 tracking-tighter">Submission Guide</h3>
                         <div className="space-y-6">
                             {[
                                 { title: "Formatting", desc: "Follow IEEE standards for elite presentation" },
@@ -53,7 +53,7 @@ export default function SubmitClient() {
                                     </div>
                                     <div>
                                         <h4 className="text-[11px] font-black uppercase tracking-[0.15em] text-primary/80 mb-1 group-hover/item:text-primary transition-colors">{item.title}</h4>
-                                        <p className="text-[11px] text-primary/50 font-medium italic">{item.desc}</p>
+                                        <p className="text-[11px] text-primary/50 font-medium">{item.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -92,7 +92,7 @@ export default function SubmitClient() {
                                 <Gavel className="w-8 h-8 text-white" />
                             </div>
                             <h3 className="text-2xl font-black mb-2 text-white tracking-tighter">Technical Issue?</h3>
-                            <p className="text-sm text-white/70 mb-8 font-medium leading-relaxed italic">Reach our elite support desk for immediate assistance with submissions.</p>
+                            <p className="text-sm text-white/70 mb-8 font-medium leading-relaxed">Reach our elite support desk for immediate assistance with submissions.</p>
                             <Button asChild className="w-full h-12 bg-white/10 border border-white/20 hover:bg-white text-white hover:text-secondary font-black text-[10px] uppercase tracking-[0.2em] rounded-xl transition-all">
                                 <Link href="/contact" className="flex items-center justify-between px-6 w-full">
                                     <span>Contact Support</span>

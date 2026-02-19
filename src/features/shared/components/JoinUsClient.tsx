@@ -12,14 +12,11 @@ export default function JoinUsClient() {
                 {/* Left Column: Benefits & Info */}
                 <div className="lg:col-span-5 space-y-12">
                     <div className="space-y-6">
-                        <Badge variant="secondary" className="font-black text-[10px] uppercase tracking-[0.4em] px-4 h-7 rounded-full shadow-sm border border-primary/5 italic bg-white text-primary">
-                            Elite Membership
-                        </Badge>
-                        <h2 className="text-4xl sm:text-5xl font-black text-primary tracking-tighter italic leading-none">
-                            Orchestrate the <span className="text-secondary not-italic">Future</span>
+                        <h2 className="text-4xl sm:text-5xl font-black text-primary tracking-tighter leading-none">
+                            Orchestrate the <span>Future</span>
                         </h2>
-                        <p className="text-primary/40 leading-relaxed font-medium text-lg italic">
-                            "Joining the IJITEST Editorial Board is a mandate for excellence, offering profound influence over the trajectory of global engineering discourse."
+                        <p className="text-primary/40 leading-relaxed font-medium text-lg">
+                            "Joining the IJITEST Editorial Board is a commitment to excellence, offering professional influence over the trajectory of global engineering discourse."
                         </p>
                     </div>
 
@@ -47,18 +44,18 @@ export default function JoinUsClient() {
                                         <benefit.icon className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-black text-primary tracking-tight italic mb-1">{benefit.title}</h3>
-                                        <p className="text-primary/40 text-[11px] font-medium leading-relaxed italic">{benefit.desc}</p>
+                                        <h3 className="text-lg font-black text-primary tracking-tight mb-1">{benefit.title}</h3>
+                                        <p className="text-primary/40 text-[11px] font-medium leading-relaxed">{benefit.desc}</p>
                                     </div>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
 
-                    <Card className="bg-primary border-none shadow-vip rounded-[3rem] overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-120 transition-transform duration-1000" />
+                    <Card className="bg-primary border-none shadow-lg rounded-[2rem] overflow-hidden relative group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                         <CardContent className="p-10">
-                            <h3 className="font-black text-2xl mb-8 text-white tracking-tighter italic">Eligibility <span className="text-secondary not-italic">Matrix</span></h3>
+                            <h3 className="font-black text-2xl mb-8 text-white tracking-tighter">Eligibility Requirements</h3>
                             <ul className="space-y-4">
                                 {[
                                     "Ph.D. Doctorate in Advanced Engineering/Technology",
@@ -66,8 +63,8 @@ export default function JoinUsClient() {
                                     "Verified publication history (minimum 5 Q1/Q2 papers)",
                                     "Affiliation with recognized global research institutions"
                                 ].map((item, i) => (
-                                    <li key={i} className="flex items-start gap-4 text-[12px] font-black italic text-white/50 group/item">
-                                        <div className="w-5 h-5 bg-white/10 rounded-lg flex items-center justify-center shrink-0 border border-white/10 group-hover/item:text-secondary transition-colors">
+                                    <li key={i} className="flex items-start gap-4 text-[12px] font-black text-white/50 group/item">
+                                        <div className="w-5 h-5 bg-white/10 rounded-lg flex items-center justify-center shrink-0 border border-white/10">
                                             <CheckCircle2 className="w-3 h-3" />
                                         </div>
                                         {item}

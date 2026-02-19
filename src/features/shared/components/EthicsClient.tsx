@@ -14,9 +14,9 @@ export default function EthicsClient() {
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-12">
                     <section className="relative">
-                        <div className="absolute -left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-secondary via-primary to-transparent opacity-20 hidden md:block" />
-                        <p className="text-xl md:text-2xl font-black leading-relaxed text-primary tracking-tight italic">
-                            "Our editorial ecosystem is founded on the immutable principles of scientific integrity, technical accuracy, and the highest scholarly ethical standards."
+                        <div className="absolute -left-8 top-0 bottom-0 w-1 bg-primary/10 hidden md:block" />
+                        <p className="text-xl md:text-2xl font-black leading-relaxed text-primary tracking-tight">
+                            "Our editorial ecosystem is founded on the principles of scientific integrity, technical accuracy, and the highest scholarly ethical standards."
                         </p>
                     </section>
 
@@ -26,13 +26,12 @@ export default function EthicsClient() {
                         </div>
                         <CardHeader className="p-10 px-12 border-b border-primary/5 bg-primary/5">
                             <div className="space-y-1">
-                                <Badge variant="secondary" className="font-black text-[9px] uppercase tracking-[0.3em] bg-white text-primary px-4 h-6 rounded-full shadow-sm border border-primary/5 italic">Integrity Protocol</Badge>
-                                <CardTitle className="text-3xl font-black text-primary tracking-tighter italic mt-2">Plagiarism <span className="text-secondary not-italic">Enforcement</span></CardTitle>
+                                <Badge variant="secondary" className="font-black text-[9px] uppercase tracking-[0.3em] bg-white text-primary px-4 h-6 rounded-full shadow-sm border border-primary/5">Integrity Protocol</Badge>
+                                <CardTitle className="text-3xl font-black text-primary tracking-tighter mt-2">Plagiarism Enforcement</CardTitle>
                             </div>
-                            <ShieldAlert className="w-8 h-8 text-primary/20 absolute right-12 top-12" />
                         </CardHeader>
                         <CardContent className="p-10 px-12 space-y-10">
-                            <p className="text-base font-medium text-primary/40 leading-relaxed italic border-l-2 border-secondary/20 pl-6">
+                            <p className="text-base font-medium text-primary/40 leading-relaxed border-l-2 border-secondary/20 pl-6">
                                 "IJITEST maintains a zero-tolerance mandate toward intellectual misappropriation. Every submission undergoes deep-scanning via advanced cryptographic and semantic origin-detection systems."
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -46,7 +45,7 @@ export default function EthicsClient() {
                                         <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm text-secondary group-hover/item:scale-110 transition-transform">
                                             <ShieldCheck className="w-4 h-4" />
                                         </div>
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em] italic">{item}</span>
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">{item}</span>
                                     </div>
                                 ))}
                             </div>
@@ -55,8 +54,8 @@ export default function EthicsClient() {
 
                     <section className="pt-10 border-t border-primary/5 space-y-8">
                         <div>
-                            <h2 className="text-3xl font-black text-primary tracking-tighter italic">Global <span className="text-secondary not-italic">Compliance</span></h2>
-                            <p className="text-[11px] text-primary/30 font-black uppercase tracking-[0.4em] mt-2 italic">Standardized Ethics Framework</p>
+                            <h2 className="text-3xl font-black text-primary tracking-tighter">Global Compliance</h2>
+                            <p className="text-[11px] text-primary/30 font-black uppercase tracking-[0.4em] mt-2">Standardized Ethics Framework</p>
                         </div>
 
                         <Card className="bg-primary border-none shadow-vip rounded-[3rem] overflow-hidden relative group">
@@ -66,10 +65,10 @@ export default function EthicsClient() {
                                     <Scale className="w-10 h-10 text-secondary" />
                                 </div>
                                 <div className="space-y-4">
-                                    <p className="text-2xl text-white font-black tracking-tighter italic leading-snug">
-                                        COPE Certified <span className="text-secondary not-italic">Workflow</span>
+                                    <p className="text-2xl text-white font-black tracking-tighter leading-snug">
+                                        COPE Certified Workflow
                                     </p>
-                                    <p className="text-base text-white/50 leading-relaxed font-medium italic">
+                                    <p className="text-base text-white/50 leading-relaxed font-medium">
                                         "IJITEST operations are strictly aligned with the Committee on Publication Ethics (COPE) benchmarks. We maintain transparent protocols for retractions, disputes, and editorial transparency."
                                     </p>
                                 </div>
@@ -85,8 +84,8 @@ export default function EthicsClient() {
                     <Card className="bg-primary/5 border-primary/5 shadow-vip rounded-[2.5rem] group overflow-hidden relative">
                         <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000" />
                         <CardContent className="p-8 relative z-10">
-                            <h4 className="text-xl font-black text-primary mb-2 tracking-tighter italic">Author <span className="text-secondary not-italic">Resources</span></h4>
-                            <p className="text-[11px] text-primary/40 mb-8 font-black uppercase tracking-widest italic leading-relaxed">Mandatory Templates & Ethics Forms</p>
+                            <h4 className="text-xl font-black text-primary mb-2 tracking-tighter">Author Resources</h4>
+                            <p className="text-[11px] text-primary/40 mb-8 font-black uppercase tracking-widest leading-relaxed">Mandatory Templates & Ethics Forms</p>
                             <Button asChild className="w-full text-[10px] font-black uppercase tracking-[0.3em] h-12 bg-primary hover:bg-primary/95 rounded-xl shadow-lg transition-all group/btn">
                                 <Link href="/guidelines" className="flex items-center justify-between px-6 w-full">
                                     <span>Full Protocols</span>

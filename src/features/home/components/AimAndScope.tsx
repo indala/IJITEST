@@ -1,6 +1,6 @@
 "use client";
 import { motion } from 'framer-motion';
-import { BookOpen, History,ChevronRight } from 'lucide-react';
+import { BookOpen, History, ChevronRight } from 'lucide-react';
 import { memo } from 'react';
 
 const disciplines = [
@@ -33,7 +33,7 @@ function AimAndScope({ journalShortName }: { journalShortName?: string }) {
                     <div className="p-4 bg-primary/5 rounded-[2rem] text-primary border border-primary/10 shadow-vip">
                         <BookOpen className="w-7 h-7" />
                     </div>
-                    <h2 className="text-3xl sm:text-4xl font-sans font-black text-primary tracking-tighter italic">Aim and <span className="text-secondary not-italic">Scope</span></h2>
+                    <h2 className="text-3xl sm:text-4xl font-sans font-black text-primary tracking-tighter">Aim and Scope</h2>
                 </div>
 
                 <div className="space-y-10">
@@ -65,7 +65,7 @@ function AimAndScope({ journalShortName }: { journalShortName?: string }) {
                                 <span className="w-2 h-2 bg-secondary rounded-full" />
                                 Mission Priority
                             </p>
-                            <p className="text-sm sm:text-base text-primary/70 font-medium leading-relaxed italic">
+                            <p className="text-sm sm:text-base text-primary/70 font-medium leading-relaxed">
                                 "Interdisciplinary research merging engineering with managerial sciences is highly prioritized."
                             </p>
                         </div>

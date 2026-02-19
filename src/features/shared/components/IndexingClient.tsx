@@ -21,11 +21,11 @@ export default function IndexingClient() {
                                 <Search className="w-8 h-8" />
                             </div>
                             <div>
-                                <h2 className="text-4xl font-black text-primary tracking-tighter italic leading-tight">Global <span className="text-secondary not-italic">Visibility</span></h2>
-                                <p className="text-[11px] text-primary/30 font-black uppercase tracking-[0.4em] mt-1 italic">The Science of Discovery</p>
+                                <h2 className="text-4xl font-black text-primary tracking-tighter leading-tight">Global Visibility</h2>
+                                <p className="text-[11px] text-primary/30 font-black uppercase tracking-[0.4em] mt-1">The Science of Discovery</p>
                             </div>
                         </div>
-                        <p className="text-xl font-medium text-primary/60 leading-relaxed italic border-l-4 border-secondary/20 pl-10 max-w-2xl">
+                        <p className="text-xl font-medium text-primary/60 leading-relaxed border-l-4 border-secondary/20 pl-10 max-w-2xl">
                             "Our strategic mandate is to ensure that every validated innovation published in IJITEST reaches the global scientific community through premier indexing hubs."
                         </p>
                     </section>
@@ -33,13 +33,13 @@ export default function IndexingClient() {
                     <RoadmapSection />
 
                     {/* Technical Standards */}
-                    <Card className="bg-white border-primary/5 shadow-vip rounded-[3rem] overflow-hidden group">
+                    <Card className="bg-white border-primary/5 shadow-lg rounded-[2.5rem] overflow-hidden group">
                         <CardContent className="p-10 md:p-14 space-y-12">
                             <div className="flex items-center gap-6">
-                                <div className="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary shadow-inner border border-secondary/5 group-hover:rotate-12 transition-transform">
+                                <div className="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary shadow-inner border border-secondary/5 transition-transform">
                                     <Database className="w-7 h-7" />
                                 </div>
-                                <h3 className="text-2xl font-black text-primary tracking-tighter italic">Metadata <span className="text-secondary not-italic">Protocols</span></h3>
+                                <h3 className="text-2xl font-black text-primary tracking-tighter">Metadata Protocols</h3>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -49,10 +49,10 @@ export default function IndexingClient() {
                                     { title: "XML Delivery", desc: "Automated indexing feeding systems" },
                                     { title: "Archival Sync", desc: "Long-term preservation orchestration" }
                                 ].map((spec, i) => (
-                                    <div key={i} className="space-y-3 p-6 bg-primary/5 rounded-2xl border border-primary/5 hover:bg-white hover:shadow-vip transition-all duration-500">
-                                        <Badge variant="outline" className="text-[9px] font-black uppercase tracking-[0.2em] px-3 h-5 border-primary/10 text-primary/40 italic">Technical Spec</Badge>
-                                        <h4 className="text-lg font-black text-primary italic tracking-tight">{spec.title}</h4>
-                                        <p className="text-xs text-primary/40 font-medium leading-relaxed italic">{spec.desc}</p>
+                                    <div key={i} className="space-y-3 p-6 bg-primary/5 rounded-2xl border border-primary/5 hover:bg-white hover:shadow-lg transition-all duration-500">
+                                        <Badge variant="outline" className="text-[9px] font-black uppercase tracking-[0.2em] px-3 h-5 border-primary/10 text-primary/40">Technical Spec</Badge>
+                                        <h4 className="text-lg font-black text-primary tracking-tight">{spec.title}</h4>
+                                        <p className="text-xs text-primary/40 font-medium leading-relaxed">{spec.desc}</p>
                                     </div>
                                 ))}
                             </div>
@@ -62,7 +62,7 @@ export default function IndexingClient() {
 
                 {/* Sidebar Utilities */}
                 <div className="space-y-10">
-                    <div className="p-1 rounded-[3rem] bg-gradient-to-br from-secondary/20 to-transparent border border-secondary/10 shadow-vip">
+                    <div className="p-1 rounded-[3rem] bg-primary/5 border border-primary/5 shadow-lg">
                         <div className="bg-white/50 backdrop-blur-sm p-3 rounded-[2.8rem]">
                             <TrackManuscriptWidget />
                         </div>
@@ -80,10 +80,10 @@ export default function IndexingClient() {
                     <Card className="bg-primary/5 border-primary/5 border-dashed border-2 rounded-[2.5rem] p-10 text-center space-y-8 group relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="space-y-2 relative z-10">
-                            <CardTitle className="text-2xl font-black text-primary italic">Inaugural <span className="text-secondary">2026</span></CardTitle>
-                            <p className="text-[11px] text-primary/40 font-black uppercase tracking-widest leading-relaxed italic">Strategic volume for foundational indexing integration.</p>
+                            <CardTitle className="text-2xl font-black text-primary">Inaugural 2026</CardTitle>
+                            <p className="text-[11px] text-primary/40 font-black uppercase tracking-widest leading-relaxed">Strategic volume for foundational indexing integration.</p>
                         </div>
-                        <Badge className="bg-secondary text-white text-[10px] font-black px-6 py-2 rounded-full shadow-lg shadow-secondary/20 uppercase tracking-widest relative z-10 italic">Submissions Open</Badge>
+                        <Badge className="bg-secondary text-white text-[10px] font-black px-6 py-2 rounded-full shadow-lg shadow-secondary/20 uppercase tracking-widest relative z-10">Submissions Open</Badge>
                     </Card>
                 </div>
             </div>

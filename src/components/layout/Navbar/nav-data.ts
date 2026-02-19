@@ -7,7 +7,6 @@ export const navigation = [
             { name: 'About the Journal', href: '/about' },
             { name: 'Publication Ethics', href: '/ethics' },
             { name: 'Peer Review Process', href: '/peer-review' },
-            { name: 'Reviewer Guidelines', href: '/reviewer-guidelines' },
             { name: 'Join Us', href: '/join-us' },
         ]
     },

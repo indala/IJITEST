@@ -102,7 +102,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                             <div className="flex-1 space-y-2">
                                 <h2 className="text-xl font-black text-foreground tracking-tight">{user.full_name}</h2>
                                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                    <Badge variant="outline" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest border-primary/20 text-primary bg-primary/5 italic">
+                                    <Badge variant="outline" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest border-primary/20 text-primary bg-primary/5">
                                         {user.role} portal access
                                     </Badge>
                                     <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground">
@@ -119,27 +119,27 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card className="border-primary/5 shadow-vip bg-white">
                         <CardHeader className="p-6 pb-0">
-                            <CardTitle className="text-[10px] font-black text-primary/40 uppercase tracking-[0.3em] flex items-center gap-2 italic">
+                            <CardTitle className="text-[10px] font-black text-primary/40 uppercase tracking-[0.3em] flex items-center gap-2">
                                 <Shield className="w-4 h-4 text-secondary" /> Identity Protocol
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6 pt-6 space-y-5">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1 italic">Full Identity</Label>
+                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Full Identity</Label>
                                 <Input
                                     name="fullName"
                                     defaultValue={user.full_name}
                                     required
-                                    className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 italic shadow-inner rounded-xl"
+                                    className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-xl"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1 italic">Professional Status</Label>
+                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Professional Status</Label>
                                 <Input
                                     name="designation"
                                     defaultValue={user.designation}
                                     placeholder="e.g. Senior Researcher"
-                                    className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 italic shadow-inner rounded-xl"
+                                    className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-xl"
                                 />
                             </div>
                         </CardContent>
@@ -147,27 +147,27 @@ export default function ProfileForm({ user }: ProfileFormProps) {
 
                     <Card className="border-primary/5 shadow-vip bg-white">
                         <CardHeader className="p-6 pb-0">
-                            <CardTitle className="text-[10px] font-black text-primary/40 uppercase tracking-[0.3em] flex items-center gap-2 italic">
+                            <CardTitle className="text-[10px] font-black text-primary/40 uppercase tracking-[0.3em] flex items-center gap-2">
                                 <Building2 className="w-4 h-4 text-secondary" /> Institutional Provenance
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6 pt-6 space-y-5">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1 italic">Organization / University</Label>
+                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Organization / University</Label>
                                 <Input
                                     name="institute"
                                     defaultValue={user.institute}
                                     placeholder="e.g. Oxford University"
-                                    className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 italic shadow-inner rounded-xl"
+                                    className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-xl"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1 italic">Reference Protocol</Label>
+                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Reference Protocol</Label>
                                 <Input
                                     name="phone"
                                     defaultValue={user.phone}
                                     placeholder="+1 (555) 000-0000"
-                                    className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 italic shadow-inner rounded-xl"
+                                    className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-xl"
                                 />
                             </div>
                         </CardContent>
@@ -177,7 +177,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                 {/* Bio / About Section */}
                 <Card className="border-primary/5 shadow-vip bg-white">
                     <CardHeader className="p-6 pb-0">
-                        <CardTitle className="text-[10px] font-black text-primary/40 uppercase tracking-[0.3em] flex items-center gap-2 italic">
+                        <CardTitle className="text-[10px] font-black text-primary/40 uppercase tracking-[0.3em] flex items-center gap-2">
                             <FileText className="w-4 h-4 text-secondary" /> Expertise Dossier
                         </CardTitle>
                     </CardHeader>
@@ -187,7 +187,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                             defaultValue={user.bio}
                             placeholder="Detail your academic background and technical research interests..."
                             rows={4}
-                            className="bg-primary/5 border-primary/5 text-xs font-medium resize-none focus-visible:ring-1 focus-visible:ring-primary/20 italic shadow-inner rounded-2xl p-6"
+                            className="bg-primary/5 border-primary/5 text-xs font-medium resize-none focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-2xl p-6"
                         />
                     </CardContent>
                 </Card>
@@ -197,8 +197,8 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                     <div className={`p-6 rounded-[2rem] flex items-center gap-4 animate-in fade-in slide-in-from-top-2 border ${status.success ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' : 'bg-secondary/10 border-secondary/20 text-secondary'}`}>
                         {status.success ? <CheckCircle className="w-5 h-5 shadow-sm" /> : <AlertTriangle className="w-5 h-5 shadow-sm" />}
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] italic">{status.success ? 'Update Authorized' : 'Transmission Failure'}</p>
-                            <p className="text-xs font-bold italic">{status.success ? 'Your account profile has been successfully synchronized.' : status.error}</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em]">{status.success ? 'Update Authorized' : 'Transmission Failure'}</p>
+                            <p className="text-xs font-bold">{status.success ? 'Your account profile has been successfully synchronized.' : status.error}</p>
                         </div>
                     </div>
                 )}
@@ -208,7 +208,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                     <Button
                         type="submit"
                         disabled={isSubmitting}
-                        className="h-16 px-10 gap-3 font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-primary/20 rounded-[1.5rem] bg-primary hover:scale-[1.02] transition-all italic"
+                        className="h-16 px-10 gap-3 font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-primary/20 rounded-[1.5rem] bg-primary hover:scale-[1.02] transition-all"
                     >
                         {isSubmitting ? (
                             <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />

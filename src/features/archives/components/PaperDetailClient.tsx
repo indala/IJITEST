@@ -37,7 +37,7 @@ export default function PaperDetailClient({ paper, id }: PaperDetailClientProps)
                                         <BookOpen className="w-3 h-3" /> Volume {paper.volume_number}, Issue {paper.issue_number}
                                     </span>
                                 )}
-                                <span className="bg-gray-50 text-gray-400 text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-[0.2em] border border-gray-100 italic">
+                                <span className="bg-gray-50 text-gray-400 text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-[0.2em] border border-gray-100">
                                     Published: {new Date(paper.updated_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                                 </span>
                             </div>
@@ -53,7 +53,7 @@ export default function PaperDetailClient({ paper, id }: PaperDetailClientProps)
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-1">Corresponding Author</p>
-                                        <h4 className="text-lg font-bold text-gray-900 italic">{paper.author_name}</h4>
+                                        <h4 className="text-lg font-bold text-gray-900">{paper.author_name}</h4>
                                         <p className="text-xs text-primary font-medium flex items-center gap-1.5 mt-1">
                                             <Mail className="w-3 h-3" /> {paper.author_email}
                                         </p>
@@ -74,10 +74,10 @@ export default function PaperDetailClient({ paper, id }: PaperDetailClientProps)
 
                     {/* Abstract Section */}
                     <div className="bg-gray-50/50 p-10 md:p-14 rounded-[3rem] border border-gray-100 relative group">
-                        <h2 className="text-xl font-serif font-black text-gray-900 mb-8 flex items-center gap-3 italic">
+                        <h2 className="text-xl font-serif font-black text-gray-900 mb-8 flex items-center gap-3">
                             <FileText className="w-6 h-6 text-primary opacity-50" /> Abstract
                         </h2>
-                        <p className="text-gray-600 leading-[1.8] text-justify font-medium italic indent-8">
+                        <p className="text-gray-600 leading-[1.8] text-justify font-medium indent-8">
                             {paper.abstract}
                         </p>
 
@@ -100,7 +100,7 @@ export default function PaperDetailClient({ paper, id }: PaperDetailClientProps)
                     {/* PDF Viewer Section */}
                     <div className="space-y-6">
                         <div className="flex items-center justify-between px-6">
-                            <h2 className="text-xl font-serif font-black text-gray-900 italic">Manuscript Viewer</h2>
+                            <h2 className="text-xl font-serif font-black text-gray-900">Manuscript Viewer</h2>
                             <a
                                 href={paper.file_path}
                                 download
