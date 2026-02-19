@@ -11,7 +11,6 @@ interface BoardCategory {
         name: string;
         designation: string;
         affiliation: string;
-        email?: string;
     }>;
 }
 
@@ -57,14 +56,12 @@ const boardData: BoardCategory[] = [
             {
                 name: "Dr. R. Sridevi",
                 designation: "Associate Professor, Department of Electronics and Communication Engineering",
-                affiliation: "Sree Vahini Institute of Science & Technology (A), Nuzvidu, India",
-                email: "rsridevi@sreevahini.edu.in"
+                affiliation: "Sree Vahini Institute of Science & Technology (A), Nuzvidu, India"
             },
             {
                 name: "Dr. D. Raveendra",
                 designation: "Associate Professor, Department of Electrical Engineering",
-                affiliation: "Motilal Nehru National Institute of Technology, Allahabad, India",
-                email: "raveendogga@mnnit.ac.in"
+                affiliation: "Motilal Nehru National Institute of Technology, Allahabad, India"
             },
             {
                 name: "Dr. K. Srinivas",
@@ -92,15 +89,15 @@ export default function EditorialBoardClient({ board }: { board: any[] }) {
             >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                 <div className="relative z-10">
-                    <h3 className="text-2xl md:text-3xl font-black mb-4 tracking-tighter">Become an editorial member of IJITEST</h3>
+                    <h3 className="text-2xl md:text-3xl font-black mb-4 tracking-tighter">Join our Academic Network</h3>
                     <p className="text-slate-400 mb-8 max-w-xl font-medium leading-relaxed">
-                        Join our global network of academic experts and contribute to scientific excelence. We welcome Professors, Engineering Experts, and Scientists.
+                        Contribute your expertise to scientific excellence. We welcome Professors, Engineering Experts, and Researchers to join our global editorial board.
                     </p>
                     <div className="flex flex-wrap gap-4">
                         <Button asChild className="h-14 px-8 bg-secondary hover:bg-secondary/90 text-white rounded-2xl shadow-xl shadow-secondary/20 group">
-                            <a href="mailto:support@ijitest.com" className="flex items-center gap-3">
-                                <Mail className="w-5 h-5" />
-                                <span className="text-xs font-black uppercase tracking-widest">Mail your CV</span>
+                            <a href="/join-us" className="flex items-center gap-3">
+                                <UserPlus className="w-5 h-5" />
+                                <span className="text-xs font-black uppercase tracking-widest">Apply for Board</span>
                             </a>
                         </Button>
                     </div>
@@ -145,14 +142,6 @@ export default function EditorialBoardClient({ board }: { board: any[] }) {
                                                 </p>
                                             </div>
 
-                                            {member.email && (
-                                                <div className="flex items-center gap-3 pt-2">
-                                                    <Mail className="w-4 h-4 text-slate-300" />
-                                                    <a href={`mailto:${member.email}`} className="text-sm font-bold text-primary hover:text-secondary transition-colors truncate">
-                                                        {member.email}
-                                                    </a>
-                                                </div>
-                                            )}
                                         </div>
                                     </CardContent>
                                 </Card>

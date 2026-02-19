@@ -14,35 +14,35 @@ export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="lg:hidden bg-background/95 backdrop-blur-2xl border-b border-primary/10 overflow-hidden"
+                    initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                    className="lg:hidden absolute top-full left-0 w-full bg-background border-b border-primary/10 shadow-2xl overflow-y-auto max-h-[85vh] z-50 p-4 pt-2 pb-10"
                 >
-                    <div className="px-4 pt-4 pb-8 space-y-1">
+                    <div className="space-y-2">
                         {navigation.map((item, idx) => (
                             <motion.div
                                 key={item.name}
-                                initial={{ opacity: 0, x: -20 }}
+                                initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: idx * 0.05 }}
+                                transition={{ delay: idx * 0.03 }}
                             >
-                                <div className="py-2">
+                                <div className="space-y-1">
                                     <Link
                                         href={item.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="block px-4 py-3 text-xs font-black uppercase tracking-widest text-primary/70 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
+                                        className="flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-primary/70 hover:text-primary hover:bg-primary/5 rounded-2xl transition-all border border-transparent hover:border-primary/5"
                                     >
                                         {item.name}
                                     </Link>
                                     {item.children && (
-                                        <div className="ml-4 pl-4 border-l-2 border-secondary/20 space-y-1 mt-1">
+                                        <div className="ml-6 pl-4 border-l-2 border-secondary/10 space-y-1 mt-1">
                                             {item.children.map((child) => (
                                                 <Link
                                                     key={child.name}
                                                     href={child.href}
                                                     onClick={() => setIsOpen(false)}
-                                                    className="block px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary/50 hover:text-secondary transition-all"
+                                                    className="block px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-primary/40 hover:text-secondary hover:bg-secondary/5 rounded-xl transition-all"
                                                 >
                                                     {child.name}
                                                 </Link>
@@ -52,13 +52,13 @@ export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
                                 </div>
                             </motion.div>
                         ))}
-                        <div className="pt-4">
+                        <div className="pt-6">
                             <Link
                                 href="/submit"
-                                className="block w-full bg-primary text-white py-4 text-center rounded-xl font-black uppercase tracking-widest text-xs"
+                                className="flex items-center justify-center w-full h-16 bg-primary text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                                 onClick={() => setIsOpen(false)}
                             >
-                                Submit Paper
+                                Submit Manuscript
                             </Link>
                         </div>
                     </div>

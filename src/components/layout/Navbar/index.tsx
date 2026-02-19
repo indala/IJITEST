@@ -46,7 +46,9 @@ export default function Navbar({ settings }: { settings?: Record<string, string>
                 </div>
             </div>
 
-            <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
+            <div className="relative">
+                <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
+            </div>
         </nav>
     );
 }

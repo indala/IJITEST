@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { motion, animate } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 interface PageHeaderProps {
     title: string;
@@ -14,13 +14,34 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, description, breadcrumbs, scrollOnComplete = true }: PageHeaderProps) {
     const sectionRef = useRef<HTMLElement>(null);
+    const animationRef = useRef<any>(null);
+
+    useEffect(() => {
+        const stopAnimation = () => {
+            if (animationRef.current) {
+                animationRef.current.stop();
+                animationRef.current = null;
+            }
+        };
+
+        window.addEventListener('wheel', stopAnimation, { passive: true });
+        window.addEventListener('touchmove', stopAnimation, { passive: true });
+        window.addEventListener('pointerdown', stopAnimation, { passive: true });
+
+        return () => {
+            window.removeEventListener('wheel', stopAnimation);
+            window.removeEventListener('touchmove', stopAnimation);
+            window.removeEventListener('pointerdown', stopAnimation);
+            stopAnimation();
+        };
+    }, []);
 
     const handleAnimationComplete = () => {
         if (scrollOnComplete && sectionRef.current) {
             const sectionBottom =
                 sectionRef.current.getBoundingClientRect().bottom + window.scrollY - 80;
 
-            animate(window.scrollY, sectionBottom, {
+            animationRef.current = animate(window.scrollY, sectionBottom, {
                 duration: 1.2,
                 ease: [0.32, 0.72, 0, 1],
                 onUpdate: (latest) => window.scrollTo(0, latest),

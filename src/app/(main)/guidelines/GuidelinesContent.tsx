@@ -17,6 +17,7 @@ interface GuidelinesContentProps {
 export default function GuidelinesContent({ settings }: GuidelinesContentProps) {
     const shortName = settings.journal_short_name || "IJITEST";
     const supportEmail = settings.support_email || "editor@ijitest.org";
+    console.log(settings)
 
     return (
         <div className="bg-background min-h-screen">
@@ -47,10 +48,10 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                             <TabsContent value="workflow" className="space-y-10 mt-0 animate-in fade-in slide-in-from-bottom-2 duration-500">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {[
-                                        { icon: Download, title: "1. Download Template", desc: "Use our IEEE-based Word template with 10pt main text for elite presentation." },
-                                        { icon: FileText, title: "2. Submit via Email", desc: `Send your manuscript and affiliation details to ${supportEmail} for priority handling.` },
-                                        { icon: Cpu, title: "3. Peer Review", desc: "Elite decision within 3–5 working days via rigorous double-blind review process." },
-                                        { icon: FileCheck, title: "4. Final Publication", desc: "Complete copyright and pay APC to receive DOI and global indexing approval." }
+                                        { icon: Download, title: "1. Download Template", desc: "Use our official IEEE Word template to ensure your manuscript meets global formatting standards." },
+                                        { icon: FileText, title: "2. Submit via Portal", desc: `Upload your manuscript and metadata through our secure submission dashboard for rapid processing.` },
+                                        { icon: Cpu, title: "3. Peer Review", desc: "Rigorous double-blind peer review by domain experts. Initial decision typically within 2–3 weeks." },
+                                        { icon: FileCheck, title: "4. Final Publication", desc: "Upon acceptance, complete copyright formalities and APC payment for DOI assignment and indexing." }
                                     ].map((step, idx) => (
                                         <motion.div
                                             key={idx}
@@ -81,12 +82,12 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
                                             <div className="space-y-2">
                                                 <h3 className="text-2xl font-black text-white tracking-tighter">Ready for Submission?</h3>
-                                                <p className="text-sm text-white/60 font-medium border-l-2 border-white/10 pl-6">"Elite research deserves elite recognition. Submit your technical breakthrough today."</p>
+                                                <p className="text-sm text-white/60 font-medium border-l-2 border-white/10 pl-6">Submit your latest technical breakthrough today through our official portal.</p>
                                             </div>
                                             <Button asChild className="h-14 px-10 bg-secondary hover:bg-secondary/90 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-secondary/20 transition-all hover:scale-105">
-                                                <a href={`mailto:${supportEmail}`} className="flex items-center">
-                                                    Send Manuscript <ChevronRight className="w-5 h-5 ml-2" />
-                                                </a>
+                                                <Link href="/submit" className="flex items-center">
+                                                    Submit Manuscript <ChevronRight className="w-5 h-5 ml-2" />
+                                                </Link>
                                             </Button>
                                         </div>
                                     </div>
@@ -103,10 +104,11 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                                         </CardHeader>
                                         <CardContent className="p-8 pt-0 space-y-4">
                                             {[
+                                                "IEEE Standard Two-Column Layout",
                                                 "Times New Roman Style Font",
                                                 "10pt Main Body / 9pt Abstract",
-                                                "Minimum 04 Keywords Required",
-                                                "Single-spaced, double column format"
+                                                "Minimum 04 Keywords Mandatory",
+                                                "Margins: T:0.7, B:0.7, R:0.6, L:0.6"
                                             ].map((rule, idx) => (
                                                 <div key={idx} className="flex items-center gap-4 text-sm font-bold text-primary/70 group/rule">
                                                     <div className="w-5 h-5 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 group-hover/rule:bg-secondary group-hover/rule:text-white transition-all">
@@ -126,20 +128,20 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                                                 </div>
                                                 <div className="text-left flex-1">
                                                     <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">MS Word Template</p>
-                                                    <p className="text-[10px] text-primary/40 font-black uppercase">IEEE Standard</p>
+                                                    <p className="text-[10px] text-primary/40 font-black uppercase">Official IEEE Doc</p>
                                                 </div>
                                                 <ChevronRight className="w-5 h-5 text-primary/20 group-hover:text-primary transition-colors" />
                                             </a>
                                         </Button>
 
                                         <Button asChild variant="outline" className="w-full h-20 justify-between border-2 border-secondary/10 border-dashed px-6 group rounded-[2rem] hover:border-secondary/30 hover:bg-secondary/5 transition-all outline-none">
-                                            <a href={settings.copyright_url || "/docs/copyright-form.pdf"} download className="flex items-center gap-5 w-full">
+                                            <a href={settings.copyright_url || "/docs/copyright-form.docx"} download className="flex items-center gap-5 w-full">
                                                 <div className="w-12 h-12 bg-secondary/5 rounded-2xl flex items-center justify-center text-secondary border border-secondary/10 group-hover:bg-secondary group-hover:text-white transition-all duration-500">
                                                     <Download className="w-6 h-6" />
                                                 </div>
                                                 <div className="text-left flex-1">
                                                     <p className="text-xs font-black uppercase tracking-[0.2em] text-secondary">Copyright Form</p>
-                                                    <p className="text-[10px] text-secondary/40 font-black uppercase">Mandatory Doc</p>
+                                                    <p className="text-[10px] text-secondary/40 font-black uppercase">Required Asset</p>
                                                 </div>
                                                 <ChevronRight className="w-5 h-5 text-secondary/20 group-hover:text-secondary transition-colors" />
                                             </a>
@@ -165,7 +167,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {[
                                     { label: "Process", title: "Double-Blind", desc: "Peer review by elite global domain experts.", color: "emerald", badge: "Process" },
-                                    { label: "Timeline", title: "3–5 Days", desc: "Initial editorial decision timeframe for rapid impact.", color: "blue", badge: "Timeline" },
+                                    { label: "Timeline", title: "2–3 Weeks", desc: "Standard peer review decision timeframe for thorough validation.", color: "blue", badge: "Timeline" },
                                     { label: "Indexing", title: "DOI Assignment", desc: "Permanent global registry for all elite articles.", color: "amber", badge: "Indexing" }
                                 ].map((item, i) => (
                                     <Card key={i} className="bg-white border border-primary/5 shadow-vip hover:shadow-vip-hover hover:border-secondary/20 transition-all duration-500 rounded-3xl overflow-hidden group">
@@ -196,7 +198,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                                 </div>
                                 <CardTitle className="text-2xl font-black mb-2 text-white tracking-tighter">Ethics Policy</CardTitle>
                                 <p className="text-sm text-white/70 mb-8 font-medium leading-relaxed">IJITEST follows COPE guidelines for scientific integrity and global best practices.</p>
-                                <Link href="/policy" className="group/link inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white">
+                                <Link href="/privacy" className="group/link inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white">
                                     <span className="border-b border-white/30 group-hover/link:border-white transition-all pb-1">View Policy</span>
                                     <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
                                 </Link>
