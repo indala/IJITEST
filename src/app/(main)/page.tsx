@@ -37,7 +37,7 @@ export default async function Home() {
       <HomeCarousel />
 
       {/* Institutional Core Section */}
-      <section className="py-10 sm:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <section className="py-10 sm:py-14 max-w-7xl xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
 
           {/* Main Info Column */}

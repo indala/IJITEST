@@ -85,18 +85,23 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                                     size="icon"
                                     onClick={() => fileInputRef.current?.click()}
                                     className="absolute -bottom-2 -right-2 h-8 w-8 rounded-lg shadow-lg border border-border bg-background hover:bg-muted"
+                                    aria-label="Change profile photo"
+                                    title="Change profile photo"
                                 >
                                     <Camera className="w-4 h-4" />
                                 </Button>
                                 <input
+                                    id="profile-photo-input"
                                     type="file"
                                     name="photo"
                                     ref={fileInputRef}
                                     className="hidden"
                                     accept="image/*"
                                     onChange={handlePhotoChange}
+                                    aria-label="Upload profile photo"
+                                    title="Choose a profile photo"
                                 />
-                                <input type="hidden" name="existingPhotoUrl" value={user.photo_url || ''} />
+                                <input type="hidden" name="existingPhotoUrl" value={user.photo_url || ''} title="Existing Photo URL" />
                             </div>
 
                             <div className="flex-1 space-y-2">
@@ -125,20 +130,25 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                         </CardHeader>
                         <CardContent className="p-6 pt-6 space-y-5">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Full Identity</Label>
+                                <Label htmlFor="fullName" className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Full Identity</Label>
                                 <Input
+                                    id="fullName"
                                     name="fullName"
                                     defaultValue={user.full_name}
                                     required
+                                    placeholder="Enter your full name"
+                                    title="Full Identity"
                                     className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-xl"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Professional Status</Label>
+                                <Label htmlFor="designation" className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Professional Status</Label>
                                 <Input
+                                    id="designation"
                                     name="designation"
                                     defaultValue={user.designation}
                                     placeholder="e.g. Senior Researcher"
+                                    title="Professional Status"
                                     className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-xl"
                                 />
                             </div>
@@ -153,20 +163,24 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                         </CardHeader>
                         <CardContent className="p-6 pt-6 space-y-5">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Organization / University</Label>
+                                <Label htmlFor="institute" className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Organization / University</Label>
                                 <Input
+                                    id="institute"
                                     name="institute"
                                     defaultValue={user.institute}
                                     placeholder="e.g. Oxford University"
+                                    title="Organization / University"
                                     className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-xl"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Reference Protocol</Label>
+                                <Label htmlFor="phone" className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Reference Protocol</Label>
                                 <Input
+                                    id="phone"
                                     name="phone"
                                     defaultValue={user.phone}
                                     placeholder="+1 (555) 000-0000"
+                                    title="Reference Protocol (Phone)"
                                     className="bg-primary/5 border-primary/5 h-12 text-xs font-bold focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-xl"
                                 />
                             </div>
@@ -181,12 +195,15 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                             <FileText className="w-4 h-4 text-secondary" /> Expertise Dossier
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-6 pt-6">
+                    <CardContent className="p-6 pt-6 space-y-2">
+                        <Label htmlFor="bio" className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] px-1">Expertise Summary</Label>
                         <Textarea
+                            id="bio"
                             name="bio"
                             defaultValue={user.bio}
                             placeholder="Detail your academic background and technical research interests..."
                             rows={4}
+                            title="Expertise Summary"
                             className="bg-primary/5 border-primary/5 text-xs font-medium resize-none focus-visible:ring-1 focus-visible:ring-primary/20 shadow-inner rounded-2xl p-6"
                         />
                     </CardContent>
@@ -209,6 +226,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                         type="submit"
                         disabled={isSubmitting}
                         className="h-16 px-10 gap-3 font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-primary/20 rounded-[1.5rem] bg-primary hover:scale-[1.02] transition-all"
+                        title="Update Private Profile"
                     >
                         {isSubmitting ? (
                             <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />

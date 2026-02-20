@@ -11,7 +11,7 @@ export default function Footer({ settings }: { settings?: Record<string, string>
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary/50 to-transparent opacity-30" />
             <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
 
-            <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+            <div className="max-w-[1600px] mx-auto px-4 md:px-8 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
 
                     <div className="lg:col-span-1 space-y-8">
@@ -37,13 +37,13 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                             <li><Link href="/guidelines" className="hover:text-secondary transition-colors">Author Guidelines</Link></li>
                             <li><Link href="/peer-review" className="hover:text-secondary transition-colors">Peer Review</Link></li>
                             <li><Link href="/ethics" className="hover:text-secondary transition-colors">Publication Ethics</Link></li>
-                            <li><Link href="/docs/IJITEST_TEMPLATE.docx" className="hover:text-secondary transition-colors">Resources</Link></li>
                             <li><Link href="/archives" className="hover:text-secondary transition-colors">Digital Archives</Link></li>
                             <li><Link href="/indexing" className="hover:text-secondary transition-colors">Indexing Hub</Link></li>
                             <li><Link href="/privacy" className="hover:text-secondary transition-colors">Privacy Policy</Link></li>
                             <li><Link href="/terms" className="hover:text-secondary transition-colors">Terms of Use</Link></li>
                             <li><Link href="/track" className="hover:text-secondary transition-colors">Track Application</Link></li>
                             <li><Link href="/contact" className="hover:text-secondary transition-colors">Contact Office</Link></li>
+                            <li><Link href="/login" className="hover:text-secondary transition-colors">Login</Link></li>
                         </ul>
                     </div>
 

@@ -102,10 +102,13 @@ function ReviewsContent() {
                                 }
                             }} className="space-y-4 pt-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Select Manuscript</label>
+                                    <label htmlFor="assign-submissionId" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Select Manuscript</label>
                                     <select
+                                        id="assign-submissionId"
                                         name="submissionId"
                                         required
+                                        title="Select a manuscript to assign"
+                                        aria-label="Select manuscript"
                                         defaultValue={assignId || ""}
                                         className="flex h-11 w-full rounded-lg bg-muted/50 px-3 py-1 text-xs font-bold transition-colors outline-none border-none ring-offset-background focus:ring-1 focus:ring-primary/30 appearance-none"
                                     >
@@ -116,8 +119,15 @@ function ReviewsContent() {
                                     </select>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Available Reviewers</label>
-                                    <select name="reviewerId" required className="flex h-11 w-full rounded-lg bg-muted/50 px-3 py-1 text-xs font-bold transition-colors outline-none border-none ring-offset-background focus:ring-1 focus:ring-primary/30 appearance-none">
+                                    <label htmlFor="assign-reviewerId" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Available Reviewers</label>
+                                    <select
+                                        id="assign-reviewerId"
+                                        name="reviewerId"
+                                        required
+                                        title="Select an available reviewer"
+                                        aria-label="Available Reviewers"
+                                        className="flex h-11 w-full rounded-lg bg-muted/50 px-3 py-1 text-xs font-bold transition-colors outline-none border-none ring-offset-background focus:ring-1 focus:ring-primary/30 appearance-none"
+                                    >
                                         <option value="">-- Choose a staff member --</option>
                                         {staff.map(r => (
                                             <option key={r.id} value={r.id}>{r.full_name} ({r.email})</option>
@@ -125,8 +135,8 @@ function ReviewsContent() {
                                     </select>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Review Deadline</label>
-                                    <Input name="deadline" type="date" required className="h-11 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 font-bold text-xs" />
+                                    <label htmlFor="assign-deadline" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Review Deadline</label>
+                                    <Input id="assign-deadline" name="deadline" type="date" required className="h-11 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 font-bold text-xs" />
                                 </div>
                                 <DialogFooter className="pt-2">
                                     <Button type="submit" className="w-full h-11 font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary/20">
@@ -141,41 +151,40 @@ function ReviewsContent() {
 
             <div className="grid grid-cols-1 gap-4">
                 {reviews.map((item) => (
-                    <Card key={item.id} className="border-border/50 shadow-sm hover:shadow-md transition-all group overflow-hidden">
+                    <Card key={item.id} className="border-border/50 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group overflow-hidden bg-white/50 backdrop-blur-sm">
                         <CardContent className="p-0">
                             <div className="p-6 flex flex-col md:flex-row md:items-start justify-between gap-6">
                                 <div className="flex-1 space-y-4 min-w-0">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <Badge className={`h-5 px-1.5 text-[9px] font-black uppercase tracking-widest ${item.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-none' : 'bg-blue-600/10 text-blue-600 border-none'}`}>
+                                        <Badge className={`h-5 px-1.5 text-[8px] font-black uppercase tracking-[0.15em] border-none shadow-sm ${item.status === 'completed' ? 'bg-emerald-500 text-white' : 'bg-primary text-white'}`}>
                                             {item.status.replace('_', ' ')}
                                         </Badge>
-                                        <span className="text-[10px] font-mono font-black text-muted-foreground uppercase tracking-tighter bg-muted px-2 py-0.5 rounded border border-border/50">
-                                            ID: {item.paper_id}
-                                        </span>
+                                        <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-mono font-black text-muted-foreground uppercase tracking-tighter bg-muted/30 border-border/50">
+                                            DOC-{item.paper_id}
+                                        </Badge>
                                     </div>
 
-                                    <h3 className="text-base font-black text-foreground leading-tight tracking-tight truncate group-hover:text-primary transition-colors">
+                                    <h3 className="text-base font-black text-foreground leading-tight tracking-tight capitalize group-hover:text-primary transition-colors">
                                         {item.title}
                                     </h3>
 
                                     <div className="flex flex-wrap gap-4 items-center">
-                                        <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
+                                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 bg-muted/20 px-2 py-1 rounded-md">
                                             <User className="w-3.5 h-3.5 opacity-40 text-primary" />
-                                            <span>Reviewer: {item.reviewer_name}</span>
+                                            <span>Staff: {item.reviewer_name}</span>
                                         </div>
-                                        <div className="flex items-center gap-1.5 text-xs font-black text-foreground">
-                                            <Clock className="w-3.5 h-3.5 opacity-40 text-orange-500" />
+                                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-foreground bg-orange-500/5 px-2 py-1 rounded-md border border-orange-500/10">
+                                            <Clock className="w-3.5 h-3.5 text-orange-500" />
                                             <span className={item.status === 'completed' ? 'text-muted-foreground/30 line-through' : 'text-orange-600'}>
-                                                Due: {new Date(item.deadline).toLocaleDateString()}
+                                                DEADLINE: {new Date(item.deadline).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}
                                             </span>
                                         </div>
                                     </div>
 
                                     {item.feedback && (
-                                        <div className="bg-muted/30 p-3 rounded-lg border border-border/30 text-[11px] text-muted-foreground font-medium leading-relaxed italic relative">
-                                            <span className="absolute -top-2 -left-1 text-2xl text-primary/10 font-serif">"</span>
+                                        <div className="bg-primary/5 p-4 rounded-xl border border-primary/10 text-[11px] text-muted-foreground font-bold leading-relaxed italic relative pl-8">
+                                            <span className="absolute left-3 top-3 text-2xl text-primary/20 font-serif leading-none">“</span>
                                             {item.feedback}
-                                            <span className="absolute -bottom-4 -right-1 text-2xl text-primary/10 font-serif">"</span>
                                         </div>
                                     )}
                                 </div>
@@ -217,8 +226,9 @@ function ReviewsContent() {
                                                     }
                                                 }} className="space-y-4 pt-4">
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Feedback Summary</label>
+                                                        <label htmlFor={`feedback-text-${item.id}`} className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Feedback Summary</label>
                                                         <Textarea
+                                                            id={`feedback-text-${item.id}`}
                                                             name="feedbackText"
                                                             required
                                                             rows={4}
@@ -227,12 +237,14 @@ function ReviewsContent() {
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Deep Review File (Optional)</label>
+                                                        <label htmlFor={`feedback-file-${item.id}`} className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Deep Review File (Optional)</label>
                                                         <div className="relative group">
                                                             <input
+                                                                id={`feedback-file-${item.id}`}
                                                                 name="feedbackFile"
                                                                 type="file"
                                                                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                                                aria-label="Upload evaluation file"
                                                             />
                                                             <div className="w-full bg-muted/30 border-2 border-dashed border-border/50 p-6 rounded-xl group-hover:bg-muted/50 group-hover:border-primary transition-all flex flex-col items-center justify-center gap-2">
                                                                 <FileUp className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />

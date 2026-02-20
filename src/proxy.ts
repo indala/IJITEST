@@ -6,6 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret'
 
 // Define which routes require which roles
 const roleConfig: Record<string, string[]> = {
+  '/dashboard': ['admin', 'editor', 'reviewer', 'author'],
   '/admin/users': ['admin'],
   '/admin/settings': ['admin'],
   '/admin/payments': ['admin'],
@@ -46,12 +47,15 @@ export async function proxy(request: NextRequest) {
   // If they go to /login and are logged in, redirect to their role dashboard.
   if (pathname === '/login' && user) {
     const url = request.nextUrl.clone()
-    url.pathname = user.role === 'admin' ? '/admin' : user.role === 'editor' ? '/editor' : '/reviewer';
+    if (user.role === 'admin') url.pathname = '/admin'
+    else if (user.role === 'editor') url.pathname = '/editor'
+    else if (user.role === 'reviewer') url.pathname = '/reviewer'
+    else url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
   // Protect panel routes
-  const isPanelRoute = pathname.startsWith('/admin') || pathname.startsWith('/editor') || pathname.startsWith('/reviewer');
+  const isPanelRoute = pathname.startsWith('/admin') || pathname.startsWith('/editor') || pathname.startsWith('/reviewer') || pathname.startsWith('/dashboard');
 
   if (isPanelRoute && pathname !== '/login') {
     if (!user) {
@@ -70,7 +74,7 @@ export async function proxy(request: NextRequest) {
       if (!allowedRoles.includes(user.role)) {
         // Redirect unauthorized staff back to their own dashboard
         const url = request.nextUrl.clone();
-        url.pathname = user.role === 'admin' ? '/admin' : user.role === 'editor' ? '/editor' : '/reviewer';
+        url.pathname = user.role === 'admin' ? '/admin' : user.role === 'editor' ? '/editor' : user.role === 'reviewer' ? '/reviewer' : '/dashboard';
         return NextResponse.redirect(url);
       }
     }
@@ -91,6 +95,7 @@ export const config = {
     '/admin/:path*',
     '/editor/:path*',
     '/reviewer/:path*',
+    '/dashboard/:path*',
     '/login',
   ],
 }

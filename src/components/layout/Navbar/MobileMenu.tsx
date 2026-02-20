@@ -3,6 +3,11 @@
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { navigation } from './nav-data';
+import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
+import { SendHorizonal, X, ChevronRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface MobileMenuProps {
     isOpen: boolean;
@@ -10,60 +15,164 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
-    return (
+    const pathname = usePathname();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Body Scroll Lock
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = 'var(--removed-body-scrollbar-width)'; // Prevent layout shift if any
+        } else {
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        };
+    }, [isOpen]);
+
+    if (!mounted) return null;
+
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                    className="lg:hidden absolute top-full left-0 w-full bg-background border-b border-primary/10 shadow-2xl overflow-y-auto max-h-[85vh] z-50 p-4 pt-2 pb-10"
-                >
-                    <div className="space-y-2">
-                        {navigation.map((item, idx) => (
-                            <motion.div
-                                key={item.name}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: idx * 0.03 }}
+                <>
+                    {/* High-End Backdrop */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsOpen(false)}
+                        className="fixed inset-0 bg-primary/20 backdrop-blur-md z-[9998] lg:hidden"
+                    />
+
+                    {/* Fixed Floating Modal Content */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        className="fixed top-24 left-4 right-4 mx-auto w-[calc(100%-2rem)] max-w-[480px] bg-white/95 backdrop-blur-3xl rounded-[2rem] shadow-[0_40px_80px_-16px_rgba(0,0,0,0.3)] border border-white/40 flex flex-col overflow-hidden max-h-[85vh] z-[9999] lg:hidden"
+                    >
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-6 h-16 border-b border-primary/5 shrink-0">
+                            <div className="flex flex-col">
+                                <span className="text-[9px] font-black text-secondary uppercase tracking-[0.3em]">Menu</span>
+                                <span className="text-xs font-black text-primary uppercase tracking-widest">Navigation</span>
+                            </div>
+                            <button
+                                title="Close Menu"
+                                onClick={() => setIsOpen(false)}
+                                className="w-8 h-8 flex items-center justify-center rounded-xl bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all duration-300"
                             >
-                                <div className="space-y-1">
-                                    <Link
-                                        href={item.href}
-                                        onClick={() => setIsOpen(false)}
-                                        className="flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-primary/70 hover:text-primary hover:bg-primary/5 rounded-2xl transition-all border border-transparent hover:border-primary/5"
-                                    >
-                                        {item.name}
-                                    </Link>
-                                    {item.children && (
-                                        <div className="ml-6 pl-4 border-l-2 border-secondary/10 space-y-1 mt-1">
-                                            {item.children.map((child) => (
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+
+                        {/* Navigation Scroll Area (Scrollbar Hidden) */}
+                        <div
+                            className="flex-1 overflow-y-auto px-5 py-6 scrolling-touch"
+                            style={{
+                                scrollbarWidth: 'none',
+                                msOverflowStyle: 'none',
+                            }}
+                        >
+                            <style dangerouslySetInnerHTML={{
+                                __html: `
+                                .scrolling-touch::-webkit-scrollbar { display: none; }
+                            `}} />
+                            <div className="grid grid-cols-1 gap-1.5">
+                                {navigation.map((item, idx) => {
+                                    const isActive = pathname === item.href || item.children?.some(c => pathname === c.href);
+                                    return (
+                                        <motion.div
+                                            key={item.name}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.05 + idx * 0.03 }}
+                                        >
+                                            <div className="space-y-1">
                                                 <Link
-                                                    key={child.name}
-                                                    href={child.href}
+                                                    href={item.href}
                                                     onClick={() => setIsOpen(false)}
-                                                    className="block px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-primary/40 hover:text-secondary hover:bg-secondary/5 rounded-xl transition-all"
+                                                    className={cn(
+                                                        "group flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-all duration-300 border border-transparent",
+                                                        isActive
+                                                            ? "bg-primary/[0.04] border-primary/5"
+                                                            : "hover:bg-primary/[0.02]"
+                                                    )}
                                                 >
-                                                    {child.name}
+                                                    <div className="flex items-center gap-3.5">
+                                                        <div className={cn(
+                                                            "w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-500",
+                                                            isActive ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-primary/5 text-primary/40 group-hover:bg-primary/10 group-hover:text-primary"
+                                                        )}>
+                                                            {item.icon && <item.icon className="w-4 h-4" />}
+                                                        </div>
+                                                        <span className={cn(
+                                                            "text-[12px] font-black uppercase tracking-[0.05em] transition-all duration-300",
+                                                            isActive ? "text-primary" : "text-primary/60 group-hover:text-primary"
+                                                        )}>{item.name}</span>
+                                                    </div>
+                                                    <ChevronRight className={cn(
+                                                        "w-3.5 h-3.5 transition-all duration-500",
+                                                        isActive ? "text-secondary translate-x-0" : "text-primary/10 -translate-x-1 group-hover:translate-x-0 group-hover:text-primary/30"
+                                                    )} />
                                                 </Link>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </motion.div>
-                        ))}
-                        <div className="pt-6">
+
+                                                {item.children && (
+                                                    <div className="ml-12 space-y-1 border-l border-primary/5 pl-4 pb-1">
+                                                        {item.children.map((child, childIdx) => {
+                                                            const isSubActive = pathname === child.href;
+                                                            return (
+                                                                <Link
+                                                                    key={child.name}
+                                                                    href={child.href}
+                                                                    onClick={() => setIsOpen(false)}
+                                                                    className={cn(
+                                                                        "flex items-center gap-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all",
+                                                                        isSubActive ? "text-secondary" : "text-primary/40 hover:text-primary"
+                                                                    )}
+                                                                >
+                                                                    <div className={cn(
+                                                                        "w-1.5 h-1.5 rounded-full transition-all duration-500",
+                                                                        isSubActive ? "bg-secondary scale-110 shadow-[0_0_8px_rgba(234,179,8,0.5)]" : "bg-primary/10"
+                                                                    )} />
+                                                                    {child.name}
+                                                                </Link>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Footer / CTA */}
+                        <div className="px-6 py-5 border-t border-primary/5 shrink-0">
                             <Link
                                 href="/submit"
-                                className="flex items-center justify-center w-full h-16 bg-primary text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                className="flex items-center justify-center gap-3 w-full h-14 bg-primary text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all relative overflow-hidden group"
                                 onClick={() => setIsOpen(false)}
                             >
-                                Submit Manuscript
+                                <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                <SendHorizonal className="w-4 h-4 relative z-10" />
+                                <span className="relative z-10">Submit Manuscript</span>
                             </Link>
                         </div>
-                    </div>
-                </motion.div>
+                    </motion.div>
+                </>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }

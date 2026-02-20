@@ -129,10 +129,11 @@ function SetupContent() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <input type="hidden" name="token" value={token!} />
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-500 pl-2">Create Password</label>
+                            <label htmlFor="password" title="password" className="text-sm font-bold text-gray-500 pl-2">Create Password</label>
                             <div className="relative">
-                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" aria-hidden="true" />
                                 <input
+                                    id="password"
                                     name="password"
                                     type="password"
                                     required
@@ -143,10 +144,11 @@ function SetupContent() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-500 pl-2">Confirm Password</label>
+                            <label htmlFor="confirmPassword" title="confirmPassword" className="text-sm font-bold text-gray-500 pl-2">Confirm Password</label>
                             <div className="relative">
-                                <CheckCircle2 className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+                                <CheckCircle2 className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" aria-hidden="true" />
                                 <input
+                                    id="confirmPassword"
                                     name="confirmPassword"
                                     type="password"
                                     required

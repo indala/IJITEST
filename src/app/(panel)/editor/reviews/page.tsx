@@ -102,8 +102,9 @@ function ReviewsContent() {
                                 }
                             }} className="space-y-4 pt-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Select Manuscript</label>
+                                    <label htmlFor="editor-assign-submissionId" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Select Manuscript</label>
                                     <select
+                                        id="editor-assign-submissionId"
                                         name="submissionId"
                                         required
                                         defaultValue={assignId || ""}
@@ -116,8 +117,8 @@ function ReviewsContent() {
                                     </select>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Available Reviewers</label>
-                                    <select name="reviewerId" required className="flex h-11 w-full rounded-lg bg-muted/50 px-3 py-1 text-xs font-bold transition-colors outline-none border-none ring-offset-background focus:ring-1 focus:ring-primary/30 appearance-none">
+                                    <label htmlFor="editor-assign-reviewerId" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Available Reviewers</label>
+                                    <select id="editor-assign-reviewerId" name="reviewerId" required className="flex h-11 w-full rounded-lg bg-muted/50 px-3 py-1 text-xs font-bold transition-colors outline-none border-none ring-offset-background focus:ring-1 focus:ring-primary/30 appearance-none">
                                         <option value="">-- Choose a staff member --</option>
                                         {staff.map(r => (
                                             <option key={r.id} value={r.id}>{r.full_name} ({r.email})</option>
@@ -125,8 +126,8 @@ function ReviewsContent() {
                                     </select>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Review Deadline</label>
-                                    <Input name="deadline" type="date" required className="h-11 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 font-bold text-xs" />
+                                    <label htmlFor="editor-assign-deadline" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Review Deadline</label>
+                                    <Input id="editor-assign-deadline" name="deadline" type="date" required className="h-11 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 font-bold text-xs" />
                                 </div>
                                 <DialogFooter className="pt-2">
                                     <Button type="submit" className="w-full h-11 font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary/20">
@@ -217,8 +218,9 @@ function ReviewsContent() {
                                                     }
                                                 }} className="space-y-4 pt-4">
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Feedback Summary</label>
+                                                        <label htmlFor={`editor-feedback-text-${item.id}`} className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Feedback Summary</label>
                                                         <Textarea
+                                                            id={`editor-feedback-text-${item.id}`}
                                                             name="feedbackText"
                                                             required
                                                             rows={4}
@@ -227,12 +229,14 @@ function ReviewsContent() {
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Deep Review File (Optional)</label>
+                                                        <label htmlFor={`editor-feedback-file-${item.id}`} className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Deep Review File (Optional)</label>
                                                         <div className="relative group">
                                                             <input
+                                                                id={`editor-feedback-file-${item.id}`}
                                                                 name="feedbackFile"
                                                                 type="file"
                                                                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                                                aria-label="Upload deep review file"
                                                             />
                                                             <div className="w-full bg-muted/30 border-2 border-dashed border-border/50 p-6 rounded-xl group-hover:bg-muted/50 group-hover:border-primary transition-all flex flex-col items-center justify-center gap-2">
                                                                 <FileUp className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />

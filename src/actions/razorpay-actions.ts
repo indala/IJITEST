@@ -77,7 +77,7 @@ export async function verifyRazorpayPayment(data: {
             .digest("hex");
 
         if (generated_signature !== razorpay_signature) {
-            return { error: "Invalid payment signature" };
+            return { success: false, error: "Invalid payment signature" };
         }
 
         // 2. Update Payment Status in DB
@@ -91,10 +91,11 @@ export async function verifyRazorpayPayment(data: {
 
         revalidatePath('/track');
         revalidatePath('/admin/payments');
+        revalidatePath('/dashboard');
 
         return { success: true };
     } catch (error: any) {
         console.error("Verify Razorpay Payment Error:", error);
-        return { error: "Failed to verify payment: " + error.message };
+        return { success: false, error: "Failed to verify payment: " + error.message };
     }
 }

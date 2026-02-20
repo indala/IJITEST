@@ -89,7 +89,7 @@ function AimAndScope({ journalShortName }: { journalShortName?: string }) {
                         <History className="w-14 h-14 text-secondary" />
                     </div>
                     <div className="space-y-6">
-                        <h3 className="text-3xl sm:text-4xl font-sans font-black tracking-tighter">Publication Process</h3>
+                        <h3 className="text-3xl sm:text-4xl font-sans font-black text-white tracking-tighter">Publication Process</h3>
                         <p className="text-lg sm:text-xl text-white/80 font-medium leading-relaxed max-w-2xl">
                             Accepted papers will be published online, upon receiving the final version from the authors in the recent upcoming issue. Our streamlined workflow minimizes time-to-publication while maintaining elite peer-review standards.
                         </p>

@@ -13,6 +13,12 @@ export default function Navbar({ settings }: { settings?: Record<string, string>
     const shortName = settings?.journal_short_name || "IJITEST";
 
     useEffect(() => {
+        if (isOpen) {
+            window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
         };
@@ -21,34 +27,47 @@ export default function Navbar({ settings }: { settings?: Record<string, string>
     }, []);
 
     return (
-        <nav className={`sticky top-0 z-50 w-full transition-all duration-500 ${isScrolled ? 'bg-background/95 shadow-lg py-1' : 'bg-background/90 backdrop-blur-xl border-b border-primary/10 py-0'}`}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className={`flex justify-between transition-all duration-500 ${isScrolled ? 'h-16' : 'h-20'}`}>
+        <nav
+            id="journal-navbar"
+            className={`sticky top-0 z-50 w-full transition-all duration-700 ${isScrolled
+                ? 'bg-white/90 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.05)] py-0.5'
+                : 'bg-background/95 backdrop-blur-xl border-b border-primary/5 py-0'}`}>
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+                <div className={`flex justify-between items-center transition-all duration-700 ${isScrolled ? 'h-14 lg:h-16' : 'h-16 lg:h-20 xl:h-24'}`}>
+
+                    {/* Brand */}
                     <NavbarBrand shortName={shortName} isScrolled={isScrolled} />
 
+                    {/* Desktop Navigation */}
                     <NavbarLinks isScrolled={isScrolled} />
 
-                    <div className="flex items-center gap-4">
-                        <Link href="/submit" className={`flex items-center px-4 sm:px-6 rounded-xl bg-gradient-to-r from-secondary to-secondary/90 text-white font-black hover:scale-105 hover:shadow-xl transition-all duration-500 shadow-xl shadow-secondary/20 ${isScrolled ? 'py-1.5 sm:py-2 text-[9px] sm:text-[10px]' : 'py-2 sm:py-3 text-[10px] sm:text-xs'} uppercase tracking-[0.15em]`}>
-                            Submit Paper
+                    {/* Actions */}
+                    <div className="flex items-center gap-4 lg:gap-6">
+                        <Link
+                            href="/submit"
+                            className={`group relative flex items-center px-6 sm:px-8 rounded-2xl bg-primary text-white font-black overflow-hidden transition-all duration-500 shadow-xl shadow-primary/20 ${isScrolled ? 'py-2.5 text-[10px]' : 'py-3.5 text-xs'} uppercase tracking-[0.2em]`}
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary/80 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
+                            <span className="relative z-10 hidden sm:inline">Submit Paper</span>
+                            <span className="relative z-10 sm:hidden">Submit</span>
                         </Link>
 
                         {/* Mobile menu button */}
                         <div className="lg:hidden flex items-center">
                             <button
+                                id="mobile-nav-toggler"
                                 onClick={() => setIsOpen(!isOpen)}
-                                className="text-gray-600 hover:text-primary p-2 transition-colors"
+                                aria-label="Toggle navigation menu"
+                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all duration-300"
                             >
-                                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="relative">
-                <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
-            </div>
+            <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
         </nav>
     );
 }

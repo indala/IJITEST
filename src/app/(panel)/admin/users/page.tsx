@@ -90,16 +90,16 @@ export default function UserManagement() {
                             }
                         }} className="space-y-4">
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Full Name</label>
-                                <Input name="fullName" required className="h-11 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 font-bold text-xs" placeholder="Dr. Jane Smith" />
+                                <label htmlFor="staff-fullName" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Full Name</label>
+                                <Input id="staff-fullName" name="fullName" required className="h-11 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 font-bold text-xs" placeholder="Dr. Jane Smith" />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Email Address</label>
-                                <Input name="email" type="email" required className="h-11 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 font-bold text-xs" placeholder="jane@ijitest.com" />
+                                <label htmlFor="staff-email" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Email Address</label>
+                                <Input id="staff-email" name="email" type="email" required className="h-11 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 font-bold text-xs" placeholder="jane@ijitest.com" />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">User Role</label>
-                                <select name="role" required className="flex h-11 w-full rounded-lg bg-muted/50 px-3 py-1 text-xs font-bold transition-colors outline-none border-none ring-offset-background placeholder:text-muted-foreground focus:ring-1 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50">
+                                <label htmlFor="staff-role" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">User Role</label>
+                                <select id="staff-role" name="role" required className="flex h-11 w-full rounded-lg bg-muted/50 px-3 py-1 text-xs font-bold transition-colors outline-none border-none ring-offset-background placeholder:text-muted-foreground focus:ring-1 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50">
                                     <option value="reviewer">Reviewer (Expert witness)</option>
                                     <option value="editor">Editor (Decision-maker)</option>
                                     <option value="admin">Administrator (Architect)</option>
@@ -117,16 +117,22 @@ export default function UserManagement() {
 
             {/* Users Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {users.map((user) => (
-                    <Card key={user.id} className="border-border/50 shadow-sm hover:shadow-md transition-all group overflow-hidden">
+                {users.length === 0 ? (
+                    <div className="col-span-full py-20 bg-muted/20 border-2 border-dashed border-border/50 rounded-2xl flex flex-col items-center justify-center text-center">
+                        <Users className="w-10 h-10 text-muted-foreground/20 mb-4" />
+                        <h3 className="text-sm font-black text-muted-foreground uppercase tracking-tight">No Staff Found</h3>
+                        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest italic">Start by adding your first team member.</p>
+                    </div>
+                ) : users.map((user) => (
+                    <Card key={user.id} className="border-border/50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden bg-white/50 backdrop-blur-sm">
                         <CardContent className="p-5">
                             <div className="flex items-center gap-4 mb-5">
-                                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary/5 group-hover:text-primary transition-colors border border-border/10 shrink-0">
+                                <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary/5 group-hover:text-primary transition-all duration-300 border border-border/10 shrink-0 shadow-inner">
                                     <UserCog className="w-6 h-6" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h3 className="font-black text-foreground text-sm tracking-tight truncate">{user.full_name}</h3>
-                                    <Badge className={`h-4 px-1.5 text-[8px] font-black uppercase tracking-widest mt-1 ${getRoleVariant(user.role)}`}>
+                                    <h3 className="font-black text-foreground text-sm tracking-tight truncate uppercase leading-none mb-1">{user.full_name}</h3>
+                                    <Badge className={`h-4 px-1.5 text-[7px] font-black uppercase tracking-[0.1em] border-none shadow-sm ${getRoleVariant(user.role)}`}>
                                         {user.role}
                                     </Badge>
                                 </div>
@@ -138,26 +144,28 @@ export default function UserManagement() {
                             </div>
 
                             <div className="space-y-3 mb-5">
-                                <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground truncate">
-                                    <Mail className="w-3.5 h-3.5 opacity-40" />
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/80 truncate bg-muted/30 px-2 py-1.5 rounded-lg border border-border/5">
+                                    <Mail className="w-3.5 h-3.5 opacity-40 text-primary" />
                                     <span>{user.email}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-tight">
-                                    <ShieldCheck className="w-3.5 h-3.5 opacity-40" />
-                                    <span>Access granted {new Date(user.created_at).toLocaleDateString()}</span>
+                                <div className="flex items-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-widest px-1">
+                                    <ShieldCheck className="w-3.5 h-3.5 opacity-30" />
+                                    <span>Member since {new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
                                 </div>
                             </div>
 
                             <Separator className="mb-4 opacity-50" />
 
                             <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Employee #{user.id}</span>
+                                <Badge variant="outline" className="text-[8px] font-mono font-black text-muted-foreground/50 uppercase tracking-widest bg-muted/20 border-border/20">
+                                    ID: STAFF-{String(user.id).padStart(3, '0')}
+                                </Badge>
                                 {currentUser && Number(currentUser.id) !== Number(user.id) ? (
                                     <Button
                                         variant="ghost"
                                         size="icon"
                                         onClick={async () => {
-                                            if (confirm("Are you sure you want to revoke access for this user?")) {
+                                            if (confirm("Are you sure you want to revoke access? This cannot be undone.")) {
                                                 const result = await deleteUser(user.id);
                                                 if (result?.error) {
                                                     alert(result.error);
@@ -166,13 +174,13 @@ export default function UserManagement() {
                                                 }
                                             }
                                         }}
-                                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/5"
+                                        className="h-8 w-8 text-muted-foreground hover:text-white hover:bg-destructive rounded-lg transition-all"
                                     >
                                         <Trash2 className="w-4 h-4" />
                                     </Button>
                                 ) : (
-                                    <Badge variant="outline" className="h-5 px-2 text-[8px] font-black uppercase tracking-widest text-primary border-primary/20 bg-primary/5">
-                                        Your Account
+                                    <Badge variant="outline" className="h-5 px-2 text-[8px] font-black uppercase tracking-widest text-emerald-600 border-emerald-500/20 bg-emerald-500/5">
+                                        Primary Session
                                     </Badge>
                                 )}
                             </div>

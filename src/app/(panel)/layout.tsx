@@ -194,7 +194,7 @@ export default function PanelLayout({
                         </div>
                     </header>
 
-                    <div className="p-4 lg:p-8">
+                    <div className="p-4 lg:p-8 max-w-screen-2xl mx-auto w-full">
                         {children}
                     </div>
                 </main>

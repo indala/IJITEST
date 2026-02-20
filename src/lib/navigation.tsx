@@ -25,10 +25,11 @@ export const sidebarItems: NavigationItem[] = [
         name: 'Dashboard',
         icon: <LayoutDashboard />,
         href: '', // Base dashboard for the role
-        roles: ['admin', 'editor', 'reviewer'],
+        roles: ['admin', 'editor', 'reviewer', 'author'],
         labelOverrides: {
             'reviewer': 'My Assignments',
-            'editor': 'Editorial Hub'
+            'editor': 'Editorial Hub',
+            'author': 'Author Workspace'
         }
     },
     { name: 'Submissions', icon: <FileStack />, href: 'submissions', roles: ['admin', 'editor'] },
@@ -38,11 +39,15 @@ export const sidebarItems: NavigationItem[] = [
     { name: 'Messages', icon: <MessageSquare />, href: 'messages', roles: ['admin', 'editor'] },
     { name: 'Users & Roles', icon: <Users />, href: 'users', roles: ['admin'] },
     { name: 'Manage Applications', icon: <FileText />, href: 'applications', roles: ['admin', 'editor'] },
-    { name: 'Account Profile', icon: <UserCog />, href: 'profile', roles: ['admin', 'editor', 'reviewer'] },
+    { name: 'Account Profile', icon: <UserCog />, href: 'profile', roles: ['admin', 'editor', 'reviewer', 'author'] },
     { name: 'System Settings', icon: <Settings />, href: 'settings', roles: ['admin'] },
 ];
 
 export function getFullHref(item: NavigationItem, role: string) {
+    if (role === 'author') {
+        if (!item.href) return '/dashboard';
+        return `/dashboard/${item.href}`;
+    }
     const base = `/${role}`;
     if (!item.href) return base;
     return `${base}/${item.href}`;

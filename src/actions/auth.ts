@@ -47,6 +47,14 @@ export async function login(formData: FormData) {
         })
 
         revalidatePath('/', 'layout')
+
+        // Dynamic redirect based on role
+        let target = '/dashboard';
+        if (user.role === 'admin') target = '/admin';
+        else if (user.role === 'editor') target = '/editor';
+        else if (user.role === 'reviewer') target = '/reviewer';
+
+        return { success: true, redirectTo: target };
     } catch (error: any) {
         if (error.digest?.startsWith('NEXT_REDIRECT')) {
             throw error;
@@ -54,8 +62,6 @@ export async function login(formData: FormData) {
         console.error('Login error:', error)
         return { error: 'An unexpected error occurred' }
     }
-
-    redirect('/admin') // Redirect to admin for now, the root page will handle specifics if needed
 }
 
 export async function logout() {
