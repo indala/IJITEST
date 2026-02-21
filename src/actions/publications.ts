@@ -32,6 +32,18 @@ export async function getVolumesIssues() {
     }
 }
 
+export async function getLatestPublishedIssue() {
+    try {
+        const [rows]: any = await pool.execute(
+            "SELECT * FROM volumes_issues WHERE status = 'published' ORDER BY year DESC, volume_number DESC, issue_number DESC LIMIT 1"
+        );
+        return rows[0] || null;
+    } catch (error: any) {
+        console.error("Get Latest Published Issue Error:", error);
+        return null;
+    }
+}
+
 export async function assignPaperToIssue(submissionId: number, issueId: number) {
     try {
         await pool.execute(

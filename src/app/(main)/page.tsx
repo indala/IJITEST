@@ -31,17 +31,17 @@ export default async function Home() {
   return (
     <div className="flex flex-col overflow-hidden bg-background relative">
       {/* Background Decorative Blob */}
-      <div className="absolute top-[20%] right-0 w-[800px] h-[800px] bg-primary/2 rounded-full blur-[150px] -z-10" />
-      <div className="absolute bottom-[10%] left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px] -z-10" />
+      <div className="absolute top-[20%] right-0 w-[800px] h-[800px] bg-primary/2 rounded-full blur-[150px] -z-10 group-hover:bg-primary/5 transition-colors duration-1000" />
+      <div className="absolute bottom-[10%] left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px] -z-10 group-hover:bg-secondary/10 transition-colors duration-1000" />
 
       <HomeCarousel />
 
       {/* Institutional Core Section */}
-      <section className="py-10 sm:py-14 max-w-7xl xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
+      <section className="py-16 sm:py-24 max-w-7xl xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
 
           {/* Main Info Column */}
-          <div className="lg:col-span-2 space-y-12 sm:space-y-16">
+          <div className="lg:col-span-2 space-y-16 sm:space-y-24">
             <WelcomeSection
               journalName={settings.journal_name}
               journalShortName={settings.journal_short_name}
@@ -52,8 +52,8 @@ export default async function Home() {
           </div>
 
           {/* Institutional Sidebar */}
-          <div className="space-y-8 sm:space-y-10">
-            <div className="p-1 rounded-[2rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip">
+          <div className="space-y-10 sm:space-y-12">
+            <div className="p-1 rounded-[2rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip hover:shadow-vip-hover transition-shadow duration-500">
               <div className="bg-white/50 backdrop-blur-sm p-2 rounded-[1.8rem]">
                 <TrackManuscriptWidget />
               </div>

@@ -47,6 +47,7 @@ export default function Navbar({ settings }: { settings?: Record<string, string>
                             href="/submit"
                             className={`group relative flex items-center px-6 sm:px-8 rounded-2xl bg-primary text-white font-black overflow-hidden transition-all duration-500 shadow-xl shadow-primary/20 ${isScrolled ? 'py-2.5 text-[10px]' : 'py-3.5 text-xs'} uppercase tracking-[0.2em]`}
                         >
+                            <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.2),transparent)] animate-shine" />
                             <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary/80 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
                             <span className="relative z-10 hidden sm:inline">Submit Paper</span>
                             <span className="relative z-10 sm:hidden">Submit</span>

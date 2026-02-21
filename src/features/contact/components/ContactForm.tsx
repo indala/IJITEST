@@ -25,48 +25,50 @@ export default function ContactForm() {
 
     if (status === 'success') {
         return (
-            <div className="flex flex-col items-center justify-center p-8 text-center space-y-4 animate-in fade-in zoom-in duration-500">
-                <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-8 h-8" />
+            <div className="flex flex-col items-center justify-center p-8 sm:p-12 text-center space-y-4 sm:space-y-6 animate-in fade-in zoom-in duration-500 bg-white rounded-3xl border border-primary/5 shadow-sm">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center shadow-inner border border-emerald-100">
+                    <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10" />
                 </div>
-                <h3 className="text-xl font-black text-foreground">Message Transmitted</h3>
-                <p className="text-muted-foreground font-medium max-w-sm text-xs leading-relaxed">Our editorial team will get back to you within 24-48 hours via email.</p>
-                <Button variant="link" onClick={() => setStatus('idle')} className="text-primary font-black uppercase text-[10px] tracking-widest">New Message</Button>
+                <div className="space-y-2">
+                    <h3 className="text-2xl sm:text-3xl font-black text-primary tracking-tighter">Message <span className="text-emerald-600">Transmitted</span></h3>
+                    <p className="text-primary/60 font-medium max-w-xs mx-auto text-xs sm:text-sm leading-relaxed">Our editorial team will get back to you within 24-48 hours via email.</p>
+                </div>
+                <Button variant="outline" onClick={() => setStatus('idle')} className="rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-black uppercase text-[10px] tracking-widest mt-4">Send Another Message</Button>
             </div>
         );
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
             <div>
-                <h3 className="text-xl font-black text-foreground tracking-tight">Direct Inquiry Form</h3>
-                <p className="text-muted-foreground text-xs font-medium mt-1">Fill out the form below and we'll get back to you shortly.</p>
+                <h3 className="text-xl sm:text-2xl font-black text-primary tracking-tight">Direct Inquiry Form</h3>
+                <p className="text-primary/60 text-[11px] sm:text-xs font-medium mt-1">Fill out the form below and we'll get back to you shortly.</p>
             </div>
 
-            <form action={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Full Name</Label>
-                        <Input name="name" required className="bg-muted/30 border-border/50 font-bold" placeholder="Author Name" />
+            <form action={handleSubmit} className="space-y-5 sm:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[9px] sm:text-[10px] font-black text-primary/70 uppercase tracking-widest pl-1">Full Name</Label>
+                        <Input name="name" required className="h-12 bg-white border-slate-200 rounded-xl font-bold text-primary focus-visible:ring-primary/20 shadow-sm px-4" placeholder="Author Name" />
                     </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Email Address</Label>
-                        <Input name="email" type="email" required className="bg-muted/30 border-border/50 font-bold" placeholder="researcher@university.edu" />
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[9px] sm:text-[10px] font-black text-primary/70 uppercase tracking-widest pl-1">Email Address</Label>
+                        <Input name="email" type="email" required className="h-12 bg-white border-slate-200 rounded-xl font-bold text-primary focus-visible:ring-primary/20 shadow-sm px-4" placeholder="researcher@university.edu" />
                     </div>
                 </div>
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Subject</Label>
-                    <Input name="subject" required className="bg-muted/30 border-border/50 font-bold" placeholder="Status Inquiry for Paper ID: IJITEST-X" />
+                <div className="space-y-2 text-left">
+                    <Label className="text-[9px] sm:text-[10px] font-black text-primary/70 uppercase tracking-widest pl-1">Subject</Label>
+                    <Input name="subject" required className="h-12 bg-white border-slate-200 rounded-xl font-bold text-primary focus-visible:ring-primary/20 shadow-sm px-4" placeholder="Status Inquiry for Paper ID: IJITEST-X" />
                 </div>
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Message Content</Label>
-                    <Textarea name="message" rows={5} required className="bg-muted/30 border-border/50 font-bold resize-none" placeholder="Provide details of your inquiry here..." />
+                <div className="space-y-2 text-left">
+                    <Label className="text-[9px] sm:text-[10px] font-black text-primary/70 uppercase tracking-widest pl-1">Message Content</Label>
+                    <Textarea name="message" rows={5} required className="bg-white border-slate-200 rounded-xl font-bold text-primary focus-visible:ring-primary/20 shadow-sm p-4 resize-none" placeholder="Provide details of your inquiry here..." />
                 </div>
 
                 <Button
                     type="submit"
                     disabled={status === 'loading'}
-                    className="w-full h-12 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20"
+                    className="w-full h-12 sm:h-14 bg-primary text-white rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest sm:tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all"
                 >
                     {status === 'loading' ? (
                         <>Transmitting <Loader2 className="w-4 h-4 ml-2 animate-spin" /></>
@@ -76,7 +78,7 @@ export default function ContactForm() {
                 </Button>
 
                 {status === 'error' && (
-                    <p className="text-destructive text-center font-bold text-[10px] uppercase tracking-wider">Failed to transmit. Please try again.</p>
+                    <p className="text-secondary text-center font-bold text-[10px] uppercase tracking-wider">Failed to transmit. Please try again.</p>
                 )}
             </form>
         </div>

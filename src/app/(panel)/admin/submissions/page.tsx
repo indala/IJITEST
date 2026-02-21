@@ -61,7 +61,7 @@ export default async function Submissions({
         (SELECT COUNT(*) FROM reviews r WHERE r.submission_id = s.id AND r.status = 'completed') as completed_reviews 
         FROM submissions s
     `;
-    let params: any[] = [];
+    const params: any[] = [];
 
     if (currentStatus === 'pending') {
         query += ' WHERE s.status IN ("under_review", "accepted")';

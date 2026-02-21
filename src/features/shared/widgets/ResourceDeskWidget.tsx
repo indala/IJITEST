@@ -9,7 +9,6 @@ interface ResourceDeskWidgetProps {
 function ResourceDeskWidget({ settings }: ResourceDeskWidgetProps) {
     const resources = [
         { label: "Word Template", type: "DOCX", link: settings?.template_url || "/docs/template.docx" },
-        { label: "PDF Template", type: "PDF", link: "/docs/template.pdf" },
         { label: "Copyright Form", type: "DOCX", link: settings?.copyright_url || "/docs/copyright-form.docx" }
     ];
 

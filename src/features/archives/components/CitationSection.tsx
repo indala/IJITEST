@@ -73,8 +73,8 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                         <p className="text-[10px] font-black text-gray-900 italic">2584-2579</p>
                     </div>
                     <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-100 text-center">
-                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-tighter mb-0.5">DOI (Pending)</p>
-                        <p className="text-[10px] font-black text-gray-900 italic">Registered</p>
+                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-tighter mb-0.5">SJIF Impact</p>
+                        <p className="text-[10px] font-black text-gray-900 italic">8.16 (2024)</p>
                     </div>
                 </div>
             </div>

@@ -21,10 +21,9 @@ export default function TermsClient() {
                     </section>
 
                     <Card className="border-primary/5 shadow-vip hover:shadow-vip-hover transition-all duration-500 rounded-[3rem] bg-white group overflow-hidden relative">
-                        <div className="absolute top-0 right-0 p-12 text-primary/5 group-hover:rotate-12 transition-transform duration-1000">
-                            <Copyright className="w-48 h-48" />
-                        </div>
-                        <CardHeader className="p-10 px-12 border-b border-primary/5 bg-primary/5">
+                        <div className="absolute top-0 right-0 p-12 text-primary/5 group-hover:rotate-12 group-hover:scale-110 group-hover:text-primary/10 transition-all duration-1000 pointer-events-none" />
+                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors duration-1000 pointer-events-none" />
+                        <CardHeader className="p-10 px-12 border-b border-primary/5 bg-primary/5 relative z-10">
                             <div className="space-y-1">
                                 <Badge variant="secondary" className="font-black text-[9px] uppercase tracking-[0.3em] bg-white text-primary px-4 h-6 rounded-full shadow-sm border border-primary/5">Legal Protocol</Badge>
                                 <CardTitle className="text-3xl font-black text-primary tracking-tighter mt-2">Intellectual Sovereignty</CardTitle>
@@ -53,8 +52,8 @@ export default function TermsClient() {
                     </Card>
 
                     <section className="pt-10 border-t border-primary/5 space-y-8">
-                        <div className="flex items-center gap-6">
-                            <div className="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary shadow-inner border border-primary/5">
+                        <div className="flex items-center gap-6 group/section">
+                            <div className="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary shadow-inner border border-primary/5 group-hover/section:scale-110 group-hover/section:bg-primary/10 transition-all duration-500">
                                 <Gavel className="w-6 h-6" />
                             </div>
                             <div>
@@ -73,9 +72,10 @@ export default function TermsClient() {
                     </section>
 
                     <Card className="bg-primary/5 border-primary/5 rounded-[2.5rem] shadow-inner group overflow-hidden relative">
-                        <div className="absolute -right-4 -bottom-4 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000" />
+                        <div className="absolute -right-4 -bottom-4 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 group-hover:bg-primary/10 transition-all duration-1000 pointer-events-none" />
                         <CardContent className="p-10 sm:p-14 flex flex-col md:flex-row gap-10 items-center relative z-10">
-                            <div className="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center shrink-0 border border-primary/5 shadow-vip group-hover:scale-110 transition-transform duration-500">
+                            <div className="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center shrink-0 border border-primary/5 shadow-vip group-hover:rotate-12 group-hover:scale-110 transition-all duration-500 overflow-hidden relative">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-full group-hover:animate-shine pointer-events-none" />
                                 <FileText className="w-10 h-10 text-secondary" />
                             </div>
                             <div className="space-y-4">
@@ -90,10 +90,12 @@ export default function TermsClient() {
 
                 {/* Sidebar Utilities */}
                 <div className="space-y-10">
-                    <TrackManuscriptWidget />
+                    <div className="group/widget transition-transform duration-500 hover:-translate-y-1">
+                        <TrackManuscriptWidget />
+                    </div>
 
                     <Card className="bg-primary border-none text-white shadow-vip rounded-[2.5rem] overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-120 transition-transform duration-1000" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-120 group-hover:bg-secondary/20 transition-all duration-1000 pointer-events-none" />
                         <CardHeader className="p-8 pb-4">
                             <ShieldAlert className="w-10 h-10 text-secondary/40 mb-4 transition-transform" />
                             <CardTitle className="text-2xl font-black text-white tracking-tighter">Policy Matrix</CardTitle>

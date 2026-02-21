@@ -24,7 +24,7 @@ export default function HomeCarousel() {
     }, []);
 
     return (
-        <section className="relative h-[250px] sm:h-[350px] lg:h-[450px] xl:h-[550px] bg-slate-950 overflow-hidden">
+        <section className="relative h-[250px] sm:h-[350px] lg:h-[380px] xl:h-[450px] bg-slate-950 overflow-hidden">
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentIndex}
@@ -63,7 +63,7 @@ export default function HomeCarousel() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3, duration: 0.8 }}
                             >
-                                <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-sans font-black text-white tracking-[0.05em] leading-[1.1] mb-6 drop-shadow-2xl">
+                                <h1 className="text-xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-sans font-black text-white tracking-[0.05em] leading-[1.1] mb-6 drop-shadow-2xl">
                                     {MAIN_TITLE}
                                 </h1>
                             </motion.div>
@@ -74,15 +74,23 @@ export default function HomeCarousel() {
                                 transition={{ delay: 0.5, duration: 0.8 }}
                                 className="flex flex-wrap items-center gap-6"
                             >
-                                <Link
-                                    href="/submit"
-                                    className="px-8 py-3.5 rounded-xl bg-secondary text-white font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-secondary/20 hover:scale-105 transition-transform"
+                                <motion.div
+                                    animate={{
+                                        boxShadow: ["0px 0px 0px rgba(220,38,38,0)", "0px 10px 30px rgba(220,38,38,0.5)", "0px 0px 0px rgba(220,38,38,0)"]
+                                    }}
+                                    transition={{ duration: 3, repeat: Infinity }}
+                                    className="rounded-xl overflow-hidden"
                                 >
-                                    Submit Manuscript
-                                </Link>
+                                    <Link
+                                        href="/submit"
+                                        className="block px-8 py-3.5 bg-secondary text-white font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-secondary/20 hover:scale-105 transition-transform"
+                                    >
+                                        Submit Manuscript
+                                    </Link>
+                                </motion.div>
                                 <Link
                                     href="/archives"
-                                    className="text-white/70 font-black text-[10px] uppercase tracking-[0.2em] border-b border-white/20 hover:border-white hover:text-white transition-all pb-1"
+                                    className="text-white/70 font-black text-[10px] uppercase tracking-[0.2em] border-b border-white/20 hover:border-white hover:text-white transition-all pb-1 hover:-translate-y-1 block"
                                 >
                                     Explore Archives
                                 </Link>

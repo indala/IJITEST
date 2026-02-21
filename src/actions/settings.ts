@@ -18,7 +18,7 @@ export async function getSettings() {
             support_phone: '+91 8919643590',
             office_address: 'Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India',
             publisher_name: 'Felix Academic Publications',
-            apc_description: 'APC covers DOI assignment, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.',
+            apc_description: 'APC covers SJIF impact evaluation, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.',
             template_url: '/docs/template.docx',
             copyright_url: '/docs/copyright-form.docx'
         };

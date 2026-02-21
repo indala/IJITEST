@@ -17,7 +17,6 @@ interface GuidelinesContentProps {
 export default function GuidelinesContent({ settings }: GuidelinesContentProps) {
     const shortName = settings.journal_short_name || "IJITEST";
     const supportEmail = settings.support_email || "editor@ijitest.org";
-    console.log(settings)
 
     return (
         <div className="bg-background min-h-screen">
@@ -51,7 +50,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                                         { icon: Download, title: "1. Download Template", desc: "Use our official IEEE Word template to ensure your manuscript meets global formatting standards." },
                                         { icon: FileText, title: "2. Submit via Portal", desc: `Upload your manuscript and metadata through our secure submission dashboard for rapid processing.` },
                                         { icon: Cpu, title: "3. Peer Review", desc: "Rigorous double-blind peer review by domain experts. Initial decision typically within 2–3 weeks." },
-                                        { icon: FileCheck, title: "4. Final Publication", desc: "Upon acceptance, complete copyright formalities and APC payment for DOI assignment and indexing." }
+                                        { icon: FileCheck, title: "4. Final Publication", desc: "Upon acceptance, complete copyright formalities and APC payment for SJIF impact evaluation." }
                                     ].map((step, idx) => (
                                         <motion.div
                                             key={idx}
@@ -78,7 +77,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
 
                                 <Card className="bg-primary p-1 rounded-[3rem] shadow-vip border-none overflow-hidden group">
                                     <div className="bg-white/5 backdrop-blur-md p-8 sm:p-10 rounded-[2.8rem] relative">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700" />
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 group-hover:bg-secondary/30 transition-all duration-700 pointer-events-none" />
                                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
                                             <div className="space-y-2">
                                                 <h3 className="text-2xl font-black text-white tracking-tighter">Ready for Submission?</h3>
@@ -152,7 +151,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                                 <Card className="bg-gradient-to-br from-primary/5 to-transparent border border-primary/10 rounded-[2.5rem] shadow-sm">
                                     <CardContent className="p-8">
                                         <p className="text-sm text-primary/60 font-medium leading-relaxed text-center max-w-3xl mx-auto border-l-2 border-secondary/30 px-6">
-                                            * Authors must ensure all figures are high-resolution (min 300 DPI) and references follow the IEEE citation style for faster indexing approval. Elite submissions receive priority processing.
+                                            * Authors must ensure all figures are high-resolution (min 300 DPI) and references follow the IEEE citation style for faster indexing and SJIF impact assessment. Elite submissions receive priority processing.
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -168,7 +167,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                                 {[
                                     { label: "Process", title: "Double-Blind", desc: "Peer review by elite global domain experts.", color: "emerald", badge: "Process" },
                                     { label: "Timeline", title: "2–3 Weeks", desc: "Standard peer review decision timeframe for thorough validation.", color: "blue", badge: "Timeline" },
-                                    { label: "Indexing", title: "DOI Assignment", desc: "Permanent global registry for all elite articles.", color: "amber", badge: "Indexing" }
+                                    { label: "Indexing", title: "SJIF Impact", desc: "High scientific impact factor calculation for all articles.", color: "amber", badge: "Timeline" }
                                 ].map((item, i) => (
                                     <Card key={i} className="bg-white border border-primary/5 shadow-vip hover:shadow-vip-hover hover:border-secondary/20 transition-all duration-500 rounded-3xl overflow-hidden group">
                                         <CardContent className="p-7 text-center space-y-4">
@@ -184,16 +183,16 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
 
                     {/* Sidebar Utilities */}
                     <div className="space-y-10">
-                        <div className="p-1 rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip">
+                        <div className="group/widget transition-transform duration-500 hover:-translate-y-1">
                             <div className="bg-white/50 backdrop-blur-sm p-3 rounded-[2.3rem]">
                                 <TrackManuscriptWidget />
                             </div>
                         </div>
 
                         <Card className="bg-secondary border-none text-white shadow-vip-hover rounded-[2.5rem] overflow-hidden relative group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-white/20 transition-colors duration-1000 pointer-events-none" />
                             <CardContent className="p-8 relative z-10">
-                                <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/20 group-hover:rotate-12 transition-transform duration-500">
+                                <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/20 group-hover:rotate-12 group-hover:scale-110 transition-all duration-500">
                                     <ShieldAlert className="w-8 h-8 text-white" />
                                 </div>
                                 <CardTitle className="text-2xl font-black mb-2 text-white tracking-tighter">Ethics Policy</CardTitle>
@@ -207,7 +206,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
 
                         <Card className="bg-primary p-1 border-none text-white shadow-vip rounded-[2.5rem] overflow-hidden relative group">
                             <div className="bg-white/5 backdrop-blur-md p-8 rounded-[2.3rem] relative">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-secondary opacity-20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700" />
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-secondary opacity-20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 group-hover:opacity-30 transition-all duration-700 pointer-events-none" />
                                 <CardContent className="p-0 relative z-10">
                                     <h3 className="text-lg font-black mb-6 tracking-widest uppercase text-secondary">APC Summary</h3>
                                     <div className="space-y-4 mb-8">

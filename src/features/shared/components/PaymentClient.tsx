@@ -77,12 +77,12 @@ export default function PaymentClient({ id }: { id: string }) {
         <div className="min-h-screen flex items-center justify-center bg-background p-4 sm:p-8">
             <Card className="max-w-xl w-full border-primary/5 rounded-[3.5rem] text-center p-12 sm:p-20 shadow-vip-hover bg-white group">
                 <CardContent className="space-y-10 p-0">
-                    <div className="w-24 h-24 bg-emerald-50 rounded-[2.5rem] flex items-center justify-center mx-auto border border-emerald-100 shadow-sm group-hover:scale-110 transition-transform duration-700">
+                    <div className="w-24 h-24 bg-emerald-50 rounded-[2.5rem] flex items-center justify-center mx-auto border border-emerald-100 shadow-sm group-hover:scale-110 transition-transform duration-700 animate-float-slow">
                         <CheckCircle2 className="w-12 h-12 text-emerald-500" />
                     </div>
                     <div className="space-y-4">
                         <h2 className="text-3xl font-black text-primary tracking-tighter">Grant Confirmed</h2>
-                        <p className="text-sm text-primary/40 font-medium leading-relaxed">Transaction finalized. Your research is now officially queued for global indexing and DOI assignment.</p>
+                        <p className="text-sm text-primary/40 font-medium leading-relaxed">Transaction finalized. Your research is now officially queued for global indexing and SJIF impact evaluation.</p>
                     </div>
                     <div className="space-y-4 pt-4">
                         <Button asChild className="h-14 w-full bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-xl shadow-primary/20">
@@ -118,8 +118,9 @@ export default function PaymentClient({ id }: { id: string }) {
                             </div>
 
                             <Card className="border-primary/5 shadow-vip rounded-[3rem] overflow-hidden bg-white group">
-                                <CardHeader className="bg-primary/5 border-b border-primary/5 p-8 px-10">
-                                    <div className="flex justify-between items-center">
+                                <CardHeader className="bg-primary/5 border-b border-primary/5 p-8 px-10 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+                                    <div className="flex justify-between items-center relative z-10">
                                         <Badge variant="secondary" className="font-black text-[10px] uppercase tracking-[0.3em] bg-white text-primary px-4 h-6 rounded-full shadow-sm border border-primary/5">Invoice Details</Badge>
                                         <ShieldCheck className="w-6 h-6 text-primary/20" />
                                     </div>
@@ -147,7 +148,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                             <span className="text-primary/60">₹ 2,100.00</span>
                                         </div>
                                         <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-[0.2em] text-primary/40">
-                                            <span>DOI & Metadata Indexing</span>
+                                            <span>SJIF & Metadata Indexing</span>
                                             <span className="text-primary/60">₹ 400.00</span>
                                         </div>
                                         <div className="flex justify-between items-center pt-8 mt-4 border-t-2 border-dashed border-primary/10">
@@ -159,7 +160,7 @@ export default function PaymentClient({ id }: { id: string }) {
                             </Card>
 
                             <div className="bg-primary/5 border border-primary/5 p-8 rounded-[2.5rem] relative overflow-hidden group/policy">
-                                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover/policy:scale-150 transition-transform duration-1000" />
+                                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover/policy:scale-150 transition-transform duration-1000 pointer-events-none" />
                                 <div className="flex gap-6 relative z-10">
                                     <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-primary/5">
                                         <Info className="w-6 h-6 text-primary" />
@@ -167,7 +168,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <div className="space-y-2">
                                         <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-primary">Financial Policy</h4>
                                         <p className="text-[11px] text-primary/40 font-medium leading-relaxed pr-8">
-                                            "Submission of payment constitutes final agreement for global dissemination. Once DOI is registered, transactions are non-refundable according to COPE guidelines."
+                                            "Submission of payment constitutes final agreement for global dissemination. Once article is processed, transactions are non-refundable according to COPE guidelines."
                                         </p>
                                     </div>
                                 </div>
@@ -195,7 +196,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                     disabled={processing}
                                     className="w-full h-20 bg-primary hover:bg-primary/95 text-white flex flex-col items-center justify-center gap-1 rounded-2xl shadow-2xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/paybtn"
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/paybtn:translate-x-full transition-transform duration-1000" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine pointer-events-none" />
                                     {processing ? (
                                         <div className="flex items-center gap-3">
                                             <span className="font-black text-xs uppercase tracking-widest">Bridging API...</span>

@@ -46,7 +46,7 @@ export default async function Submissions({
 
     // Fetch submissions from MySQL with optional status filtering
     let query = 'SELECT * FROM submissions';
-    let params: any[] = [];
+    const params: any[] = [];
 
     if (currentStatus === 'pending') {
         query += ' WHERE status IN ("under_review", "accepted")';

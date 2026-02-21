@@ -9,7 +9,8 @@ export default function Footer({ settings }: { settings?: Record<string, string>
         <footer className="bg-slate-950 text-white pt-20 pb-10 font-sans relative overflow-hidden">
             {/* Background decorative glow */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary/50 to-transparent opacity-30" />
-            <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/20 transition-colors duration-1000" />
+            <div className="absolute top-1/4 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-secondary/10 transition-colors duration-1000" />
 
             <div className="max-w-[1600px] mx-auto px-4 md:px-8 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
@@ -52,8 +53,9 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                         <div>
                             <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-white mb-10 border-b border-white/10 pb-4 inline-block">Support HQ</h4>
                             <div className="space-y-6">
-                                <div className="flex gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                <div className="flex gap-4 group/support">
+                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:scale-110 group-hover/support:bg-white/10 transition-all duration-500 overflow-hidden relative">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
                                         <ShieldCheck className="w-4 h-4 text-secondary" />
                                     </div>
                                     <div>
@@ -61,8 +63,9 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                                         <span className="text-xs font-black text-white">Institutional Standards</span>
                                     </div>
                                 </div>
-                                <div className="flex gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                <div className="flex gap-4 group/support">
+                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:scale-110 group-hover/support:bg-white/10 transition-all duration-500 overflow-hidden relative">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
                                         <Phone className="w-4 h-4 text-secondary" />
                                     </div>
                                     <div>
@@ -70,8 +73,9 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                                         <p className="text-xs font-black text-white">+91 8919643590</p>
                                     </div>
                                 </div>
-                                <div className="flex gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                <div className="flex gap-4 group/support">
+                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:scale-110 group-hover/support:bg-white/10 transition-all duration-500 overflow-hidden relative">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
                                         <MapPin className="w-4 h-4 text-secondary" />
                                     </div>
                                     <div>
@@ -96,11 +100,13 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                     </div>
 
                     <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-default group/protocol overflow-hidden relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/protocol:animate-shine pointer-events-none" />
                             <ShieldCheck className="w-4 h-4 text-emerald-400" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">COPE Protocol</span>
                         </div>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-default group/hub overflow-hidden relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/hub:animate-shine pointer-events-none" />
                             <Globe className="w-4 h-4 text-blue-400" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Open Access Hub</span>
                         </div>

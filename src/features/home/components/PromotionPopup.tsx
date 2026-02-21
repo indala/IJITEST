@@ -28,12 +28,12 @@ export default function PromotionPopup() {
     return (
         <AnimatePresence>
             {isVisible && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+                <div className="fixed  inset-0 z-[100] flex items-center justify-center p-4  bg-black/70 backdrop-blur-md">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative max-w-lg w-full bg-white rounded-[3rem] overflow-hidden shadow-vip border border-primary/5 max-h-[90vh] flex flex-col"
+                        className="border-black  border-2 relative max-w-lg w-full bg-white rounded-[3rem] overflow-hidden shadow-vip border border-primary/5 max-h-[97vh] flex flex-col"
                     >
                         {/* Decorative Background */}
                         <div className="absolute top-0 right-0 w-80 h-80 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -47,49 +47,51 @@ export default function PromotionPopup() {
                             className="absolute top-6 right-6 p-2 text-primary/40 hover:text-secondary hover:bg-secondary/10 transition-all z-20 rounded-2xl shadow-inner border border-primary/5"
                             aria-label="Close protocol"
                         >
-                            <X className="w-5 h-5" />
+                            <X className="w-5 h-5 animate-pulse" />
                         </Button>
 
-                        <div className="relative z-10 p-10 sm:p-14 text-center space-y-8 overflow-y-auto sm:overflow-y-visible">
-                            <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/5 rounded-[2rem] text-primary mb-2 mx-auto shadow-inner border border-primary/5">
-                                <Sparkles className="w-10 h-10" />
+                        <div className="relative z-10 p-6 sm:p-10 text-center flex flex-col h-full overflow-y-auto custom-scrollbar">
+                            <div className="shrink-0 mb-4 sm:mb-6">
+                                <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-primary/5 rounded-[1.5rem] sm:rounded-[2rem] text-primary shadow-inner border border-primary/5 mx-auto">
+                                    <Sparkles className="w-7 h-7 sm:w-8 sm:h-8" />
+                                </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <Badge variant="secondary" className="px-4 py-1.5 bg-secondary text-white text-[10px] font-black uppercase tracking-[0.4em] rounded-full shadow-lg shadow-secondary/20">
+                            <div className="space-y-3 mb-6 shrink-0">
+                                <Badge variant="secondary" className="px-3 py-1 sm:px-4 sm:py-1.5 bg-secondary text-white text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] rounded-full shadow-lg shadow-secondary/20 inline-block">
                                     Strategic Incentive
                                 </Badge>
-                                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary leading-none tracking-tighter">
+                                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary leading-tight sm:leading-none tracking-tighter">
                                     Publish Research <br />
                                     <span className="text-secondary">Gratis Protocol</span>
                                 </h2>
-                                <p className="text-sm text-primary/60 font-medium leading-relaxed border-l-4 border-secondary/50 pl-8 text-left">
+                                <p className="text-xs sm:text-sm text-primary/60 font-medium leading-relaxed border-l-4 border-secondary/50 pl-6 text-left max-w-sm mx-auto sm:max-w-none">
                                     In our commitment to supporting the next generation of innovators, the <strong>Primary Investigator</strong> will receive a <strong>100% APC Waiver</strong> for our inaugural 2026 volume.
                                 </p>
                             </div>
 
-                            <div className="bg-primary/5 p-6 rounded-[2rem] border border-primary/5 flex items-center gap-6 text-left shadow-inner">
-                                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-primary/5">
-                                    <Gift className="w-7 h-7 text-secondary" />
+                            <div className="bg-primary/5 p-4 sm:p-5 rounded-[1.5rem] sm:rounded-[2rem] border border-primary/5 flex items-center gap-4 text-left shadow-inner shrink-0 mb-6 sm:mb-8">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-primary/5">
+                                    <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
                                 </div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-primary/40 leading-relaxed">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-primary/40 leading-relaxed">
                                     Limited engagement window. Applicable for high-fidelity technical submissions validated this session.
                                 </p>
                             </div>
 
-                            <div className="flex flex-col gap-4 pt-4">
+                            <div className="flex flex-col  gap-2 sm:gap-3 mt-auto shrink-0">
                                 <Button
                                     onClick={closePopup}
-                                    className="w-full h-16 bg-primary text-white rounded-3xl font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all group/btn"
+                                    className="w-full h-12 sm:h-14 bg-linear-to-r from-primary via-purple/80 from-32% hover:from-60% to-secondary text-white rounded-xl sm:rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all group/btn"
                                 >
-                                    <span className="flex items-center gap-2">
-                                        Transmit Submission <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                    <span className="flex items-center justify-center gap-2">
+                                        Transmit Submission <Send className="w-4 h-4 group-hover:translate-x-1  hover:-translate-y-1 transition-transform" />
                                     </span>
                                 </Button>
                                 <Button
-                                    variant="ghost"
+                                    variant="link"
                                     onClick={closePopup}
-                                    className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] hover:text-primary transition-all h-12"
+                                    className="text-[9px] font-black text-primary/40 uppercase tracking-[0.2em] transition-all h-10"
                                 >
                                     Deferred Engagement
                                 </Button>

@@ -13,10 +13,10 @@ export default function SubmitClient() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
                 {/* Main Content */}
                 <div className="lg:col-span-2">
-                    <Card className="border-primary/5 shadow-lg rounded-[3rem] overflow-hidden bg-white group">
+                    <Card className="border-primary/5 shadow-md hover:shadow-xl transition-all duration-500 rounded-3xl overflow-hidden bg-white group">
                         <div className="bg-primary p-8 sm:p-10 text-white relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-80 h-80 bg-secondary/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700" />
-                            <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-accent/20 rounded-full blur-[80px]" />
+                            <div className="absolute top-0 right-0 w-80 h-80 bg-secondary/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 group-hover:bg-secondary/30 transition-all duration-1000 pointer-events-none" />
+                            <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-accent/20 rounded-full blur-[80px] group-hover:bg-accent/30 transition-colors duration-1000 pointer-events-none" />
 
                             <div className="relative z-10 space-y-2">
                                 <h2 className="text-3xl font-black tracking-tighter">Ready to Publish?</h2>
@@ -24,21 +24,21 @@ export default function SubmitClient() {
                             </div>
                         </div>
 
-                        <CardContent className="p-8 sm:p-12 relative z-10">
+                        <CardContent className="p-6 sm:p-12 relative z-10">
                             <SubmissionForm />
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Sidebar Utilities */}
-                <div className="space-y-10">
-                    <div className="p-1 rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip">
-                        <div className="bg-white/50 backdrop-blur-sm p-3 rounded-[2.3rem]">
+                <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+                    <div className="group/widget transition-transform duration-500 hover:-translate-y-1">
+                        <div className="bg-white/50 backdrop-blur-sm p-3 rounded-[1.3rem]">
                             <TrackManuscriptWidget />
                         </div>
                     </div>
 
-                    <Card className="bg-white border border-primary/5 p-8 sm:p-10 rounded-[2.5rem] shadow-lg group">
+                    <Card className="bg-white border border-primary/5 p-8 sm:p-10 rounded-3xl shadow-md group">
                         <h3 className="text-2xl font-black text-primary mb-8 tracking-tighter">Submission Guide</h3>
                         <div className="space-y-6">
                             {[
@@ -85,18 +85,18 @@ export default function SubmitClient() {
                         </div>
                     </div>
 
-                    <Card className="bg-secondary border-none text-white shadow-vip-hover rounded-[2.5rem] overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+                    <Card className="bg-secondary border-none text-white shadow-xl rounded-3xl overflow-hidden relative group hover:shadow-2xl transition-all duration-500">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
                         <CardContent className="p-8 relative z-10">
-                            <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/20 group-hover:rotate-12 transition-transform duration-500">
+                            <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/20 group-hover:rotate-12 group-hover:scale-110 transition-all duration-500">
                                 <Gavel className="w-8 h-8 text-white" />
                             </div>
                             <h3 className="text-2xl font-black mb-2 text-white tracking-tighter">Technical Issue?</h3>
-                            <p className="text-sm text-white/70 mb-8 font-medium leading-relaxed">Reach our elite support desk for immediate assistance with submissions.</p>
+                            <p className="text-sm text-white/80 mb-8 font-medium leading-relaxed">Reach our elite support desk for immediate assistance with submissions.</p>
                             <Button asChild className="w-full h-12 bg-white/10 border border-white/20 hover:bg-white text-white hover:text-secondary font-black text-[10px] uppercase tracking-[0.2em] rounded-xl transition-all">
                                 <Link href="/contact" className="flex items-center justify-between px-6 w-full">
                                     <span>Contact Support</span>
-                                    <ChevronRight className="w-4 h-4" />
+                                    <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                                 </Link>
                             </Button>
                         </CardContent>

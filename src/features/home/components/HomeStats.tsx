@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 import { memo } from 'react';
 
 const stats = [
-    { label: "Commencement", value: "2026", color: "text-blue-600", dotColor: "bg-blue-600", delay: 0 },
-    { label: "Frequency", value: "Monthly", color: "text-emerald-600", dotColor: "bg-emerald-600", delay: 0.1 },
-    { label: "Journal Frequency", value: "Monthly (12 issues per year)", color: "text-amber-600", dotColor: "bg-amber-600", delay: 0.2 }
+    { label: "Review Model", value: "Double-Blind", color: "text-emerald-600", dotColor: "bg-emerald-600", delay: 0 },
+    { label: "Publication", value: "Monthly", color: "text-blue-600", dotColor: "bg-blue-600", delay: 0.1 },
+    { label: "Open Access", value: "100% APC Waiver", color: "text-amber-600", dotColor: "bg-amber-600", delay: 0.2 }
 ];
 
 const CARD_DURATION = 3;
@@ -32,10 +32,10 @@ function HomeStats() {
                     className="h-full"
                 >
                     <Card className="h-full border border-primary/5 bg-white shadow-vip hover:shadow-vip-hover transition-all duration-500 group overflow-hidden relative">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-500" />
 
                         <CardContent className="p-6 flex flex-col justify-between h-full relative z-10">
-                            <div>
+                            <div className="group-hover:-translate-y-1 transition-transform duration-500">
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/40 mb-3 group-hover:text-secondary transition-colors duration-500">
                                     {stat.label}
                                 </p>
@@ -56,7 +56,11 @@ function HomeStats() {
                                         className="h-full w-full bg-gradient-to-r from-secondary to-secondary/50"
                                     />
                                 </div>
-                                <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
+                                <motion.div
+                                    animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 }}
+                                    className="w-1.5 h-1.5 rounded-full bg-secondary"
+                                />
                             </div>
                         </CardContent>
                     </Card>

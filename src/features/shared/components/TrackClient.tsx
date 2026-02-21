@@ -117,8 +117,9 @@ export default function TrackClient() {
     return (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
             {/* Tracking Form */}
-            <Card className="border-primary/5 shadow-vip rounded-[3rem] mb-16 overflow-hidden bg-white group">
-                <CardHeader className="p-10 pb-0">
+            <Card className="border-primary/5 bg-primary/[0.02] shadow-sm rounded-3xl overflow-hidden relative group/search">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover/search:bg-primary/10 transition-colors duration-1000 pointer-events-none" />
+                <CardHeader className="p-10 pb-0 relative z-10">
                     <div className="flex items-center gap-4 mb-2">
                         <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center">
                             <Search className="w-5 h-5 text-primary" />
@@ -156,8 +157,9 @@ export default function TrackClient() {
                             <Button
                                 type="submit"
                                 disabled={status === 'loading'}
-                                className="w-full h-16 bg-primary hover:bg-primary/90 text-white font-black text-sm uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                                className="w-full h-16 bg-primary hover:bg-primary/90 text-white font-black text-sm uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group-hover:animate-none"
                             >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shine pointer-events-none" />
                                 {status === 'loading' ? (
                                     <>Searching Archives... <Loader2 className="ml-3 w-5 h-5 animate-spin" /></>
                                 ) : (
@@ -183,6 +185,7 @@ export default function TrackClient() {
                             className="space-y-8"
                         >
                             <Card className="border-primary/5 shadow-vip-hover rounded-[3rem] overflow-hidden relative bg-white group">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/10 transition-colors duration-1000 pointer-events-none" />
                                 <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
                                     <FileText className="w-48 h-48 text-primary" />
                                 </div>
@@ -250,12 +253,12 @@ export default function TrackClient() {
                                         {manuscript.status === 'accepted' && (
                                             <Card className="bg-primary p-1 border-none rounded-[2.5rem] shadow-vip overflow-hidden group/pay">
                                                 <div className="bg-white/10 backdrop-blur-md p-8 sm:p-10 rounded-[2.3rem] relative">
-                                                    <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/30 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover/pay:scale-150 transition-transform duration-700" />
+                                                    <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/30 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover/pay:scale-150 transition-transform duration-700 pointer-events-none" />
                                                     <div className="flex flex-col md:items-center justify-between gap-8 relative z-10">
                                                         <div className="text-center space-y-2">
                                                             <h3 className="text-2xl font-black text-white tracking-tighter">Final Step: APC Payment</h3>
                                                             <p className="text-sm text-white/60 font-medium max-w-md mx-auto">
-                                                                "Your research is approved. Complete the hosting fee to finalize global indexing and DOI registry."
+                                                                "Your research is approved. Complete the hosting fee to finalize global indexing and SJIF impact assessment."
                                                             </p>
                                                         </div>
                                                         <Button asChild className="h-14 px-12 bg-secondary hover:bg-secondary/90 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-secondary/20 transition-all hover:scale-105 active:scale-95">

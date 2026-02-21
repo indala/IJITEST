@@ -21,9 +21,8 @@ export default function PrivacyClient() {
                     </section>
 
                     <Card className="border-primary/5 shadow-vip hover:shadow-vip-hover transition-all duration-500 rounded-[3rem] bg-white group overflow-hidden relative">
-                        <div className="absolute top-0 right-0 p-12 text-primary/5 group-hover:rotate-12 transition-transform duration-1000">
-                            <Lock className="w-48 h-48" />
-                        </div>
+                        <div className="absolute top-0 right-0 p-12 text-primary/5 group-hover:rotate-12 group-hover:scale-110 group-hover:text-primary/10 transition-all duration-1000 pointer-events-none" />
+                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors duration-1000 pointer-events-none" />
                         <CardHeader className="p-10 px-12 border-b border-primary/5 bg-primary/5">
                             <div className="space-y-1">
                                 <Badge variant="secondary" className="font-black text-[9px] uppercase tracking-[0.3em] bg-white text-primary px-4 h-6 rounded-full shadow-sm border border-primary/5">Data Protocol</Badge>
@@ -51,8 +50,8 @@ export default function PrivacyClient() {
                     </Card>
 
                     <section className="pt-10 border-t border-primary/5 space-y-8">
-                        <div className="flex items-center gap-6">
-                            <div className="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary shadow-inner border border-primary/5">
+                        <div className="flex items-center gap-6 group/section">
+                            <div className="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary shadow-inner border border-primary/5 group-hover/section:scale-110 group-hover/section:bg-primary/10 transition-all duration-500">
                                 <Eye className="w-6 h-6" />
                             </div>
                             <div>
@@ -80,9 +79,10 @@ export default function PrivacyClient() {
                     </section>
 
                     <Card className="bg-primary border-none shadow-lg rounded-[2.5rem] overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-white/10 transition-colors duration-1000 pointer-events-none" />
                         <CardContent className="p-10 sm:p-14 flex flex-col md:flex-row gap-10 items-center relative z-10">
-                            <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center text-white shrink-0 border border-white/10 shadow-inner group-hover:rotate-12 transition-transform duration-500">
+                            <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center text-white shrink-0 border border-white/10 shadow-inner group-hover:rotate-12 group-hover:scale-110 transition-all duration-500 overflow-hidden relative">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine pointer-events-none" />
                                 <ShieldCheck className="w-10 h-10 text-secondary" />
                             </div>
                             <div className="space-y-4">
@@ -97,10 +97,12 @@ export default function PrivacyClient() {
 
                 {/* Sidebar Utilities */}
                 <div className="space-y-10">
-                    <TrackManuscriptWidget />
+                    <div className="group/widget transition-transform duration-500 hover:-translate-y-1">
+                        <TrackManuscriptWidget />
+                    </div>
 
                     <Card className="bg-primary/5 border-primary/5 shadow-lg rounded-[2.5rem] group overflow-hidden relative">
-                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000" />
+                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 group-hover:bg-primary/10 transition-all duration-1000 pointer-events-none" />
                         <CardContent className="p-8 relative z-10">
                             <ShieldAlert className="w-10 h-10 mb-6 text-secondary/40 group-hover:rotate-12 transition-transform" />
                             <h3 className="text-xl font-black text-primary mb-2 tracking-tighter">Legal Nexus</h3>

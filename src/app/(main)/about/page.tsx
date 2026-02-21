@@ -41,16 +41,16 @@ export default function About() {
 
                     {/* Sidebar Utilities */}
                     <div className="space-y-10">
-                        <div className="p-1 rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip">
+                        <div className="p-1 rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip animate-float">
                             <div className="bg-white/50 backdrop-blur-sm p-3 rounded-[2.3rem]">
                                 <TrackManuscriptWidget />
                             </div>
                         </div>
 
                         <Card className="bg-secondary border-none text-white shadow-vip-hover rounded-[2.5rem] overflow-hidden relative group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl animate-blob pointer-events-none" />
                             <CardContent className="p-8 relative z-10">
-                                <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/20 group-hover:rotate-12 transition-transform duration-500">
+                                <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/20 group-hover:rotate-12 transition-transform duration-500 animate-float-slow">
                                     <ShieldAlert className="w-8 h-8 text-white" />
                                 </div>
                                 <CardTitle className="text-2xl font-black mb-2 text-white tracking-tighter">Ethics Policy</CardTitle>
@@ -63,16 +63,19 @@ export default function About() {
                         </Card>
 
                         <Card className="bg-white border border-primary/5 shadow-vip rounded-[2.5rem] group overflow-hidden relative">
-                            <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary/5 rounded-full translate-y-1/2 translate-x-1/2 blur-2xl" />
+                            <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary/5 rounded-full translate-y-1/2 translate-x-1/2 blur-2xl animate-blob pointer-events-none" style={{ animationDelay: '1s' }} />
                             <CardContent className="p-8 relative z-10">
                                 <h4 className="text-2xl font-black text-primary mb-2 tracking-tighter italic">Call for <span className="text-secondary not-italic">Papers</span></h4>
                                 <p className="text-sm text-primary/50 mb-8 font-medium leading-relaxed">Submit your breakthrough research for our upcoming 2026 Monthly edition.</p>
-                                <Button asChild className="w-full h-14 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 rounded-2xl group/btn transition-all duration-500 overflow-hidden relative">
-                                    <Link href="/submit" className="flex items-center justify-center relative z-10">
-                                        <span className="text-xs font-black uppercase tracking-[0.2em]">Submit Manuscript</span>
-                                        <ChevronRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                                    </Link>
-                                </Button>
+                                <div className="animate-float">
+                                    <Button asChild className="w-full h-14 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 rounded-2xl group/btn transition-all duration-500 overflow-hidden relative">
+                                        <Link href="/submit" className="flex items-center justify-center relative z-10">
+                                            <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.2),transparent)] animate-shine" />
+                                            <span className="text-xs font-black uppercase tracking-[0.2em] relative z-10">Submit Manuscript</span>
+                                            <ChevronRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform relative z-10" />
+                                        </Link>
+                                    </Button>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>

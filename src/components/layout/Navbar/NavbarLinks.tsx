@@ -33,7 +33,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                         >
                             <span className="relative z-10">{item.name}</span>
                             {item.children && (
-                                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-500 text-secondary/50 group-hover:text-secondary ${isHovered ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-500 text-secondary/50 group-hover:text-secondary ${isHovered ? 'rotate-180 animate-pulse' : ''}`} />
                             )}
 
                             {(isHovered || (isActive && !hoveredIndex)) && (

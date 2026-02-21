@@ -85,21 +85,21 @@ export default function AboutClient() {
                 </div>
             </section>
 
-            <section className="bg-primary p-10 sm:p-12 rounded-[2rem] text-white relative overflow-hidden shadow-lg border border-white/5">
-                <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/5 rounded-full blur-[100px]" />
-                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-white/5 rounded-full blur-[80px]" />
+            <section className="bg-primary p-10 sm:p-12 mt-4 rounded-[2rem] text-white relative overflow-hidden shadow-lg border border-white/5 group/publisher">
+                <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/5 rounded-full blur-[120px] group-hover/publisher:bg-white/10 transition-colors duration-1000 pointer-events-none" />
+                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-white/5 rounded-full blur-[90px] group-hover/publisher:bg-white/10 transition-colors duration-1000 pointer-events-none" />
 
                 <div className="relative z-10">
                     <div className="flex items-center gap-5 mb-8">
                         <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20">
                             <Building2 className="w-9 h-9 text-secondary" />
                         </div>
-                        <h2 className="text-3xl font-black tracking-tighter">About <span>Publisher</span></h2>
+                        <h2 className="text-3xl text-white font-black tracking-tighter">About <span className="text-secondary ps-2">Publisher</span></h2>
                     </div>
                     <div className="space-y-6">
                         <div>
                             <p className="text-2xl font-black text-white tracking-tight mb-1">Felix Academic Publications</p>
-                            <p className="text-[10px] text-white/50 font-black uppercase tracking-[0.3em]">Foundation for Education, Innovation & Excellence</p>
+                            <p className="text-[10px] text-white/60 font-black uppercase tracking-[0.3em]">Foundation for Education, Innovation & Excellence</p>
                         </div>
                         <div className="text-base sm:text-lg text-white/70 leading-relaxed font-medium space-y-6 max-w-2xl border-l-2 border-white/10 pl-8">
                             <p>

@@ -32,8 +32,9 @@ export default function ReviewerGuidelinesClient() {
                                 { title: "Clarity", desc: "Concise linguistic orchestration and precise data visualization." },
                                 { title: "Contribution", desc: "High-impact advancement for the global scientific collective." }
                             ].map((item, i) => (
-                                <Card key={i} className="bg-white border-primary/5 shadow-vip hover:shadow-vip-hover transition-all duration-500 rounded-[2rem] group overflow-hidden">
-                                    <CardContent className="p-8 flex items-start gap-6">
+                                <Card key={i} className="bg-white border-primary/5 shadow-vip hover:shadow-vip-hover transition-all duration-500 rounded-[2rem] group overflow-hidden relative">
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+                                    <CardContent className="p-8 flex items-start gap-6 relative z-10">
                                         <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center shrink-0 text-primary border border-primary/5 shadow-inner group-hover:rotate-12 transition-transform">
                                             <ShieldCheck className="w-5 h-5" />
                                         </div>
@@ -48,7 +49,7 @@ export default function ReviewerGuidelinesClient() {
                     </section>
 
                     <Card className="bg-primary border-none shadow-vip rounded-[3rem] overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-1000" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-1000 pointer-events-none" />
                         <CardContent className="p-10 sm:p-14 flex flex-col md:flex-row gap-10 items-center relative z-10">
                             <div className="w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center shrink-0 border border-white/10 shadow-inner group-hover:rotate-12 transition-transform duration-500">
                                 <ShieldAlert className="w-10 h-10 text-secondary" />
@@ -63,9 +64,9 @@ export default function ReviewerGuidelinesClient() {
                     </Card>
 
                     <div className="bg-primary text-white p-12 sm:p-20 rounded-[4rem] shadow-vip-hover relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-1000" />
+                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-1000 animate-blob pointer-events-none" />
                         <div className="relative z-10 flex flex-col items-center md:items-start space-y-10">
-                            <div className="bg-white/10 p-5 rounded-3xl border border-white/10 shadow-inner group-hover:rotate-12 transition-transform">
+                            <div className="bg-white/10 p-5 rounded-3xl border border-white/10 shadow-inner group-hover:rotate-12 transition-transform animate-float-slow">
                                 <BookOpen className="w-12 h-12 text-secondary" />
                             </div>
                             <div className="space-y-4 text-center md:text-left">
@@ -88,12 +89,14 @@ export default function ReviewerGuidelinesClient() {
 
                 {/* Sidebar Utilities */}
                 <div className="space-y-10">
-                    <TrackManuscriptWidget />
+                    <div className="group/widget transition-transform duration-500 hover:-translate-y-1">
+                        <TrackManuscriptWidget />
+                    </div>
 
                     <Card className="bg-primary/5 border-primary/5 shadow-vip rounded-[2.5rem] group overflow-hidden relative">
-                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-secondary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000" />
+                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-secondary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000 animate-blob pointer-events-none" />
                         <CardContent className="p-8 relative z-10">
-                            <ShieldAlert className="w-10 h-10 mb-6 text-secondary/40 group-hover:rotate-12 transition-transform" />
+                            <ShieldAlert className="w-10 h-10 mb-6 text-secondary/40 group-hover:rotate-12 transition-transform animate-float-slow" />
                             <h3 className="text-xl font-black text-primary mb-2 tracking-tighter italic">Ethics <span className="text-secondary not-italic">Framework</span></h3>
                             <p className="text-[11px] text-primary/40 mb-8 font-black uppercase tracking-widest italic leading-relaxed">Essential Evaluator Policy</p>
                             <Button asChild className="w-full text-[10px] font-black uppercase tracking-[0.3em] h-11 bg-primary hover:bg-primary/95 rounded-xl transition-all group/btn shadow-lg shadow-primary/20">

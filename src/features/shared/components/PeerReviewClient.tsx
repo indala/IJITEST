@@ -15,7 +15,7 @@ export default function PeerReviewClient() {
                 <div className="lg:col-span-2 space-y-12">
                     <section>
                         <Card className="bg-primary border-none text-white shadow-lg rounded-[2.5rem] overflow-hidden relative group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                             <CardContent className="p-10 sm:p-14 flex flex-col md:flex-row items-center gap-10">
                                 <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center shrink-0 border border-white/10 shadow-inner">
                                     <ShieldCheck className="w-12 h-12 text-secondary" />
@@ -61,9 +61,9 @@ export default function PeerReviewClient() {
 
                     <section>
                         <Card className="bg-primary/5 border-primary/5 rounded-[2.5rem] shadow-inner group overflow-hidden relative">
-                            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000" />
+                            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000 animate-blob pointer-events-none" />
                             <CardContent className="p-10 flex flex-col md:flex-row items-center gap-10 relative z-10">
-                                <div className="w-20 h-20 bg-white rounded-[1.5rem] flex items-center justify-center shrink-0 border border-primary/5 shadow-vip group-hover:scale-110 transition-transform duration-500">
+                                <div className="w-20 h-20 bg-white rounded-[1.5rem] flex items-center justify-center shrink-0 border border-primary/5 shadow-vip group-hover:scale-110 transition-transform duration-500 animate-float-slow">
                                     <Clock className="w-10 h-10 text-secondary" />
                                 </div>
                                 <div className="space-y-2">
@@ -79,10 +79,12 @@ export default function PeerReviewClient() {
 
                 {/* Sidebar Utilities */}
                 <div className="space-y-10">
-                    <TrackManuscriptWidget />
+                    <div className="animate-float">
+                        <TrackManuscriptWidget />
+                    </div>
 
                     <Card className="bg-primary border-none text-white shadow-vip rounded-[2.5rem] overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-120 transition-transform duration-1000" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-120 transition-transform duration-1000 animate-blob pointer-events-none" />
                         <CardHeader className="p-8 pb-4">
                             <CardTitle className="text-2xl font-black text-white tracking-tighter">Reviewer Panel</CardTitle>
                             <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mt-1">Certified Evaluation</p>

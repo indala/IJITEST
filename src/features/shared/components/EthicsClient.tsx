@@ -21,7 +21,7 @@ export default function EthicsClient() {
                     </section>
 
                     <Card className="border-primary/5 shadow-vip hover:shadow-vip-hover transition-all duration-500 rounded-[3rem] bg-white group overflow-hidden relative">
-                        <div className="absolute top-0 right-0 p-12 text-primary/5 group-hover:rotate-12 transition-transform duration-1000">
+                        <div className="absolute top-0 right-0 p-12 text-primary/5 group-hover:rotate-12 transition-transform duration-1000 animate-blob pointer-events-none">
                             <AlertOctagon className="w-48 h-48" />
                         </div>
                         <CardHeader className="p-10 px-12 border-b border-primary/5 bg-primary/5">
@@ -59,7 +59,8 @@ export default function EthicsClient() {
                         </div>
 
                         <Card className="bg-primary border-none shadow-vip rounded-[3rem] overflow-hidden relative group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-1000" />
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-secondary/10 transition-colors duration-1000 pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 group-hover:bg-primary/10 transition-colors duration-1000 pointer-events-none" style={{ animationDelay: '2s' }} />
                             <CardContent className="p-10 sm:p-14 flex flex-col md:flex-row gap-10 items-center relative z-10">
                                 <div className="w-24 h-24 bg-white/10 rounded-[2rem] flex items-center justify-center text-white shrink-0 border border-white/10 shadow-inner group-hover:rotate-12 transition-transform duration-500">
                                     <Scale className="w-10 h-10 text-secondary" />
@@ -79,17 +80,20 @@ export default function EthicsClient() {
 
                 {/* Sidebar Utilities */}
                 <div className="space-y-10">
-                    <TrackManuscriptWidget />
+                    <div className="animate-float">
+                        <TrackManuscriptWidget />
+                    </div>
 
                     <Card className="bg-primary/5 border-primary/5 shadow-vip rounded-[2.5rem] group overflow-hidden relative">
-                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000" />
+                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000 animate-blob pointer-events-none" />
                         <CardContent className="p-8 relative z-10">
                             <h4 className="text-xl font-black text-primary mb-2 tracking-tighter">Author Resources</h4>
                             <p className="text-[11px] text-primary/40 mb-8 font-black uppercase tracking-widest leading-relaxed">Mandatory Templates & Ethics Forms</p>
-                            <Button asChild className="w-full text-[10px] font-black uppercase tracking-[0.3em] h-12 bg-primary hover:bg-primary/95 rounded-xl shadow-lg transition-all group/btn">
+                            <Button asChild className="w-full text-[10px] font-black uppercase tracking-[0.3em] h-12 bg-primary hover:bg-primary/95 rounded-xl shadow-lg transition-all group/btn relative overflow-hidden">
                                 <Link href="/guidelines" className="flex items-center justify-between px-6 w-full">
-                                    <span>Full Protocols</span>
-                                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                    <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.1),transparent)] animate-shine" />
+                                    <span className="relative z-10">Full Protocols</span>
+                                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform relative z-10" />
                                 </Link>
                             </Button>
                         </CardContent>

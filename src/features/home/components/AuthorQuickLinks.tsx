@@ -1,6 +1,9 @@
+"use client";
+
 import { BookOpen, ShieldCheck, UserCheck, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { memo } from 'react';
+import { motion } from 'framer-motion';
 
 function AuthorQuickLinks() {
     const links = [
@@ -31,31 +34,38 @@ function AuthorQuickLinks() {
     ];
 
     return (
-        <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50">
-            <h3 className="text-xl font-sans font-black mb-6 text-gray-900">For Authors</h3>
-            <div className="space-y-4">
-                {links.map((link, i) => (
-                    <Link
-                        key={i}
-                        href={link.href}
-                        className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100 group"
-                    >
-                        <div className={`p-3 rounded-xl ${link.bgColor} ${link.color} shrink-0`}>
-                            <link.icon className="w-5 h-5" />
-                        </div>
-                        <div className="flex-1">
-                            <span className="text-xs font-black uppercase tracking-tight block group-hover:text-primary transition-colors">
-                                {link.label}
-                            </span>
-                            <span className="text-[10px] text-gray-500 font-medium line-clamp-1">
-                                {link.description}
-                            </span>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-primary transition-colors" />
-                    </Link>
-                ))}
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+        >
+            <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-gray-200/60 transition-all duration-300">
+                <h3 className="text-xl font-sans font-black mb-6 text-gray-900">For Authors</h3>
+                <div className="space-y-4">
+                    {links.map((link, i) => (
+                        <Link
+                            key={i}
+                            href={link.href}
+                            className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50/50 hover:bg-white hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 hover:shadow-md group"
+                        >
+                            <div className={`p-3 rounded-xl ${link.bgColor} ${link.color} shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                                <link.icon className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                                <span className="text-xs font-black uppercase tracking-tight block group-hover:text-primary transition-colors">
+                                    {link.label}
+                                </span>
+                                <span className="text-[10px] text-gray-500 font-medium line-clamp-1">
+                                    {link.description}
+                                </span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
+                        </Link>
+                    ))}
+                </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 

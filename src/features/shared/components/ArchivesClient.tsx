@@ -23,21 +23,24 @@ export default function ArchivesClient({ initialPapers }: { initialPapers: any[]
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
             {/* Search Bar */}
-            <div className="mb-12 relative max-w-3xl">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary/40">
-                    <Search className="w-5 h-5" />
-                </div>
-                <Input
-                    type="text"
-                    placeholder="Search by Title, Author, or Manuscript ID..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-16 pl-14 pr-6 rounded-[1.5rem] bg-primary/5 border-primary/10 font-bold text-primary shadow-inner focus-visible:ring-primary placeholder:text-primary/20"
-                />
-                <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden sm:block">
-                    <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest border-primary/10 text-primary/30">Archives DB v1.0</Badge>
-                </div>
-            </div>
+            <Card className="mb-12 border-primary/5 shadow-sm rounded-[2rem] overflow-hidden bg-primary/[0.02] relative group/search">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover/search:bg-primary/10 transition-colors duration-1000 pointer-events-none" />
+                <CardContent className="p-2 sm:p-3 relative flex items-center z-10">
+                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary/40 z-10 transition-transform duration-500 group-focus-within/search:scale-110 group-focus-within/search:text-primary">
+                        <Search className="w-5 h-5" />
+                    </div>
+                    <Input
+                        type="text"
+                        placeholder="Search by Title, Author, or Manuscript ID..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="h-14 sm:h-16 pl-14 pr-6 rounded-[1.5rem] bg-white border-primary/10 font-bold text-primary shadow-inner focus-visible:ring-primary/20 placeholder:text-primary/20 transition-all w-full"
+                    />
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:block z-10">
+                        <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest border-primary/10 text-primary/40 bg-white">Archives DB v1.0</Badge>
+                    </div>
+                </CardContent>
+            </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 {/* Main Content */}
@@ -45,7 +48,7 @@ export default function ArchivesClient({ initialPapers }: { initialPapers: any[]
                     {filteredPapers.length > 0 ? (
                         <>
                             <Card className="bg-primary border-none text-white overflow-hidden relative rounded-[2.5rem] shadow-vip group">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2 group-hover:scale-120 transition-transform duration-1000" />
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2 group-hover:scale-120 group-hover:bg-secondary/30 transition-all duration-1000 pointer-events-none" />
                                 <CardContent className="p-10 flex flex-col md:flex-row md:items-center justify-between relative z-10">
                                     <div className="space-y-2">
                                         <h2 className="text-3xl font-black tracking-tighter">Published Research</h2>
@@ -58,7 +61,8 @@ export default function ArchivesClient({ initialPapers }: { initialPapers: any[]
                                             <Badge className="text-[9px] h-5 font-black uppercase tracking-[0.2em] bg-secondary text-white border-none shadow-lg shadow-secondary/20 px-3">Live Volume</Badge>
                                             <p className="text-sm font-black text-white/80 mt-2">Volume 1 (2026)</p>
                                         </div>
-                                        <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/10 shadow-inner group-hover:rotate-12 transition-transform duration-500">
+                                        <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/10 shadow-inner group-hover:rotate-12 group-hover:scale-110 transition-all duration-500 overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine pointer-events-none" />
                                             <FileText className="w-7 h-7 text-secondary" />
                                         </div>
                                     </div>
@@ -80,7 +84,7 @@ export default function ArchivesClient({ initialPapers }: { initialPapers: any[]
                                 <FileText className="w-8 h-8 text-primary/20" />
                             </div>
                             <h2 className="text-3xl font-black text-primary tracking-tighter mb-4 relative z-10">Inaugural Volume <br className="hidden sm:block" /> In Progress</h2>
-                            <p className="text-primary/40 max-w-sm mx-auto font-medium relative z-10 mb-10 text-sm leading-relaxed">
+                            <p className="text-primary/50 max-w-md mx-auto font-bold relative z-10 mb-10 text-sm leading-relaxed">
                                 "Elite research undergoes rigorous peer-review. Accepted articles are streamed to our digital repository following official validation."
                             </p>
                             <Button asChild className="relative z-10 h-14 px-10 font-black text-[10px] uppercase tracking-[0.3em] bg-primary hover:bg-primary/95 text-white rounded-2xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.05]">
@@ -94,10 +98,12 @@ export default function ArchivesClient({ initialPapers }: { initialPapers: any[]
 
                 {/* Sidebar Utilities */}
                 <div className="space-y-10">
-                    <TrackManuscriptWidget />
+                    <div className="group/widget transition-transform duration-500 hover:-translate-y-1">
+                        <TrackManuscriptWidget />
+                    </div>
 
                     <Card className="bg-primary/5 border-primary/5 shadow-vip rounded-[2.5rem] group overflow-hidden relative">
-                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000" />
+                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 group-hover:bg-primary/10 transition-all duration-1000 pointer-events-none" />
                         <CardContent className="p-8 relative z-10">
                             <h4 className="text-xl font-black text-primary mb-2 tracking-tighter">Call for Papers</h4>
                             <p className="text-[11px] text-primary/40 mb-8 font-black uppercase tracking-widest leading-relaxed">Enrolling Elite Research for 2026 Edition</p>
