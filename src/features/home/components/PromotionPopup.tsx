@@ -52,13 +52,13 @@ export default function PromotionPopup() {
 
                         <div className="relative z-10 p-6 sm:p-10 text-center flex flex-col h-full overflow-y-auto custom-scrollbar">
                             <div className="shrink-0 mb-4 sm:mb-6">
-                                <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-primary/5 rounded-[1.5rem] sm:rounded-[2rem] text-primary shadow-inner border border-primary/5 mx-auto">
-                                    <Sparkles className="w-7 h-7 sm:w-8 sm:h-8" />
+                                <div className=" inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-primary/5 rounded-[1.5rem] sm:rounded-[2rem] text-primary shadow-inner border border-primary/5 mx-auto">
+                                    <Sparkles className=" w-7 h-7 sm:w-8 sm:h-8 " />
                                 </div>
                             </div>
 
-                            <div className="space-y-3 mb-6 shrink-0">
-                                <Badge variant="secondary" className="px-3 py-1 sm:px-4 sm:py-1.5 bg-secondary text-white text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] rounded-full shadow-lg shadow-secondary/20 inline-block">
+                            <div className="space-y-3 mb-6 shrink-0 ">
+                                <Badge variant="secondary" className=" px-3 py-1 sm:px-4 sm:py-1.5 bg-secondary text-white text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] rounded-full shadow-lg shadow-secondary/20 inline-block">
                                     Strategic Incentive
                                 </Badge>
                                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary leading-tight sm:leading-none tracking-tighter">
@@ -72,7 +72,7 @@ export default function PromotionPopup() {
 
                             <div className="bg-primary/5 p-4 sm:p-5 rounded-[1.5rem] sm:rounded-[2rem] border border-primary/5 flex items-center gap-4 text-left shadow-inner shrink-0 mb-6 sm:mb-8">
                                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-primary/5">
-                                    <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
+                                    <Gift className="animate-shine w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
                                 </div>
                                 <p className="text-[9px] font-black uppercase tracking-widest text-primary/40 leading-relaxed">
                                     Limited engagement window. Applicable for high-fidelity technical submissions validated this session.
@@ -82,7 +82,7 @@ export default function PromotionPopup() {
                             <div className="flex flex-col  gap-2 sm:gap-3 mt-auto shrink-0">
                                 <Button
                                     onClick={closePopup}
-                                    className="w-full h-12 sm:h-14 bg-linear-to-r from-primary via-purple/80 from-32% hover:from-60% to-secondary text-white rounded-xl sm:rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all group/btn"
+                                    className=" w-full h-12 sm:h-14 bg-linear-to-r from-primary via-purple/80 from-32% hover:from-60% to-secondary text-white rounded-xl sm:rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all group/btn"
                                 >
                                     <span className="flex items-center justify-center gap-2">
                                         Transmit Submission <Send className="w-4 h-4 group-hover:translate-x-1  hover:-translate-y-1 transition-transform" />

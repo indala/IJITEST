@@ -8,7 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export default function PaymentClient({ id }: { id: string }) {
+export default function PaymentClient({ id, settings }: { id: string, settings: any }) {
+    const apcTotal = parseFloat(settings?.apc_inr || '2500');
+    const apcFee = Math.floor(apcTotal * 0.84);
+    const apcIndexing = apcTotal - apcFee;
+
     const [loading, setLoading] = useState(true);
     const [manuscript, setManuscript] = useState<any>(null);
     const [error, setError] = useState('');
@@ -145,15 +149,15 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <div className="space-y-5 pt-4">
                                         <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-[0.2em] text-primary/40">
                                             <span>Journal Processing Fee</span>
-                                            <span className="text-primary/60">₹ 2,100.00</span>
+                                            <span className="text-primary/60">₹ {apcFee.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                         </div>
                                         <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-[0.2em] text-primary/40">
                                             <span>SJIF & Metadata Indexing</span>
-                                            <span className="text-primary/60">₹ 400.00</span>
+                                            <span className="text-primary/60">₹ {apcIndexing.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                         </div>
                                         <div className="flex justify-between items-center pt-8 mt-4 border-t-2 border-dashed border-primary/10">
                                             <span className="text-base font-black text-primary uppercase tracking-[0.1em]">Grand Total Due</span>
-                                            <span className="text-3xl font-black text-secondary tracking-tighter">₹ 2,500.00</span>
+                                            <span className="text-3xl font-black text-secondary tracking-tighter">₹ {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -204,7 +208,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                         </div>
                                     ) : (
                                         <>
-                                            <span className="text-xl font-black tracking-tighter">Confirm ₹ 2,500.00</span>
+                                            <span className="text-xl font-black tracking-tighter">Confirm ₹ {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                             <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Complete Transmission</span>
                                         </>
                                     )}

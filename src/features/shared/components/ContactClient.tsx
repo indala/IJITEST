@@ -90,7 +90,7 @@ export default function ContactClient() {
                             <div className="absolute -left-4 -bottom-4 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 group-hover:bg-primary/10 transition-all duration-1000 pointer-events-none" />
                             <CardContent className="p-8 relative z-10">
                                 <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center mb-6 shadow-sm border border-primary/10 group-hover:scale-105 transition-all duration-300 text-secondary">
-                                    <ShieldAlert className="w-6 h-6 group-hover:text-primary transition-colors" />
+                                    <ShieldAlert className=" w-6 h-6 group-hover:text-primary transition-colors" />
                                 </div>
                                 <h3 className="text-xl font-black text-primary mb-2 tracking-tighter">Integrity Nexus</h3>
                                 <p className="text-[10px] sm:text-[11px] text-primary/60 mb-6 font-black uppercase tracking-widest leading-relaxed">COPE Standard Adherence</p>

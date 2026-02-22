@@ -50,6 +50,7 @@ function FileInput({
             >
                 <input
                     ref={inputRef}
+                    placeholder="Upload File"
                     type="file"
                     name={name}
                     accept={accept}
