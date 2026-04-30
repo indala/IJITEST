@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2026 at 04:46 AM
+-- Generation Time: Apr 29, 2026 at 04:19 PM
 -- Server version: 12.3.1-MariaDB-log
 -- PHP Version: 7.2.34
 
@@ -203,6 +203,15 @@ CREATE TABLE `review_assignments` (
   `responded_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `review_assignments`
+--
+
+INSERT INTO `review_assignments` (`id`, `submission_id`, `reviewer_id`, `version_id`, `assigned_by`, `review_round`, `status`, `deadline`, `assigned_at`, `responded_at`) VALUES
+(1, 11, '79dfcee0-31c1-11f1-ad3e-c05465fbbdc2', 11, '87b55eae-e296-4a65-a82f-3c503beadf7e', 1, 'assigned', '2026-04-29', '2026-04-26 03:18:29', NULL),
+(2, 11, '79dcbb44-31c1-11f1-ad3e-c05465fbbdc2', 11, '87b55eae-e296-4a65-a82f-3c503beadf7e', 1, 'assigned', '2026-04-29', '2026-04-26 03:19:40', NULL),
+(3, 11, 'u19-mahendra-uuid-003', 11, '87b55eae-e296-4a65-a82f-3c503beadf7e', 1, 'assigned', '2026-04-29', '2026-04-26 03:26:52', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -225,12 +234,12 @@ INSERT INTO `settings` (`setting_key`, `setting_value`, `updated_at`) VALUES
 ('apc_usd', '0', '2026-04-01 19:17:58'),
 ('copyright_url', '/docs/copyright-form.docx', '2026-04-01 19:17:58'),
 ('is_promotion_active', 'true', '2026-04-01 19:17:58'),
-('issn_number', 'XXXX-XXXX', '2026-04-01 19:17:58'),
+('issn_number', 'Applied For', '2026-04-23 05:30:45'),
 ('journal_name', 'International Journal of Innovative Trends in Engineering Science and Technology', '2026-04-01 19:17:58'),
 ('journal_short_name', 'IJITEST', '2026-04-01 19:17:58'),
 ('office_address', 'Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India', '2026-04-01 19:17:59'),
 ('publisher_name', 'Felix Academic Publications', '2026-04-01 19:17:59'),
-('submission_sequence_2026', '10', '2026-04-16 18:35:18'),
+('submission_sequence_2026', '11', '2026-04-29 16:18:44'),
 ('support_email', 'support@ijitest.org', '2026-04-01 19:17:59'),
 ('support_phone', '+91 8919643590', '2026-04-01 19:17:59'),
 ('template_url', '/docs/template-url.docx', '2026-04-01 19:17:59');
@@ -270,7 +279,8 @@ INSERT INTO `submissions` (`id`, `paper_id`, `slug`, `status`, `final_decision`,
 (7, 'IJITEST-2026-007', 'ijitest2026007', 'published', NULL, NULL, NULL, 'ec45d5c4-0ec8-49ff-a9c0-d18ea988bfb2', 1, '2026-03-31 15:00:00', '2026-04-19 05:41:03', NULL),
 (8, 'IJITEST-2026-008', 'ijitest2026008', 'published', NULL, NULL, NULL, 'fa60af47-276f-4c3a-8c34-89aae8ee28dd', 1, '2026-03-31 16:00:00', '2026-04-19 05:41:03', NULL),
 (9, 'IJITEST-2026-009', 'ijitest2026009', 'published', NULL, NULL, NULL, 'a0d1d251-cccd-4a52-93ff-26bcc7ae428a', 1, '2026-03-31 17:00:00', '2026-04-19 05:41:03', NULL),
-(10, 'IJITEST-2026-010', 'ijitest2026010', 'published', NULL, NULL, NULL, 'c411a1e8-1a94-4ba8-bf5c-d3bead1b617b', 1, '2026-03-31 18:00:00', '2026-04-19 05:41:03', NULL);
+(10, 'IJITEST-2026-010', 'ijitest2026010', 'published', NULL, NULL, NULL, 'c411a1e8-1a94-4ba8-bf5c-d3bead1b617b', 1, '2026-03-31 18:00:00', '2026-04-19 05:41:03', NULL),
+(11, 'IJITEST-2026-011', 'ijitest2026011', 'revision_requested', NULL, NULL, NULL, 'cd2ef493-3626-483a-93c6-8236287bf7a1', NULL, '2026-04-25 05:55:52', '2026-04-29 16:18:44', NULL);
 
 -- --------------------------------------------------------
 
@@ -333,16 +343,16 @@ INSERT INTO `submission_authors` (`id`, `submission_id`, `name`, `email`, `is_co
 (36, 10, 'B. Chaitanya', 'coauthor_36@ijitest.org', 0, 3, NULL, NULL, 'Department of Mechanical Engineering,Avanthi Institute of Engineering and Technology, Vizianagaram, A.P., India'),
 (37, 10, 'P. Venkataramana', 'coauthor_37@ijitest.org', 0, 4, NULL, NULL, 'Department of Mechanical Engineering,Avanthi Institute of Engineering and Technology, Vizianagaram, A.P., India'),
 (38, 10, 'K. Deepthi', 'coauthor_38@ijitest.org', 0, 5, NULL, NULL, 'Associate Professor,Department of Mechanical Engineering,Avanthi Institute of Engineering and Technology, Vizianagaram, A.P., India'),
-(39, 2, 'S Naga Mallik Raj', 'mallikblue@gmail.com', 0, 1, NULL, NULL, 'Associate Professor, Department of CSE, Vignans Institute of Information Technology (A), Visakhapatnam, India'),
-(40, 2, 'Gulshan Sri Babu Thorlapati', 'gulshansribabu@gmail.com', 0, 2, NULL, NULL, 'Student, Department of CIVIL, Vignans Institute of Information Technology (A), Visakhapatnam, India'),
-(41, 2, 'G. Madhavi', 'gmadhavi@gmail.com', 0, 3, NULL, NULL, 'Assistant Professor, Department of BS&H, Vignans Institute of Information Technology (A), Visakhapatnam, India'),
-(42, 6, 'A. Venkateswara Rao', 'vallu@miracleeducationalsociety.com', 0, 1, NULL, NULL, 'Associate Professor, Department of ECE, Miracle Educational Society Group of Institutions(A), Vizianagaram, India'),
-(43, 6, 'CH. Subba Rao', 'schappa@miracleeducationalsociety.com', 0, 2, NULL, NULL, 'Assistant Professor, Department of ECE, Miracle Educational Society Group of Institutions(A), Vizianagaram, India'),
 (44, 2, 'S Naga Mallik Raj', 'mallikblue@gmail.com', 0, 1, NULL, NULL, 'Associate Professor, Department of CSE, Vignans Institute of Information Technology (A), Visakhapatnam, India'),
 (45, 2, 'Gulshan Sri Babu Thorlapati', 'gulshansribabu@gmail.com', 0, 2, NULL, NULL, 'Student, Department of CIVIL, Vignans Institute of Information Technology (A), Visakhapatnam, India'),
 (46, 2, 'G. Madhavi', 'gmadhavi@gmail.com', 0, 3, NULL, NULL, 'Assistant Professor, Department of BS&H, Vignans Institute of Information Technology (A), Visakhapatnam, India'),
 (47, 6, 'A. Venkateswara Rao', 'vallu@miracleeducationalsociety.com', 0, 1, NULL, NULL, 'Associate Professor, Department of ECE, Miracle Educational Society Group of Institutions(A), Vizianagaram, India'),
-(48, 6, 'CH. Subba Rao', 'schappa@miracleeducationalsociety.com', 0, 2, NULL, NULL, 'Assistant Professor, Department of ECE, Miracle Educational Society Group of Institutions(A), Vizianagaram, India');
+(48, 6, 'CH. Subba Rao', 'schappa@miracleeducationalsociety.com', 0, 2, NULL, NULL, 'Assistant Professor, Department of ECE, Miracle Educational Society Group of Institutions(A), Vizianagaram, India'),
+(49, 11, 'Cheekatla Swapnapriya ', 'swapnachsp@gmail.com', 1, 0, '9505175015', 'Associate professor', 'Vignan\'s institute of information technology '),
+(50, 11, 'Pulipati Kalpana ', 'pkalpana1109@gmail.com', 0, 1, '6300489462', 'Student', 'Vignan\'s institute of information technology '),
+(51, 11, 'Mahamed Mastan Jani', 'mdjani1209@gmail.com', 0, 2, '8688286621', 'Student ', 'Vignan\'s institute of information technology '),
+(52, 11, 'Medisetty Surya Teja', 'suryatejamedisetty000@gmail.com', 0, 3, '9440410212', 'Student', 'Vignan\'s institute of information technology '),
+(53, 11, 'Mycherla Bharath Karthik ', 'bharathkarthik2006@gmail.com', 0, 4, '8309802888', 'Student', 'Vignan\'s institute of information technology ');
 
 -- --------------------------------------------------------
 
@@ -386,7 +396,13 @@ INSERT INTO `submission_files` (`id`, `version_id`, `file_type`, `file_url`, `or
 (7, 7, 'pdf_version', '/uploads/published/IJITEST-2026-007-published.pdf', 'IJITEST-2026-007.pdf', NULL, '2026-04-19 05:41:03'),
 (8, 8, 'pdf_version', '/uploads/published/IJITEST-2026-008-published.pdf', 'IJITEST-2026-008.pdf', NULL, '2026-04-19 05:41:03'),
 (9, 9, 'pdf_version', '/uploads/published/IJITEST-2026-009-published.pdf', 'IJITEST-2026-009.pdf', NULL, '2026-04-19 05:41:03'),
-(10, 10, 'pdf_version', '/uploads/published/IJITEST-2026-010-published.pdf', 'IJITEST-2026-010.pdf', NULL, '2026-04-19 05:41:03');
+(10, 10, 'pdf_version', '/uploads/published/IJITEST-2026-010-published.pdf', 'IJITEST-2026-010.pdf', NULL, '2026-04-19 05:41:03'),
+(11, 11, 'main_manuscript', '/uploads/submissions/manuscript_11_1777096552946.docx', '_IJITEST_DRL_Final_-1.docx', 331837, '2026-04-25 05:55:52'),
+(12, 11, 'copyright_form', '/uploads/submissions/copyright_11_1777096552946.docx', 'copyright-form.docx', 12616, '2026-04-25 05:55:52'),
+(13, 11, 'pdf_version', '/uploads/submissions/auto_final_v1_1777173061816.pdf', 'auto_final_v1_1777173061816.pdf', 861037, '2026-04-26 03:11:01'),
+(14, 11, 'pdf_version', '/uploads/submissions/reviewer_copy_11_1777173509372.pdf', 'reviewer_manuscript.pdf', NULL, '2026-04-26 03:18:29'),
+(15, 11, 'pdf_version', '/uploads/submissions/reviewer_copy_11_1777173580053.pdf', 'reviewer_manuscript.pdf', NULL, '2026-04-26 03:19:40'),
+(16, 11, 'pdf_version', '/uploads/submissions/reviewer_copy_11_1777174012396.pdf', 'reviewer_manuscript.pdf', NULL, '2026-04-26 03:26:52');
 
 -- --------------------------------------------------------
 
@@ -420,7 +436,8 @@ INSERT INTO `submission_versions` (`id`, `submission_id`, `version_number`, `tit
 (7, 7, 1, 'Fabrication of Multipurpose Agriculture Machine', 'Agriculture plays a vital role in economic development, and modern technology integration is essential for improving productivity. This paper presents the fabrication of a multipurpose agricultural machine that performs spraying, seeding, and plowing operations using solar power as the primary energy source. The system reduces manual labor, minimizes fuel consumption, and promotes eco-friendly farming. The machine consists of a solar panel, battery storage, DC motors, and mechanical assemblies for three agricultural tasks: uniform pesticide spraying, controlled seed placement at proper depth and spacing, and soil plowing for aeration. Testing on a 100 sq.m test plot demonstrates 90% spraying uniformity, 88% seed placement accuracy at 15cm spacing, plowing depth of 10cm in medium soil, and 3 hours continuous operation on solar charge, achieving 70% labor reduction and 55% cost savings compared to manual farming methods', '[\"Agriculture Machine\", \"Solar Power\", \"Multipurpose\", \"Spraying\", \"Seeding\", \"Plowing\", \"DC Motor\", \"Renewable Energy\"]', 'Engineering', NULL, '2026-03-31 15:00:00'),
 (8, 8, 1, 'Fabrication of Automatic Tire Inflating System', 'Proper tire pressure is essential for vehicle safety, fuel efficiency, and tire longevity, but manual checking and inflating is often neglected. This paper presents the fabrication of an Automatic Tire Inflating System that monitors and regulates tire pressure without manual intervention. The system uses pressure sensors, an Arduino microcontroller, and a 12V DC air compressor to continuously detect tire air pressure and automatically activate inflation when pressure falls below the preset limit. An LCD display shows real-time pressure readings, while LED indicators and a buzzer provide alerts for under- inflation and over-inflation conditions. The system automatically deactivates the compressor when optimal pressure is reached. Testing demonstrates  0.5 PSI measurement accuracy, automatic inflation response within 3 seconds of pressure drop detection, and inflation rate of 2 PSI per minute, achieving the target pressure of 32 PSI within 5 minutes from a 22 PSI under- inflated condition. The system enhances vehicle safety, improves fuel efficiency by 35%, and extends tire life by up to 20%.', '[\"Automatic Tire Inflation\", \"Pressure Sensor\", \"Microcontroller\", \"Air Compressor\", \"Vehicle Safety\", \"Fuel Efficiency\"]', 'Engineering', NULL, '2026-03-31 16:00:00'),
 (9, 9, 1, 'Fabrication of Solar Grass Cutter with Bluetooth Control', 'This paper presents the fabrication of a solar- powered grass cutter with Bluetooth-based mobile phone control, combining renewable energy with wireless automation for modern gardening and agriculture. The machine operates using solar power stored in a rechargeable battery, driving cutting motors and a Bluetooth-controlled movement system. Users control forward, backward, left, and right movement through a mobile application, reducing manual labour and improving safety. The system consists of a solar panel (20W), 12V lead-acid battery, DC motors for movement and cutting, HC-05 Bluetooth module, L298N motor driver, Arduino Uno controller, and a robust chassis. Testing demonstrates continuous operation for 2.5 hours on a full solar charge, cutting efficiency of 85% on grass up to 15cm height, Bluetooth control range of 10 meters, and 60% reduction in operational cost compared to petrol-driven alternatives, making it eco-friendly and suitable for lawns, gardens, and playgrounds', '[\"Solar Energy\", \"Grass Cutter\", \"Bluetooth Control\", \"DC Motor\", \"Renewable Energy\", \"Automation\", \"Mobile Application\"]', 'Engineering', NULL, '2026-03-31 17:00:00'),
-(10, 10, 1, 'Fabrication of 90 Degree Steering System', 'Conventional steering systems are limited by their large turning radius, making vehicle maneuvering difficult in congested urban areas. This paper presents the fabrication of a 90 Degree Steering System that allows all four wheels to rotate up to 90 degrees, enabling lateral (sideways) movement of the vehicle. The system uses electric motors, rack and pinion mechanism, bevel gears, sprockets, and chain drive arrangements. The prototype features four DC motors for wheel motion and an additional motor arrangement for 90-degree wheel rotation. Powered by a rechargeable 12V battery and controlled through an electronic control unit, the system demonstrates successful sideways parking capability, zero-radius turning, and diagonal movement. Testing shows the turning radius reduces from 5.2m (conventional) to effectively 0m (in- place rotation), lateral parking time reduces by 65%, and the system operates reliably across 200 test cycles.', '[\"90 Degree Steering\", \"Lateral Movement\", \"Rack\", \"Pinion\", \"Bevel Gear\", \"Four-Wheel Steering\", \"Parking Mechanism\"]', 'Engineering', NULL, '2026-03-31 18:00:00');
+(10, 10, 1, 'Fabrication of 90 Degree Steering System', 'Conventional steering systems are limited by their large turning radius, making vehicle maneuvering difficult in congested urban areas. This paper presents the fabrication of a 90 Degree Steering System that allows all four wheels to rotate up to 90 degrees, enabling lateral (sideways) movement of the vehicle. The system uses electric motors, rack and pinion mechanism, bevel gears, sprockets, and chain drive arrangements. The prototype features four DC motors for wheel motion and an additional motor arrangement for 90-degree wheel rotation. Powered by a rechargeable 12V battery and controlled through an electronic control unit, the system demonstrates successful sideways parking capability, zero-radius turning, and diagonal movement. Testing shows the turning radius reduces from 5.2m (conventional) to effectively 0m (in- place rotation), lateral parking time reduces by 65%, and the system operates reliably across 200 test cycles.', '[\"90 Degree Steering\", \"Lateral Movement\", \"Rack\", \"Pinion\", \"Bevel Gear\", \"Four-Wheel Steering\", \"Parking Mechanism\"]', 'Engineering', NULL, '2026-03-31 18:00:00'),
+(11, 11, 1, 'Deep Reinforcement Learning for Dynamic Resource Management in Ephemeral Edge Computing Networks', 'Efficient resource orchestration in modern edge computing deployments is increasingly challenged by node mobility, stochastic workloads, and limited energy budgets. Conventional static and heuristic scheduling methods are fundamentally inadequate for volatile environments such as UAV swarms and vehicular ad hoc networks, where topology and resource availability evolve continuously. This paper proposes a novel adaptive resource management framework grounded in Proximal Policy Optimization (PPO), a state-of-the-art Deep Reinforcement Learning (DRL) algorithm, tailored for ephemeral edge computing scenarios. The resource allocation problem is rigorously formalized as a Markov Decision Process (MDP) that jointly accounts for end-to-end task latency, cumulative energy expenditure, load distribution fairness, and Service Level Agreement (SLA) compliance. Through iterative interaction with a realistic simulation environment encompassing 20 mobile UAV nodes, the PPO agent acquires nuanced allocation policies that balance competing performance objectives. Our key novelty lies in a composite reward signal that explicitly penalizes battery depletion events, discouraging greedy local processing in favor of energy-balanced, network-lifetime-aware decisions. Experimental results demonstrate that the proposed PPO-based framework reduces SLA violations by approximately 30% and extends network operational lifetime by up to 47% compared to Deep Q-Network (DQN) baselines and classical static schedulers.\r\n', ' Deep Reinforcement Learning, Proximal Policy Optimization (PPO), Edge Computing, Dynamic Resource Allocation, Markov Decision Process, UAV Networks, Energy Efficiency, SLA Compliance.', NULL, NULL, '2026-04-25 05:55:52');
 
 -- --------------------------------------------------------
 
@@ -462,8 +479,8 @@ INSERT INTO `users` (`id`, `email`, `password_hash`, `role`, `is_active`, `is_em
 ('79dd80d7-31c1-11f1-ad3e-c05465fbbdc2', 'skaredla@gitam.edu', NULL, 'reviewer', 1, 0, NULL, '2026-03-03 14:08:13', '2026-04-11 03:23:59', NULL, 0),
 ('79de0a1f-31c1-11f1-ad3e-c05465fbbdc2', 'norsuzila@salam.uitm.edu.my', '$2b$10$SoJp3xko/HImNINIVY2RjO9Vk17ERTTcijrIXECZ.f1/2EtiEwZfm', 'editor', 1, 0, NULL, '2026-03-03 14:29:56', '2026-04-06 14:04:06', NULL, 0),
 ('79de63c3-31c1-11f1-ad3e-c05465fbbdc2', 'razh1977@gmail.com', NULL, 'editor', 1, 0, NULL, '2026-03-03 15:34:37', '2026-04-06 14:04:06', NULL, 0),
-('79df667a-31c1-11f1-ad3e-c05465fbbdc2', 'trinadhphd33@gmail.com', NULL, 'editor', 1, 0, NULL, '2026-03-05 15:56:46', '2026-04-06 14:04:06', NULL, 0),
-('79dfcee0-31c1-11f1-ad3e-c05465fbbdc2', 'mr.challa33@gmail.com', NULL, 'reviewer', 1, 0, NULL, '2026-03-05 15:56:53', '2026-04-06 14:04:06', NULL, 0),
+('79df667a-31c1-11f1-ad3e-c05465fbbdc2', 'trinadhphd33@gmail.com', NULL, 'editor', 1, 0, NULL, '2026-03-05 15:56:46', '2026-04-29 12:14:17', NULL, 0),
+('79dfcee0-31c1-11f1-ad3e-c05465fbbdc2', 'mr.challa33@gmail.com', NULL, 'editor', 1, 0, NULL, '2026-03-05 15:56:53', '2026-04-29 12:14:35', NULL, 0),
 ('82b7987d-f90d-4a19-b1d3-1947671914db', 'telukarthik9@gmail.com', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03', NULL, 0),
 ('866d93bc-b280-4bc0-a776-ce70477630df', 'jeevankumarkella@gmail.com', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03', NULL, 0),
 ('87b55eae-e296-4a65-a82f-3c503beadf7e', 'editor@ijitest.org', '$2b$10$HpElpKNYCXaqdUpivIxWA.CLDniLlVW/GIb7VyiDv4Syl3WsKsdqy', 'admin', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 06:38:53', NULL, 1),
@@ -481,7 +498,7 @@ INSERT INTO `users` (`id`, `email`, `password_hash`, `role`, `is_active`, `is_em
 ('f7905eac-6c28-4718-a00f-3fe9849bc465', 'saikumarbolla31@gmail.com', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03', NULL, 0),
 ('f83fee8d-5304-4b40-806d-59531ed01db5', 'neelapuabhiram007@gmail.com', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03', NULL, 0),
 ('fa60af47-276f-4c3a-8c34-89aae8ee28dd', 'umeshchandra15623@gmail.com', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03', NULL, 0),
-('u19-mahendra-uuid-003', 'narlamahendracai@gpcet.ac.in', '$2a$12$M2tKWAune7p18LlnZgnfkecIDlaQvQ6SkhDYrbMiX.9fOAPFpqYVy', 'editor', 1, 1, NULL, '2026-04-08 14:24:12', '2026-04-11 03:25:47', NULL, 0);
+('u19-mahendra-uuid-003', 'narlamahendracai@gpcet.ac.in', '$2a$12$M2tKWAune7p18LlnZgnfkecIDlaQvQ6SkhDYrbMiX.9fOAPFpqYVy', 'reviewer', 1, 1, NULL, '2026-04-08 14:24:12', '2026-04-26 03:22:35', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -537,7 +554,7 @@ CREATE TABLE `user_profiles` (
 
 INSERT INTO `user_profiles` (`id`, `user_id`, `full_name`, `designation`, `institute`, `phone`, `orcid_id`, `nationality`, `bio`, `photo_url`, `created_at`, `updated_at`) VALUES
 (1, '5e46659a-9c4d-4740-811d-ce905ef103d0', 'PSN Bhashar', NULL, 'Assistant Professor,Department of ECE, SVP Engineering College, Visakhapatnam, India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
-(2, '87b55eae-e296-4a65-a82f-3c503beadf7e', 'IJITEST Editor', NULL, 'IJITEST Editorial Board', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
+(2, '87b55eae-e296-4a65-a82f-3c503beadf7e', 'Dr. Ravibabu T.', 'Associate Professor', 'Department of Electronics and Communication Engineering, MES Group of Institutions', '+918919643590', '', 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-28 16:36:38'),
 (3, 'ac34b85e-d7c0-454b-9ef9-4b73e39ee30a', 'Gulshan Sribabu Thorlapati', NULL, 'Department of CIVIL, Vignans Institute of Information Technology (A), Visakhapatnam, India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
 (4, '5afb6ea1-45f9-4d45-b023-4e3e6c1fb025', 'S.HarshaVardhan', NULL, 'Department of Mechanical Engineering,Avanthi Institute of Engineering and Technology, Vizianagaram, A.P., India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
 (5, 'bce1657c-32a6-492d-9df5-a03dcb465726', 'Mohan Kumar', NULL, 'IJITEST Admin', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
@@ -557,9 +574,16 @@ INSERT INTO `user_profiles` (`id`, `user_id`, `full_name`, `designation`, `insti
 (19, 'ec6f9428-c3e0-4bdf-bb28-07ea86ba2440', 'T. Ravi babu', NULL, 'Associate Professor,Department of ECE, Miracle Educational Society Group of Institutions(A), Vizianagaram, India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
 (20, 'f7905eac-6c28-4718-a00f-3fe9849bc465', 'B. Sai Kumar', NULL, 'Department of Mechanical Engineering,Avanthi Institute of Engineering and Technology, Vizianagaram, A.P., India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
 (21, '94a51dbe-acc8-4df8-a3c6-03ecc15287a0', 'CH. Subba Rao', NULL, 'Associate Professor,Department of ECE, Miracle Educational Society Group of Institutions(A), Vizianagaram, India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
-(22, 'cd2ef493-3626-483a-93c6-8236287bf7a1', 'Chekatla Swapna Priya', NULL, 'Department of CSE, Vignans Institute of Information Technology (A), Visakhapatnam, India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
+(22, 'cd2ef493-3626-483a-93c6-8236287bf7a1', 'Cheekatla Swapnapriya ', 'Associate professor', 'Vignan\'s institute of information technology ', '9505175015', NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-25 05:55:52'),
 (23, '82b7987d-f90d-4a19-b1d3-1947671914db', 'T. Karthik', NULL, 'Department of Mechanical Engineering,Avanthi Institute of Engineering and Technology, Vizianagaram, A.P., India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
-(24, 'fa60af47-276f-4c3a-8c34-89aae8ee28dd', 'N.UmeshChandra', NULL, 'Department of Mechanical Engineering,Avanthi Institute of Engineering and Technology, Vizianagaram, A.P., India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03');
+(24, 'fa60af47-276f-4c3a-8c34-89aae8ee28dd', 'N.UmeshChandra', NULL, 'Department of Mechanical Engineering,Avanthi Institute of Engineering and Technology, Vizianagaram, A.P., India', NULL, NULL, 'India', NULL, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03'),
+(25, '79de0a1f-31c1-11f1-ad3e-c05465fbbdc2', 'Dr. Norsuzila Ya\'acob', 'Professor', 'Dept. of Electrical Engineering, University of Teknologi MARA, Shah Alam, Malaysia', NULL, NULL, 'Malaysia', NULL, NULL, '2026-04-23 05:01:48', '2026-04-23 05:01:48'),
+(26, 'u19-mahendra-uuid-003', 'Dr. Mahendra Narla', 'Associate Professor', 'Dept of Artificial Intelligence and Data Science, GPCET, Kurnool, India', NULL, NULL, 'India', NULL, NULL, '2026-04-23 05:01:48', '2026-04-23 05:01:48'),
+(27, '79de63c3-31c1-11f1-ad3e-c05465fbbdc2', 'Razalingah', 'Professor', 'Faculty of Electrical Engineering, Universiti Teknologi Malaysia', NULL, NULL, 'Malaysia', NULL, NULL, '2026-04-23 05:01:48', '2026-04-23 05:01:48'),
+(28, '79df667a-31c1-11f1-ad3e-c05465fbbdc2', 'Dr. Trinadha Rao Challa', 'Associate Professor', 'Dept of Mechanical Engineering, MES Group of Institutions, India', NULL, NULL, 'India', NULL, NULL, '2026-04-23 05:01:48', '2026-04-23 05:01:48'),
+(29, '79dc7b1c-31c1-11f1-ad3e-c05465fbbdc2', 'Dr. Somasekhar Borugadda', 'Professor', 'Anil Neerukonda Institute of Technology and Sciences, Visakhapatnam, AP, India', NULL, NULL, 'India', NULL, NULL, '2026-04-23 05:01:48', '2026-04-23 05:01:48'),
+(30, '79dcf791-31c1-11f1-ad3e-c05465fbbdc2', 'Dr. Appalabathula Venkatesh', 'Associate Professor', 'Anil Neerukonda Institute of Technology and Sciences, India', NULL, NULL, 'India', NULL, NULL, '2026-04-23 05:01:48', '2026-04-23 05:01:48'),
+(31, '79dd80d7-31c1-11f1-ad3e-c05465fbbdc2', 'Dr. Srinivasa Rao Thammada', 'Professor', 'Dept of Computer Science Engineering, GITAM University, India', NULL, NULL, 'India', NULL, NULL, '2026-04-23 05:01:48', '2026-04-23 05:01:48');
 
 -- --------------------------------------------------------
 
@@ -843,43 +867,43 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `review_assignments`
 --
 ALTER TABLE `review_assignments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `submissions`
 --
 ALTER TABLE `submissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `submission_authors`
 --
 ALTER TABLE `submission_authors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `submission_files`
 --
 ALTER TABLE `submission_files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `submission_versions`
 --
 ALTER TABLE `submission_versions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `user_invitations`
 --
 ALTER TABLE `user_invitations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`
 --
 ALTER TABLE `user_profiles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `volumes_issues`

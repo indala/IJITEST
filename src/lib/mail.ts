@@ -167,7 +167,7 @@ export const emailTemplates = {
         };
     },
 
-    reviewAssignment: (reviewerName: string, paperTitle: string, deadline: string, paperId: string) => {
+    reviewAssignment: (reviewerName: string, paperTitle: string, deadline: string, paperId: string, setupUrl?: string) => {
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${reviewerName}</strong>,</p>
@@ -179,13 +179,16 @@ export const emailTemplates = {
                 <p style="margin: 0; font-style: italic; color: #475569;">"${paperTitle}"</p>
             </div>
 
-            <p style="color: ${JOURNAL.primaryColor}; font-weight: bold;">Submit Feedback By: ${new Date(deadline).toLocaleDateString()}</p>
-            <p>Your technical evaluation is critical to maintaining the high standards of our journal. You can access the manuscript and review guidelines in your dashboard.</p>
+            <p style="color: ${JOURNAL.primaryColor}; font-weight: bold;">Submit Feedback By: ${new Date(deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            <p>Your technical evaluation is critical to maintaining the high standards of our journal. ${setupUrl ? 'Since this is your first assignment, please secure your reviewer account using the button below to access the manuscript.' : 'You can access the manuscript and review guidelines in your reviewer dashboard.'}</p>
         `;
 
         return {
             subject: `[${JOURNAL.shortName}] New Peer Review Invitation: ${paperId}`,
-            html: mailLayout(content, {
+            html: mailLayout(content, setupUrl ? {
+                text: 'Secure My Reviewer Account',
+                url: setupUrl
+            } : {
                 text: 'Access Reviewer Portal',
                 url: `${baseUrl}/reviewer`
             })

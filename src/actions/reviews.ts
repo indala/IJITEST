@@ -15,8 +15,10 @@ import {
     submissionAuthors,
     users,
     userProfiles,
+    userInvitations,
 } from "@/db/schema";
 
+import crypto from "crypto";
 import { convertDocxToPdf } from "@/lib/ilovepdf";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -178,11 +180,35 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 .where(eq(submissions.id, submissionId));
 
             // 8. Fetch notification data (no email inside transaction)
-            const [staff] = await tx.select({ email: users.email, name: userProfiles.fullName })
+            const [staff] = await tx.select({ 
+                email: users.email, 
+                name: userProfiles.fullName,
+                isVerified: users.isEmailVerified,
+                hasPassword: sql<boolean>`${users.passwordHash} IS NOT NULL`
+            })
                 .from(users)
                 .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
                 .where(eq(users.id, reviewerId))
                 .limit(1);
+
+            let setupUrl: string | undefined = undefined;
+            if (staff && (!staff.isVerified || !staff.hasPassword)) {
+                const invitationToken = crypto.randomBytes(32).toString('hex');
+                const expires = new Date();
+                expires.setHours(expires.getHours() + 168); // 7 days
+
+                await tx.insert(userInvitations).values({
+                    email: staff.email,
+                    role: 'reviewer',
+                    token: invitationToken,
+                    expiresAt: expires,
+                }).onDuplicateKeyUpdate({
+                    set: { token: invitationToken, expiresAt: expires }
+                });
+
+                const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+                setupUrl = `${baseUrl}/auth/setup-password?token=${invitationToken}`;
+            }
 
             const [paper] = await tx.select({ paperId: submissions.paperId, title: submissionVersions.title })
                 .from(submissions)
@@ -191,7 +217,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 .orderBy(desc(submissionVersions.versionNumber))
                 .limit(1);
 
-            return { success: true, staff, paper };
+            return { success: true, staff, paper, setupUrl };
         });
 
         // 9. Send email AFTER transaction commits (fire-and-forget)
@@ -200,7 +226,8 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 txResult.staff.name || "Reviewer",
                 txResult.paper.title,
                 deadline,
-                txResult.paper.paperId
+                txResult.paper.paperId,
+                (txResult as any).setupUrl
             );
             sendEmail({ to: txResult.staff.email, subject: template.subject, html: template.html })
                 .catch(e => console.error("Reviewer assignment email failed:", e));

@@ -141,11 +141,13 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             // Update sequence
             await tx.update(settings).set({ settingValue: newSeq.toString() }).where(eq(settings.settingKey, seqKey));
 
-            const paperId = `IJITEST-${currentYear}-${String(newSeq).padStart(4, "0")}`;
+            const paperId = `IJITEST-${currentYear}-${String(newSeq).padStart(3, "0")}`;
+            const slug = paperId.toLowerCase().replace(/-/g, "");
 
             // C. Insert Core Submission
             const [submissionInsert] = await tx.insert(submissions).values({
                 paperId,
+                slug,
                 status: "submitted",
                 correspondingAuthorId: userId,
             }).$returningId();

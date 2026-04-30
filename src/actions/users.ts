@@ -119,7 +119,7 @@ export async function createUser(formData: FormData): Promise<ActionResponse> {
     try {
         const invitationToken = crypto.randomBytes(32).toString('hex');
         const expires = new Date();
-        expires.setHours(expires.getHours() + 24);
+        expires.setHours(expires.getHours() + 168); // 7-day window for account setup
 
         const userId = crypto.randomUUID();
 
