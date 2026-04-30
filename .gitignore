@@ -41,5 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 # user-generated uploads (manuscripts, photos, PDFs — never commit these)
-/public/uploads/
-/public/docs/
+
