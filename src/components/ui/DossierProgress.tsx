@@ -56,7 +56,7 @@ export function DossierProgress({
 
             <div className="relative h-2 2xl:h-4 w-full bg-muted/30 rounded-full overflow-hidden border border-white/5 shadow-inner">
                 <div 
-                    className={cn("h-full transition-all duration-1000 ease-out rounded-full shadow-lg w-[var(--dossier-progress)]", getStatusColor(percentage))} 
+                    className={cn("h-full transition-all duration-1000 ease-out rounded-full shadow-lg w-(--dossier-progress)", getStatusColor(percentage))} 
                     style={{ '--dossier-progress': `${progress}%` } as React.CSSProperties}
                 />
             </div>

@@ -27,7 +27,7 @@ import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import fs from 'fs/promises';
 import path from 'path';
-import { eq, desc, and, isNull, inArray } from "drizzle-orm";
+import { eq, desc, and, isNull, inArray, or, like, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
@@ -167,29 +167,110 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
 /**
  * Fetch all submissions formatted for Admin/Editor listing
  */
-export async function getAllSubmissions(filters?: { status?: string }): Promise<ActionResponse<SubmissionUI[]>> {
+export async function getAllSubmissions(filters?: { status?: string, q?: string }): Promise<ActionResponse<SubmissionUI[]>> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Unauthorized" };
         }
 
-        let query = db.select({ id: submissions.id }).from(submissions).$dynamic();
-        
-        const conditions = [isNull(submissions.deletedAt)];
+        // 1. Fetch core data + latest versions in one JOIN query
+        const conditions: any[] = [isNull(submissions.deletedAt)];
         if (filters?.status && filters.status !== 'all') {
-            conditions.push(eq(submissions.status, filters.status as typeof submissions.$inferSelect.status));
+            conditions.push(eq(submissions.status, filters.status as any));
         }
-        
-        query = query.where(and(...conditions)).orderBy(desc(submissions.submittedAt));
+        if (filters?.q) {
+            const searchVal = `%${filters.q}%`;
+            conditions.push(or(
+                like(submissions.paperId, searchVal),
+                like(submissionVersions.title, searchVal)
+            ));
+        }
 
-        const ids = await query;
-        const results = await Promise.all(ids.map(async s => {
-            const res = await getSubmissionById(s.id);
-            return res.success ? res.data : null;
-        }));
+        const latestVersions = db.select({
+            submissionId: submissionVersions.submissionId,
+            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
+        })
+        .from(submissionVersions)
+        .groupBy(submissionVersions.submissionId)
+        .as('lv');
+
+        const rows = await db.select({
+            submission: submissions,
+            author: users,
+            authorProfile: userProfiles,
+            latestVersion: submissionVersions,
+            payment: payments,
+            issue: volumesIssues,
+            publication: publications
+        })
+        .from(submissions)
+        .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
+        .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+        .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+        .leftJoin(submissionVersions, and(
+            eq(submissions.id, submissionVersions.submissionId),
+            eq(submissionVersions.versionNumber, latestVersions.maxVersion)
+        ))
+        .leftJoin(payments, eq(submissions.id, payments.submissionId))
+        .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
+        .leftJoin(publications, eq(submissions.id, publications.submissionId))
+        .where(and(...conditions))
+        .orderBy(desc(submissions.submittedAt));
+
+        if (rows.length === 0) return { success: true, data: [] };
+
+        const subIds = rows.map(r => r.submission.id);
+        const versionIds = rows.filter(r => r.latestVersion).map(r => r.latestVersion!.id);
+
+        // 2. Bulk fetch Co-Authors
+        const allCoAuthors = await db.select().from(submissionAuthors).where(inArray(submissionAuthors.submissionId, subIds));
         
-        const data = results.filter((s): s is SubmissionUI => s !== null);
+        // 3. Bulk fetch Files
+        const allFiles = versionIds.length > 0 
+            ? await db.select().from(submissionFiles).where(inArray(submissionFiles.versionId, versionIds))
+            : [];
+
+        // 4. Map everything to SubmissionUI
+        const data: SubmissionUI[] = rows.map(row => {
+            const subAuthors = allCoAuthors.filter(a => a.submissionId === row.submission.id);
+            const subFiles = row.latestVersion ? allFiles.filter(f => f.versionId === row.latestVersion!.id) : [];
+            
+            const mainManuscript = subFiles.find(f => f.fileType === 'main_manuscript');
+            const pdfVersion = subFiles.find(f => f.fileType === 'pdf_version');
+            const finalPdf = row.publication?.finalPdfUrl;
+
+            return {
+                ...row.submission,
+                paper_id: row.submission.paperId,
+                submitted_at: row.submission.submittedAt,
+                updated_at: row.submission.updatedAt,
+                title: row.latestVersion?.title || "Untitled Manuscript",
+                abstract: row.latestVersion?.abstract || "",
+                keywords: row.latestVersion?.keywords || "",
+                file_path: mainManuscript?.fileUrl || "",
+                pdf_url: finalPdf || pdfVersion?.fileUrl || "",
+                author_name: row.authorProfile?.fullName || "Unknown Author",
+                author_email: row.author?.email || "",
+                co_authors: JSON.stringify(subAuthors.map(a => ({ name: a.name, email: a.email, institution: a.institution }))),
+                volume_number: row.issue?.volumeNumber,
+                issue_number: row.issue?.issueNumber,
+                start_page: row.publication?.startPage,
+                end_page: row.publication?.endPage,
+                issue_id: row.submission.issueId,
+                latestVersion: row.latestVersion ? { ...row.latestVersion, files: subFiles as SubmissionFile[] } : undefined,
+                allFiles: subFiles as SubmissionFile[],
+                allReviews: [], // Reviews are not typically needed for list view, but can be added if required
+                payment: row.payment,
+                correspondingAuthor: { ...row.author, profile: row.authorProfile } as any,
+                authors: subAuthors as any,
+                versions: row.latestVersion ? [{ ...row.latestVersion, files: subFiles as SubmissionFile[] }] as any : [],
+                reviewAssignments: [],
+                issue: row.issue as any,
+                publication: row.publication as any
+            };
+        });
+
         return { success: true, data };
     } catch (error) {
         console.error("Get All Submissions Error:", error);

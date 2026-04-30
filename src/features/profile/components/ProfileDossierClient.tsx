@@ -3,13 +3,13 @@
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
-import { 
-    Building2, 
-    Globe, 
-    CheckCircle2, 
-    XCircle, 
-    Clock, 
-    ExternalLink, 
+import {
+    Building2,
+    Globe,
+    CheckCircle2,
+    XCircle,
+    Clock,
+    ExternalLink,
     Camera,
     FileText,
     Search,
@@ -24,11 +24,11 @@ import { Input } from "@/components/ui/input"
 import { InlineEditField } from "@/components/ui/InlineEditField"
 import { DossierProgress } from "@/components/ui/DossierProgress"
 import { toast } from "sonner"
-import { 
-    updateProfileField, 
-    updateResearchInterests, 
+import {
+    updateProfileField,
+    updateResearchInterests,
     updateProfilePhoto,
-    ProfileData 
+    ProfileData
 } from "@/actions/profile"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -40,8 +40,8 @@ interface ProfileDossierClientProps {
 }
 
 const CATEGORIES = [
-    "AI/ML", "VLSI", "Renewable Energy", "Biomedical Engineering", 
-    "Cybersecurity", "Data Science", "IoT", "Signal Processing", 
+    "AI/ML", "VLSI", "Renewable Energy", "Biomedical Engineering",
+    "Cybersecurity", "Data Science", "IoT", "Signal Processing",
     "Environmental Engineering", "Civil Infrastructure"
 ]
 
@@ -104,7 +104,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
     }
 
     const toggleInterest = (interest: string) => {
-        setTempInterests(prev => 
+        setTempInterests(prev =>
             prev.includes(interest) ? prev.filter(i => i !== interest) : [...prev, interest]
         )
     }
@@ -135,11 +135,11 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                 <div className="relative group/avatar" ref={sectionRefs['photo']}>
                     <div className="w-32 h-32 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden relative border-2 border-slate-200 dark:border-slate-800">
                         {data.photo_url ? (
-                            <Image 
-                                src={data.photo_url} 
-                                alt={data.name} 
+                            <Image
+                                src={data.photo_url}
+                                alt={data.name}
                                 fill
-                                className="object-cover" 
+                                className="object-cover"
                             />
                         ) : (
                             <div className="text-3xl font-bold text-slate-400">
@@ -148,10 +148,10 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                         )}
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer">
                             <Camera className="text-white w-6 h-6" />
-                            <input 
+                            <input
                                 title="Upload Photo"
-                                type="file" 
-                                className="absolute inset-0 opacity-0 cursor-pointer" 
+                                type="file"
+                                className="absolute inset-0 opacity-0 cursor-pointer"
                                 onChange={handlePhotoUpload}
                                 accept="image/*"
                             />
@@ -170,8 +170,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                     <div className="flex flex-wrap justify-center md:justify-start gap-2 pt-1">
                         <Badge variant="secondary" className="font-medium px-2 py-0.5">{role}</Badge>
                         {data.orcid_id && (
-                            <Link 
-                                href={`https://orcid.org/${data.orcid_id}`} 
+                            <Link
+                                href={`https://orcid.org/${data.orcid_id}`}
                                 target="_blank"
                                 className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-primary transition-colors"
                             >
@@ -183,7 +183,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                 </div>
 
                 <div className="w-full md:w-64 border-l border-slate-100 dark:border-slate-800 pl-0 md:pl-6">
-                    <DossierProgress 
+                    <DossierProgress
                         percentage={data.completeness.percentage}
                         missing={data.completeness.missing}
                         onChipClick={scrollToSection}
@@ -202,19 +202,19 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                         </CardHeader>
                         <CardContent className="p-5 space-y-4">
                             <div ref={sectionRefs['name']}>
-                                <InlineEditField 
-                                    label="Full Name" 
-                                    value={data.name} 
+                                <InlineEditField
+                                    label="Full Name"
+                                    value={data.name}
                                     onSave={(v) => handleSaveField('name', v)}
-                                    placeholder="Full Name" 
+                                    placeholder="Full Name"
                                 />
                             </div>
                             <div ref={sectionRefs['designation']}>
-                                <InlineEditField 
-                                    label="Designation" 
-                                    value={data.designation} 
+                                <InlineEditField
+                                    label="Designation"
+                                    value={data.designation}
                                     onSave={(v) => handleSaveField('designation', v)}
-                                    placeholder="e.g. Professor" 
+                                    placeholder="e.g. Professor"
                                 />
                             </div>
                             <div className="space-y-1 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-800">
@@ -224,9 +224,9 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                 <p className="text-sm font-semibold truncate text-slate-700 dark:text-slate-300">{data.email}</p>
                             </div>
                             <div ref={sectionRefs['orcid_id']}>
-                                <InlineEditField 
-                                    label="ORCID iD" 
-                                    value={data.orcid_id || ""} 
+                                <InlineEditField
+                                    label="ORCID iD"
+                                    value={data.orcid_id || ""}
                                     onSave={(v) => handleSaveField('orcid_id', v)}
                                     placeholder="0000-0000-0000-0000"
                                 />
@@ -266,9 +266,9 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                         <Card className="rounded-xl border-slate-200 dark:border-slate-800 shadow-sm" ref={sectionRefs['interests']}>
                             <CardHeader className="p-5 pb-2 flex flex-row items-center justify-between">
                                 <CardTitle className="text-lg font-bold">Research Interests</CardTitle>
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
+                                <Button
+                                    variant="outline"
+                                    size="sm"
                                     onClick={() => {
                                         setTempInterests([...data.research_interests]);
                                         setIsEditingInterests(!isEditingInterests);
@@ -281,7 +281,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                             <CardContent className="p-5">
                                 <AnimatePresence mode="wait">
                                     {isEditingInterests ? (
-                                        <motion.div 
+                                        <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
@@ -294,8 +294,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                         onClick={() => toggleInterest(cat)}
                                                         className={cn(
                                                             "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                                                            tempInterests.includes(cat) 
-                                                                ? "bg-primary text-white" 
+                                                            tempInterests.includes(cat)
+                                                                ? "bg-primary text-white"
                                                                 : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200"
                                                         )}
                                                     >
@@ -305,8 +305,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                             </div>
 
                                             <div className="flex gap-2">
-                                                <Input 
-                                                    placeholder="Add other interest..." 
+                                                <Input
+                                                    placeholder="Add other interest..."
                                                     value={newInterest}
                                                     onChange={(e) => setNewInterest(e.target.value)}
                                                     onKeyDown={(e) => e.key === 'Enter' && addCustomInterest()}
@@ -316,7 +316,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                     <Plus className="w-4 h-4" />
                                                 </Button>
                                             </div>
-                                            
+
                                             <div className="flex flex-wrap gap-2">
                                                 {tempInterests.filter(i => !CATEGORIES.includes(i)).map(interest => (
                                                     <Badge key={interest} variant="outline" className="gap-1 px-2 py-1">
@@ -354,12 +354,12 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                     <div className={cn(
                                         "p-2 rounded-lg",
                                         data.application.status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600' :
-                                        data.application.status === 'rejected' ? 'bg-rose-50 dark:bg-rose-950/20 text-rose-600' :
-                                        'bg-amber-50 dark:bg-amber-950/20 text-amber-600'
+                                            data.application.status === 'rejected' ? 'bg-rose-50 dark:bg-rose-950/20 text-rose-600' :
+                                                'bg-amber-50 dark:bg-amber-950/20 text-amber-600'
                                     )}>
-                                        {data.application.status === 'approved' ? <CheckCircle2 className="w-6 h-6" /> : 
-                                         data.application.status === 'rejected' ? <XCircle className="w-6 h-6" /> : 
-                                         <Clock className="w-6 h-6" />}
+                                        {data.application.status === 'approved' ? <CheckCircle2 className="w-6 h-6" /> :
+                                            data.application.status === 'rejected' ? <XCircle className="w-6 h-6" /> :
+                                                <Clock className="w-6 h-6" />}
                                     </div>
                                     <div className="space-y-1">
                                         <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100">
@@ -367,8 +367,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                         </h4>
                                         <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
                                             {data.application.status === 'approved' ? `Your professional profile is active. You have access to all editorial modules.` :
-                                             data.application.status === 'rejected' ? "After evaluation, the board has concluded to reject this application." :
-                                             "Vetting protocols are currently analyzing your academic footprint."}
+                                                data.application.status === 'rejected' ? "After evaluation, the board has concluded to reject this application." :
+                                                    "Vetting protocols are currently analyzing your academic footprint."}
                                         </p>
                                     </div>
                                 </div>

@@ -104,7 +104,7 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
             const role = (app.type || 'reviewer') as 'editor' | 'reviewer';
             const invitationToken = crypto.randomBytes(32).toString('hex');
             const expires = new Date();
-            expires.setHours(expires.getHours() + 24);
+            expires.setHours(expires.getHours() + 168); // 7-day window for account setup
 
             const userId = crypto.randomUUID();
 
@@ -170,7 +170,7 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
                         <a href="${setupUrl}" style="background: #0000FF; color: white; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px;">Set Up My Account</a>
                     </div>
                     <p style="color: #666; font-size: 14px;">Once your password is set, you can access your dedicated dashboard at:<br><a href="${portalUrl}" style="color: #0000FF; text-decoration: none;"><strong>${portalUrl}</strong></a></p>
-                    <p style="color: #666; font-size: 12px; margin-top: 20px;">This invitation link will expire in 24 hours.</p>
+                    <p style="color: #666; font-size: 12px; margin-top: 20px;">This invitation link will expire in 7 days.</p>
                     <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 30px; text-align: center;">
                         <p style="color: #999; font-size: 11px;">International Journal of Innovative Trends in Engineering Science and Technology</p>
                     </div>

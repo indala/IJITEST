@@ -1,10 +1,12 @@
 "use client";
 
 import { getPasswordSetupInfo, setupPassword } from '@/actions/users';
-import { ShieldCheck, Lock, Mail, CheckCircle2, ArrowRight } from 'lucide-react';
-import { useState, useEffect, Suspense } from 'react';
+import { ShieldCheck, Lock, Mail, CheckCircle2, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 
 function SetupContent() {
     const searchParams = useSearchParams();
@@ -16,6 +18,7 @@ function SetupContent() {
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         if (!token) {
@@ -23,14 +26,21 @@ function SetupContent() {
             return;
         }
         async function load() {
-            const data = await getPasswordSetupInfo(token!);
-            setInfo(data);
-            setLoading(false);
+            try {
+                const result = await getPasswordSetupInfo(token!);
+                if (result.success) {
+                    setInfo(result.data);
+                }
+            } catch (err) {
+                console.error("Setup info load error:", err);
+            } finally {
+                setLoading(false);
+            }
         }
         load();
     }, [token]);
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setStatus('loading');
 
@@ -44,145 +54,182 @@ function SetupContent() {
             return;
         }
 
-        const result = await setupPassword(formData);
-        if (result.success) {
-            setStatus('success');
-            setTimeout(() => {
-                router.push('/login');
-            }, 3000);
-        } else {
-            setErrorMessage(result.error || "Failed to setup password");
+        try {
+            const result = await setupPassword(formData);
+            if (result.success) {
+                setStatus('success');
+                setTimeout(() => {
+                    router.push('/login');
+                }, 3000);
+            } else {
+                setErrorMessage(result.error || "Failed to setup password");
+                setStatus('error');
+            }
+        } catch (err) {
+            setErrorMessage("A network error occurred. Please try again.");
             setStatus('error');
         }
-    }
+    }, [router]);
 
     if (loading) return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <div className="animate-pulse flex flex-col items-center gap-4">
-                <div className="w-16 h-16 bg-primary/10 rounded-4xl"></div>
-                <div className="h-4 w-32 bg-gray-200 rounded"></div>
+            <div className="flex flex-col items-center gap-4">
+                <Loader2 className="w-10 h-10 animate-spin text-[#000066]" />
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Validating Credentials</p>
             </div>
         </div>
     );
 
     if (!token || !info) return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-center">
-            <div className="max-w-md w-full bg-white rounded-[2.5rem] p-12 shadow-xl border border-gray-100">
-                <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-8">
-                    <ShieldCheck className="w-10 h-10 text-red-500" />
+            <div className="max-w-md w-full bg-card rounded-xl p-8 sm:p-12 shadow-sm border border-border/50">
+                <div className="w-16 h-16 bg-destructive/5 rounded-xl flex items-center justify-center mx-auto mb-6 border border-destructive/10">
+                    <ShieldCheck className="w-8 h-8 text-destructive" />
                 </div>
-                <h1 className=" font-serif font-black text-gray-900 mb-4">Invalid or Expired Link</h1>
-                <p className="text-gray-500 mb-8 font-medium">This invitation link is either incorrect or has expired. Please contact the administrator for a new one.</p>
-                <Link href="/" className="bg-primary text-white block py-4 rounded-2xl font-black shadow-lg shadow-primary/20 cursor-pointer">
-                    Back to Home
-                </Link>
+                <h1 className="text-xl font-semibold text-gray-900 mb-2">Invalid or Expired Link</h1>
+                <p className="text-sm text-muted-foreground mb-8 leading-relaxed font-medium">This invitation link is either incorrect or has expired. Please contact the administrator for a new one.</p>
+                <Button asChild className="w-full h-11 bg-[#000066] hover:bg-[#000088] text-white">
+                    <Link href="/">Back to Home</Link>
+                </Button>
             </div>
         </div>
     );
 
     if (status === 'success') return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-center">
-            <div className="max-w-md w-full bg-white rounded-[2.5rem] p-12 shadow-xl border border-gray-100">
-                <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
-                    <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div className="max-w-md w-full bg-card rounded-xl p-8 sm:p-12 shadow-sm border border-border/50">
+                <div className="w-16 h-16 bg-emerald-500/5 rounded-xl flex items-center justify-center mx-auto mb-6 border border-emerald-500/10">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-500" />
                 </div>
-                <h1 className=" font-serif font-black text-gray-900 mb-4">{ctx === 'reset' ? 'Password Reset!' : 'Account Ready!'}</h1>
-                <p className="text-gray-500 mb-10 font-medium">
+                <h1 className="text-xl font-semibold text-gray-900 mb-2">{ctx === 'reset' ? 'Password Reset!' : 'Account Ready!'}</h1>
+                <p className="text-sm text-muted-foreground mb-8 leading-relaxed font-medium">
                     {ctx === 'reset'
                         ? 'Your password has been reset successfully. You can now log in with your new credentials.'
                         : 'Your password has been set successfully. You are now being redirected to the login portal.'}
                 </p>
-                <Link href="/login" className="flex items-center justify-center gap-2 text-primary font-black  tracking-widest text-sm hover:gap-4 transition-all cursor-pointer">
-                    Go to Login <ArrowRight className="w-5 h-5" />
-                </Link>
+                <Button asChild variant="ghost" className="text-[#000066] hover:text-[#000088] hover:bg-transparent font-bold text-xs uppercase tracking-widest gap-2">
+                    <Link href="/login">Go to Login <ArrowRight className="w-4 h-4" /></Link>
+                </Button>
             </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <div className="max-w-xl w-full">
-                <div className="text-center mb-12">
-                    <div className="bg-primary w-16 h-16 rounded-4xl flex items-center justify-center shadow-2xl shadow-primary/30 mx-auto mb-8">
-                        <span className="text-white font-black text-2xl">IJ</span>
+        <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div className="max-w-md w-full">
+                <section className="text-center mb-8">
+                    <div className="bg-[#000066]/5 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 border border-[#000066]/10">
+                        <Lock className="w-8 h-8 text-[#000066]" />
                     </div>
-                    <h1 className=" font-serif font-black text-gray-900 mb-4">
-                        {ctx === 'reset' ? 'Reset Your Password' : 'Complete Your Setup'}
+                    <h1 className="text-xl font-semibold text-gray-900 mb-1">
+                        {ctx === 'reset' ? 'Password Recovery' : 'Secure Your Account'}
                     </h1>
-                    <p className="text-gray-500 font-medium">Welcome to the IJITEST editorial hub, {info.full_name}.</p>
-                </div>
+                    <p className="text-[10px] font-bold text-[#000066] uppercase tracking-widest leading-relaxed">
+                        International Journal of Innovative Trends
+                    </p>
+                </section>
 
-                <div className="bg-white rounded-[3rem] p-12 shadow-2xl shadow-gray-200/50 border border-gray-100">
-                    <div className="flex items-center gap-4 p-6 bg-gray-50 rounded-3xl border border-gray-100 mb-10">
-                        <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary">
-                            <Mail className="w-6 h-6" />
+                <div className="bg-card p-8 rounded-xl border border-border/50 shadow-sm overflow-hidden">
+                    <div className="flex items-center gap-4 p-4 bg-muted/20 rounded-lg border border-border/50 mb-8">
+                        <div className="w-10 h-10 rounded-lg bg-background border border-border/50 flex items-center justify-center text-[#000066] shrink-0">
+                            <Mail className="w-5 h-5" />
                         </div>
-                        <div>
-                            <p className="text-[10px] font-black  tracking-widest text-gray-400">Account Identity</p>
-                            <p className="font-bold text-gray-900">{info.email}</p>
+                        <div className="min-w-0">
+                            <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase mb-0.5">Account Identity</p>
+                            <p className="text-xs font-bold text-gray-900 truncate">{info.email}</p>
                         </div>
-                        <div className="ml-auto px-4 py-1.5 bg-primary/10 text-primary rounded-full text-[10px] font-black  tracking-widest">
+                        <div className="ml-auto px-3 py-1 bg-[#000066]/10 text-[#000066] rounded-md text-[10px] font-bold tracking-widest uppercase">
                             {info.role}
                         </div>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <input type="hidden" name="token" value={token!} />
+                        
                         <div className="space-y-2">
-                            <label htmlFor="password" title="password" className="text-sm font-bold text-gray-500 pl-2">Create Password</label>
-                            <div className="relative">
-                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" aria-hidden="true" />
-                                <input
-                                    id="password"
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Create Password</label>
+                            <InputGroup className="h-11 rounded-lg border-border/50 bg-muted/20">
+                                <InputGroupAddon align="inline-start" className="pl-3">
+                                    <Lock className="w-4 h-4 text-muted-foreground/60" />
+                                </InputGroupAddon>
+                                <InputGroupInput
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     required
-                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white pl-14 pr-6 py-5 rounded-3xl outline-none transition-all font-bold"
                                     placeholder="••••••••"
+                                    className="text-xs font-medium"
                                 />
-                            </div>
+                                <InputGroupAddon align="inline-end" className="pr-1">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="h-8 w-8 text-muted-foreground/60 hover:text-[#000066] transition-colors hover:bg-transparent"
+                                    >
+                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </Button>
+                                </InputGroupAddon>
+                            </InputGroup>
                         </div>
 
                         <div className="space-y-2">
-                            <label htmlFor="confirmPassword" title="confirmPassword" className="text-sm font-bold text-gray-500 pl-2">Confirm Password</label>
-                            <div className="relative">
-                                <CheckCircle2 className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" aria-hidden="true" />
-                                <input
-                                    id="confirmPassword"
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Confirm Password</label>
+                            <InputGroup className="h-11 rounded-lg border-border/50 bg-muted/20">
+                                <InputGroupAddon align="inline-start" className="pl-3">
+                                    <CheckCircle2 className="w-4 h-4 text-muted-foreground/60" />
+                                </InputGroupAddon>
+                                <InputGroupInput
                                     name="confirmPassword"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     required
-                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white pl-14 pr-6 py-5 rounded-3xl outline-none transition-all font-bold"
                                     placeholder="••••••••"
+                                    className="text-xs font-medium"
                                 />
-                            </div>
+                            </InputGroup>
                         </div>
 
                         {status === 'error' && (
-                            <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold flex items-center gap-3">
-                                <ShieldCheck className="w-5 h-5" />
+                            <div className="p-4 bg-destructive/5 border border-destructive/10 text-destructive rounded-lg text-xs font-semibold flex items-center gap-3">
+                                <ShieldCheck className="w-4 h-4" />
                                 {errorMessage}
                             </div>
                         )}
 
-                        <button
+                        <Button
                             disabled={status === 'loading'}
-                            className="w-full bg-primary text-white py-6 rounded-3xl font-black text-lg shadow-[0_20px_40px_-15px_rgba(109,2,2,0.3)] hover:shadow-[0_25px_50px_-12px_rgba(109,2,2,0.4)] hover:-translate-y-1 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                            className="w-full h-11 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-2"
                         >
-                            {status === 'loading'
-                                ? (ctx === 'reset' ? 'Resetting Password...' : 'Securing Account...')
-                                : (ctx === 'reset' ? 'Update & Login' : 'Finish Setup & Join')}
-                        </button>
+                            {status === 'loading' ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    {ctx === 'reset' ? 'Updating...' : 'Securing...'}
+                                </>
+                            ) : (
+                                <>
+                                    {ctx === 'reset' ? 'Update Password' : 'Join Editorial Board'}
+                                    <ArrowRight className="w-4 h-4" />
+                                </>
+                            )}
+                        </Button>
                     </form>
                 </div>
+
+                <span className="text-center mt-8 text-[10px] text-muted-foreground font-semibold tracking-widest uppercase opacity-40 block">
+                    Secure Setup Link • 128-bit Encryption
+                </span>
             </div>
-        </div>
+        </main>
     );
 }
 
 export default function SetupPassword() {
     return (
-        <Suspense fallback={null}>
+        <Suspense fallback={
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+                <Loader2 className="w-8 h-8 animate-spin text-[#000066]" />
+            </div>
+        }>
             <SetupContent />
         </Suspense>
     );

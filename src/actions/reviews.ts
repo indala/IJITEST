@@ -158,10 +158,10 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
             }
 
             // 6. Record Assignment — all reviewers in same batch share the same round
-            const [roundRes] = await tx.select({ max: sql<number>`MAX(review_round)` })
+            const roundRes = await tx.select({ max: sql<number>`MAX(${reviewAssignments.reviewRound})` })
                 .from(reviewAssignments)
                 .where(eq(reviewAssignments.submissionId, submissionId));
-            const reviewRound = roundRes?.max || 1;
+            const reviewRound = (roundRes[0]?.max || 0) + 1;
 
             const [newAssignment] = await tx.insert(reviewAssignments).values({
                 submissionId,
@@ -172,7 +172,8 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 status: 'assigned',
                 deadline: new Date(deadline),
                 assignedAt: new Date(),
-            }).$returningId();
+            });
+            const assignmentId = (newAssignment as any).insertId;
 
             // 7. Update Submission Status
             await tx.update(submissions)
@@ -396,6 +397,22 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
         if (reviewerId && session.user.role !== 'admin' && session.user.role !== 'editor' && session.user.id !== reviewerId) {
             return { success: false, error: "Unauthorized" };
         }
+        const manuscriptSubquery = db.select({ 
+            fileUrl: submissionFiles.fileUrl,
+            versionId: submissionFiles.versionId 
+        })
+        .from(submissionFiles)
+        .where(eq(submissionFiles.fileType, 'pdf_version'))
+        .as('ms');
+
+        const feedbackSubquery = db.select({ 
+            fileUrl: submissionFiles.fileUrl,
+            versionId: submissionFiles.versionId 
+        })
+        .from(submissionFiles)
+        .where(eq(submissionFiles.fileType, 'feedback'))
+        .as('fs');
+
         const query = db.select({
             id: reviewAssignments.id,
             status: reviewAssignments.status,
@@ -410,14 +427,16 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
             decision: reviews.decision,
             commentsToAuthor: reviews.commentsToAuthor,
             submittedAt: reviews.submittedAt,
-            manuscriptPath: sql<string>`(SELECT f.file_url FROM submission_files f WHERE f.version_id = ${reviewAssignments.versionId} AND f.file_type = 'pdf_version' LIMIT 1)`,
-            feedbackFilePath: sql<string>`(SELECT f.file_url FROM submission_files f WHERE f.version_id = ${reviewAssignments.versionId} AND f.file_type = 'feedback' LIMIT 1)`
+            manuscriptPath: manuscriptSubquery.fileUrl,
+            feedbackFilePath: feedbackSubquery.fileUrl
         })
         .from(reviewAssignments)
         .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
         .innerJoin(submissionVersions, eq(reviewAssignments.versionId, submissionVersions.id))
         .leftJoin(userProfiles, eq(reviewAssignments.reviewerId, userProfiles.userId))
         .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId))
+        .leftJoin(manuscriptSubquery, eq(reviewAssignments.versionId, manuscriptSubquery.versionId))
+        .leftJoin(feedbackSubquery, eq(reviewAssignments.versionId, feedbackSubquery.versionId))
         .orderBy(desc(reviewAssignments.assignedAt));
 
         const rows = reviewerId ? await query.where(eq(reviewAssignments.reviewerId, reviewerId)) : await query;
@@ -438,18 +457,35 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<any[
             return { success: false, error: "Unauthorized" };
         }
 
-       // Papers that are in stages that require review
+       const latestVersions = db.select({
+            submissionId: submissionVersions.submissionId,
+            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
+        })
+        .from(submissionVersions)
+        .groupBy(submissionVersions.submissionId)
+        .as('lv');
+
+       const manuscriptPaths = db.select({
+            versionId: submissionFiles.versionId,
+            fileUrl: submissionFiles.fileUrl
+       })
+       .from(submissionFiles)
+       .where(eq(submissionFiles.fileType, 'pdf_version'))
+       .as('mp');
+
        const rows = await db.select({
             id: submissions.id,
             paperId: submissions.paperId,
             title: submissionVersions.title,
-            pdfUrl: sql<string>`(SELECT f.file_url FROM submission_files f WHERE f.version_id = ${submissionVersions.id} AND f.file_type = 'pdf_version' LIMIT 1)`
+            pdfUrl: manuscriptPaths.fileUrl
        })
        .from(submissions)
        .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+       .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+       .leftJoin(manuscriptPaths, eq(submissionVersions.id, manuscriptPaths.versionId))
        .where(and(
            inArray(submissions.status, ['submitted', 'editor_assigned', 'under_review', 'revision_requested']),
-           sql`${submissionVersions.versionNumber} = (SELECT MAX(v2.version_number) FROM submission_versions v2 WHERE v2.submission_id = ${submissions.id})`
+           eq(submissionVersions.versionNumber, latestVersions.maxVersion)
        ));
 
         return { success: true, data: rows };

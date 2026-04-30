@@ -248,8 +248,8 @@ export async function updateResearchInterests(userId: string, interests: string[
                     if (existing[0]) {
                         interestId = existing[0].id;
                     } else {
-                        const [inserted] = await tx.insert(masterInterests).values({ name }).$returningId();
-                        interestId = inserted.id;
+                        const [inserted] = await tx.insert(masterInterests).values({ name });
+                        interestId = (inserted as any).insertId;
                     }
 
                     await tx.insert(applicationInterests).values({

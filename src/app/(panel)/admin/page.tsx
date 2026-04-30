@@ -38,18 +38,22 @@ export default async function AdminDashboard() {
             paidRevenueRes,
             pendingRevenueRes,
             publishedCountRes,
-            reviewStatsRes
+            reviewStatsRes,
+            completedReviewsRes
         ] = await Promise.all([
             db.select({ value: count() }).from(submissions),
             db.select({ value: count() }).from(users),
             db.select({ total: sum(payments.amount) }).from(payments).where(or(eq(payments.status, 'paid'), eq(payments.status, 'verified'))),
             db.select({ total: sum(payments.amount) }).from(payments).where(eq(payments.status, 'pending')),
             db.select({ value: count() }).from(submissions).where(eq(submissions.status, 'published')),
-            db.select({ 
-                total: count(),
-                completed: sql<number>`SUM(CASE WHEN ${reviews.submittedAt} IS NOT NULL THEN 1 ELSE 0 END)` 
-            }).from(reviews)
+            db.select({ value: count() }).from(reviews),
+            db.select({ value: count() }).from(reviews).where(sql`${reviews.submittedAt} IS NOT NULL`)
         ]);
+
+        const paidRevenue = paidRevenueRes[0].total || 0;
+        const pendingRevenue = pendingRevenueRes[0].total || 0;
+        const totalReviews = reviewStatsRes[0].value || 0;
+        const completedReviews = completedReviewsRes[0]?.value || 0;
 
         const stats = [
             { label: 'Revenue', value: Number(paidRevenueRes[0].total) || 0, icon: 'TrendingUp', variant: 'emerald', prefix: '₹' },
@@ -67,7 +71,7 @@ export default async function AdminDashboard() {
             author_name: userProfiles.fullName
         })
         .from(submissions)
-        .leftJoin(submissionVersions, and(eq(submissions.id, submissionVersions.submissionId), sql`${submissionVersions.versionNumber} = 1`))
+        .leftJoin(submissionVersions, and(eq(submissions.id, submissionVersions.submissionId), eq(submissionVersions.versionNumber, 1)))
         .leftJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
         .orderBy(desc(submissions.submittedAt))
         .limit(5);
@@ -87,7 +91,7 @@ export default async function AdminDashboard() {
 
         // 2. Health Calculations
         const startDb = performance.now();
-        await db.execute(sql`SELECT 1`);
+        await db.select({ val: sql`1` }).from(users).limit(1);
         const dbLatency = (performance.now() - startDb).toFixed(2);
         
         const uploadsPath = path.join(process.cwd(), 'public', 'uploads');
@@ -106,7 +110,7 @@ export default async function AdminDashboard() {
         ];
 
         const pubPercent = subCountRes[0].value > 0 ? (publishedCountRes[0].value / subCountRes[0].value) * 100 : 0;
-        const revPercent = reviewStatsRes[0].total > 0 ? (Number(reviewStatsRes[0].completed) / reviewStatsRes[0].total) * 100 : 0;
+        const revPercent = totalReviews > 0 ? (Number(completedReviews) / totalReviews) * 100 : 0;
 
         return (
             <DashboardRegistry 

@@ -164,7 +164,7 @@ export async function createUser(formData: FormData): Promise<ActionResponse> {
                     <div style="text-align: center; margin: 40px 0;">
                         <a href="${setupUrl}" style="background: #6d0202; color: white; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px; box-shadow: 0 10px 20px -5px rgba(109,2,2,0.3);">Secure My Account</a>
                     </div>
-                    <p style="color: #666; font-size: 12px; font-style: ;">This invitation link will expire in 24 hours.</p>
+                    <p style="color: #666; font-size: 12px; font-style: ;">This invitation link will expire in 7 days.</p>
                     <div style="margin-top: 40px; border-top: 1px solid #eee; pt: 30px; text-align: center;">
                         <p style="color: #999; font-size: 11px;">International Journal of Innovative Trends in Engineering Science and Technology</p>
                     </div>
@@ -197,7 +197,7 @@ export async function getPasswordSetupInfo(token: string): Promise<ActionRespons
         .where(
             and(
                 eq(userInvitations.token, token),
-                sql`${userInvitations.expiresAt} > NOW()`
+                sql`${userInvitations.expiresAt} > ${new Date()}`
             )
         )
         .limit(1);
@@ -224,7 +224,7 @@ export async function setupPassword(formData: FormData): Promise<ActionResponse>
                 .where(
                     and(
                         eq(userInvitations.token, token),
-                        sql`${userInvitations.expiresAt} > NOW()`
+                        sql`${userInvitations.expiresAt} > ${new Date()}`
                     )
                 )
                 .limit(1);

@@ -74,7 +74,7 @@ export default function NotificationCenter() {
                 {userRole !== 'reviewer' && (
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Link href="/admin/messages" className="relative group">
+                            <Link href={`/${userRole}/messages`} className="relative group">
                                 <div className="h-10 w-10 2xl:h-12 2xl:w-12 rounded-xl flex items-center justify-center bg-[#000066]/5 text-[#000066] hover:bg-[#000066]/10 transition-all border border-border/50">
                                     <MessageSquareDot className="w-5 h-5 2xl:w-6 2xl:h-6" />
                                     <Badge count={counts.messages} />

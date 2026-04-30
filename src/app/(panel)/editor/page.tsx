@@ -52,7 +52,7 @@ export default async function EditorDashboard() {
         .from(schema.submissions)
         .leftJoin(schema.submissionVersions, and(
             eq(schema.submissions.id, schema.submissionVersions.submissionId),
-            sql`${schema.submissionVersions.versionNumber} = 1`
+            eq(schema.submissionVersions.versionNumber, 1)
         ))
         .leftJoin(schema.userProfiles, eq(schema.submissions.correspondingAuthorId, schema.userProfiles.userId))
         .orderBy(desc(schema.submissions.submittedAt))
@@ -60,7 +60,7 @@ export default async function EditorDashboard() {
 
         // 2. Health Calculations
         const startDb = performance.now();
-        await db.execute(sql`SELECT 1`);
+        await db.select({ val: sql`1` }).from(schema.users).limit(1);
         const dbLatency = (performance.now() - startDb).toFixed(2);
         
         const uploadsPath = path.join(process.cwd(), 'public', 'uploads');

@@ -40,6 +40,14 @@ export async function getAuthorDashboard(): Promise<ActionResponse<{ submissions
         if (!author) return { success: false, error: "Unauthorized", data: { submissions: [] } };
 
         // Unified query using JOINS to avoid multiple calls and raw SQL issues
+        const latestVersions = db.select({
+            submissionId: submissionVersions.submissionId,
+            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
+        })
+        .from(submissionVersions)
+        .groupBy(submissionVersions.submissionId)
+        .as('lv');
+
         const rows = await db.select({
             id: submissions.id,
             paperId: submissions.paperId,
@@ -55,9 +63,10 @@ export async function getAuthorDashboard(): Promise<ActionResponse<{ submissions
             issueYear: volumesIssues.year
         })
         .from(submissions)
+        .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
         .leftJoin(submissionVersions, and(
             eq(submissions.id, submissionVersions.submissionId),
-            sql`${submissionVersions.versionNumber} = (SELECT MAX(v2.version_number) FROM submission_versions v2 WHERE v2.submission_id = ${submissions.id})`
+            eq(submissionVersions.versionNumber, latestVersions.maxVersion)
         ))
         .leftJoin(payments, eq(submissions.id, payments.submissionId))
         .leftJoin(publications, eq(submissions.id, publications.submissionId))
@@ -81,6 +90,14 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
         const author = await getAuthorSession();
         if (!author) return { success: false, error: "Unauthorized" };
 
+        const latestVersions = db.select({
+            submissionId: submissionVersions.submissionId,
+            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
+        })
+        .from(submissionVersions)
+        .groupBy(submissionVersions.submissionId)
+        .as('lv');
+
         // 1. Core Metadata
         const subData = await db.select({
             id: submissions.id,
@@ -96,9 +113,10 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
             changelog: submissionVersions.changelog
         })
         .from(submissions)
+        .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
         .innerJoin(submissionVersions, and(
             eq(submissions.id, submissionVersions.submissionId),
-            sql`${submissionVersions.versionNumber} = (SELECT MAX(v2.version_number) FROM submission_versions v2 WHERE v2.submission_id = ${submissions.id})`
+            eq(submissionVersions.versionNumber, latestVersions.maxVersion)
         ))
         .where(and(
             eq(submissions.id, submissionId),
@@ -245,8 +263,8 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                 abstract: latest.abstract,
                 keywords: latest.keywords,
                 changelog: changelog || "Revised version submission",
-            }).$returningId();
-            const verId = versionInsert.id;
+            });
+            const verId = (versionInsert as any).insertId;
 
             // C. Predictable URLs (DB First)
             const timestamp = Date.now();
@@ -277,7 +295,11 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             await fs.writeFile(path.join(uploadDir, result.cName), Buffer.from(await copyrightFile.arrayBuffer()));
             fileCleanup.push(path.join(uploadDir, result.cName));
         } catch (ioErr) {
-            // IO failed — rollback: delete orphaned version + its file records, reset submission status
+            // IO failed — cleanup disk and rollback DB
+            for (const filePath of fileCleanup) {
+                try { await fs.unlink(filePath); } catch (e) { /* ignore */ }
+            }
+
             await db.transaction(async (tx) => {
                 await tx.delete(submissionFiles).where(eq(submissionFiles.versionId, result.verId));
                 await tx.delete(submissionVersions).where(
@@ -338,6 +360,14 @@ export async function getMySubmissions() {
 
         const userId = session.user.id;
 
+        const latestVersions = db.select({
+            submissionId: submissionVersions.submissionId,
+            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
+        })
+        .from(submissionVersions)
+        .groupBy(submissionVersions.submissionId)
+        .as('lv');
+
         const query = db.select({
             id: submissions.id,
             paperId: submissions.paperId,
@@ -346,9 +376,10 @@ export async function getMySubmissions() {
             title: submissionVersions.title,
         })
         .from(submissions)
+        .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
         .leftJoin(submissionVersions, and(
             eq(submissions.id, submissionVersions.submissionId),
-            sql`${submissionVersions.versionNumber} = (SELECT MAX(v.version_number) FROM submission_versions v WHERE v.submission_id = ${submissions.id})`
+            eq(submissionVersions.versionNumber, latestVersions.maxVersion)
         ));
 
         // Authors only see their own. Admins/Editors see all? 
@@ -426,7 +457,7 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
                 // We'll use a transaction for each user cleanup
                 await db.transaction(async (tx) => {
                     // Get all submission IDs for this author to clean files
-                    const authorSubs = await tx.select({ id: submissions.id }).from(submissions).where(sql`${submissions.correspondingAuthorId} = ${aId}`);
+                    const authorSubs = await tx.select({ id: submissions.id }).from(submissions).where(eq(submissions.correspondingAuthorId, aId));
                     const subIds = authorSubs.map(s => s.id);
 
                     if (subIds.length > 0) {
@@ -449,8 +480,8 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
                     }
 
                     // Delete Profile and User
-                    await tx.delete(userProfiles).where(sql`${userProfiles.userId} = ${aId}`);
-                    await tx.delete(users).where(sql`${users.id} = ${aId}`);
+                    await tx.delete(userProfiles).where(eq(userProfiles.userId, aId));
+                    await tx.delete(users).where(eq(users.id, aId));
                 });
                 deletedCount++;
             }

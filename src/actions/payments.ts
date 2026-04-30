@@ -30,7 +30,14 @@ export async function getPayments(): Promise<ActionResponse<PaymentRow[]>> {
             return { success: false, error: "Unauthorized" };
         }
 
-        // Join only the latest version per submission to avoid duplicate rows
+        const latestVersions = db.select({
+            submissionId: submissionVersions.submissionId,
+            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
+        })
+        .from(submissionVersions)
+        .groupBy(submissionVersions.submissionId)
+        .as('lv');
+
         const results = await db.select({
             id: payments.id,
             submissionId: payments.submissionId,
@@ -49,13 +56,11 @@ export async function getPayments(): Promise<ActionResponse<PaymentRow[]>> {
         .innerJoin(submissions, eq(payments.submissionId, submissions.id))
         .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
         .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .innerJoin(
-            submissionVersions,
-            and(
-                eq(submissionVersions.submissionId, submissions.id),
-                sql`${submissionVersions.versionNumber} = (SELECT MAX(v.version_number) FROM submission_versions v WHERE v.submission_id = ${submissions.id})`
-            )
-        )
+        .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+        .innerJoin(submissionVersions, and(
+            eq(submissionVersions.submissionId, submissions.id),
+            eq(submissionVersions.versionNumber, latestVersions.maxVersion)
+        ))
         .orderBy(desc(payments.createdAt));
         
         return { success: true, data: results as PaymentRow[] };

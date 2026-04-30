@@ -316,7 +316,7 @@ export const emailTemplates = {
                 <p style="margin: 5px 0 0 0; color: #475569; font-size: 14px; font-style: italic;">"${paperTitle}"</p>
             </div>
 
-            <p style="font-size: 12px; color: #94a3b8; font-style: italic;">Note: This invitation link will expire in 72 hours for security purposes.</p>
+            <p style="font-size: 12px; color: #94a3b8; font-style: italic;">Note: This invitation link will expire in 7 days for security purposes.</p>
         `;
 
         return {

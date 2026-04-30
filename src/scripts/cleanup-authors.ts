@@ -17,6 +17,9 @@ async function cleanupStaleAuthors() {
     console.log("[Cleanup] Starting stale author deactivation...");
 
     try {
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+
         const staleAuthors = await db.select({
             id: users.id,
             email: users.email,
@@ -28,7 +31,7 @@ async function cleanupStaleAuthors() {
         .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
         .where(and(
             inArray(submissions.status, ['rejected', 'revision_requested']),
-            sql`DATEDIFF(NOW(), ${submissions.updatedAt}) > 15`,
+            sql`${submissions.updatedAt} < ${fifteenDaysAgo}`,
             eq(users.isActive, true),
             eq(users.role, 'author')
         ));

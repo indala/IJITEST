@@ -73,9 +73,8 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
                 type: application_type as 'reviewer' | 'editor',
                 status: 'pending',
                 nationality,
-            }).$returningId();
-
-            const appId = insertedApp.id;
+            });
+            const appId = (insertedApp as any).insertId;
 
             // Persist Normalized Research Interests
             if (researchInterestsStr && appId) {
@@ -93,8 +92,8 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
                         if (existing[0]) {
                             interestId = existing[0].id;
                         } else {
-                            const [inserted] = await tx.insert(masterInterests).values({ name: trimmedName }).$returningId();
-                            interestId = inserted.id;
+                            const [inserted] = await tx.insert(masterInterests).values({ name: trimmedName });
+                            interestId = (inserted as any).insertId;
                         }
 
                         await tx.insert(applicationInterests).values({

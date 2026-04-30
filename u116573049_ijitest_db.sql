@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 29, 2026 at 04:19 PM
+-- Generation Time: Apr 30, 2026 at 05:58 AM
 -- Server version: 12.3.1-MariaDB-log
 -- PHP Version: 7.2.34
 
@@ -184,6 +184,13 @@ CREATE TABLE `reviews` (
   `submitted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `reviews`
+--
+
+INSERT INTO `reviews` (`id`, `assignment_id`, `decision`, `score`, `confidence`, `comments_to_author`, `comments_to_editor`, `created_at`, `submitted_at`) VALUES
+(1, 4, 'minor_revision', 8, 3, 'title missing', '', '2026-04-29 17:50:00', '2026-04-29 17:50:00');
+
 -- --------------------------------------------------------
 
 --
@@ -210,7 +217,8 @@ CREATE TABLE `review_assignments` (
 INSERT INTO `review_assignments` (`id`, `submission_id`, `reviewer_id`, `version_id`, `assigned_by`, `review_round`, `status`, `deadline`, `assigned_at`, `responded_at`) VALUES
 (1, 11, '79dfcee0-31c1-11f1-ad3e-c05465fbbdc2', 11, '87b55eae-e296-4a65-a82f-3c503beadf7e', 1, 'assigned', '2026-04-29', '2026-04-26 03:18:29', NULL),
 (2, 11, '79dcbb44-31c1-11f1-ad3e-c05465fbbdc2', 11, '87b55eae-e296-4a65-a82f-3c503beadf7e', 1, 'assigned', '2026-04-29', '2026-04-26 03:19:40', NULL),
-(3, 11, 'u19-mahendra-uuid-003', 11, '87b55eae-e296-4a65-a82f-3c503beadf7e', 1, 'assigned', '2026-04-29', '2026-04-26 03:26:52', NULL);
+(3, 11, 'u19-mahendra-uuid-003', 11, '87b55eae-e296-4a65-a82f-3c503beadf7e', 1, 'assigned', '2026-04-29', '2026-04-26 03:26:52', NULL),
+(4, 11, 'bce1657c-32a6-492d-9df5-a03dcb465726', 11, '87b55eae-e296-4a65-a82f-3c503beadf7e', 1, 'completed', '2026-05-02', '2026-04-29 16:30:44', '2026-04-29 17:50:00');
 
 -- --------------------------------------------------------
 
@@ -280,7 +288,7 @@ INSERT INTO `submissions` (`id`, `paper_id`, `slug`, `status`, `final_decision`,
 (8, 'IJITEST-2026-008', 'ijitest2026008', 'published', NULL, NULL, NULL, 'fa60af47-276f-4c3a-8c34-89aae8ee28dd', 1, '2026-03-31 16:00:00', '2026-04-19 05:41:03', NULL),
 (9, 'IJITEST-2026-009', 'ijitest2026009', 'published', NULL, NULL, NULL, 'a0d1d251-cccd-4a52-93ff-26bcc7ae428a', 1, '2026-03-31 17:00:00', '2026-04-19 05:41:03', NULL),
 (10, 'IJITEST-2026-010', 'ijitest2026010', 'published', NULL, NULL, NULL, 'c411a1e8-1a94-4ba8-bf5c-d3bead1b617b', 1, '2026-03-31 18:00:00', '2026-04-19 05:41:03', NULL),
-(11, 'IJITEST-2026-011', 'ijitest2026011', 'revision_requested', NULL, NULL, NULL, 'cd2ef493-3626-483a-93c6-8236287bf7a1', NULL, '2026-04-25 05:55:52', '2026-04-29 16:18:44', NULL);
+(11, 'IJITEST-2026-011', 'ijitest2026011', 'accepted', NULL, NULL, NULL, 'cd2ef493-3626-483a-93c6-8236287bf7a1', NULL, '2026-04-25 05:55:52', '2026-04-29 18:11:57', NULL);
 
 -- --------------------------------------------------------
 
@@ -399,10 +407,7 @@ INSERT INTO `submission_files` (`id`, `version_id`, `file_type`, `file_url`, `or
 (10, 10, 'pdf_version', '/uploads/published/IJITEST-2026-010-published.pdf', 'IJITEST-2026-010.pdf', NULL, '2026-04-19 05:41:03'),
 (11, 11, 'main_manuscript', '/uploads/submissions/manuscript_11_1777096552946.docx', '_IJITEST_DRL_Final_-1.docx', 331837, '2026-04-25 05:55:52'),
 (12, 11, 'copyright_form', '/uploads/submissions/copyright_11_1777096552946.docx', 'copyright-form.docx', 12616, '2026-04-25 05:55:52'),
-(13, 11, 'pdf_version', '/uploads/submissions/auto_final_v1_1777173061816.pdf', 'auto_final_v1_1777173061816.pdf', 861037, '2026-04-26 03:11:01'),
-(14, 11, 'pdf_version', '/uploads/submissions/reviewer_copy_11_1777173509372.pdf', 'reviewer_manuscript.pdf', NULL, '2026-04-26 03:18:29'),
-(15, 11, 'pdf_version', '/uploads/submissions/reviewer_copy_11_1777173580053.pdf', 'reviewer_manuscript.pdf', NULL, '2026-04-26 03:19:40'),
-(16, 11, 'pdf_version', '/uploads/submissions/reviewer_copy_11_1777174012396.pdf', 'reviewer_manuscript.pdf', NULL, '2026-04-26 03:26:52');
+(17, 11, 'pdf_version', '/uploads/submissions/auto_final_v1_1777486300103.pdf', 'auto_final_v1_1777486300103.pdf', 861351, '2026-04-29 18:11:40');
 
 -- --------------------------------------------------------
 
@@ -861,19 +866,19 @@ ALTER TABLE `publications`
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `review_assignments`
 --
 ALTER TABLE `review_assignments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `submissions`
 --
 ALTER TABLE `submissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `submission_authors`
@@ -885,7 +890,7 @@ ALTER TABLE `submission_authors`
 -- AUTO_INCREMENT for table `submission_files`
 --
 ALTER TABLE `submission_files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `submission_versions`
@@ -897,13 +902,13 @@ ALTER TABLE `submission_versions`
 -- AUTO_INCREMENT for table `user_invitations`
 --
 ALTER TABLE `user_invitations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`
 --
 ALTER TABLE `user_profiles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `volumes_issues`

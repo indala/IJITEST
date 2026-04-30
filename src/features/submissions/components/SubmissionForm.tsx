@@ -32,7 +32,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const coAuthorSchema = z.object({
     name: z.string().min(2, "Name required"),
     email: z.string().email("Invalid email"),
-    phone: z.string().regex(/^[0-9]+$/, "Numbers only"),
+    phone: z.string().optional().or(z.literal('')),
     designation: z.string().min(2, "Designation required"),
     institution: z.string().min(2, "Institution required"),
 });
@@ -41,7 +41,7 @@ const formSchema = z.object({
     title: z.string().min(10, "Title must be at least 10 characters"),
     author_name: z.string().min(2, "Author name must be at least 2 characters"),
     author_email: z.string().email("Invalid email address"),
-    author_phone: z.string().regex(/^[0-9]+$/, "Numbers only"),
+    author_phone: z.string().optional().or(z.literal('')),
     author_designation: z.string().min(2, "Designation required"),
     affiliation: z.string().min(5, "Affiliation must be at least 5 characters"),
     abstract: z.string().min(100, "Abstract must be at least 100 characters"),
@@ -86,9 +86,9 @@ export default function SubmissionForm() {
             });
             return;
         }
-        if (!copyrightFile) {
-            toast.error("Copyright Form Missing", {
-                description: "The signed copyright agreement is mandatory."
+        if (!manuscriptFile) {
+            toast.error("Manuscript Missing", {
+                description: "Primary research document is required."
             });
             return;
         }
@@ -105,7 +105,9 @@ export default function SubmissionForm() {
         });
         
         formData.append("manuscript", manuscriptFile);
-        formData.append("copyright_form", copyrightFile);
+        if (copyrightFile) {
+            formData.append("copyright_form", copyrightFile);
+        }
 
         submissionMutation.mutate(formData, {
             onSuccess: () => {
@@ -252,7 +254,7 @@ export default function SubmissionForm() {
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Phone className="w-4 h-4 text-[#000066]" />
-                                        <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Phone Number</FormLabel>
+                                        <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Phone Number (Optional)</FormLabel>
                                     </div>
                                     <FormControl>
                                         <Input
@@ -450,7 +452,7 @@ export default function SubmissionForm() {
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormControl>
-                                                                    <Input type="tel" placeholder="Phone" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs" />
+                                                                    <Input type="tel" placeholder="Phone (Optional)" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs" />
                                                                 </FormControl>
                                                                 <FormMessage />
                                                             </FormItem>
@@ -568,7 +570,7 @@ export default function SubmissionForm() {
                                     <div className="w-10 h-10 rounded-xl bg-[#000066]/5 text-[#000066] flex items-center justify-center border border-[#000066]/10">
                                         <Shield className="w-5 h-5" />
                                     </div>
-                                    <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider m-0">Copyright Agreement</FormLabel>
+                                    <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider m-0">Copyright Agreement (Optional)</FormLabel>
                                 </div>
                                 {settings.copyright_url && (
                                     <Button asChild variant="ghost" size="sm" className="h-8 text-[#000066] font-bold text-[9px] uppercase tracking-wider hover:bg-[#000066]/5">
@@ -609,7 +611,7 @@ export default function SubmissionForm() {
                                                 <Upload className="w-5 h-5 text-[#000066]/40" />
                                             </div>
                                             <p className="text-xs font-semibold text-gray-900">Upload Signed Form</p>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">Signed Word (DOCX)</p>
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">Optional at submission</p>
                                         </div>
                                     )}
                                 </label>

@@ -204,6 +204,14 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
                     ? eq(submissions.paperId, id)
                     : eq(publications.submissionId, numericId);
 
+                const latestVersions = db.select({
+                    submissionId: submissionVersions.submissionId,
+                    maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
+                })
+                .from(submissionVersions)
+                .groupBy(submissionVersions.submissionId)
+                .as('lv');
+
                 const rows = await db.select({
                     publication: publications,
                     submission: submissions,
@@ -214,9 +222,10 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
                 .from(publications)
                 .where(whereClause)
                 .leftJoin(submissions, eq(publications.submissionId, submissions.id))
+                .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
                 .leftJoin(submissionVersions, and(
                     eq(submissions.id, submissionVersions.submissionId),
-                    eq(submissionVersions.versionNumber, sql`(SELECT MAX(version_number) FROM submission_versions WHERE submission_id = ${submissions.id})`)
+                    eq(submissionVersions.versionNumber, latestVersions.maxVersion)
                 ))
                 .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
                 .leftJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))

@@ -25,7 +25,9 @@ const submissionSchema = z.object({
     author_email: z.string().email("Invalid email address").max(255, "Email address cannot exceed 255 characters"),
     author_phone: z.string()
         .regex(/^[0-9]+$/, "Author phone must contain only numbers")
-        .max(20, "Phone number cannot exceed 20 characters"),
+        .max(20, "Phone number cannot exceed 20 characters")
+        .optional()
+        .or(z.literal('')),
     author_designation: z.string().min(2, "Author designation is required").max(255, "Designation cannot exceed 255 characters"),
     affiliation: z.string().min(2, "Affiliation is required").max(500, "Institution name cannot exceed 500 characters"),
     title: z.string().min(10, "Title must be at least 10 characters").max(1000, "Title cannot exceed 1000 characters"),
@@ -68,7 +70,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         const copyrightFile = formData.get("copyright_form") as File;
 
         if (!manuscriptFile || manuscriptFile.size === 0) return { success: false, error: "Manuscript file is mandatory" };
-        if (!copyrightFile || copyrightFile.size === 0) return { success: false, error: "Copyright form is mandatory" };
+        const copyrightProvided = copyrightFile && copyrightFile.size > 0;
 
         // .docx ONLY Policy
         const docxMime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -76,8 +78,12 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             f.name.toLowerCase().endsWith(".docx") ||
             f.type === docxMime;
 
-        if (!isDocx(manuscriptFile) || !isDocx(copyrightFile)) {
-            return { success: false, error: "Strict Policy: Only .docx files are accepted for both Manuscript and Copyright Form." };
+        if (!isDocx(manuscriptFile)) {
+            return { success: false, error: "Strict Policy: Only .docx files are accepted for the Manuscript." };
+        }
+
+        if (copyrightProvided && !isDocx(copyrightFile)) {
+            return { success: false, error: "Strict Policy: The Copyright Form must be a .docx file." };
         }
 
         // 2. Transactional Database Operations (Save everything BUT don't upload files yet)
@@ -131,11 +137,16 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const seqKey = `submission_sequence_${currentYear}`;
 
             // Ensure sequence entry exists
-            await tx.execute(sql`INSERT INTO settings (setting_key, setting_value) VALUES (${seqKey}, '0') ON DUPLICATE KEY UPDATE setting_key = setting_key`);
+            await tx.insert(settings)
+                .values({ settingKey: seqKey, settingValue: '0' })
+                .onDuplicateKeyUpdate({ set: { settingKey: seqKey } });
 
             // Lock and Fetch current sequence
-            const [seqResult] = await tx.execute(sql`SELECT setting_value as value FROM settings WHERE setting_key = ${seqKey} FOR UPDATE`);
-            const lastSeq = parseInt((seqResult as any).value || "0");
+            const seqResult = await tx.select({ value: settings.settingValue })
+                .from(settings)
+                .where(eq(settings.settingKey, seqKey))
+                .for('update');
+            const lastSeq = parseInt(seqResult[0]?.value || "0");
             const newSeq = lastSeq + 1;
 
             // Update sequence
@@ -150,8 +161,8 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 slug,
                 status: "submitted",
                 correspondingAuthorId: userId,
-            }).$returningId();
-            const subId = submissionInsert.id;
+            });
+            const subId = (submissionInsert as any).insertId;
 
             // D. Insert Version 1
             const [versionInsert] = await tx.insert(submissionVersions).values({
@@ -160,8 +171,8 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 title: validated.data.title,
                 abstract: validated.data.abstract,
                 keywords: validated.data.keywords,
-            }).$returningId();
-            const verId = versionInsert.id;
+            });
+            const verId = (versionInsert as any).insertId;
 
             // E. Authors (Lead + Co-authors)
             const authorsList: any[] = [{
@@ -204,14 +215,22 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const mName = `manuscript_${subId}_${timestamp}.${manuscriptFile.name.split('.').pop()}`;
             const cName = `copyright_${subId}_${timestamp}.${copyrightFile.name.split('.').pop()}`;
             const mUrl = `/uploads/submissions/${mName}`;
-            const cUrl = `/uploads/submissions/${cName}`;
+            
+            const fileRecords: (typeof submissionFiles.$inferInsert)[] = [
+                { versionId: verId, fileType: "main_manuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size }
+            ];
 
-            await tx.insert(submissionFiles).values([
-                { versionId: verId, fileType: "main_manuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size },
-                { versionId: verId, fileType: "copyright_form", fileUrl: cUrl, originalName: copyrightFile.name, fileSize: copyrightFile.size }
-            ]);
+            let finalCName: string | undefined = undefined;
+            if (copyrightProvided) {
+                const cName = `copyright_${subId}_${timestamp}.${copyrightFile.name.split('.').pop()}`;
+                const cUrl = `/uploads/submissions/${cName}`;
+                fileRecords.push({ versionId: verId, fileType: "copyright_form" as const, fileUrl: cUrl, originalName: copyrightFile.name, fileSize: copyrightFile.size });
+                finalCName = cName;
+            }
 
-            return { paperId, subId, mName, cName };
+            await tx.insert(submissionFiles).values(fileRecords);
+
+            return { paperId, subId, mName, cName: finalCName };
         });
 
         // 3. File Uploads (Happens post-transaction to strictly follow "DB First" rule)
@@ -224,8 +243,10 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             await fs.writeFile(path.join(uploadDir, result.mName), Buffer.from(await manuscriptFile.arrayBuffer()));
             fileCleanupList.push(path.join(uploadDir, result.mName));
 
-            await fs.writeFile(path.join(uploadDir, result.cName), Buffer.from(await copyrightFile.arrayBuffer()));
-            fileCleanupList.push(path.join(uploadDir, result.cName));
+            if (result.cName && copyrightFile) {
+                await fs.writeFile(path.join(uploadDir, result.cName), Buffer.from(await copyrightFile.arrayBuffer()));
+                fileCleanupList.push(path.join(uploadDir, result.cName));
+            }
         } catch (uploadErr) {
             // File-system cleanup for orphaned files
             for (const filePath of fileCleanupList) {

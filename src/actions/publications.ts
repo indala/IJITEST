@@ -20,12 +20,19 @@ import path from "path";
 import fs from "fs/promises";
 import { brandPdf } from "@/lib/pdf-branding";
 import { getSubmissionById } from "./submissions";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 
 /**
  * Create a new volume/issue
  */
 export async function createVolumeIssue(formData: FormData): Promise<ActionResponse> {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        return { success: false, error: "Unauthorized" };
+    }
+    
     const volume = parseInt(formData.get('volume') as string);
     const issue = parseInt(formData.get('issue') as string);
     const year = parseInt(formData.get('year') as string);
@@ -255,6 +262,11 @@ export interface PaperWithPublication {
  */
 export async function publishIssue(id: number): Promise<ActionResponse> {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized" };
+        }
+
         await db.update(volumesIssues)
             .set({ status: 'published' })
             .where(eq(volumesIssues.id, id));
@@ -277,6 +289,14 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
 export async function getPapersByIssueId(issueId: number): Promise<ActionResponse<PaperWithPublication[]>> {
     try {
         // Return structured data for the issue listing
+        const latestVersions = db.select({
+            submissionId: submissionVersions.submissionId,
+            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
+        })
+        .from(submissionVersions)
+        .groupBy(submissionVersions.submissionId)
+        .as('lv');
+
         const rows = await db.select({
             id: submissions.id,
             paperId: submissions.paperId,
@@ -287,9 +307,10 @@ export async function getPapersByIssueId(issueId: number): Promise<ActionRespons
             .from(submissions)
             .where(eq(submissions.issueId, issueId))
             .leftJoin(publications, eq(submissions.id, publications.submissionId))
+            .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
             .leftJoin(submissionVersions, and(
                 eq(submissions.id, submissionVersions.submissionId),
-                sql`${submissionVersions.versionNumber} = (SELECT MAX(v2.version_number) FROM submission_versions v2 WHERE v2.submission_id = ${submissions.id})`
+                eq(submissionVersions.versionNumber, latestVersions.maxVersion)
             ));
 
         const data = rows.map(r => ({
@@ -312,6 +333,11 @@ export async function getPapersByIssueId(issueId: number): Promise<ActionRespons
  */
 export async function unassignPaperFromIssue(submissionId: number): Promise<ActionResponse> {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized" };
+        }
+
         await db.transaction(async (tx) => {
             await tx.delete(publications).where(eq(publications.submissionId, submissionId));
             await tx.update(submissions)
@@ -334,12 +360,17 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
  * Update an existing volume/issue
  */
 export async function updateVolumeIssue(id: number, formData: FormData): Promise<ActionResponse> {
-    const volume = parseInt(formData.get('volume') as string);
-    const issue = parseInt(formData.get('issue') as string);
-    const year = parseInt(formData.get('year') as string);
-    const monthRange = formData.get('monthRange') as string;
-
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const volume = parseInt(formData.get('volume') as string);
+        const issue = parseInt(formData.get('issue') as string);
+        const year = parseInt(formData.get('year') as string);
+        const monthRange = formData.get('monthRange') as string;
+
         await db.update(volumesIssues)
             .set({
                 volumeNumber: volume,
@@ -362,6 +393,11 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
  */
 export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'admin') {
+            return { success: false, error: "Unauthorized: Admin access required." };
+        }
+
         return await db.transaction(async (tx) => {
             // 1. Unassign all papers
             await tx.delete(publications).where(eq(publications.issueId, id));
