@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
-import { 
-    ShieldAlert, User, FileUp, CheckCircle, Clock, Search, 
-    Plus, X, Download, FileText, Eye, RefreshCw, Loader2 
+import {
+    ShieldAlert, User, FileUp, CheckCircle, Clock, Search,
+    Plus, X, Download, FileText, Eye, RefreshCw, Loader2
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -33,18 +33,18 @@ import { useQueryClient } from '@tanstack/react-query';
 
 // --- Sub-components ---
 
-const ReviewItemCard = React.memo(({ 
-    item, 
-    user, 
-    isInternalStaff, 
-    onAccept, 
+const ReviewItemCard = React.memo(({
+    item,
+    user,
+    isInternalStaff,
+    onAccept,
     onReject,
-    onFeedbackSubmit 
-}: { 
-    item: any, 
-    user: any, 
-    isInternalStaff: boolean, 
-    onAccept: (item: any) => void, 
+    onFeedbackSubmit
+}: {
+    item: any,
+    user: any,
+    isInternalStaff: boolean,
+    onAccept: (item: any) => void,
     onReject: (item: any) => void,
     onFeedbackSubmit: (item: any, formData: FormData) => Promise<void>
 }) => {
@@ -76,7 +76,7 @@ const ReviewItemCard = React.memo(({
                         <h3 className="font-semibold text-foreground hover:text-primary transition-colors text-lg xl:text-xl 2xl:text-2xl leading-tight">
                             {item.title}
                         </h3>
-                        
+
                         <div className="flex flex-wrap gap-8 items-center pt-2">
                             <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                                 <User className="w-4 h-4 text-primary" />
@@ -134,7 +134,7 @@ const ReviewItemCard = React.memo(({
                                             scientific assessment for paper: <span className="text-foreground">{item.paperId}</span>
                                         </DialogDescription>
                                     </DialogHeader>
-                                    
+
                                     <form action={handleFormSubmit} className="space-y-5 pt-2">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                             {/* Primary decisions */}
@@ -157,24 +157,24 @@ const ReviewItemCard = React.memo(({
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div className="space-y-1.5">
                                                         <label className="text-[11px] font-medium text-muted-foreground">score (1-10)</label>
-                                                        <Input 
-                                                            name="score" 
-                                                            type="number" 
-                                                            min="1" 
-                                                            max="10" 
-                                                            required 
+                                                        <Input
+                                                            name="score"
+                                                            type="number"
+                                                            min="1"
+                                                            max="10"
+                                                            required
                                                             placeholder="8"
                                                             className="h-11 bg-muted/30 border-border/50 rounded-lg px-4 text-sm"
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
                                                         <label className="text-[11px] font-medium text-muted-foreground">confidence (1-5)</label>
-                                                        <Input 
-                                                            name="confidence" 
-                                                            type="number" 
-                                                            min="1" 
-                                                            max="5" 
-                                                            required 
+                                                        <Input
+                                                            name="confidence"
+                                                            type="number"
+                                                            min="1"
+                                                            max="5"
+                                                            required
                                                             placeholder="4"
                                                             className="h-11 bg-muted/30 border-border/50 rounded-lg px-4 text-sm"
                                                         />
@@ -549,10 +549,10 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
 
                 <div className="grid grid-cols-1 gap-4">
                     {filteredReviews.map((item) => (
-                        <ReviewItemCard 
-                            key={item.id} 
-                            item={item} 
-                            user={session?.user} 
+                        <ReviewItemCard
+                            key={item.id}
+                            item={item}
+                            user={session?.user}
                             isInternalStaff={isInternalStaff}
                             onAccept={handleAccept}
                             onReject={handleReject}

@@ -25,6 +25,10 @@ export type ProfileData = {
     name: string;
     email: string;
     designation: string;
+    institute: string;
+    phone: string;
+    nationality: string;
+    bio: string;
     photo_url: string | null;
     orcid_id: string | null;
     application?: {
@@ -61,6 +65,10 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
             email: users.email,
             name: userProfiles.fullName,
             designation: userProfiles.designation,
+            institute: userProfiles.institute,
+            phone: userProfiles.phone,
+            nationality: userProfiles.nationality,
+            bio: userProfiles.bio,
             photo_url: userProfiles.photoUrl,
             orcid_id: userProfiles.orcidId,
         })
@@ -77,6 +85,10 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
             email: userData.email,
             name: userData.name || "",
             designation: userData.designation || "",
+            institute: userData.institute || "",
+            phone: userData.phone || "",
+            nationality: userData.nationality || "India",
+            bio: userData.bio || "",
             photo_url: userData.photo_url,
             orcid_id: userData.orcid_id,
             research_interests: []
@@ -168,7 +180,7 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
 }
 
 export async function updateProfileField(userId: string, field: string, value: string): Promise<ActionResponse<string>> {
-    const whitelist = ['name', 'designation', 'orcid_id', 'phone'];
+    const whitelist = ['name', 'designation', 'orcid_id', 'phone', 'institute', 'nationality', 'bio'];
     if (!whitelist.includes(field)) {
         return { success: false, error: 'Field not permitted' };
     }
@@ -182,8 +194,11 @@ export async function updateProfileField(userId: string, field: string, value: s
     const limits: Record<string, number> = {
         name: 255,
         designation: 255,
+        institute: 255,
+        nationality: 100,
         orcid_id: 50,
-        phone: 20
+        phone: 20,
+        bio: 2000
     };
 
     if (limits[field] && trimmedValue.length > limits[field]) {
@@ -201,6 +216,9 @@ export async function updateProfileField(userId: string, field: string, value: s
         else if (field === 'orcid_id') updateDoc.orcidId = trimmedValue;
         else if (field === 'designation') updateDoc.designation = trimmedValue;
         else if (field === 'phone') updateDoc.phone = trimmedValue;
+        else if (field === 'institute') updateDoc.institute = trimmedValue;
+        else if (field === 'nationality') updateDoc.nationality = trimmedValue;
+        else if (field === 'bio') updateDoc.bio = trimmedValue;
 
         await db.update(userProfiles)
             .set(updateDoc)
@@ -338,10 +356,12 @@ export async function getProfileCompleteness(profileData: Partial<ProfileData>, 
     check(profileData.name, 'Full Name');
     check(profileData.designation, 'Designation');
     check(profileData.email, 'Email Address');
+    check(profileData.institute, 'Academic Institute');
+    check(profileData.nationality, 'Nationality/Country');
+    check(profileData.phone, 'Phone Number');
+    check(profileData.bio, 'Biography');
     
     if (role !== 'admin' && role !== 'author') {
-        check(profileData.application?.institute, 'Academic Institute');
-        check(profileData.application?.country, 'Nationality/Country');
         check(profileData.research_interests, 'Research Interests');
     }
 

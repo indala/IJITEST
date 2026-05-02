@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { contactMessages } from "@/db/schema";
 import { eq, and, like, or, desc, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { sendEmail } from "@/lib/mail";
+import { emailTemplates, sendEmail } from "@/lib/mail";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
@@ -131,6 +131,51 @@ export async function deleteMessage(id: number): Promise<ActionResponse> {
 }
 
 /**
+ * Admin: Reply to a contact message via email.
+ */
+export async function replyToMessage(id: number, replyContent: string): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'admin') {
+            return { success: false, error: "Unauthorized access." };
+        }
+
+        const [message] = await db.select()
+            .from(contactMessages)
+            .where(eq(contactMessages.id, id))
+            .limit(1);
+
+        if (!message) return { success: false, error: "Message not found." };
+
+        // Send the reply email
+        const template = emailTemplates.contactReply(
+            message.name, 
+            message.subject || 'Your Inquiry to IJITEST', 
+            replyContent, 
+            message.message,
+            message.createdAt?.toLocaleDateString()
+        );
+
+        await sendEmail({
+            to: message.email,
+            subject: template.subject,
+            html: template.html
+        });
+
+        // Automatically mark as resolved after replying
+        await db.update(contactMessages)
+            .set({ status: 'resolved' })
+            .where(eq(contactMessages.id, id));
+
+        revalidatePath('/admin/messages');
+        return { success: true };
+    } catch (error) {
+        console.error("Reply Message Error:", error);
+        return { success: false, error: "Failed to send reply: " + (error instanceof Error ? error.message : String(error)) };
+    }
+}
+
+/**
  * Revert a message back to pending status.
  */
 export async function revertMessageStatus(id: number): Promise<ActionResponse> {
@@ -160,34 +205,24 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
         });
 
         // 1. Auto-reply to visitor (fire-and-forget)
+        const receiptTemplate = emailTemplates.contactReceipt(name, subject);
         sendEmail({
             to: email,
-            subject: `Receipt Confirmation: ${subject || 'Contact Inquiry'}`,
-            html: `
-                <div style="font-family: sans-serif; color: #333; max-width: 600px;">
-                    <h2 style="color: #6d0202;">Message Received</h2>
-                    <p>Dear ${name},</p>
-                    <p>Thank you for reaching out to IJITEST. We have received your inquiry regarding "<strong>${subject || 'General'}</strong>".</p>
-                    <p>Our editorial team will review your message and get back to you shortly.</p>
-                    <p>Best regards,<br>IJITEST Support Team</p>
-                </div>
-            `
+            subject: receiptTemplate.subject,
+            html: receiptTemplate.html
         }).catch(e => console.error("Auto-reply email failed:", e));
 
         // 2. Notify Admin (fire-and-forget)
         const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER;
         if (adminEmail) {
+            const adminTemplate = emailTemplates.adminNotification(
+                `New Inquiry: ${subject || 'Contact Form'}`,
+                `Visitor <strong>${name}</strong> (${email}) has submitted a new inquiry:<br><br>"${message}"`
+            );
             sendEmail({
                 to: adminEmail,
-                subject: `NEW INQUIRY: ${subject || 'Contact Form'}`,
-                html: `
-                    <div style="font-family: sans-serif; background: #f4f4f4; padding: 20px;">
-                        <h3>New inquiry from ${name} (${email})</h3>
-                        <p><strong>Subject:</strong> ${subject}</p>
-                        <p><strong>Message:</strong></p>
-                        <blockquote style="border-left: 4px solid #6d0202; padding-left: 15px;">${message}</blockquote>
-                    </div>
-                `
+                subject: adminTemplate.subject,
+                html: adminTemplate.html
             }).catch(e => console.error("Admin notification email failed:", e));
         }
 

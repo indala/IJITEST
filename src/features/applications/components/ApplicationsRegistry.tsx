@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback, useMemo, Suspense } from 'react';
 import NextImage from 'next/image';
-import { List } from 'react-window';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Search, User, Building2, FileText, 
@@ -22,7 +21,13 @@ import { Separator } from "@/components/ui/separator";
 
 
 
-import { useApplications, useApproveApplication, useRejectApplication } from "@/hooks/queries/useApplications";
+import { 
+    useApplications, 
+    useApproveApplication, 
+    useRejectApplication,
+    useBulkApproveApplications,
+    useBulkRejectApplications
+} from "@/hooks/queries/useApplications";
 
 // --- Sub-components ---
 
@@ -42,16 +47,16 @@ const ApplicationItemCard = React.memo(({
             className={`relative overflow-hidden border-primary/5 bg-card/50 transition-all hover:bg-card hover:border-primary/20 cursor-pointer group ${isSelected ? 'ring-2 ring-primary/50' : ''}`}
             onClick={() => onInspect(app)}
         >
-            <CardContent className="p-0 flex flex-col md:flex-row items-center">
+            <CardContent className="p-0 flex flex-col lg:flex-row items-stretch lg:items-center">
                 <div 
-                    className="px-6 py-10 flex items-center border-r border-primary/5"
+                    className="px-6 py-4 lg:py-10 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-primary/5 bg-muted/5 lg:bg-transparent"
                     onClick={(e) => { e.stopPropagation(); onToggle(app.id); }}
                 >
                     <Checkbox checked={isSelected} />
                 </div>
 
-                <div className="p-4 flex justify-center shrink-0">
-                    <div className="w-20 h-20 bg-muted rounded-xl border border-primary/5 overflow-hidden shadow-inner relative">
+                <div className="p-4 flex justify-center shrink-0 lg:border-r border-primary/5">
+                    <div className="w-16 h-16 lg:w-20 lg:h-20 bg-muted rounded-xl border border-primary/5 overflow-hidden shadow-inner relative">
                         {app.photoUrl ? (
                             <NextImage 
                                 src={app.photoUrl} 
@@ -66,30 +71,30 @@ const ApplicationItemCard = React.memo(({
                     </div>
                 </div>
 
-                <div className="p-6 flex-1 space-y-2 border-r border-primary/5 min-w-0">
+                <div className="p-6 flex-1 space-y-2 lg:border-r border-primary/5 min-w-0">
                     <div className="flex items-center gap-3">
-                        <h3 className="font-bold text-lg text-foreground truncate uppercase tracking-tight">{app.fullName}</h3>
-                        <Badge className={`rounded-lg h-5 px-2.5 border-none text-[8px] font-black uppercase tracking-widest ${
+                        <h3 className="font-bold text-sm lg:text-lg text-foreground truncate uppercase tracking-tight">{app.fullName}</h3>
+                        <Badge className={`rounded-lg h-5 px-2.5 border-none text-[7px] lg:text-[8px] font-black uppercase tracking-widest ${
                             app.type === 'editor' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
                         }`}>
                             {app.type}
                         </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-x-6 gap-y-1 text-muted-foreground text-[10px] font-bold uppercase tracking-widest opacity-60">
-                        <span className="flex items-center gap-2"><Building2 className="w-3.5 h-3.5" /> {app.institute}</span>
-                        <span className="flex items-center gap-2"><Briefcase className="w-3.5 h-3.5" /> {app.designation}</span>
+                    <div className="flex flex-wrap gap-x-4 lg:gap-x-6 gap-y-1 text-muted-foreground text-[8px] lg:text-[10px] font-bold uppercase tracking-widest opacity-60">
+                        <span className="flex items-center gap-2"><Building2 className="w-3 lg:w-3.5 h-3 lg:h-3.5" /> {app.institute}</span>
+                        <span className="flex items-center gap-2"><Briefcase className="w-3 lg:w-3.5 h-3 lg:h-3.5" /> {app.designation}</span>
                     </div>
                 </div>
 
-                <div className="p-8 flex flex-col items-center md:items-end justify-center gap-3 bg-muted/5 h-full min-w-[200px]">
-                    <Badge className={`h-8 px-5 text-[10px] font-black tracking-widest uppercase border-none rounded-xl ${
+                <div className="p-4 lg:p-8 flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-3 bg-muted/5 h-full min-w-0 lg:min-w-[200px] border-t lg:border-t-0 border-primary/5">
+                    <Badge className={`h-7 lg:h-8 px-4 lg:px-5 text-[8px] lg:text-[10px] font-black tracking-widest uppercase border-none rounded-xl ${
                         app.status === 'approved' ? 'bg-emerald-500 text-white' :
                         app.status === 'rejected' ? 'bg-rose-500 text-white' :
                         'bg-amber-500 text-black'
                     }`}>
                         {app.status}
                     </Badge>
-                    <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-40">
+                    <p className="text-[8px] lg:text-[9px] font-bold text-muted-foreground uppercase opacity-40">
                         {dayjs(app.createdAt).format('DD MMM YYYY')}
                     </p>
                 </div>
@@ -118,11 +123,15 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
 
     const approveMutation = useApproveApplication();
     const rejectMutation = useRejectApplication();
+    const bulkApproveMutation = useBulkApproveApplications();
+    const bulkRejectMutation = useBulkRejectApplications();
 
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [inspectApp, setInspectApp] = useState<any | null>(null);
     const [rejectionMode, setRejectionMode] = useState(false);
     const [rejectionReason, setRejectionReason] = useState("");
+    const [bulkRejectionMode, setBulkRejectionMode] = useState(false);
+    const [bulkRejectionReason, setBulkRejectionReason] = useState("");
     const [approveConfirm, setApproveConfirm] = useState(false);
 
     const filteredApps = useMemo(() => {
@@ -175,6 +184,36 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
         }
     };
 
+    const handleBulkApprove = async () => {
+        if (selectedIds.length === 0) return;
+        const toastId = toast.loading(`Authorizing ${selectedIds.length} candidates...`);
+        const res = await bulkApproveMutation.mutateAsync(selectedIds);
+        if (res.success) {
+            toast.success("Collective authorization complete", { id: toastId });
+            setSelectedIds([]);
+        } else {
+            toast.error(res.error || "Bulk processing failed", { id: toastId });
+        }
+    };
+
+    const handleBulkReject = async (reason: string) => {
+        if (selectedIds.length === 0) return;
+        if (reason.length < 20) {
+            toast.error("Vetting rationale must be at least 20 characters");
+            return;
+        }
+        const toastId = toast.loading(`Declining ${selectedIds.length} proposals...`);
+        const res = await bulkRejectMutation.mutateAsync({ ids: selectedIds, reason });
+        if (res.success) {
+            toast.success("Collective rejection processed", { id: toastId });
+            setSelectedIds([]);
+            setBulkRejectionMode(false);
+            setBulkRejectionReason("");
+        } else {
+            toast.error(res.error || "Bulk processing failed", { id: toastId });
+        }
+    };
+
     if (loading) {
         return (
             <div className="p-32 flex flex-col items-center justify-center gap-6">
@@ -185,7 +224,7 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
     }
 
     return (
-        <section className="space-y-8 pb-32">
+        <section className="flex-1 flex flex-col min-h-0 space-y-4 lg:space-y-6 p-4 lg:px-6 lg:pb-6">
             
 
             <div className="relative group max-w-2xl">
@@ -199,17 +238,74 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
             </div>
 
             {filteredApps.length > 0 && (
-                <div className="flex items-center gap-4 px-4 py-2 bg-muted/30 rounded-xl border border-primary/5 w-fit">
-                    <Checkbox 
-                        checked={selectedIds.length === filteredApps.length && filteredApps.length > 0}
-                        onCheckedChange={handleSelectAll}
-                        id="select-all"
-                    />
-                    <label htmlFor="select-all" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest cursor-pointer">
-                        {selectedIds.length === 0 ? "Select for batch action" : `${selectedIds.length} applicants selected`}
-                    </label>
+                <div className="flex flex-col sm:flex-row items-center gap-4 px-4 py-3 bg-muted/30 rounded-2xl border border-primary/5 w-fit">
+                    <div className="flex items-center gap-3">
+                        <Checkbox 
+                            checked={selectedIds.length === filteredApps.length && filteredApps.length > 0}
+                            onCheckedChange={handleSelectAll}
+                            id="select-all"
+                        />
+                        <label htmlFor="select-all" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest cursor-pointer">
+                            {selectedIds.length === 0 ? "Select for batch action" : `${selectedIds.length} applicants selected`}
+                        </label>
+                    </div>
+
+                    {selectedIds.length > 0 && (
+                        <div className="flex items-center gap-2 pl-4 border-l border-primary/10">
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-8 px-4 rounded-lg text-[9px] font-black uppercase tracking-widest border-emerald-500/20 text-emerald-600 hover:bg-emerald-500 hover:text-white"
+                                onClick={handleBulkApprove}
+                            >
+                                Bulk Approve
+                            </Button>
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-8 px-4 rounded-lg text-[9px] font-black uppercase tracking-widest border-rose-500/20 text-rose-600 hover:bg-rose-500 hover:text-white"
+                                onClick={() => setBulkRejectionMode(true)}
+                            >
+                                Bulk Reject
+                            </Button>
+                        </div>
+                    )}
                 </div>
             )}
+
+            <AnimatePresence>
+                {bulkRejectionMode && (
+                    <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="bg-rose-500/5 border border-rose-500/10 rounded-3xl p-6 space-y-4 overflow-hidden"
+                    >
+                        <div className="flex justify-between items-center">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-600">Bulk Rejection Rationale</h4>
+                            <span className={`text-[10px] font-black ${bulkRejectionReason.length < 20 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                                {bulkRejectionReason.length}/20 characters
+                            </span>
+                        </div>
+                        <textarea
+                            value={bulkRejectionReason}
+                            onChange={(e) => setBulkRejectionReason(e.target.value)}
+                            className="w-full h-24 bg-background border-2 border-rose-500/10 rounded-2xl p-4 text-sm focus:border-rose-500 outline-none transition-all resize-none font-medium"
+                            placeholder="Enter the grounds for declining these selected proposals..."
+                        />
+                        <div className="flex gap-3 justify-end">
+                            <Button variant="ghost" size="sm" onClick={() => setBulkRejectionMode(false)} className="h-9 px-6 rounded-xl font-black uppercase text-[9px] tracking-widest">Abort</Button>
+                            <Button 
+                                disabled={bulkRejectionReason.length < 20}
+                                onClick={() => handleBulkReject(bulkRejectionReason)}
+                                className="h-9 px-6 rounded-xl bg-rose-600 text-white font-black uppercase text-[9px] tracking-widest"
+                            >
+                                Confirm Collective Rejection
+                            </Button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <div className="grid grid-cols-1 gap-4">
                 {filteredApps.length === 0 ? (
@@ -218,29 +314,21 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
                         <p className="text-[10px] font-bold text-primary/30 uppercase tracking-widest">No matching dossiers found</p>
                     </div>
                 ) : (
-                    <div className="h-[calc(100vh-400px)] min-h-[600px]">
-                        <List
-                            rowCount={filteredApps.length}
-                            rowHeight={160}
-                            style={{ height: '100%', width: '100%' }}
-                            className="custom-scrollbar"
-                            rowProps={{
-                                filteredApps,
-                                selectedIds,
-                                toggleSelect,
-                                setInspectApp
-                            }}
-                            rowComponent={({ index, style, filteredApps, selectedIds, toggleSelect, setInspectApp }: any) => (
-                                <div style={style} className="pb-4 pr-4">
-                                    <ApplicationItemCard 
-                                        app={filteredApps[index]}
-                                        isSelected={selectedIds.includes(filteredApps[index].id)}
-                                        onToggle={toggleSelect}
-                                        onInspect={setInspectApp}
-                                    />
-                                </div>
-                            )}
-                        />
+                    <div 
+                        className="flex-1 min-h-0 bg-muted/5 rounded-2xl lg:rounded-3xl border border-primary/5 overflow-y-auto custom-scrollbar p-2 lg:p-4"
+                        data-lenis-prevent
+                    >
+                        <div className="space-y-4">
+                            {filteredApps.map((app) => (
+                                <ApplicationItemCard 
+                                    key={app.id}
+                                    app={app}
+                                    isSelected={selectedIds.includes(app.id)}
+                                    onToggle={toggleSelect}
+                                    onInspect={setInspectApp}
+                                />
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>
@@ -249,8 +337,13 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
                 <Drawer.Portal>
                     <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" />
                     <Drawer.Content className="fixed bottom-0 left-0 right-0 z-50 flex flex-col h-[90vh] bg-card border-t border-primary/5 rounded-t-[32px] outline-none shadow-2xl">
+                        <Drawer.Title className="sr-only">Application Details</Drawer.Title>
+                        <Drawer.Description className="sr-only">Detailed overview of the candidate's dossier and research profile.</Drawer.Description>
                         <div className="mx-auto w-12 h-1.5 shrink-0 rounded-full bg-primary/10 my-4" />
-                        <div className="flex-1 overflow-y-auto px-6 pb-12 custom-scrollbar">
+                        <div 
+                            className="flex-1 overflow-y-auto min-h-0 px-6 pb-12 custom-scrollbar"
+                            data-lenis-prevent
+                        >
                             {inspectApp && (
                                 <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] min-h-full gap-8">
                                     <div className="p-8 bg-primary/2 border rounded-3xl border-primary/5 space-y-8">

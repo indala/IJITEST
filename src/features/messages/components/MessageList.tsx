@@ -27,7 +27,7 @@ const MessageItem = memo(({
     return (
         <div
             className={cn(
-                "group relative flex items-start gap-3 p-2.5 transition-all duration-200 cursor-pointer border-l-2",
+                "group relative flex items-start gap-2.5 p-2 transition-all duration-200 cursor-pointer border-l-2",
                 isSelected 
                     ? "bg-primary/5 border-primary" 
                     : isPending 

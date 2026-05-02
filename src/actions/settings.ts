@@ -64,6 +64,7 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
 export async function getSettingsData(): Promise<Record<string, string>> {
     const res = await getSettings();
     return res.data || DEFAULT_SETTINGS;
+    
 }
 
 export async function updateSettings(formData: FormData): Promise<ActionResponse> {

@@ -32,8 +32,8 @@ export function InboxFilters({
     ]
 
     return (
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full bg-muted/10 p-2 rounded-xl border border-white/5">
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 w-full bg-muted/10 p-1 rounded-xl border border-white/5">
+            <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
                 {tabs.map((tab) => {
                     const Icon = tab.icon
                     const isActive = status === tab.id
@@ -43,7 +43,7 @@ export function InboxFilters({
                             key={tab.id}
                             onClick={() => onStatusChange(tab.id)}
                             className={cn(
-                                "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 group text-[11px] whitespace-nowrap",
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200 group text-[11px] xl:text-xs whitespace-nowrap",
                                 isActive 
                                     ? "bg-primary text-white dark:text-slate-950 font-bold shadow-sm" 
                                     : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground"
@@ -71,7 +71,7 @@ export function InboxFilters({
                     placeholder="search messages" 
                     value={search}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    className="pl-9 h-9 bg-muted/20 border-white/5 rounded-lg text-xs placeholder:opacity-50"
+                    className="pl-9 h-9 bg-muted/20 border-border rounded-lg text-xs placeholder:opacity-50 focus:border-primary/50 transition-colors"
                 />
             </div>
         </div>

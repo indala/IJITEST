@@ -11,7 +11,7 @@ interface InlineEditFieldProps {
     value: string
     onSave: (value: string) => Promise<void>
     readOnly?: boolean
-    type?: "text" | "url"
+    type?: "text" | "url" | "textarea"
     placeholder?: string
     icon?: React.ReactNode
     className?: string
@@ -31,7 +31,7 @@ export function InlineEditField({
     const [currentValue, setCurrentValue] = useState(value)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const inputRef = useRef<HTMLInputElement>(null)
+    const inputRef = useRef<any>(null)
 
     useEffect(() => {
         setCurrentValue(value)
@@ -81,21 +81,35 @@ export function InlineEditField({
                                     {icon}
                                 </div>
                             )}
-                            <Input
-                                ref={inputRef}
-                                value={currentValue}
-                                onChange={(e) => setCurrentValue(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") handleSave()
-                                    if (e.key === "Escape") handleCancel()
-                                }}
-                                placeholder={placeholder}
-                                disabled={isLoading}
-                                className={cn(
-                                    "h-12 bg-background/50 border-primary/20 rounded-xl font-bold transition-all focus:border-primary focus:ring-1 focus:ring-primary/20",
-                                    icon && "pl-10"
-                                )}
-                            />
+                            {type === "textarea" ? (
+                                <textarea
+                                    ref={inputRef}
+                                    value={currentValue}
+                                    onChange={(e) => setCurrentValue(e.target.value)}
+                                    placeholder={placeholder}
+                                    disabled={isLoading}
+                                    className={cn(
+                                        "w-full min-h-[120px] p-4 bg-background/50 border border-primary/20 rounded-xl font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/20 text-sm resize-none",
+                                        error && "border-rose-500/50"
+                                    )}
+                                />
+                            ) : (
+                                <Input
+                                    ref={inputRef}
+                                    value={currentValue}
+                                    onChange={(e) => setCurrentValue(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") handleSave()
+                                        if (e.key === "Escape") handleCancel()
+                                    }}
+                                    placeholder={placeholder}
+                                    disabled={isLoading}
+                                    className={cn(
+                                        "h-12 bg-background/50 border-primary/20 rounded-xl font-bold transition-all focus:border-primary focus:ring-1 focus:ring-primary/20",
+                                        icon && "pl-10"
+                                    )}
+                                />
+                            )}
                         </div>
                         <div className="flex gap-1">
                             <Button
@@ -123,7 +137,8 @@ export function InlineEditField({
                         <div className="flex items-center gap-3 px-1 overflow-hidden">
                             {icon && <div className="opacity-40 shrink-0">{icon}</div>}
                             <span className={cn(
-                                "font-serif text-lg 2xl:text-xl font-bold truncate transition-colors",
+                                "font-serif text-lg 2xl:text-xl font-bold transition-colors whitespace-pre-wrap",
+                                type === "textarea" && "text-sm font-sans font-medium leading-relaxed opacity-80",
                                 !value && "text-muted-foreground italic font-sans text-base opacity-40"
                             )}>
                                 {value || placeholder || "Not set"}

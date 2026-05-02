@@ -37,7 +37,7 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
         const logoPath = path.join(process.cwd(), 'public/logo.png');
         const logoBytes = await fs.readFile(logoPath);
         const logoImage = await pdfDoc.embedPng(logoBytes);
-        
+
         // Scale logo to height of ~40 pts
         const logoHeight = 40;
         const logoWidth = (logoImage.width / logoImage.height) * logoHeight;
@@ -48,10 +48,10 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
             `A Peer-Reviewed International Research Journal (${metadata.journalShortName})`,
             `${metadata.website} | E-ISSN: ${metadata.issn}`
         ];
-        
+
         // 5. PROCESS ALL PAGES
-        const headerMaskHeight = 80; 
-        const footerMaskHeight =70;
+        const headerMaskHeight = 80;
+        const footerMaskHeight = 70;
 
         for (let i = 0; i < pages.length; i++) {
             const page = pages[i];
@@ -65,7 +65,7 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
                 y: height - headerMaskHeight,
                 width: width,
                 height: headerMaskHeight,
-                color: rgb(1, 1, 1), 
+                color: rgb(1, 1, 1),
             });
 
             // Draw Logo on the left
@@ -165,7 +165,7 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
             const urlTextWidth = regularFont.widthOfTextAtSize(urlText, fontSize);
             const urlX = (width / 2) - (urlTextWidth / 2);
             const urlY = footerLineY - 35;
-            
+
             page.drawText(urlText, {
                 x: urlX,
                 y: urlY,

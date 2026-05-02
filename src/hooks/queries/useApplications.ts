@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getApplications, approveApplication, rejectApplication } from '@/actions/applications';
+import { getApplications, approveApplication, rejectApplication, bulkApproveApplications, bulkRejectApplications } from '@/actions/applications';
 import { Application } from '@/db/types';
 
 export function useApplications(filters?: { role?: string, status?: string, interest?: string }) {
@@ -28,6 +28,28 @@ export function useRejectApplication() {
 
     return useMutation({
         mutationFn: ({ id, reason }: { id: number, reason: string }) => rejectApplication(id, reason),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['applications'] });
+        }
+    });
+}
+
+export function useBulkApproveApplications() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (ids: number[]) => bulkApproveApplications(ids),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['applications'] });
+        }
+    });
+}
+
+export function useBulkRejectApplications() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ ids, reason }: { ids: number[], reason: string }) => bulkRejectApplications(ids, reason),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['applications'] });
         }

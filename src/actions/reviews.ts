@@ -353,10 +353,16 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
             const { info } = result;
             if (decision === 'accept') {
                 const admins = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
+                const staffAlert = emailTemplates.staffNotification(
+                    "Editor",
+                    `Review Decision: Accept [${info.paperId}]`,
+                    `A reviewer has submitted a recommendation of <strong>'Accept'</strong> for the manuscript <strong>"${info.title}"</strong>.`,
+                    `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/submissions/${info.submissionId}`
+                );
                 Promise.allSettled(admins.map(a => sendEmail({
                     to: a.email,
-                    subject: `Review Decision (Accept): ${info.paperId}`,
-                    html: `<p>A reviewer has recommended 'Accept' for paper ${info.paperId}.</p>`
+                    subject: staffAlert.subject,
+                    html: staffAlert.html
                 })));
             } else {
                 const statusMap: Record<string, "revision_requested" | "rejected"> = {
@@ -398,22 +404,24 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
             return { success: false, error: "Unauthorized" };
         }
         const manuscriptSubquery = db.select({ 
-            fileUrl: submissionFiles.fileUrl,
+            manuscriptUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('manuscriptUrl'),
             versionId: submissionFiles.versionId 
         })
         .from(submissionFiles)
         .where(eq(submissionFiles.fileType, 'pdf_version'))
+        .groupBy(submissionFiles.versionId)
         .as('ms');
 
         const feedbackSubquery = db.select({ 
-            fileUrl: submissionFiles.fileUrl,
+            feedbackUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('feedbackUrl'),
             versionId: submissionFiles.versionId 
         })
         .from(submissionFiles)
         .where(eq(submissionFiles.fileType, 'feedback'))
+        .groupBy(submissionFiles.versionId)
         .as('fs');
 
-        const query = db.select({
+        let query = db.select({
             id: reviewAssignments.id,
             status: reviewAssignments.status,
             assignedAt: reviewAssignments.assignedAt,
@@ -427,8 +435,8 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
             decision: reviews.decision,
             commentsToAuthor: reviews.commentsToAuthor,
             submittedAt: reviews.submittedAt,
-            manuscriptPath: manuscriptSubquery.fileUrl,
-            feedbackFilePath: feedbackSubquery.fileUrl
+            manuscriptPath: manuscriptSubquery.manuscriptUrl,
+            feedbackFilePath: feedbackSubquery.feedbackUrl
         })
         .from(reviewAssignments)
         .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
@@ -437,9 +445,13 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
         .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId))
         .leftJoin(manuscriptSubquery, eq(reviewAssignments.versionId, manuscriptSubquery.versionId))
         .leftJoin(feedbackSubquery, eq(reviewAssignments.versionId, feedbackSubquery.versionId))
-        .orderBy(desc(reviewAssignments.assignedAt));
+        .$dynamic();
 
-        const rows = reviewerId ? await query.where(eq(reviewAssignments.reviewerId, reviewerId)) : await query;
+        if (reviewerId) {
+            query = query.where(eq(reviewAssignments.reviewerId, reviewerId));
+        }
+
+        const rows = await query.orderBy(desc(reviewAssignments.assignedAt));
         return { success: true, data: rows };
     } catch (error) {
         console.error("Get Reviews Error:", error);
@@ -467,17 +479,18 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<any[
 
        const manuscriptPaths = db.select({
             versionId: submissionFiles.versionId,
-            fileUrl: submissionFiles.fileUrl
+            pdfUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('pdfUrl')
        })
        .from(submissionFiles)
        .where(eq(submissionFiles.fileType, 'pdf_version'))
+       .groupBy(submissionFiles.versionId)
        .as('mp');
 
        const rows = await db.select({
             id: submissions.id,
             paperId: submissions.paperId,
             title: submissionVersions.title,
-            pdfUrl: manuscriptPaths.fileUrl
+            pdfUrl: manuscriptPaths.pdfUrl
        })
        .from(submissions)
        .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))

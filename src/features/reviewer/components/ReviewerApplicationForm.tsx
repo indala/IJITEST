@@ -457,10 +457,16 @@ export default function ReviewerApplicationForm() {
                                         <FileInput
                                             name="cv"
                                             label="CV"
-                                            accept=".pdf,.doc,.docx"
+                                            accept=".pdf"
                                             icon={FileText}
                                             value={formData.cv}
-                                            onChange={(file) => setFormData(p => ({ ...p, cv: file }))}
+                                            onChange={(file) => {
+                                                if (file && !file.name.toLowerCase().endsWith('.pdf')) {
+                                                    toast.error("CV must be a PDF document.");
+                                                    return;
+                                                }
+                                                setFormData(p => ({ ...p, cv: file }));
+                                            }}
                                         />
                                         <FileInput
                                             name="photo"

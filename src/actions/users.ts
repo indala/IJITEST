@@ -104,7 +104,7 @@ export async function getUsers(role?: "admin" | "editor" | "reviewer" | "author"
 }
 
 import crypto from 'crypto';
-import { sendEmail } from '@/lib/mail';
+import { emailTemplates, sendEmail } from '@/lib/mail';
 
 export async function createUser(formData: FormData): Promise<ActionResponse> {
     const session = await getServerSession(authOptions);
@@ -149,27 +149,11 @@ export async function createUser(formData: FormData): Promise<ActionResponse> {
         // Send invitation email
         const setupUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/setup-password?token=${invitationToken}`;
 
+        const template = emailTemplates.boardInvitation(fullName, role, setupUrl);
         sendEmail({
             to: email,
-            subject: 'Account Verification | IJITEST Hub',
-            html: `
-                <div style="font-family: serif; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f0f0f0; border-radius: 20px;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #6d0202; margin-bottom: 10px;">IJITEST</h1>
-                        <p style="color: #666; font-size: 14px; text-transform: ; letter-spacing: 0.2em;">Editorial Management Hub</p>
-                    </div>
-                    <p>Dear ${fullName},</p>
-                    <p>You have been invited to join the <strong>IJITEST</strong> editorial team as <strong>${role}</strong>.</p>
-                    <p>To finalize your account setup, please click the button below to secure your account:</p>
-                    <div style="text-align: center; margin: 40px 0;">
-                        <a href="${setupUrl}" style="background: #6d0202; color: white; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px; box-shadow: 0 10px 20px -5px rgba(109,2,2,0.3);">Secure My Account</a>
-                    </div>
-                    <p style="color: #666; font-size: 12px; font-style: ;">This invitation link will expire in 7 days.</p>
-                    <div style="margin-top: 40px; border-top: 1px solid #eee; pt: 30px; text-align: center;">
-                        <p style="color: #999; font-size: 11px;">International Journal of Innovative Trends in Engineering Science and Technology</p>
-                    </div>
-                </div>
-            `
+            subject: template.subject,
+            html: template.html
         });
 
         revalidatePath('/admin/users');
@@ -287,27 +271,11 @@ export async function requestPasswordReset(formData: FormData): Promise<ActionRe
 
         const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/setup-password?token=${resetToken}&ctx=reset`;
 
+        const template = emailTemplates.passwordReset(user.fullName, resetUrl);
         sendEmail({
             to: email,
-            subject: 'Reset Your Password | IJITEST',
-            html: `
-                <div style="font-family: serif; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f0f0f0; border-radius: 20px;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #6d0202; margin-bottom: 10px;">IJITEST</h1>
-                        <p style="color: #666; font-size: 14px; text-transform: ; letter-spacing: 0.2em;">Password Recovery</p>
-                    </div>
-                    <p>Dear ${user.fullName},</p>
-                    <p>We received a request to reset your password for the <strong>IJITEST</strong> editorial portal.</p>
-                    <p>To set a new password, please click the button below:</p>
-                    <div style="text-align: center; margin: 40px 0;">
-                        <a href="${resetUrl}" style="background: #6d0202; color: white; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px; box-shadow: 0 10px 20px -5px rgba(109,2,2,0.3);">Create New Password</a>
-                    </div>
-                    <p style="color: #666; font-size: 12px; font-style: ;">This recovery link will expire in 1 hour. If you didn't request this, you can safely ignore this email.</p>
-                    <div style="margin-top: 40px; border-top: 1px solid #eee; pt: 30px; text-align: center;">
-                        <p style="color: #999; font-size: 11px;">International Journal of Innovative Trends in Engineering Science and Technology</p>
-                    </div>
-                </div>
-            `
+            subject: template.subject,
+            html: template.html
         });
 
         return { success: true };

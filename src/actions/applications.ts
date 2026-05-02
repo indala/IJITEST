@@ -14,7 +14,7 @@ import {
 } from "@/db/types";
 import { eq, and, desc, SQL, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { sendEmail } from "@/lib/mail";
+import { emailTemplates, sendEmail } from "@/lib/mail";
 import crypto from "crypto";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -152,30 +152,13 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
         // 5. Send Invitation Email
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
         const setupUrl = `${baseUrl}/auth/setup-password?token=${invitationToken}&ctx=setup`;
-        const portalUrl = `${baseUrl}/${role}`;
+        
+        const template = emailTemplates.boardInvitation(app.fullName, role, setupUrl);
 
         await sendEmail({
             to: app.email,
-            subject: `Welcome to IJITEST | ${role.charAt(0).toUpperCase() + role.slice(1)} Portal Invitation`,
-            html: `
-                <div style="font-family: serif; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f0f0f0; border-radius: 20px;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #6d0202; margin-bottom: 10px;">IJITEST</h1>
-                        <p style="color: #666; font-size: 14px; letter-spacing: 0.2em;">Board Enrollment</p>
-                    </div>
-                    <p>Dear ${app.fullName},</p>
-                    <p>We are pleased to inform you that your application to join the <strong>IJITEST ${role} board</strong> has been <strong>Accepted</strong>.</p>
-                    <p>To finalize your enrollment and access your dashboard, please click the button below to secure your account and set your password:</p>
-                    <div style="text-align: center; margin: 40px 0;">
-                        <a href="${setupUrl}" style="background: #0000FF; color: white; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px;">Set Up My Account</a>
-                    </div>
-                    <p style="color: #666; font-size: 14px;">Once your password is set, you can access your dedicated dashboard at:<br><a href="${portalUrl}" style="color: #0000FF; text-decoration: none;"><strong>${portalUrl}</strong></a></p>
-                    <p style="color: #666; font-size: 12px; margin-top: 20px;">This invitation link will expire in 7 days.</p>
-                    <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 30px; text-align: center;">
-                        <p style="color: #999; font-size: 11px;">International Journal of Innovative Trends in Engineering Science and Technology</p>
-                    </div>
-                </div>
-            `
+            subject: template.subject,
+            html: template.html
         });
 
         revalidatePath("/admin/applications");
@@ -214,25 +197,11 @@ export async function rejectApplication(id: number, reason: string): Promise<Act
         const role = app.type || 'reviewer';
 
         // 1. Send Rejection Email
+        const template = emailTemplates.boardRejection(app.fullName, role, reason);
         await sendEmail({
             to: app.email,
-            subject: `Application Update | IJITEST ${role.charAt(0).toUpperCase() + role.slice(1)} Board`,
-            html: `
-                <div style="font-family: serif; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #f0f0f0; border-radius: 20px;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #6d0202; margin-bottom: 10px;">IJITEST</h1>
-                    </div>
-                    <p>Dear ${app.fullName},</p>
-                    <p>Thank you for your interest in joining the <strong>IJITEST ${role} board</strong>.</p>
-                    <p>After careful review of your profile and academic background, we regret to inform you that we cannot proceed with your application at this time.</p>
-                    <p><strong>Reason:</strong> ${reason}</p>
-                    <p>While we appreciate your professional expertise, we suggest you continue to contribute to our journal through research submissions, and you may apply again in the future.</p>
-                    <p style="color: #666; font-size: 12px;">We wish you the very best in your academic endeavors.</p>
-                    <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 30px; text-align: center;">
-                        <p style="color: #999; font-size: 11px;">International Journal of Innovative Trends in Engineering Science and Technology</p>
-                    </div>
-                </div>
-            `
+            subject: template.subject,
+            html: template.html
         });
 
         // 2. Update status to rejected

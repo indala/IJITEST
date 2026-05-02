@@ -289,24 +289,43 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         if (validated.data.co_authors) {
             const coAuthors = JSON.parse(validated.data.co_authors);
             if (Array.isArray(coAuthors)) {
-                await Promise.allSettled(coAuthors.map(ca => sendEmail({
-                    to: ca.email,
-                    subject: `Submission Notification: ${result.paperId}`,
-                    html: `<p>Dear ${ca.name}, you have been added as a co-author for the paper <strong>${validated.data.title}</strong> at IJITEST.</p>`
-                })));
+                await Promise.allSettled(coAuthors.map(ca => {
+                    const coTemplate = emailTemplates.coAuthorNotification(
+                        ca.name,
+                        validated.data.title,
+                        validated.data.author_name,
+                        result.paperId
+                    );
+                    return sendEmail({
+                        to: ca.email,
+                        subject: coTemplate.subject,
+                        html: coTemplate.html
+                    });
+                }));
             }
         }
 
         // Team Notification — role-specific links
-        const staff = await db.select({ email: users.email, role: users.role }).from(users).where(inArray(users.role, ['admin', 'editor']));
+        const staff = await db.select({ email: users.email, role: users.role, profile: userProfiles }).from(users)
+            .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .where(inArray(users.role, ['admin', 'editor']));
+            
         await Promise.allSettled(staff.map(s => {
             const dashboardLink = s.role === 'admin'
                 ? `${baseUrl}/admin/submissions/${result.subId}`
                 : `${baseUrl}/editor/submissions/${result.subId}`;
+            
+            const staffTemplate = emailTemplates.staffNotification(
+                s.profile.fullName || 'Editor',
+                `New Submission: ${result.paperId}`,
+                `A new manuscript titled <strong>"${validated.data.title}"</strong> has been submitted by <strong>${validated.data.author_name}</strong> and requires initial screening.`,
+                dashboardLink
+            );
+
             return sendEmail({
                 to: s.email,
-                subject: `New submission [${result.paperId}]`,
-                html: `<p>New submission from ${validated.data.author_name} (${result.paperId}).</p><p><a href="${dashboardLink}">View submission</a></p>`
+                subject: staffTemplate.subject,
+                html: staffTemplate.html
             });
         }));
 

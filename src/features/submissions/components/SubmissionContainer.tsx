@@ -120,13 +120,13 @@ const SubmissionDesktopRow = React.memo(({ sub, idx, role }: { sub: any, idx: nu
         className="border-b border-border/50 group hover:bg-muted/30 transition-all"
     >
         <TableCell className="px-6 py-6">
-            <span className="font-mono bg-muted px-2 py-1 rounded border border-border/50 opacity-60">
+            <span className="font-mono  bg-muted px-2 py-1 rounded border border-border/50 opacity-60">
                 {sub.paper_id}
             </span>
         </TableCell>
-        <TableCell className="px-6 py-6">
-            <div className="flex flex-col gap-2 max-w-2xl">
-                <h4 className="font-serif text-foreground text-xl leading-tight group-hover:text-primary transition-colors">
+        <TableCell className="px-6 py-6 max-w-96 whitespace-normal">
+            <div className="flex flex-col gap-2 ">
+                <h4 className="font-serif text-foreground text-xl leading-tight group-hover:text-primary transition-colors break-words">
                     {sub.title}
                 </h4>
                 <div className="flex items-center gap-10 opacity-60">
@@ -154,7 +154,7 @@ const SubmissionDesktopRow = React.memo(({ sub, idx, role }: { sub: any, idx: nu
         </TableCell>
         <TableCell className="px-6 py-6 text-right">
             <div className="flex items-center justify-end gap-4">
-                <Button asChild className="h-10 px-6 bg-primary text-white rounded-xl shadow-lg shadow-primary/10 hover:scale-[1.05] transition-all opacity-0 group-hover:opacity-100">
+                <Button asChild className="h-10 px-6 bg-primary text-white rounded-xl shadow-lg shadow-primary/10 hover:scale-[1.05] transition-all  group-hover:opacity-100">
                     <Link href={`/${role}/submissions/${sub.id}`}>
                         EXAMINE
                     </Link>
@@ -163,7 +163,7 @@ const SubmissionDesktopRow = React.memo(({ sub, idx, role }: { sub: any, idx: nu
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-12 w-12 text-primary/30 hover:text-primary rounded-xl transition-all hover:bg-primary/5 cursor-pointer">
-                            <MoreVertical className="w-6 h-6" />
+                            <MoreVertical className="size-6 text-primary" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-64 rounded-3xl p-3 shadow-2xl border-primary/5 bg-white/95 backdrop-blur-xl">
@@ -226,8 +226,8 @@ export default function SubmissionContainer({ submissions, currentStatus, role }
             <div className="p-8 border-b border-border/50 bg-muted/20">
                 <div className="flex flex-col md:flex-row gap-6 items-stretch md:items-center justify-between ">
                     <div className="flex-1">
-                        <SubmissionSearch 
-                            placeholder="Search manuscripts..." 
+                        <SubmissionSearch
+                            placeholder="Search manuscripts..."
                             onLocalFilter={setFilterQuery}
                         />
                     </div>
@@ -257,10 +257,10 @@ export default function SubmissionContainer({ submissions, currentStatus, role }
                 <Table>
                     <TableHeader className="bg-muted/50">
                         <TableRow className="border-b border-border/50">
-                            <TableHead className="h-14 px-6 opacity-40 w-40">System ID</TableHead>
-                            <TableHead className="h-14 px-6 opacity-40">Manuscript Dossier</TableHead>
-                            <TableHead className="h-14 px-6 opacity-40 w-48 text-center">Status</TableHead>
-                            <TableHead className="h-14 px-6 opacity-40 w-40 text-right">Actions</TableHead>
+                            <TableHead className="font-black h-14 px-6 opacity-90 w-40">System ID</TableHead>
+                            <TableHead className="font-black h-14 px-6 opacity-90">Manuscript Dossier</TableHead>
+                            <TableHead className="font-black h-14 px-6 opacity-90 w-48 text-center">Status</TableHead>
+                            <TableHead className="font-black h-14 px-6 opacity-90 w-40 text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

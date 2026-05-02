@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getMessages, updateMessageStatus, bulkUpdateMessageStatus, revertMessageStatus, deleteMessage, ContactMessageRow } from '@/actions/messages';
+import { getMessages, updateMessageStatus, bulkUpdateMessageStatus, revertMessageStatus, deleteMessage, replyToMessage, ContactMessageRow } from '@/actions/messages';
+import { ActionResponse } from '@/db/types';
 
 export function useMessages(filters?: { status?: 'pending' | 'resolved' | 'archived', search?: string }) {
     return useQuery<ContactMessageRow[]>({
@@ -14,8 +15,8 @@ export function useMessages(filters?: { status?: 'pending' | 'resolved' | 'archi
 export function useUpdateMessageStatus() {
     const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: ({ id, status }: { id: number, status: 'resolved' | 'archived' | 'pending' }) => 
+    return useMutation<ActionResponse, Error, { id: number, status: 'resolved' | 'archived' | 'pending' }>({
+        mutationFn: ({ id, status }) => 
             updateMessageStatus(id, status),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['messages'] });
@@ -38,7 +39,7 @@ export function useBulkUpdateMessages() {
 export function useRevertMessage() {
     const queryClient = useQueryClient();
 
-    return useMutation({
+    return useMutation<ActionResponse, Error, number>({
         mutationFn: (id: number) => revertMessageStatus(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['messages'] });
@@ -51,6 +52,18 @@ export function useDeleteMessage() {
 
     return useMutation({
         mutationFn: (id: number) => deleteMessage(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['messages'] });
+        }
+    });
+}
+
+export function useReplyToMessage() {
+    const queryClient = useQueryClient();
+
+    return useMutation<ActionResponse, Error, { id: number, content: string }>({
+        mutationFn: ({ id, content }) => 
+            replyToMessage(id, content),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['messages'] });
         }
