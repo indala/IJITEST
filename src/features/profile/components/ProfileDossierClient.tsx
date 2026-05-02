@@ -234,7 +234,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+                                    className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
                                 >
                                     <motion.div 
                                         initial={{ scale: 0.9, opacity: 0 }}
@@ -259,7 +259,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
 
                                         <div className="relative h-80 bg-slate-100 dark:bg-slate-950 overflow-hidden flex items-center justify-center">
                                             {/* Circular Frame Overlay */}
-                                            <div className="absolute inset-0 z-10 pointer-events-none ring-[100px] ring-white/90 dark:ring-slate-900/90 rounded-full scale-[2]" />
+                                            <div className="absolute inset-0 z-10 pointer-events-none ring-100 ring-white/90 dark:ring-slate-900/90 rounded-full scale-[2]" />
                                             <div className="absolute w-64 h-64 border-4 border-primary rounded-full z-20 pointer-events-none shadow-[0_0_0_100vw_rgba(0,0,0,0.4)]" />
 
                                             <motion.div

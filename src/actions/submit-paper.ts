@@ -22,7 +22,7 @@ import { ActionResponse } from "@/db/types";
 
 const submissionSchema = z.object({
     author_name: z.string().min(2, "Author name is required").max(255, "Author name cannot exceed 255 characters"),
-    author_email: z.string().email("Invalid email address").max(255, "Email address cannot exceed 255 characters"),
+    author_email: z.email("Invalid email address").max(255, "Email address cannot exceed 255 characters"),
     author_phone: z.string()
         .regex(/^[0-9]+$/, "Author phone must contain only numbers")
         .max(20, "Phone number cannot exceed 20 characters")
