@@ -69,26 +69,38 @@ export default function PaperDetailClient({ paper, id, mode = 'archive' }: Paper
                                 {paper.title}
                             </h1>
 
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-6 border-t border-gray-100">
-                                <span className="-black  tracking-widest  shrink-0">Authors <span className="text-red-600 font-bold">:</span></span>
-                                <div className="flex flex-wrap items-center gap-x-2">
-                                    <span className="font-normal leading-tight">{paper.author_name}</span>
-                                    {paper.co_authors && (() => {
-                                        try {
-                                            const coAuthors = JSON.parse(paper.co_authors);
-                                            if (!Array.isArray(coAuthors)) return null;
-                                            return coAuthors.map((author: any, idx: number) => (
-                                                <div key={idx} className="flex items-center gap-2">
-                                                    <span className="text-gray-900 font-bold">,</span>
-                                                    <span className=" font-normal leading-tight">{author.name}</span>
-                                                </div>
-                                            ));
-                                        } catch (e) {
-                                            console.error("Failed to parse co-authors", e);
-                                            return null;
-                                        }
-                                    })()}
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-3 gap-y-4 pt-6 border-t border-gray-100">
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                    <span className="-black  tracking-widest  shrink-0">Authors <span className="text-red-600 font-bold">:</span></span>
+                                    <div className="flex flex-wrap items-center gap-x-2">
+                                        <span className="font-normal leading-tight">{paper.author_name}</span>
+                                        {paper.co_authors && (() => {
+                                            try {
+                                                const coAuthors = JSON.parse(paper.co_authors);
+                                                if (!Array.isArray(coAuthors)) return null;
+                                                return coAuthors.map((author: any, idx: number) => (
+                                                    <div key={idx} className="flex items-center gap-2">
+                                                        <span className="text-gray-900 font-bold">,</span>
+                                                        <span className=" font-normal leading-tight">{author.name}</span>
+                                                    </div>
+                                                ));
+                                            } catch (e) {
+                                                console.error("Failed to parse co-authors", e);
+                                                return null;
+                                            }
+                                        })()}
+                                    </div>
                                 </div>
+
+                                <a
+                                    href={paper.file_path}
+                                    download
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hidden md:flex items-center justify-center gap-3 bg-primary text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-[0.2em] shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-1 whitespace-nowrap"
+                                >
+                                    <Download className="w-4 h-4" /> DOWNLOAD FULL PAPER
+                                </a>
                             </div>
 
                             
@@ -152,8 +164,8 @@ export default function PaperDetailClient({ paper, id, mode = 'archive' }: Paper
 
                 {/* Sidebar Utilities */}
                 <div className="space-y-8">
-                    {/* Download Button */}
-                    <div className="flex flex-col gap-4 px-4">
+                    {/* Download Button (Mobile Only) */}
+                    <div className="flex flex-col gap-4 px-4 md:hidden">
                         <a
                             href={paper.file_path}
                             download

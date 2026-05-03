@@ -24,12 +24,16 @@ interface PaperCardProps {
 }
 
 const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: PaperCardProps) {
+    const volumeSegment = `volume${paper.volume_number || 0}`;
+    const issueSegment = `issue${paper.issue_number || 0}`;
+    const paperUrl = `${basePath}/${volumeSegment}/${issueSegment}/${paper.paper_id}`;
+
     return (
         <Card className="font-serif border-primary/10 shadow-sm hover:shadow-md transition-shadow group relative rounded-lg border-t-2 border-t-transparent hover:border-t-secondary/40">
             <CardContent className="p-4 xl:p-6 2xl:p-8">
                 <div className="flex flex-col gap-6">
                     <div className="space-y-4">
-                        <Link href={`${basePath}/${paper.id}`}>
+                        <Link href={paperUrl}>
                             <h3 className="font-serif font-semibold tracking-wide text-[#000066] cursor-pointer m-0 leading-tight text-xl xl:text-2xl 2xl:text-3xl">
                                 {paper.title}
                             </h3>
@@ -47,7 +51,7 @@ const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: Pap
 
                     <div className="flex flex-col sm:flex-row items-center gap-4">
                         <Button asChild variant="default" className="bg-primary shadow-sm rounded-md transition-all w-full sm:w-auto h-10 xl:h-12">
-                            <Link href={`${basePath}/${paper.id}`} className="flex items-center gap-2 px-6">
+                            <Link href={paperUrl} className="flex items-center gap-2 px-6">
                                 <Eye className="size-5 xl:size-6 text-white" />
                                 <span className="text-base xl:text-lg">View Article</span>
                             </Link>

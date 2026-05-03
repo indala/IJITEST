@@ -34,12 +34,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const res = await getPublishedPapers();
     const papers = res.success ? res.data ?? [] : [];
 
-    const dynamicRoutes = papers.map((paper: any) => ({
-      url: `${baseUrl}/${paper.submission_mode === 'current' ? 'current-issue' : 'archives'}/${paper.id}`,
-      lastModified: new Date(paper.updated_at || new Date()),
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    }));
+    const dynamicRoutes = papers.map((paper: any) => {
+      const basePath = paper.submission_mode === 'current' ? 'current-issue' : 'archives';
+      const volume = `volume${paper.volume_number || 0}`;
+      const issue = `issue${paper.issue_number || 0}`;
+      const paperId = paper.paper_id;
+
+      return {
+        url: `${baseUrl}/${basePath}/${volume}/${issue}/${paperId}`,
+        lastModified: new Date(paper.updated_at || new Date()),
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      };
+    });
 
     return [...staticRoutes, ...dynamicRoutes];
   } catch (error) {
