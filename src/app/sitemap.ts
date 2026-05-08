@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getPublishedPapers } from '@/actions/archives';
+import { getPublishedPapers, getLatestIssuePapers } from '@/actions/archives';
 import { getSettingsData } from '@/actions/settings';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -31,11 +31,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 2. Dynamic Manuscript Routes
   try {
-    const res = await getPublishedPapers();
+    const [res, latestRes] = await Promise.all([
+      getPublishedPapers(),
+      getLatestIssuePapers()
+    ]);
+    
     const papers = res.success ? res.data ?? [] : [];
+    const latestPapers = latestRes.success ? latestRes.data ?? [] : [];
+    const latestPaperIds = new Set(latestPapers.map(p => p.id));
 
     const dynamicRoutes = papers.map((paper: any) => {
-      const basePath = paper.submission_mode === 'current' ? 'current-issue' : 'archives';
+      const isCurrent = latestPaperIds.has(paper.id);
+      const basePath = isCurrent ? 'current-issue' : 'archives';
       const volume = `volume${paper.volume_number || 0}`;
       const issue = `issue${paper.issue_number || 0}`;
       const paperId = paper.paper_id;

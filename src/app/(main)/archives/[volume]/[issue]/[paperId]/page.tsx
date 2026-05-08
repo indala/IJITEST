@@ -25,7 +25,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ volume: string, issue: string, paperId: string }> }): Promise<Metadata> {
-    const { paperId } = await params;
+    const { volume, issue, paperId } = await params;
     const [paperRes, settings] = await Promise.all([
         getPaperById(paperId),
         getSettingsData()
@@ -65,6 +65,14 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
             'dc.date': paper.published_at ? new Date(paper.published_at).toISOString().split('T')[0] : (paper.publication_year?.toString() || ''),
             'dc.subject': paper.keywords || '',
             'dc.description': paper.abstract || '',
+        },
+        alternates: {
+            canonical: `${baseUrl}/archives/${volume}/${issue}/${paperId}`
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: paper.title,
+            description: paper.abstract?.substring(0, 160)
         }
     };
 }
@@ -133,6 +141,34 @@ export default async function PaperDetailPage({ params }: { params: Promise<{ vo
                         "@type": "WebPage",
                         "@id": `${baseUrl}/archives/${volume}/${issue}/${paperId}`
                     }
+                }}
+            />
+            
+            <JsonLd
+                id="breadcrumb"
+                data={{
+                    "@context": "https://schema.org",
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        {
+                            "@type": "ListItem",
+                            "position": 1,
+                            "name": "Home",
+                            "item": `${baseUrl}/`
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 2,
+                            "name": "Archives",
+                            "item": `${baseUrl}/archives`
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 3,
+                            "name": paper.paper_id,
+                            "item": `${baseUrl}/archives/${volume}/${issue}/${paperId}`
+                        }
+                    ]
                 }}
             />
         </div>

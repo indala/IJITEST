@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
-import path from "path";
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -8,7 +7,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "20mb"
     },
   },
-  
+
   images: {
     qualities: [75, 90, 100],
     remotePatterns: [

@@ -10,12 +10,13 @@ import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
-export default async function ResubmitPage({ params }: { params: { id: string } }) {
+export default async function ResubmitPage({ params }: { params: Promise<{ id: string }> }) {
     const session: any = await getServerSession(authOptions);
     if (!session?.user) redirect('/login');
     if (session.user.role !== 'author') redirect(`/${session.user.role}`);
 
-    const submissionId = parseInt(params.id);
+    const resolvedParams = await params;
+    const submissionId = parseInt(resolvedParams.id);
     if (isNaN(submissionId)) notFound();
 
     const [submissionRes, eligibilityRes] = await Promise.all([

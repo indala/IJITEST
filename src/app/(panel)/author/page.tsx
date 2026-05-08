@@ -44,6 +44,10 @@ export default async function AuthorDashboard() {
         const response = await getAuthorDashboard();
         const submissions = response.data?.submissions || [];
 
+        const totalViews = submissions.reduce((acc: number, sub: any) => acc + (sub.views || 0), 0);
+        const totalDownloads = submissions.reduce((acc: number, sub: any) => acc + (sub.downloads || 0), 0);
+        const totalCitations = submissions.reduce((acc: number, sub: any) => acc + (sub.citations || 0), 0);
+
         const stats = [
             { label: 'Submitted', value: submissions.length, icon: <FileStack className="w-5 h-5 text-primary" /> },
             { label: 'Reviewing', value: submissions.filter((s: any) => ['submitted', 'editor_assigned', 'under_review'].includes(s.status)).length, icon: <Clock className="w-5 h-5 text-amber-500" /> },
@@ -229,15 +233,15 @@ export default async function AuthorDashboard() {
                             <div className="space-y-3 pt-4 border-t border-border/40">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-medium text-muted-foreground">Views</span>
-                                    <span className="text-sm font-bold text-foreground tabular-nums">1,204</span>
+                                    <span className="text-sm font-bold text-foreground tabular-nums">{totalViews.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-medium text-muted-foreground">Downloads</span>
-                                    <span className="text-sm font-bold text-foreground tabular-nums">482</span>
+                                    <span className="text-sm font-bold text-foreground tabular-nums">{totalDownloads.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-medium text-primary">Citations</span>
-                                    <span className="text-sm font-bold text-primary tabular-nums">12</span>
+                                    <span className="text-sm font-bold text-primary tabular-nums">{totalCitations.toLocaleString()}</span>
                                 </div>
                             </div>
                         </CardContent>

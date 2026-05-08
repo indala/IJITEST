@@ -8,8 +8,9 @@ import Link from "next/link";
 import dayjs from "@/lib/dayjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-export default async function AuthorSubmissionDetailsPage({ params }: { params: { id: string } }) {
-    const submissionId = parseInt(params.id);
+export default async function AuthorSubmissionDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+    const resolvedParams = await params;
+    const submissionId = parseInt(resolvedParams.id);
     const subResponse = await getAuthorSubmission(submissionId);
     if (!subResponse.success || !subResponse.data) return notFound();
     const sub = subResponse.data;

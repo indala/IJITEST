@@ -327,6 +327,9 @@ export const publications = mysqlTable("publications", {
     endPage: int("end_page"),
     doi: varchar("doi", { length: 100 }).unique(),
     publishedAt: timestamp("published_at").defaultNow(),
+    views: int("views").default(0).notNull(),
+    downloads: int("downloads").default(0).notNull(),
+    citations: int("citations").default(0).notNull(),
 });
 
 export const publicationsRelations = relations(publications, ({ one }) => ({

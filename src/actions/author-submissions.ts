@@ -60,7 +60,10 @@ export async function getAuthorDashboard(): Promise<ActionResponse<{ submissions
             finalPdfUrl: publications.finalPdfUrl,
             volumeNumber: volumesIssues.volumeNumber,
             issueNumber: volumesIssues.issueNumber,
-            issueYear: volumesIssues.year
+            issueYear: volumesIssues.year,
+            views: publications.views,
+            downloads: publications.downloads,
+            citations: publications.citations
         })
         .from(submissions)
         .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))

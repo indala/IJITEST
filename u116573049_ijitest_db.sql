@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 02, 2026 at 07:23 AM
+-- Generation Time: May 07, 2026 at 03:59 PM
 -- Server version: 12.3.1-MariaDB-log
 -- PHP Version: 7.2.34
 
@@ -147,27 +147,30 @@ CREATE TABLE `publications` (
   `start_page` int(11) DEFAULT NULL,
   `end_page` int(11) DEFAULT NULL,
   `doi` varchar(100) DEFAULT NULL,
-  `published_at` timestamp NULL DEFAULT current_timestamp()
+  `published_at` timestamp NULL DEFAULT current_timestamp(),
+  `views` int(11) NOT NULL DEFAULT 0,
+  `downloads` int(11) NOT NULL DEFAULT 0,
+  `citations` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `publications`
 --
 
-INSERT INTO `publications` (`id`, `submission_id`, `issue_id`, `final_pdf_url`, `start_page`, `end_page`, `doi`, `published_at`) VALUES
-(1, 1, 1, '/uploads/published/IJITEST-2026-001-published.pdf', 1, 7, NULL, '2026-03-28 09:00:00'),
-(2, 2, 1, '/uploads/published/IJITEST-2026-002-published.pdf', 8, 12, NULL, '2026-03-29 10:00:00'),
-(3, 3, 1, '/uploads/published/IJITEST-2026-003-published.pdf', 13, 20, NULL, '2026-03-29 11:00:00'),
-(4, 4, 1, '/uploads/published/IJITEST-2026-004-published.pdf', 21, 26, NULL, '2026-03-30 12:00:00'),
-(5, 5, 1, '/uploads/published/IJITEST-2026-005-published.pdf', 27, 32, NULL, '2026-03-31 13:00:00'),
-(6, 6, 1, '/uploads/published/IJITEST-2026-006-published.pdf', 33, 37, NULL, '2026-03-31 14:00:00'),
-(7, 7, 1, '/uploads/published/IJITEST-2026-007-published.pdf', 38, 41, NULL, '2026-03-31 15:00:00'),
-(8, 8, 1, '/uploads/published/IJITEST-2026-008-published.pdf', 42, 45, NULL, '2026-03-31 16:00:00'),
-(9, 9, 1, '/uploads/published/IJITEST-2026-009-published.pdf', 46, 49, NULL, '2026-03-31 17:00:00'),
-(10, 10, 1, '/uploads/published/IJITEST-2026-010-published.pdf', 50, 53, NULL, '2026-03-31 18:00:00'),
-(11, 58, 2, '/uploads/published/IJITEST-2026-011-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24'),
-(12, 59, 2, '/uploads/published/IJITEST-2026-012-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24'),
-(13, 60, 2, '/uploads/published/IJITEST-2026-013-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24');
+INSERT INTO `publications` (`id`, `submission_id`, `issue_id`, `final_pdf_url`, `start_page`, `end_page`, `doi`, `published_at`, `views`, `downloads`, `citations`) VALUES
+(1, 1, 1, '/uploads/published/IJITEST-2026-001-published.pdf', 1, 7, NULL, '2026-03-28 09:00:00', 0, 0, 0),
+(2, 2, 1, '/uploads/published/IJITEST-2026-002-published.pdf', 8, 12, NULL, '2026-03-29 10:00:00', 0, 0, 0),
+(3, 3, 1, '/uploads/published/IJITEST-2026-003-published.pdf', 13, 20, NULL, '2026-03-29 11:00:00', 0, 0, 0),
+(4, 4, 1, '/uploads/published/IJITEST-2026-004-published.pdf', 21, 26, NULL, '2026-03-30 12:00:00', 0, 0, 0),
+(5, 5, 1, '/uploads/published/IJITEST-2026-005-published.pdf', 27, 32, NULL, '2026-03-31 13:00:00', 0, 0, 0),
+(6, 6, 1, '/uploads/published/IJITEST-2026-006-published.pdf', 33, 37, NULL, '2026-03-31 14:00:00', 0, 0, 0),
+(7, 7, 1, '/uploads/published/IJITEST-2026-007-published.pdf', 38, 41, NULL, '2026-03-31 15:00:00', 0, 0, 0),
+(8, 8, 1, '/uploads/published/IJITEST-2026-008-published.pdf', 42, 45, NULL, '2026-03-31 16:00:00', 0, 0, 0),
+(9, 9, 1, '/uploads/published/IJITEST-2026-009-published.pdf', 46, 49, NULL, '2026-03-31 17:00:00', 0, 0, 0),
+(10, 10, 1, '/uploads/published/IJITEST-2026-010-published.pdf', 50, 53, NULL, '2026-03-31 18:00:00', 0, 0, 0),
+(11, 58, 2, '/uploads/published/IJITEST-2026-011-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24', 0, 0, 0),
+(12, 59, 2, '/uploads/published/IJITEST-2026-012-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24', 0, 0, 0),
+(13, 60, 2, '/uploads/published/IJITEST-2026-013-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24', 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -496,7 +499,7 @@ INSERT INTO `users` (`id`, `email`, `password_hash`, `role`, `is_active`, `is_em
 ('9196f358-d1ce-448b-a854-4cc641684f97', 'mallikblue@gmail.com', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03', NULL, 0),
 ('94a51dbe-acc8-4df8-a3c6-03ecc15287a0', 'subbaraochappa@gmail.com', '$2a$12$M2tKWAune7p18LlnZgnfkecIDlaQvQ6SkhDYrbMiX.9fOAPFpqYVy', 'reviewer', 1, 1, NULL, '2026-04-19 05:41:03', '2026-04-19 06:38:53', NULL, 0),
 ('a0d1d251-cccd-4a52-93ff-26bcc7ae428a', 'jagadishdunna2005@gmail.com', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03', NULL, 0),
-('ac34b85e-d7c0-454b-9ef9-4b73e39ee30a', 'gulshansribabu@gmail.com', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03', NULL, 0),
+('ac34b85e-d7c0-454b-9ef9-4b73e39ee30a', 'gulshansribabu@gmail.com', '$2a$12$XMa6PiA6G0OIOUFRuwnA..cADNcHYX61xvBHtNeHHPqfIgM3LXoKC', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-05-07 15:51:51', NULL, 0),
 ('af963fdb-af8a-4687-b843-dc604df4ff1c', 'jackbenison12@gmail.com', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'reviewer', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 06:38:53', NULL, 0),
 ('bce1657c-32a6-492d-9df5-a03dcb465726', 'indalamohankumar@gmail.com', '$2b$10$2nF2wRdIXIfGGFeFYJHYtOhuyufINNFC/pvZr/bAftSh6l4mql3H2', 'reviewer', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 06:38:53', NULL, 0),
 ('c411a1e8-1a94-4ba8-bf5c-d3bead1b617b', 'missing_email_ijitest-2026-010_c5545a38@ijitest.org', '$2a$10$7RmsVl.z6.v6jW9Vd1vU8.OsqYf4A5U5u5u5u5u5u5u5u5u5u5u', 'author', 1, 0, NULL, '2026-04-19 05:41:03', '2026-04-19 05:41:03', NULL, 0),
@@ -534,7 +537,8 @@ INSERT INTO `user_invitations` (`id`, `email`, `role`, `token`, `expires_at`, `i
 (2, 'jackbenison12@gmail.com', 'editor', 'c606a2bab40b8cdae84258591cbd5da5e7fd771750d5ee06337519e2abb54438', '2026-03-04 14:09:25', NULL, '2026-03-03 14:09:25'),
 (3, 'razh1977@gmail.com', 'editor', 'a52772afc7c330f652056cdb27b926b8a7de3476dbb421a69981f3d2cc2d28b2', '2026-03-31 08:51:10', NULL, '2026-03-03 15:34:37'),
 (4, 'trinadhphd33@gmail.com', 'editor', '46a219ab8c1a6157080a9886c7342c574ce6595408da12cdbcdb637f4cf53088', '2026-03-06 15:56:46', NULL, '2026-03-05 15:56:46'),
-(5, 'mr.challa33@gmail.com', 'reviewer', '2f0d0f6f1068bb271034e7e22878c5660fa2e090e756ff31d6d898c5f73b8b52', '2026-03-06 15:56:53', NULL, '2026-03-05 15:56:53');
+(5, 'mr.challa33@gmail.com', 'reviewer', '2f0d0f6f1068bb271034e7e22878c5660fa2e090e756ff31d6d898c5f73b8b52', '2026-03-06 15:56:53', NULL, '2026-03-05 15:56:53'),
+(21, 'norsuzila@salam.uitm.edu.my', 'editor', '19f0fa58b5f10f5eea3a9c89de079d37af5b0278db54e25424b9d70145930d3a', '2026-05-06 09:32:59', NULL, '2026-05-06 08:32:59');
 
 -- --------------------------------------------------------
 
@@ -624,7 +628,8 @@ CREATE TABLE `volumes_issues` (
 
 INSERT INTO `volumes_issues` (`id`, `volume_number`, `issue_number`, `year`, `month_range`, `status`, `created_at`) VALUES
 (1, 1, 1, 2026, 'March', 'published', '2026-04-19 05:41:03'),
-(2, 1, 2, 2026, 'April', 'published', '2026-04-19 05:41:03');
+(2, 1, 2, 2026, 'April', 'published', '2026-04-19 05:41:03'),
+(3, 1, 3, 2026, 'May', 'published', '2026-05-05 18:18:58');
 
 -- --------------------------------------------------------
 
@@ -914,7 +919,7 @@ ALTER TABLE `submission_versions`
 -- AUTO_INCREMENT for table `user_invitations`
 --
 ALTER TABLE `user_invitations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`
@@ -926,7 +931,7 @@ ALTER TABLE `user_profiles`
 -- AUTO_INCREMENT for table `volumes_issues`
 --
 ALTER TABLE `volumes_issues`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

@@ -1,0 +1,3 @@
+# ‎Gemini - direct access to Google AI
+
+[Sign in](https://accounts.google.com/ServiceLogin?passive=1209600&continue=https://gemini.google.com/share/cac4cc3ab5a4&followup=https://gemini.google.com/share/cac4cc3ab5a4&ec=GAZAkgU)
