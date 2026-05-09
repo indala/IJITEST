@@ -6,7 +6,7 @@ import { memo } from 'react';
 const stats = [
     { label: "Review Model", value: "Double-Blind ", color: "text-emerald-600", dotColor: "bg-emerald-600", delay: 0 },
     { label: "Publication", value: "Monthly", color: "text-blue-600", dotColor: "bg-blue-600", delay: 0.1 },
-    { label: "Open Access", value: "peer-review", color: "text-amber-600", dotColor: "bg-amber-600", delay: 0.2 }
+    { label: "Open Access", value: "100%", color: "text-amber-600", dotColor: "bg-amber-600", delay: 0.2 }
 ];
 
 

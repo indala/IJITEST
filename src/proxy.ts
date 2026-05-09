@@ -22,6 +22,10 @@ export default withAuth(
     if (path.startsWith("/reviewer") && !["admin", "editor", "reviewer"].includes(token?.role as string)) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
+    if (path.startsWith("/author") && token?.role !== "author") {
+      // Assuming 'author' role strictly has access to /author, adjust if admin/editor should also have access
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
 
     return NextResponse.next();
   },
@@ -47,6 +51,7 @@ export const config = {
     "/admin/:path*",
     "/editor/:path*",
     "/reviewer/:path*",
+    "/author/:path*",
     "/login",
   ],
 };

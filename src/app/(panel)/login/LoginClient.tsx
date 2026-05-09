@@ -4,21 +4,33 @@ import { useState } from 'react';
 import { Lock, Mail, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { signIn, getSession } from 'next-auth/react';
+import { useFormStatus } from 'react-dom';
+import { Loader2 } from 'lucide-react';
 import { InputGroup,InputGroupAddon,InputGroupInput } from '@/components/ui/input-group';
 
 function LoadingButton() {
+    const { pending } = useFormStatus();
     return (
         <Button
             type="submit"
+            disabled={pending}
             className="w-full h-11 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
-            Login <ShieldCheck className="w-4 h-4" />
+            {pending ? (
+                <>Logging in <Loader2 className="w-4 h-4 animate-spin" /></>
+            ) : (
+                <>Login <ShieldCheck className="w-4 h-4" /></>
+            )}
         </Button>
     );
 }
 
 export default function LoginClient() {
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl');
+    
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +51,9 @@ export default function LoginClient() {
             const session = await getSession();
             const role = (session?.user as { role?: string })?.role;
 
-            if (role) {
+            if (callbackUrl && callbackUrl.startsWith('/')) {
+                window.location.href = callbackUrl;
+            } else if (role) {
                 window.location.href = `/${role}`;
             } else {
                 window.location.href = '/login';

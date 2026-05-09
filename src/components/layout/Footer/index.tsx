@@ -46,7 +46,7 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                             <li><Link href="/indexing" className="hover:text-secondary transition-colors cursor-pointer">Indexing Hub</Link></li>
                             <li><Link href="/privacy" className="hover:text-secondary transition-colors cursor-pointer">Privacy Policy</Link></li>
                             <li><Link href="/terms" className="hover:text-secondary transition-colors cursor-pointer">Terms of Use</Link></li>
-                            <li><Link href="/track" className="hover:text-secondary transition-colors cursor-pointer">Track Application</Link></li>
+                            <li><Link href="/track" className="hover:text-secondary transition-colors cursor-pointer">Track Manuscript</Link></li>
                             <li><Link href="/contact" className="hover:text-secondary transition-colors cursor-pointer">Contact Office</Link></li>
                             <li><Link href="/login" className="hover:text-secondary transition-colors cursor-pointer">Login</Link></li>
                         </ul>
@@ -74,7 +74,7 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                                     </div>
                                     <div>
                                         <p className="text-white/80 mb-1 m-0 text-xs 2xl:text-base">Direct Line</p>
-                                        <p className="text-white m-0 font-semibold">+91 8919643590</p>
+                                        <p className="text-white m-0 font-semibold">{settings?.support_phone || '+91 8919643590'}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4 group/support">
@@ -85,7 +85,7 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                                     <div>
                                         <p className="text-white/80 mb-1 m-0 text-xs 2xl:text-base">Office Location</p>
                                         <p className="text-white/70 m-0 text-sm 2xl:text-lg italic">
-                                            Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India
+                                            {settings?.office_address || 'Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India'}
                                         </p>
                                     </div>
                                 </div>

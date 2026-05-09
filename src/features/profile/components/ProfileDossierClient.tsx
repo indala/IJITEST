@@ -461,7 +461,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                         </div>
 
                         {/* 3. Expertise */}
-                        {(role === 'reviewer' || role === 'editor') && (
+                        {(role === 'reviewer' || role === 'editor' || role === 'author') && (
                             <div className="p-8 space-y-6" ref={interestsRef}>
                                 <div className="flex items-center justify-between gap-2 mb-2">
                                     <div className="flex items-center gap-2">

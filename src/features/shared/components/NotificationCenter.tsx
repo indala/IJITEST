@@ -35,19 +35,23 @@ export default function NotificationCenter() {
         staleTime: 30000,
     });
 
-    if (!userRole || (userRole !== 'admin' && userRole !== 'editor' && userRole !== 'reviewer')) return null;
+    if (!userRole || (userRole !== 'admin' && userRole !== 'editor' && userRole !== 'reviewer' && userRole !== 'author')) return null;
 
     const submissionLink = userRole === 'reviewer' 
         ? '/reviewer/reviews' 
         : userRole === 'editor' 
             ? '/editor/submissions' 
-            : '/admin/submissions';
+            : userRole === 'author'
+                ? '/author/submissions'
+                : '/admin/submissions';
             
     const submissionTooltip = userRole === 'reviewer' 
         ? 'Assignments Pending Feedback' 
         : userRole === 'editor'
             ? 'Submissions Managed by You'
-            : 'New Submissions Pending Screening';
+            : userRole === 'author'
+                ? 'Submissions Requiring Action'
+                : 'New Submissions Pending Screening';
 
     return (
         <TooltipProvider>
@@ -71,7 +75,7 @@ export default function NotificationCenter() {
                 </Tooltip>
 
                 {/* Message Notifications - Admins/Editors Only */}
-                {userRole !== 'reviewer' && (
+                {(userRole === 'admin' || userRole === 'editor') && (
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Link href={`/${userRole}/messages`} className="relative group">

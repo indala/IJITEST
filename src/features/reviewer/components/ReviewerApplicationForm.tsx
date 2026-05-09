@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { X, CheckCircle2, AlertCircle, FileText, ImageIcon, Loader2, ChevronRight, ChevronLeft, Building2, Plus } from 'lucide-react';
 import { checkUserEmail } from '@/actions/users';
+import Link from 'next/link';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -339,8 +340,8 @@ export default function ReviewerApplicationForm() {
                                                     placeholder="vance@university.edu"
                                                 />
                                                 {emailStatus.exists && (
-                                                    <p className="text-[10px] font-bold text-destructive uppercase px-1 mt-1">
-                                                        Email already registered.
+                                                    <p className="text-[10px] font-bold text-destructive uppercase px-1 mt-1 flex items-center gap-1">
+                                                        Email already registered. <Link href="/login" className="underline hover:text-destructive/80 cursor-pointer">Please log in</Link>
                                                     </p>
                                                 )}
                                             </div>

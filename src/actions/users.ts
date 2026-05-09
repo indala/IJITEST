@@ -268,7 +268,11 @@ export async function requestPasswordReset(formData: FormData): Promise<ActionRe
 
         await db.insert(userInvitations).values({
             email,
-            role: (user.role === 'editor' || user.role === 'reviewer') ? user.role : 'reviewer',
+            // INTENTIONAL WORKAROUND: The `userInvitations.role` mysqlEnum constraint does not allow 'admin'.
+            // Since this is a password reset token, the role stored here is ignored during setupPassword 
+            // (it only uses the email to update the existing user). We map 'admin' to 'reviewer' purely 
+            // to satisfy the schema constraint without needing to alter the schema or create a separate table.
+            role: (user.role === 'admin' ? 'reviewer' : user.role) as "editor" | "reviewer" | "author",
             token: resetToken,
             expiresAt: expires,
         });

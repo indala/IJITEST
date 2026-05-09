@@ -45,11 +45,9 @@ function SetupContent() {
         return () => { isMounted = false; };
     }, [token]);
 
-    const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleSubmit = useCallback(async (formData: FormData) => {
         setStatus('loading');
 
-        const formData = new FormData(e.currentTarget);
         const password = formData.get('password') as string;
         const confirm = formData.get('confirmPassword') as string;
 
@@ -148,7 +146,7 @@ function SetupContent() {
                         </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form action={handleSubmit} className="space-y-6">
                         <input type="hidden" name="token" value={token!} />
                         
                         <div className="space-y-2">
@@ -212,7 +210,7 @@ function SetupContent() {
                                 </>
                             ) : (
                                 <>
-                                    {ctx === 'reset' ? 'Update Password' : 'Join Editorial Board'}
+                                    {ctx === 'reset' ? 'Update Password' : 'Activate Account'}
                                     <ArrowRight className="w-4 h-4" />
                                 </>
                             )}

@@ -41,6 +41,17 @@ export async function getNotificationCounts(): Promise<ActionResponse<{ messages
             ));
         totalSubmissionCount += revResult?.count ?? 0;
 
+        // 4. Submissions Requiring Action: Authors only
+        if (role === 'author') {
+            const [actionResult] = await db.select({ count: count() })
+                .from(submissions)
+                .where(and(
+                    eq(submissions.correspondingAuthorId, userId),
+                    inArray(submissions.status, ['revision_requested', 'payment_pending'])
+                ));
+            totalSubmissionCount += actionResult?.count ?? 0;
+        }
+
         const data = {
             messages: messageCount,
             submissions: totalSubmissionCount

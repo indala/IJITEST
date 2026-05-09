@@ -38,7 +38,7 @@ export default function PaymentClient({ id, settings }: PaymentClientProps) {
         </div>
     );
 
-    if (error || (manuscript && manuscript.status !== 'accepted' && manuscript.status !== 'published')) return (
+    if (error || (manuscript && !['accepted', 'payment_pending', 'published'].includes(manuscript.status))) return (
         <div className="min-h-screen flex items-center justify-center bg-background p-6">
             <div className="max-w-md w-full bg-card border border-border/50 rounded-xl text-center p-8 sm:p-12 shadow-sm border-l-4 border-l-destructive/50">
                 <div className="w-16 h-16 bg-destructive/5 rounded-xl flex items-center justify-center mx-auto mb-8 text-destructive">

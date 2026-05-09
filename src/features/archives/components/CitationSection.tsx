@@ -1,5 +1,6 @@
 import { Quote, Share2 } from "lucide-react";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { toast } from "sonner";
 
 interface CitationSectionProps {
     paper: {
@@ -44,7 +45,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
 
     const handleCopy = () => {
         navigator.clipboard.writeText(citationText);
-        alert("Citation copied to clipboard!");
+        toast.success("Citation copied to clipboard!");
     };
 
     return (
@@ -81,7 +82,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                             });
                         } else {
                             navigator.clipboard.writeText(window.location.href);
-                            alert("Link copied to clipboard!");
+                            toast.success("Link copied to clipboard!");
                         }
                     }}
                     className="w-full flex items-center justify-center gap-3 bg-gray-50 text-gray-500 py-4 rounded-2xl font-black text-[10px]  tracking-[0.2em] border border-gray-100 hover:bg-gray-100 transition-all font-sans"
@@ -95,7 +96,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                 <div className="grid grid-cols-1 gap-4">
                     <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 text-center group/meta">
                         <p className="text-[8px] font-black text-gray-400 tracking-[0.2em] uppercase mb-1 group-hover/meta:text-primary transition-colors">ISSN (Online)</p>
-                        <p className="text-sm font-black text-gray-900 ">{settings.issn_number || '2584-2579'}</p>
+                        <p className="text-sm font-black text-gray-900 ">{settings.issn_number || 'XXXX-XXXX'}</p>
                     </div>
                 </div>
             </div>

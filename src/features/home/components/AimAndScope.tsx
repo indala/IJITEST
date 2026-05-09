@@ -12,8 +12,7 @@ const disciplines = [
     "Electronics & Communication Engineering",
     "Mechanical & Civil Engineering",
     "Internet of Things (IoT), Robotics, and Automation",
-    "Renewable Energy and Sustainable Technologies",
-    "Management Studies, Business Administration, and Technology Management"
+    "Renewable Energy and Sustainable Technologies"
 ];
 
 function AimAndScope({ journalShortName }: { journalShortName?: string }) {
@@ -82,13 +81,13 @@ function AimAndScope({ journalShortName }: { journalShortName?: string }) {
                                 Mission Priority
                             </h3>
                             <p className="opacity-70">
-                                &quot;Interdisciplinary research merging engineering with managerial sciences is highly prioritized.&quot;
+                                &quot;Interdisciplinary research merging engineering with sustainability and data-driven innovation is highly prioritized.&quot;
                             </p>
                         </article>
 
                         <article className="p-6 bg-linear-to-br from-secondary/5 to-transparent border border-secondary/10 rounded-4xl shadow-vip hover:shadow-vip-hover hover:border-secondary/20 hover:border-2 cursor-pointer transition-all duration-300 group">
                             <p className="opacity-70 leading-relaxed">
-                                We particularly welcome interdisciplinary work combining engineering with management, sustainability, and data-driven innovation, especially with direct industrial or societal impact.
+                                We particularly welcome interdisciplinary work combining engineering with sustainability and data-driven innovation, especially with direct industrial or societal impact.
                             </p>
                         </article>
                     </div>

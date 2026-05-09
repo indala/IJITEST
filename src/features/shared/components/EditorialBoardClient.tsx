@@ -13,7 +13,7 @@ interface EditorialBoardClientProps {
 
 export default function EditorialBoardClient({ settings, initialMembers }: EditorialBoardClientProps) {
     const { data: dynamicMembers = [], isLoading } = useEditorialBoard(initialMembers);
-    const supportEmail = settings.support_email || "editor@iitest.org";
+    const supportEmail = settings.support_email || "editor@ijitest.org";
 
     const groupedBoard = useMemo(() => {
         const mappedDynamic = dynamicMembers.map(m => ({

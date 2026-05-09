@@ -325,24 +325,42 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
         }
     }, [searchParams]);
 
-    const handleAccept = useCallback(async (item: ReviewAssignment) => {
-        if (confirm('Authorize acceptance for this manuscript?')) {
-            const res = await decideSubmission(item.submissionId, 'accepted');
-            if (res.success) {
-                toast.success('Accepted');
-                refetchReviews();
-            } else toast.error(res.error);
-        }
+    const handleAccept = useCallback((item: ReviewAssignment) => {
+        toast('Authorize acceptance for this manuscript?', {
+            action: {
+                label: 'Confirm Accept',
+                onClick: async () => {
+                    const res = await decideSubmission(item.submissionId, 'accepted');
+                    if (res.success) {
+                        toast.success('Accepted');
+                        refetchReviews();
+                    } else toast.error(res.error);
+                }
+            },
+            cancel: {
+                label: 'Cancel',
+                onClick: () => {}
+            }
+        });
     }, [refetchReviews]);
 
-    const handleReject = useCallback(async (item: ReviewAssignment) => {
-        if (confirm('Commit final rejection?')) {
-            const res = await decideSubmission(item.submissionId, 'rejected');
-            if (res.success) {
-                toast.success('Rejected');
-                refetchReviews();
-            } else toast.error(res.error);
-        }
+    const handleReject = useCallback((item: ReviewAssignment) => {
+        toast('Commit final rejection?', {
+            action: {
+                label: 'Confirm Reject',
+                onClick: async () => {
+                    const res = await decideSubmission(item.submissionId, 'rejected');
+                    if (res.success) {
+                        toast.success('Rejected');
+                        refetchReviews();
+                    } else toast.error(res.error);
+                }
+            },
+            cancel: {
+                label: 'Cancel',
+                onClick: () => {}
+            }
+        });
     }, [refetchReviews]);
 
     const handleFeedbackSubmit = useCallback(async (item: ReviewAssignment, formData: FormData) => {

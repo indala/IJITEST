@@ -96,8 +96,8 @@ export default function TrackClient({ settings }: TrackClientProps) {
         if (!manuscript) return false;
         const s = manuscript.status;
         if (step === 'submitted') return true;
-        if (step === 'review') return ['under_review', 'accepted', 'rejected', 'published'].includes(s);
-        if (step === 'decision') return ['accepted', 'rejected', 'published'].includes(s);
+        if (step === 'review') return ['under_review', 'revision_requested', 'accepted', 'rejected', 'payment_pending', 'published'].includes(s);
+        if (step === 'decision') return ['accepted', 'rejected', 'payment_pending', 'published'].includes(s);
         return false;
     };
 
@@ -225,21 +225,21 @@ export default function TrackClient({ settings }: TrackClientProps) {
                                 <div className="space-y-4">
                                     <Milestone
                                         title="Manuscript Received"
-                                        {...(manuscript.submitted_at ? { date: manuscript.submitted_at.toISOString() } : {})}
+                                        {...(manuscript.submitted_at ? { date: new Date(manuscript.submitted_at).toISOString() } : {})}
                                         description="Initial submission received and queued for editorial screening."
                                         icon={FileText}
                                         active={isStepActive('submitted')}
                                     />
                                     <Milestone
                                         title="Peer Review"
-                                        {...(manuscript.review_started_at ? { date: manuscript.review_started_at.toISOString() } : {})}
+                                        {...(manuscript.review_started_at ? { date: new Date(manuscript.review_started_at).toISOString() } : {})}
                                         description="Assigned to experts for technical evaluation."
                                         icon={Search}
                                         active={isStepActive('review')}
                                     />
                                     <Milestone
                                         title="Editorial Decision"
-                                        {...((manuscript.status !== 'under_review' && manuscript.status !== 'submitted' && manuscript.updated_at) ? { date: manuscript.updated_at.toISOString() } : {})}
+                                        {...((manuscript.status !== 'under_review' && manuscript.status !== 'submitted' && manuscript.updated_at) ? { date: new Date(manuscript.updated_at).toISOString() } : {})}
                                         description={
                                             manuscript.status === 'accepted' ? "Accepted for publication in the upcoming volume." :
                                             manuscript.status === 'rejected' ? "Returned following scientific evaluation." :

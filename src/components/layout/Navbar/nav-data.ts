@@ -8,7 +8,8 @@ import {
     Users,
     ShieldCheck,
     ScrollText,
-    UserPlus
+    UserPlus,
+    Hash
 } from 'lucide-react';
 
 export const navigation = [
@@ -28,6 +29,6 @@ export const navigation = [
     { name: 'Author Guidelines', href: '/guidelines', icon: FileText },
     { name: 'Current Issue', href: '/current-issue', icon: Layout },
     { name: 'Archive', href: '/archives', icon: Archive },
-    //{ name: 'Indexing', href: '/indexing', icon: Hash },
+    { name: 'Indexing', href: '/indexing', icon: Hash },
     { name: 'Contact Us', href: '/contact', icon: Mail },
 ];

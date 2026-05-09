@@ -9,7 +9,7 @@ interface EthicsClientProps {
 
 export default function EthicsClient({ settings }: EthicsClientProps) {
     const journalName = settings.journal_name || "International Journal of Science and Applied Information Technology (IJITEST)";
-    const supportEmail = settings.support_email || "editor@iitest.org";
+    const supportEmail = settings.support_email || "editor@ijitest.org";
 
     const sections = [
         {

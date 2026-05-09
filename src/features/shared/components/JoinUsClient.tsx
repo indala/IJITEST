@@ -10,7 +10,7 @@ const BENEFITS = [
     {
         icon: Users,
         title: "Connect",
-        desc: "Connect with editors and researchers."
+        desc: "Connect with fellow researchers."
     },
     {
         icon: Award,
