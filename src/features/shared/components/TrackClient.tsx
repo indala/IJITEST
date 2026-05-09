@@ -28,7 +28,7 @@ function Milestone({ title, date, description, icon: Icon, active, last }: Miles
     return (
         <div className="flex gap-4 relative items-start">
             {!last && (
-                <div className="absolute left-5 top-10 bottom-0 w-[1px] bg-border/50" />
+                <div className="absolute left-5 top-10 bottom-0 w-px bg-border/50" />
             )}
 
             <div className={`relative z-10 w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${active
@@ -55,7 +55,7 @@ function Milestone({ title, date, description, icon: Icon, active, last }: Miles
 
 export default function TrackClient({ settings }: TrackClientProps) {
     const searchParams = useSearchParams();
-    const [paperIdInput, setPaperIdInput] = useState('');
+    const [paperIdInput, setPaperIdInput] = useState(searchParams.get('id') || '');
     const [emailInput, setEmailInput] = useState('');
     const [searchTriggered, setSearchTriggered] = useState(false);
 
@@ -72,12 +72,7 @@ export default function TrackClient({ settings }: TrackClientProps) {
     const resultsRef = useRef<HTMLDivElement>(null);
     const journalShortName = settings.journal_short_name || "IJITEST";
 
-    useEffect(() => {
-        const id = searchParams.get('id');
-        if (id) {
-            setPaperIdInput(id);
-        }
-    }, [searchParams]);
+
 
     useEffect(() => {
         if ((isSuccess || isError) && resultsRef.current) {
@@ -203,7 +198,7 @@ export default function TrackClient({ settings }: TrackClientProps) {
                                         </span>
                                     </div>
                                     <div className="text-xs text-muted-foreground flex items-center gap-2">
-                                        <Calendar className="w-3.5 h-3.5" /> {new Date(manuscript.submitted_at).getFullYear()}
+                                        <Calendar className="w-3.5 h-3.5" /> {manuscript.submitted_at ? new Date(manuscript.submitted_at).getFullYear() : 'N/A'}
                                     </div>
                                 </div>
 
@@ -230,21 +225,21 @@ export default function TrackClient({ settings }: TrackClientProps) {
                                 <div className="space-y-4">
                                     <Milestone
                                         title="Manuscript Received"
-                                        date={manuscript.submitted_at}
+                                        {...(manuscript.submitted_at ? { date: manuscript.submitted_at.toISOString() } : {})}
                                         description="Initial submission received and queued for editorial screening."
                                         icon={FileText}
                                         active={isStepActive('submitted')}
                                     />
                                     <Milestone
                                         title="Peer Review"
-                                        date={manuscript.review_started_at}
+                                        {...(manuscript.review_started_at ? { date: manuscript.review_started_at.toISOString() } : {})}
                                         description="Assigned to experts for technical evaluation."
                                         icon={Search}
                                         active={isStepActive('review')}
                                     />
                                     <Milestone
                                         title="Editorial Decision"
-                                        date={manuscript.status !== 'under_review' && manuscript.status !== 'submitted' ? manuscript.updated_at : undefined}
+                                        {...((manuscript.status !== 'under_review' && manuscript.status !== 'submitted' && manuscript.updated_at) ? { date: manuscript.updated_at.toISOString() } : {})}
                                         description={
                                             manuscript.status === 'accepted' ? "Accepted for publication in the upcoming volume." :
                                             manuscript.status === 'rejected' ? "Returned following scientific evaluation." :
@@ -314,10 +309,10 @@ export default function TrackClient({ settings }: TrackClientProps) {
                                         </div>
                                         {manuscript.reviewer_feedback && manuscript.reviewer_feedback.length > 0 && (
                                             <div className="grid grid-cols-1 gap-4">
-                                                {manuscript.reviewer_feedback.map((feedback: string, i: number) => (
+                                                {manuscript.reviewer_feedback.filter((f): f is string => f !== null).map((feedback, i) => (
                                                     <div key={i} className="p-6 bg-card border border-border/50 rounded-xl text-sm leading-relaxed flex gap-4">
                                                         <div className="w-1 h-auto bg-destructive/20 rounded-full shrink-0" />
-                                                        <div className="italic">"{feedback}"</div>
+                                                        <div className="italic">&quot;{feedback}&quot;</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -339,7 +334,7 @@ export default function TrackClient({ settings }: TrackClientProps) {
                             <p className="text-muted-foreground text-sm m-0">
                                 Manuscript not found or credentials mismatched.
                             </p>
-                            <p className="text-destructive/60 text-xs italic">"{errorMessage}"</p>
+                            <p className="text-destructive/60 text-xs italic">&quot;{errorMessage}&quot;</p>
                         </div>
                         <Button
                             onClick={() => setSearchTriggered(false)}

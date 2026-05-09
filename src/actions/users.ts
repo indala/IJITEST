@@ -18,6 +18,12 @@ import { eq, and, sql, inArray, isNotNull, not } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { safeDeleteFile } from "@/lib/fs-utils";
+import crypto from 'crypto';
+import { emailTemplates, sendEmail } from '@/lib/mail';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 
 export async function getEditorialBoard(): Promise<ActionResponse<SafeUserWithProfile[]>> {
     try {
@@ -103,8 +109,7 @@ export async function getUsers(role?: "admin" | "editor" | "reviewer" | "author"
     }
 }
 
-import crypto from 'crypto';
-import { emailTemplates, sendEmail } from '@/lib/mail';
+
 
 export async function createUser(formData: FormData): Promise<ActionResponse> {
     const session = await getServerSession(authOptions);
@@ -233,8 +238,7 @@ export async function setupPassword(formData: FormData): Promise<ActionResponse>
     }
 }
 
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+
 
 export async function requestPasswordReset(formData: FormData): Promise<ActionResponse> {
     const email = formData.get('email') as string;
@@ -366,8 +370,7 @@ export async function deleteUser(id: string): Promise<ActionResponse> {
     }
 }
 
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+
 
 export async function getUserProfile(): Promise<ActionResponse<UserWithProfile>> {
     try {

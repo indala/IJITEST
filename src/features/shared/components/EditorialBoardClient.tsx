@@ -1,6 +1,5 @@
 'use client';
 
-import { Variants } from 'framer-motion';
 import { Mail, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useEditorialBoard } from '@/hooks/queries/usePublic';
@@ -15,9 +14,8 @@ interface EditorialBoardClientProps {
 export default function EditorialBoardClient({ settings, initialMembers }: EditorialBoardClientProps) {
     const { data: dynamicMembers = [], isLoading } = useEditorialBoard(initialMembers);
     const supportEmail = settings.support_email || "editor@iitest.org";
-    
+
     const groupedBoard = useMemo(() => {
-        // Map dynamic members to match the display loop
         const mappedDynamic = dynamicMembers.map(m => ({
             full_name: m.profile?.fullName || "Staff",
             designation: m.profile?.designation || "Editor",
@@ -40,28 +38,6 @@ export default function EditorialBoardClient({ settings, initialMembers }: Edito
         return board.filter(category => category.members.length > 0);
     }, [dynamicMembers]);
 
-    const containerVariants: Variants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
-        }
-    };
-
-    const itemVariants: Variants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.6,
-                ease: [0.16, 1, 0.3, 1] as const
-            }
-        }
-    };
-
     if (isLoading && dynamicMembers.length === 0) {
         return (
             <div className="p-24 flex items-center justify-center">
@@ -72,10 +48,8 @@ export default function EditorialBoardClient({ settings, initialMembers }: Edito
 
     return (
         <section className=" space-y-12 max-w-5xl 2xl:container-responsive">
-            {/* Board Sections */}
             {groupedBoard.map((category, idx) => (
                 <section key={idx} className="overflow-hidden rounded-xl border border-primary/10 shadow-sm">
-                    {/* Role Header */}
                     <div className="bg-[#000066] p-4 px-6 xl:px-8">
                         <h2 className="text-white m-0 font-serif font-semibold text-lg xl:text-xl 2xl:text-2xl">
                             {category.role}
@@ -85,20 +59,18 @@ export default function EditorialBoardClient({ settings, initialMembers }: Edito
                     <div className="divide-y divide-primary/5">
                         {category.members.map((member: BoardMember, mIdx: number) => (
                             <article key={mIdx} className="group">
-                                {/* Name Row */}
                                 <header className="bg-muted/30 py-3 px-6 xl:px-8 border-b border-border/50">
                                     <h3 className="text-primary m-0 font-semibold text-sm xl:text-base 2xl:text-lg">
                                         {member.full_name}
                                     </h3>
                                 </header>
 
-                                {/* Institution & Details Row */}
                                 <div className="bg-card py-4 px-6 xl:px-8 space-y-2">
                                     <div className="flex gap-3 text-muted-foreground text-xs xl:text-sm">
                                         <p className="m-0 leading-relaxed">
                                             <span className="font-medium text-foreground">{member.designation}</span> • {member.institute}
-                                            {member.nationality && member.institute.toLowerCase().indexOf(member.nationality.toLowerCase()) === -1 
-                                                ? ` • ${member.nationality}` 
+                                            {member.nationality && member.institute.toLowerCase().indexOf(member.nationality.toLowerCase()) === -1
+                                                ? ` • ${member.nationality}`
                                                 : ""
                                             }
                                         </p>
@@ -118,7 +90,6 @@ export default function EditorialBoardClient({ settings, initialMembers }: Edito
                 </section>
             ))}
 
-            {/* Support/Contact Footer */}
             <section className="pt-8 border-t border-border/50">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-8">
                     <div className="text-center sm:text-left">

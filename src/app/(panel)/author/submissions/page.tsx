@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { getAuthorDashboard, checkResubmissionEligibility } from "@/actions/author-submissions";
+import { AuthorDashboardSubmission, ActionResponse } from "@/db/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,8 +22,14 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
     published: { label: 'Published', color: 'text-emerald-700', bg: 'bg-emerald-500/15' },
 };
 
+interface Eligibility {
+    eligible: boolean;
+    daysRemaining: number;
+    reason?: string;
+}
+
 export default async function AuthorSubmissionsList() {
-    const session: any = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions);
     if (!session?.user) redirect('/login');
     if (session.user.role !== 'author') redirect(`/${session.user.role}`);
 
@@ -31,7 +38,7 @@ export default async function AuthorSubmissionsList() {
 
     // Attach eligibility data in parallel
     const withEligibility = await Promise.all(
-        submissions.map(async (sub: any) => {
+        submissions.map(async (sub: AuthorDashboardSubmission) => {
             if (['revision_requested', 'rejected'].includes(sub.status)) {
                 const el = await checkResubmissionEligibility(sub.id);
                 return { ...sub, eligibility: el };
@@ -64,11 +71,12 @@ export default async function AuthorSubmissionsList() {
                 </Card>
             ) : (
                 <div className="grid grid-cols-1 gap-4">
-                    {withEligibility.map((sub: any) => {
+                    {withEligibility.map((sub) => {
+                        const eligibility = (sub.eligibility as ActionResponse<Eligibility> | null)?.data;
                         const cfg = STATUS_CONFIG[sub.status] || { label: sub.status, color: 'text-muted-foreground', bg: 'bg-muted/30' };
-                        const eligible = sub.eligibility?.eligible;
-                        const daysLeft = sub.eligibility?.daysRemaining;
-                        const isUrgent = eligible && daysLeft <= 5;
+                        const eligible = eligibility?.eligible;
+                        const daysLeft = eligibility?.daysRemaining;
+                        const isUrgent = !!(eligible && daysLeft !== undefined && daysLeft <= 5);
 
                         return (
                             <Card key={sub.id} className={`border-border/50 bg-background hover:shadow-md transition-all group ${isUrgent ? 'ring-1 ring-orange-400/40' : ''}`}>
@@ -76,14 +84,14 @@ export default async function AuthorSubmissionsList() {
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
                                         <div className="flex-1 min-w-0 space-y-2">
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <Badge variant="outline" className="text-[9px] font-mono">{sub.paper_id}</Badge>
+                                                <Badge variant="outline" className="text-[9px] font-mono">{sub.paperId}</Badge>
                                                 <Badge className={`text-[9px] font-bold border-none uppercase ${cfg.bg} ${cfg.color}`}>{cfg.label}</Badge>
                                             </div>
                                             <h3 className="font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
                                                 {sub.title}
                                             </h3>
                                             <div className="flex flex-wrap gap-4 text-[10px] text-muted-foreground">
-                                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{new Date(sub.submitted_at).toLocaleDateString()}</span>
+                                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString() : 'N/A'}</span>
                                                 {daysLeft !== undefined && daysLeft !== null && (
                                                     <span className={`flex items-center gap-1 font-bold ${isUrgent ? 'text-orange-600' : 'text-amber-600'}`}>
                                                         <Timer className="w-3 h-3" />
@@ -97,7 +105,7 @@ export default async function AuthorSubmissionsList() {
                                             <Button asChild variant="outline" size="sm" className="h-8 text-[10px] font-bold uppercase rounded-lg">
                                                 <Link href={`/author/submissions/${sub.id}`} className="flex items-center gap-1.5">Details <ExternalLink className="w-3 h-3" /></Link>
                                             </Button>
-                                            {eligible && daysLeft > 0 && (
+                                            {eligible && daysLeft !== undefined && daysLeft > 0 && (
                                                 <Button asChild size="sm" className="h-8 text-[10px] bg-orange-500 hover:bg-orange-600 text-white font-bold uppercase rounded-lg">
                                                     <Link href={`/author/submissions/${sub.id}/resubmit`} className="flex items-center gap-1.5">
                                                         <Upload className="w-3 h-3" /> Resubmit

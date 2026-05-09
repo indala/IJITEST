@@ -4,12 +4,8 @@ import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import {
-    Building2,
     Globe,
-    CheckCircle2,
-    XCircle,
     Clock,
-    ExternalLink,
     Camera,
     FileText,
     Search,
@@ -20,7 +16,7 @@ import {
     Check,
     Minus
 } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -60,24 +56,35 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
     const photoInputRef = useRef<HTMLInputElement>(null)
     const imageRef = useRef<HTMLImageElement>(null)
 
-    // Refs for scrolling
-    const sectionRefs = {
-        'name': useRef<HTMLDivElement>(null),
-        'designation': useRef<HTMLDivElement>(null),
-        'institute': useRef<HTMLDivElement>(null),
-        'phone': useRef<HTMLDivElement>(null),
-        'nationality': useRef<HTMLDivElement>(null),
-        'bio': useRef<HTMLDivElement>(null),
-        'orcid_id': useRef<HTMLDivElement>(null),
-        'photo': useRef<HTMLDivElement>(null),
-        'affiliation': useRef<HTMLDivElement>(null),
-        'interests': useRef<HTMLDivElement>(null),
-        'history': useRef<HTMLDivElement>(null)
+    const nameRef = useRef<HTMLDivElement>(null)
+    const designationRef = useRef<HTMLDivElement>(null)
+    const instituteRef = useRef<HTMLDivElement>(null)
+    const phoneRef = useRef<HTMLDivElement>(null)
+    const nationalityRef = useRef<HTMLDivElement>(null)
+    const bioRef = useRef<HTMLDivElement>(null)
+    const orcidRef = useRef<HTMLDivElement>(null)
+    const photoRef = useRef<HTMLDivElement>(null)
+    const affiliationRef = useRef<HTMLDivElement>(null)
+    const interestsRef = useRef<HTMLDivElement>(null)
+    const historyRef = useRef<HTMLDivElement>(null)
+
+    const sectionRefs: Record<string, React.RefObject<HTMLDivElement | null>> = {
+        'name': nameRef,
+        'designation': designationRef,
+        'institute': instituteRef,
+        'phone': phoneRef,
+        'nationality': nationalityRef,
+        'bio': bioRef,
+        'orcid_id': orcidRef,
+        'photo': photoRef,
+        'affiliation': affiliationRef,
+        'interests': interestsRef,
+        'history': historyRef
     }
 
     const scrollToSection = (field: string) => {
         const refName = field.toLowerCase().replace(/\s+/g, '_')
-        const ref = (sectionRefs as any)[refName]
+        const ref = (sectionRefs as Record<string, React.RefObject<HTMLDivElement | null>>)[refName]
         if (ref?.current) {
             ref.current.scrollIntoView({ behavior: "smooth", block: "center" })
         }
@@ -184,7 +191,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
             setData(prev => ({ ...prev, research_interests: res.data || [] }))
             setIsEditingInterests(false)
             toast.success("Interests updated")
-        } catch (error) {
+        } catch {
             toast.error("Failed to update interests")
         }
     }
@@ -194,7 +201,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
             <Card className="rounded-2xl border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden bg-white dark:bg-slate-900/40 backdrop-blur-md">
                 <div className="bg-slate-50/50 dark:bg-slate-800/30 p-8 border-b border-slate-100 dark:border-slate-800">
                     <div className="flex flex-col md:flex-row items-center gap-8">
-                        <div className="relative group/avatar" ref={sectionRefs['photo']}>
+                        <div className="relative group/avatar" ref={photoRef}>
                             <div className="w-40 h-40 rounded-2xl bg-slate-100 dark:bg-slate-800 overflow-hidden relative border-4 border-white dark:border-slate-700 shadow-xl">
                                 {data.photo_url ? (
                                     <Image
@@ -379,7 +386,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-                                <div ref={sectionRefs['name']}>
+                                <div ref={nameRef}>
                                     <InlineEditField
                                         label="Full Name"
                                         value={data.name}
@@ -387,7 +394,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                         placeholder="Full Name"
                                     />
                                 </div>
-                                <div ref={sectionRefs['designation']}>
+                                <div ref={designationRef}>
                                     <InlineEditField
                                         label="Professional Designation"
                                         value={data.designation}
@@ -395,7 +402,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                         placeholder="e.g. Professor"
                                     />
                                 </div>
-                                <div ref={sectionRefs['institute']}>
+                                <div ref={instituteRef}>
                                     <InlineEditField
                                         label="Academic Institute"
                                         value={data.institute}
@@ -411,7 +418,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                         <p className="text-sm font-semibold truncate text-slate-600 dark:text-slate-400">{data.email}</p>
                                     </div>
                                 </div>
-                                <div ref={sectionRefs['phone']}>
+                                <div ref={phoneRef}>
                                     <InlineEditField
                                         label="Direct Contact (Phone)"
                                         value={data.phone}
@@ -419,7 +426,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                         placeholder="+91 00000 00000"
                                     />
                                 </div>
-                                <div ref={sectionRefs['nationality']}>
+                                <div ref={nationalityRef}>
                                     <InlineEditField
                                         label="Nationality / Region"
                                         value={data.nationality}
@@ -427,7 +434,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                         placeholder="India"
                                     />
                                 </div>
-                                <div ref={sectionRefs['orcid_id']} className="md:col-span-2">
+                                <div ref={orcidRef} className="md:col-span-2">
                                     <InlineEditField
                                         label="ORCID Digital Identity"
                                         value={data.orcid_id || ""}
@@ -439,7 +446,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                         </div>
 
                         {/* 2. Biography */}
-                        <div className="p-8 space-y-6 bg-slate-50/30 dark:bg-transparent" ref={sectionRefs['bio']}>
+                        <div className="p-8 space-y-6 bg-slate-50/30 dark:bg-transparent" ref={bioRef}>
                             <div className="flex items-center gap-2 mb-2">
                                 <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-[10px]">Section 02</Badge>
                                 <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">Researcher Biography</h3>
@@ -455,7 +462,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
 
                         {/* 3. Expertise */}
                         {(role === 'reviewer' || role === 'editor') && (
-                            <div className="p-8 space-y-6" ref={sectionRefs['interests']}>
+                            <div className="p-8 space-y-6" ref={interestsRef}>
                                 <div className="flex items-center justify-between gap-2 mb-2">
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-[10px]">Section 03</Badge>
@@ -542,7 +549,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
 
                         {/* 4. Activity History */}
                         {role !== 'admin' && role !== 'editor' && (
-                            <div className="p-8 space-y-6" ref={sectionRefs['history']}>
+                            <div className="p-8 space-y-6" ref={historyRef}>
                                 <div className="flex items-center justify-between gap-2 mb-2">
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-[10px]">Section 04</Badge>

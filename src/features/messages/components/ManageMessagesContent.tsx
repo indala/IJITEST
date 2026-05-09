@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback, useEffect } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { InboxFilters } from "./InboxFilters"
 import { MessageList } from "./MessageList"
@@ -8,6 +8,7 @@ import { MessageDetail } from "./MessageDetail"
 import { useMessages } from "@/hooks/queries/useMessages"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
+import { ContactMessageRow } from "@/actions/messages"
 
 export function ManageMessagesContent() {
     const searchParams = useSearchParams()
@@ -15,34 +16,36 @@ export function ManageMessagesContent() {
     const pathname = usePathname()
 
     const activeStatus = searchParams.get('status') || 'all'
-    const queryStatus = activeStatus === 'all' ? undefined : (activeStatus as 'pending' | 'resolved' | 'archived')
     const search = searchParams.get('search') || ""
 
     const { data: messages = [], isLoading } = useMessages({ search })
 
-    const [selectedMessage, setSelectedMessage] = useState<any>(null)
+    const [selectedMessage, setSelectedMessage] = useState<ContactMessageRow | null>(null)
 
-    // Sync selected message with latest data from list
-    useEffect(() => {
-        if (selectedMessage) {
-            const updated = messages.find(m => m.id === selectedMessage.id)
-            if (updated) setSelectedMessage(updated)
-        }
-    }, [messages, selectedMessage?.id])
-
-    const messagesData = messages || []
+    // Keep selectedMessage in sync with latest data without a setState-in-effect.
+    // Derive the live version directly from the messages array.
+    const liveSelectedMessage = useMemo(() => {
+        if (!selectedMessage) return null;
+        const live = messages.find(m => m.id === selectedMessage.id) ?? selectedMessage;
+        
+        // Convert to UI Message type (handling Date to string)
+        return {
+            ...live,
+            createdAt: live.createdAt ? live.createdAt.toISOString() : new Date().toISOString()
+        };
+    }, [messages, selectedMessage])
 
     const counts = useMemo(() => ({
-        all: messagesData.length,
-        pending: messagesData.filter(m => m.status === 'pending').length,
-        resolved: messagesData.filter(m => m.status === 'resolved').length,
-        archived: messagesData.filter(m => m.status === 'archived').length
-    }), [messagesData])
+        all: messages.length,
+        pending: messages.filter(m => m.status === 'pending').length,
+        resolved: messages.filter(m => m.status === 'resolved').length,
+        archived: messages.filter(m => m.status === 'archived').length
+    }), [messages])
 
     const filteredMessages = useMemo(() => {
-        if (activeStatus === 'all') return messagesData
-        return messagesData.filter(m => m.status === activeStatus)
-    }, [messagesData, activeStatus])
+        if (activeStatus === 'all') return messages
+        return messages.filter(m => m.status === activeStatus)
+    }, [messages, activeStatus])
 
     const updateFilters = useCallback((newFilters: Record<string, string>) => {
         const params = new URLSearchParams(searchParams.toString())
@@ -53,7 +56,7 @@ export function ManageMessagesContent() {
         router.push(`${pathname}?${params.toString()}`)
     }, [searchParams, pathname, router])
 
-    const handleSelectMessage = useCallback((message: any) => {
+    const handleSelectMessage = useCallback((message: ContactMessageRow) => {
         setSelectedMessage(message)
     }, [])
 
@@ -76,7 +79,7 @@ export function ManageMessagesContent() {
                     <MessageList 
                         messages={filteredMessages}
                         loading={isLoading}
-                        selectedId={selectedMessage?.id}
+                        selectedId={selectedMessage?.id ?? 0}
                         onSelect={handleSelectMessage}
                     />
                 </div>
@@ -85,12 +88,12 @@ export function ManageMessagesContent() {
             {/* Right: Message Detail Detail (Desktop/Large) */}
             <section className="hidden lg:block w-[360px] xl:w-[400px] 2xl:w-[480px] shrink-0 bg-card rounded-2xl border border-white/5 shadow-inner overflow-hidden relative">
                 <MessageDetail 
-                    message={selectedMessage}
+                    message={liveSelectedMessage}
                 />
             </section>
 
             {/* Mobile Overlay: Detail Pane (Full Screen Dialog ideally, handled here via absolute UI for simplicity) */}
-            {selectedMessage && (
+            {liveSelectedMessage && (
                 <div className="lg:hidden fixed inset-0 z-50 bg-background animate-in slide-in-from-bottom duration-500 flex flex-col">
                     <div className="absolute top-4 left-4 z-50">
                         <Button 
@@ -104,7 +107,7 @@ export function ManageMessagesContent() {
                     </div>
                     <div className="flex-1 min-h-0 pt-16">
                         <MessageDetail 
-                            message={selectedMessage}
+                            message={liveSelectedMessage}
                         />
                     </div>
                 </div>

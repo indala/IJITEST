@@ -62,7 +62,7 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
         return { success: true };
     } catch (error) {
         console.error("Create Publication Error:", error);
-        return { success: false, error: "Failed to create publication: " + ((error as any)?.message || String(error)) };
+        return { success: false, error: "Failed to create publication: " + (error instanceof Error ? error.message : String(error)) };
     }
 }
 
@@ -245,7 +245,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         return { success: true };
     } catch (error) {
         console.error("Assign Paper Error:", error);
-        return { success: false, error: "Failed to assign paper: " + ((error as any)?.message || String(error)) };
+        return { success: false, error: "Failed to assign paper: " + (error instanceof Error ? error.message : String(error)) };
     }
 }
 

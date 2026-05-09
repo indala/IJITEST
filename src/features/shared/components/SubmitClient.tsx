@@ -17,8 +17,7 @@ const REQUIREMENTS = [
     { title: "Copyright", desc: "A signed copyright transfer form is required upon acceptance." }
 ];
 
-export default function SubmitClient({ settings }: SubmitClientProps) {
-    const journalShortName = settings.journal_short_name || "IJITEST";
+export default function SubmitClient({ settings: _settings }: SubmitClientProps) {
 
     return (
         <section className="container-responsive section-padding">

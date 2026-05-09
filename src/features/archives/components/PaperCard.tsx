@@ -3,23 +3,10 @@ import { Eye } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PublishedPaperUI } from '@/db/types';
 
 interface PaperCardProps {
-    paper: {
-        id: number | string;
-        paper_id: string;
-        title: string;
-        author_name: string;
-        author_email?: string;
-        affiliation?: string;
-        keywords?: string;
-        abstract?: string;
-        file_path?: string;
-        volume_number?: number;
-        issue_number?: number;
-        publication_year?: number;
-        month_range?: string;
-    };
+    paper: PublishedPaperUI;
     basePath?: string;
 }
 

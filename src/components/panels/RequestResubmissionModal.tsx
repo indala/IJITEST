@@ -16,10 +16,9 @@ interface Props {
     submissionId: number;
     paperId: string;
     paperTitle: string;
-    requestedBy: string;
 }
 
-export function RequestResubmissionModal({ submissionId, paperId, paperTitle, requestedBy }: Props) {
+export function RequestResubmissionModal({ submissionId, paperId, paperTitle }: Props) {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [comments, setComments] = useState("");
@@ -34,7 +33,7 @@ export function RequestResubmissionModal({ submissionId, paperId, paperTitle, re
         }
         setError(null);
         setLoading(true);
-        const result = await requestResubmissionWithComments(submissionId, comments, requestedBy);
+        const result = await requestResubmissionWithComments(submissionId, comments);
         setLoading(false);
         if (result.error) {
             setError(result.error);
@@ -105,7 +104,7 @@ export function RequestResubmissionModal({ submissionId, paperId, paperTitle, re
 
                                 <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px]">
                                     <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                                    The author will have <strong>15 days</strong> to resubmit. If they don't act, their account will be auto-deactivated.
+                                    The author will have <strong>15 days</strong> to resubmit. If they don&apos;t act, their account will be auto-deactivated.
                                 </div>
                             </div>
 

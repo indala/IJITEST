@@ -167,6 +167,6 @@ export async function verifyRazorpayPayment(data: {
         return { success: true };
     } catch (error) {
         console.error("Verify Razorpay Payment Error:", error);
-        return { success: false, error: "Failed to verify payment: " + ((error as any)?.message || String(error)) };
+        return { success: false, error: "Failed to verify payment: " + (error instanceof Error ? error.message : String(error)) };
     }
 }

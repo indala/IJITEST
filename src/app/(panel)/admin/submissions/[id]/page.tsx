@@ -1,16 +1,14 @@
-import { getSubmissionById, decideSubmission } from "@/actions/submissions";
-import { waivePayment } from "@/actions/payments";
+import { getSubmissionById } from "@/actions/submissions";
 import DeleteSubmissionButton from "@/features/submissions/components/DeleteSubmissionButton";
 import AdminPdfUpload from "@/features/submissions/components/AdminPdfUpload";
 import PublicationAssignment from "@/features/submissions/components/PublicationAssignment";
-import { RequestResubmissionModal } from "@/components/panels/RequestResubmissionModal";
+import { SubmissionDecisionActions } from "./_components/SubmissionDecisionActions";
 import {
     User,
     Mail,
     FileText,
     Download,
     CheckCircle,
-    XCircle,
     Shield,
     AlertCircle,
     Globe,
@@ -27,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getSecureUrl } from "@/lib/utils";
+import { ReviewWithReviewer } from "@/db/types";
+import { ExpertiseDossier } from "@/features/shared/components/profile/ExpertiseDossier";
 
 
 
@@ -163,14 +163,14 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 gap-4">
-                                        {submission.allReviews.filter((r: any) => r.status === 'completed').length === 0 ? (
+                                        {submission.allReviews.filter((r: ReviewWithReviewer) => r.status === 'completed').length === 0 ? (
                                             <div className="p-12 2xl:p-20 text-center bg-muted/10 rounded-xl 2xl:rounded-3xl border border-dashed border-border/50 flex flex-col items-center gap-4 2xl:gap-8">
                                                 <History className="w-8 h-8 2xl:w-14 2xl:h-14 text-muted-foreground/10" />
                                                 <p className="text-[9px] sm:text-[10px] xl:text-[11px] 2xl:text-lg font-semibold text-muted-foreground  tracking-widest ">Awaiting technical evaluation from assigned reviewers</p>
                                             </div>
                                         ) : (
                                             submission.allReviews
-                                                .filter((r: any) => r.status === 'completed')
+                                                .filter((r: ReviewWithReviewer) => r.status === 'completed')
                                                 .map((r, i) => (
                                                     <Card key={r.id} className="border-border/50 shadow-none bg-muted/5 overflow-hidden 2xl:rounded-3xl">
                                                         <CardHeader className="p-4 2xl:p-8 bg-muted/20 border-b border-border/30 flex flex-row items-center justify-between">
@@ -181,7 +181,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                                             <CheckCircle className="w-4 h-4 2xl:w-7 2xl:h-7 text-emerald-500" />
                                                         </CardHeader>
                                                         <CardContent className="p-4 2xl:p-8">
-                                                            <p className="text-xs 2xl:text-lg text-muted-foreground font-medium leading-relaxed whitespace-pre-wrap">"{r.review?.commentsToAuthor}"</p>
+                                                            <p className="text-xs 2xl:text-lg text-muted-foreground font-medium leading-relaxed whitespace-pre-wrap">&quot;{r.review?.commentsToAuthor}&quot;</p>
                                                         </CardContent>
                                                     </Card>
                                                 ))
@@ -225,7 +225,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                             {(() => {
                                                 try {
                                                     const coAuthors = JSON.parse(submission.co_authors);
-                                                    return coAuthors.map((author: any, idx: number) => (
+                                                    return coAuthors.map((author: { name: string, institution: string }, idx: number) => (
                                                         <div key={idx} className="p-3 bg-white border border-border/50 rounded-xl space-y-1 shadow-sm">
                                                             <div className="flex items-center justify-between">
                                                                 <p className="font-semibold text-[10px] 2xl:text-lg text-foreground tracking-wider">{author.name}</p>
@@ -234,7 +234,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                                             <p className="text-[9px] 2xl:text-base font-medium text-muted-foreground truncate">{author.institution}</p>
                                                         </div>
                                                     ));
-                                                } catch (e) {
+                                                } catch {
                                                     return <p className="text-[9px] font-semibold text-rose-500 uppercase tracking-widest">Metadata Corrupted</p>;
                                                 }
                                             })()}
@@ -257,7 +257,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                         <CardContent className="p-6 space-y-6">
                                             <AdminPdfUpload submissionId={submission.id} currentUrl={getSecureUrl(submission.pdf_url)} />
 
-                                            <Separator className="bg-primary/5" />
+                                            <ExpertiseDossier bio={submission.correspondingAuthor?.profile?.bio || "No biography provided."} />
 
                                             {submission.pdf_url ? (
                                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/3 border border-emerald-500/10 transition-all">
@@ -310,27 +310,11 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                                 <p className="text-[10px] 2xl:text-lg font-medium text-primary/70 ">Final authorization required</p>
                                             </div>
                                             <div className="grid grid-cols-1 gap-2 2xl:gap-4">
-                                                 <form action={async () => {
-                                                    'use server';
-                                                    await decideSubmission(submission.id, 'accepted');
-                                                }}>
-                                                    <Button className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl shadow-xl shadow-emerald-600/20 cursor-pointer">
-                                                        <CheckCircle className="w-4 h-4 2xl:w-6 2xl:h-6" /> Authorize Acceptance
-                                                    </Button>
-                                                </form>
-                                                <form action={async () => {
-                                                    'use server';
-                                                    await decideSubmission(submission.id, 'rejected');
-                                                }}>
-                                                    <Button variant="outline" className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 border-red-500/20 text-red-600 font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl cursor-pointer">
-                                                        <XCircle className="w-4 h-4 2xl:w-6 2xl:h-6" /> Final Rejection
-                                                    </Button>
-                                                </form>
-                                                <RequestResubmissionModal
+                                                <SubmissionDecisionActions
                                                     submissionId={submission.id}
                                                     paperId={submission.paper_id}
                                                     paperTitle={submission.title}
-                                                    requestedBy="admin"
+                                                    status={submission.status}
                                                 />
                                             </div>
                                         </div>
@@ -346,14 +330,12 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                                     <p className="text-[10px] font-semibold  text-emerald-600 tracking-widest">Authorized</p>
                                                     <p className="text-[10px] font-medium text-muted-foreground  tracking-widest ">Awaiting author remittance...</p>
                                                 </div>
-                                                <form action={async () => {
-                                                    'use server';
-                                                    await waivePayment(submission.id);
-                                                }}>
-                                                    <Button variant="outline" className="w-full h-9 gap-2 border-emerald-500/30 text-emerald-600 font-semibold text-[9px]  tracking-widest rounded-lg hover:bg-emerald-500 cursor-pointer">
-                                                        Waive Transaction Fee
-                                                    </Button>
-                                                </form>
+                                                <SubmissionDecisionActions
+                                                    submissionId={submission.id}
+                                                    paperId={submission.paper_id}
+                                                    paperTitle={submission.title}
+                                                    status={submission.status}
+                                                />
                                             </div>
                                         </div>
                                     )}
@@ -407,7 +389,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
 
                                                 <PublicationAssignment
                                                     submissionId={submission.id}
-                                                    currentIssueId={submission.issue_id}
+                                                    currentIssueId={submission.issue_id ?? null}
                                                 />
 
                                                 <Link

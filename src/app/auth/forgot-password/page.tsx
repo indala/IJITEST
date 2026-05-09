@@ -54,7 +54,9 @@ export default function ForgotPassword() {
                                     <MailCheck className="w-10 h-10 text-emerald-500" />
                                 </div>
                                 <h3 className=" font-serif font-black text-gray-900 mb-3">Check Your Email</h3>
-                                <p className="text-slate-600 font-medium mb-8">We've sent a secure password reset link to your email address if it's registered with us.</p>
+                                <p className="text-slate-600 font-medium mb-8">
+                                    We&apos;ve sent a secure password reset link to your email address if it&apos;s registered with us.
+                                </p>
                                 <Link
                                     href="/login"
                                     className="bg-primary text-white block py-4 rounded-2xl font-black shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"

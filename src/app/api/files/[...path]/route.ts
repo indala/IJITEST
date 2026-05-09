@@ -60,8 +60,7 @@ export async function GET(
             if (isAuthorized) return serveFile(relativePath);
         }
 
-    } catch (error) {
-        console.error("Auth check error:", error);
+    } catch { /* ignore */
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 
@@ -90,8 +89,7 @@ async function serveFile(relativePath: string) {
                 'Content-Disposition': `inline; filename="${path.basename(absolutePath)}"`,
             },
         });
-    } catch (error) {
-        // Fallback to legacy public path for migration period
+    } catch { // Fallback to legacy public path for migration period
         const legacyPath = path.join(process.cwd(), 'public', 'uploads', relativePath);
         try {
             await fs.access(legacyPath);
@@ -102,7 +100,7 @@ async function serveFile(relativePath: string) {
                     'Content-Disposition': `inline; filename="${path.basename(legacyPath)}"`,
                 },
             });
-        } catch (e) {
+        } catch {
             return new NextResponse("File Not Found", { status: 404 });
         }
     }
@@ -143,7 +141,9 @@ async function checkSubmissionAccess(userId: string, role: string, fileUrl: stri
         files.push(...fallbackFiles);
     }
 
-    const { submissionId, authorId } = files[0];
+    const fileData = files[0];
+    if (!fileData) return false;
+    const { submissionId, authorId } = fileData;
 
     if (role === 'author') {
         return authorId === userId;

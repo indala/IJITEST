@@ -1,7 +1,6 @@
 import {
     Home,
     Info,
-    BookOpen,
     Layout,
     Archive,
     Mail,

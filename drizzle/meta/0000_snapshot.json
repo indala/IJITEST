@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "fa1428f8-9ac7-490d-a5cf-0d4663ba7d53",
+  "id": "23d1554d-a4ce-4a3b-97f5-ec91f9898592",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "activity_logs": {
@@ -23,7 +23,7 @@
         },
         "entity_id": {
           "name": "entity_id",
-          "type": "int",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -85,6 +85,71 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "application_interests": {
+      "name": "application_interests",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "application_id": {
+          "name": "application_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "interest_id": {
+          "name": "interest_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "application_interests_application_id_applications_id_fk": {
+          "name": "application_interests_application_id_applications_id_fk",
+          "tableFrom": "application_interests",
+          "tableTo": "applications",
+          "columnsFrom": [
+            "application_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "application_interests_interest_id_master_interests_id_fk": {
+          "name": "application_interests_interest_id_master_interests_id_fk",
+          "tableFrom": "application_interests",
+          "tableTo": "master_interests",
+          "columnsFrom": [
+            "interest_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "application_interests_id": {
+          "name": "application_interests_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
     "applications": {
       "name": "applications",
       "columns": {
@@ -130,6 +195,20 @@
           "notNull": true,
           "autoincrement": false
         },
+        "cv_url": {
+          "name": "cv_url",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "photo_url": {
+          "name": "photo_url",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "status": {
           "name": "status",
           "type": "enum('pending','approved','rejected')",
@@ -137,6 +216,13 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'pending'"
+        },
+        "nationality": {
+          "name": "nationality",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "reviewed_by": {
           "name": "reviewed_by",
@@ -264,6 +350,52 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "master_interests": {
+      "name": "master_interests",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "master_interests_id": {
+          "name": "master_interests_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "master_interests_name_unique": {
+          "name": "master_interests_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
     "notifications": {
       "name": "notifications",
       "columns": {
@@ -389,7 +521,7 @@
         },
         "status": {
           "name": "status",
-          "type": "enum('pending','paid','verified','failed')",
+          "type": "enum('pending','paid','verified','failed','waived')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
@@ -524,6 +656,30 @@
           "notNull": false,
           "autoincrement": false,
           "default": "(now())"
+        },
+        "views": {
+          "name": "views",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "downloads": {
+          "name": "downloads",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "citations": {
+          "name": "citations",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         }
       },
       "indexes": {},
@@ -905,8 +1061,22 @@
           "notNull": true,
           "autoincrement": false
         },
-        "affiliation": {
-          "name": "affiliation",
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "designation": {
+          "name": "designation",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "institution": {
+          "name": "institution",
           "type": "varchar(500)",
           "primaryKey": false,
           "notNull": false,
@@ -1058,7 +1228,7 @@
         },
         "file_type": {
           "name": "file_type",
-          "type": "enum('main_manuscript','pdf_version','supplementary','feedback','payment_proof')",
+          "type": "enum('main_manuscript','pdf_version','copyright_form','supplementary','feedback','payment_proof')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1424,7 +1594,7 @@
         },
         "role": {
           "name": "role",
-          "type": "enum('editor','reviewer')",
+          "type": "enum('editor','reviewer','author')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1673,6 +1843,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "has_seen_promotion": {
+          "name": "has_seen_promotion",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",

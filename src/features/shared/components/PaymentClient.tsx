@@ -19,12 +19,10 @@ export default function PaymentClient({ id, settings }: PaymentClientProps) {
     const apcTotal = parseFloat(settings?.apc_inr || '2500');
     const apcFee = Math.floor(apcTotal * 0.85);
     const apcIndexing = apcTotal - apcFee;
-    const journalShortName = settings.journal_short_name || "IJITEST";
 
     const { data: queryData, isLoading: loading, error: queryError } = useTrackManuscript(id, "", true);
     const manuscript = queryData?.success && queryData.data?.manuscript ? queryData.data.manuscript : null;
-    const [processing, setProcessing] = useState(false);
-    const [paid, setPaid] = useState(false);
+    const [paid] = useState(false);
 
     const error = queryError ? "Failed to fetch manuscript details." : (queryData && !queryData.success ? queryData.error : (!manuscript && !loading ? "Manuscript not found or invalid link." : ""));
 
@@ -79,6 +77,8 @@ export default function PaymentClient({ id, settings }: PaymentClientProps) {
             </div>
         </div>
     );
+
+    if (!manuscript) return null;
 
     return (
         <div className="min-h-screen bg-background">

@@ -36,7 +36,7 @@ function FileInput({
     name: string;
     label: string;
     accept: string;
-    icon: any;
+    icon: React.ElementType;
     onChange: (file: File | null) => void;
     value: File | null;
 }) {
@@ -119,15 +119,20 @@ export default function ReviewerApplicationForm() {
 
     // Step 1: Academic Identity Email Check
     useEffect(() => {
-        if (!formData.email || formData.email.length < 5 || !formData.email.includes('@')) {
-            setEmailStatus({ loading: false, exists: null });
-            return;
+        const email = formData.email;
+        if (!email || email.length < 5 || !email.includes('@')) {
+            const id = setTimeout(() => setEmailStatus({ loading: false, exists: null }), 0);
+            return () => clearTimeout(id);
         }
 
         const timeoutId = setTimeout(async () => {
             setEmailStatus({ loading: true, exists: null });
-            const result = await checkUserEmail(formData.email);
-            setEmailStatus({ loading: false, exists: !!result.exists });
+            try {
+                const result = await checkUserEmail(email);
+                setEmailStatus({ loading: false, exists: !!result.exists });
+            } catch {
+                setEmailStatus({ loading: false, exists: null });
+            }
         }, 500);
 
         return () => clearTimeout(timeoutId);
@@ -255,9 +260,9 @@ export default function ReviewerApplicationForm() {
             <div className="bg-[#000066] p-6 text-white relative">
                 <div className="flex flex-col items-center">
                     <h2 className="text-lg font-semibold text-white mb-6">Reviewer Application</h2>
-                    
+
                     <div className="w-full max-w-xs flex items-center justify-between relative px-2">
-                        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/10 -translate-y-1/2 z-0" />
+                        <div className="absolute top-1/2 left-0 w-full h-px bg-white/10 -translate-y-1/2 z-0" />
                         {[1, 2, 3].map((s) => (
                             <div key={s} className="relative z-10 flex flex-col items-center gap-1.5">
                                 <div className={`
@@ -299,7 +304,7 @@ export default function ReviewerApplicationForm() {
 
                                     <div className="grid grid-cols-1 gap-5">
                                         <div className="space-y-2">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1 font-bold">Full Name <span className="text-destructive">*</span></Label>
+                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Full Name <span className="text-destructive">*</span></Label>
                                             <Input
                                                 value={formData.fullName}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
@@ -310,7 +315,7 @@ export default function ReviewerApplicationForm() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1 font-bold">Designation <span className="text-destructive">*</span></Label>
+                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Designation <span className="text-destructive">*</span></Label>
                                             <Input
                                                 value={formData.designation}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
@@ -322,7 +327,7 @@ export default function ReviewerApplicationForm() {
 
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between px-1">
-                                                <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider font-bold">Email Address <span className="text-destructive">*</span></Label>
+                                                <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Email Address <span className="text-destructive">*</span></Label>
                                                 {emailStatus.loading && <Loader2 className="w-3 h-3 animate-spin text-[#000066]" />}
                                             </div>
                                             <div className="relative">
@@ -347,7 +352,7 @@ export default function ReviewerApplicationForm() {
                             {step === 2 && (
                                 <div className="space-y-6">
                                     <header className="space-y-1">
-                                         <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2">
                                             <Badge className="bg-[#000066]/5 text-[#000066] border-[#000066]/10 text-[10px] font-bold uppercase py-0 px-2 rounded-md">Phase 02</Badge>
                                             <h3 className="text-base font-semibold text-gray-900">Academic Context</h3>
                                         </div>
@@ -355,7 +360,7 @@ export default function ReviewerApplicationForm() {
 
                                     <div className="grid grid-cols-1 gap-5">
                                         <div className="space-y-2">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1 font-bold">Institution <span className="text-destructive">*</span></Label>
+                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Institution <span className="text-destructive">*</span></Label>
                                             <div className="relative group">
                                                 <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30 group-focus-within:text-[#000066] transition-colors" />
                                                 <Input
@@ -369,7 +374,7 @@ export default function ReviewerApplicationForm() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1 font-bold">Nationality <span className="text-destructive">*</span></Label>
+                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Nationality <span className="text-destructive">*</span></Label>
                                             <Select value={formData.nationality} onValueChange={(val) => setFormData(prev => ({ ...prev, nationality: val }))}>
                                                 <SelectTrigger className="h-11 bg-muted/20 border-border/50 rounded-lg text-foreground px-4 text-xs xl:text-sm">
                                                     <SelectValue />
@@ -378,12 +383,12 @@ export default function ReviewerApplicationForm() {
                                                     {countries.map(c => (
                                                         <SelectItem key={c.code} value={c.name} className="py-2.5 rounded-lg text-xs">
                                                             <div className="flex items-center gap-3">
-                                                                <Image 
-                                                                    src={getFlagUrl(c.name)} 
-                                                                    alt={`${c.name} flag`} 
-                                                                    width={18} 
-                                                                    height={12} 
-                                                                    className="object-cover rounded shadow-sm shrink-0" 
+                                                                <Image
+                                                                    src={getFlagUrl(c.name)}
+                                                                    alt={`${c.name} flag`}
+                                                                    width={18}
+                                                                    height={12}
+                                                                    className="object-cover rounded shadow-sm shrink-0"
                                                                 />
                                                                 <span className="text-foreground">{c.name}</span>
                                                             </div>
@@ -394,8 +399,8 @@ export default function ReviewerApplicationForm() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1 font-bold">Research Interests <span className="text-destructive">*</span></Label>
-                                            
+                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Research Interests <span className="text-destructive">*</span></Label>
+
                                             <div className="flex flex-wrap gap-1.5 mb-3">
                                                 {PREDEFINED_INTERESTS.map(tag => (
                                                     <Badge
@@ -404,8 +409,8 @@ export default function ReviewerApplicationForm() {
                                                         variant="outline"
                                                         className={`
                                                             cursor-pointer py-1.5 px-3 rounded-lg transition-all text-[10px] font-bold uppercase tracking-tight
-                                                            ${formData.researchInterests.includes(tag) 
-                                                                ? 'bg-[#000066] text-white border-[#000066] shadow-sm' 
+                                                            ${formData.researchInterests.includes(tag)
+                                                                ? 'bg-[#000066] text-white border-[#000066] shadow-sm'
                                                                 : 'bg-muted/30 text-muted-foreground border-border/50 hover:border-[#000066]/30 hover:text-[#000066]'}
                                                         `}
                                                     >
@@ -423,7 +428,7 @@ export default function ReviewerApplicationForm() {
                                                     placeholder="Other interests..."
                                                     className="h-11 bg-muted/20 border-border/50 pl-11 pr-28 rounded-lg text-foreground text-xs xl:text-sm"
                                                 />
-                                                <Button 
+                                                <Button
                                                     type="button"
                                                     onClick={() => addCustomInterest()}
                                                     className="absolute right-1 top-1/2 -translate-y-1/2 h-8 bg-[#000066] text-white px-4 rounded-md text-[10px] font-bold uppercase"
@@ -447,7 +452,7 @@ export default function ReviewerApplicationForm() {
                             {step === 3 && (
                                 <div className="space-y-6">
                                     <header className="space-y-1">
-                                         <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2">
                                             <Badge className="bg-[#000066]/5 text-[#000066] border-[#000066]/10 text-[10px] font-bold uppercase py-0 px-2 rounded-md">Phase 03</Badge>
                                             <h3 className="text-base font-semibold text-gray-900">Documents</h3>
                                         </div>
@@ -496,9 +501,9 @@ export default function ReviewerApplicationForm() {
                 {/* Footer Actions */}
                 <div className="mt-8 flex items-center justify-between gap-4 border-t border-border/50 pt-6">
                     {step > 1 ? (
-                        <Button 
+                        <Button
                             onClick={handleBack}
-                            variant="ghost" 
+                            variant="ghost"
                             className="h-10 px-6 rounded-lg text-muted-foreground/60 hover:text-[#000066] font-bold text-[10px] uppercase tracking-wider transition-all"
                         >
                             <ChevronLeft className="w-4 h-4 mr-2" /> Back
@@ -508,14 +513,14 @@ export default function ReviewerApplicationForm() {
                     )}
 
                     {step < 3 ? (
-                        <Button 
+                        <Button
                             onClick={handleNext}
                             className="h-10 px-8 bg-[#000066] text-white rounded-lg shadow-sm hover:bg-[#000088] font-bold text-[10px] uppercase tracking-wider transition-all"
                         >
                             Continue <ChevronRight className="w-3.5 h-3.5 ml-1" />
                         </Button>
                     ) : (
-                        <Button 
+                        <Button
                             onClick={handleSubmit}
                             disabled={reviewerMutation.isPending}
                             className="h-10 px-8 bg-[#000066] text-white rounded-lg shadow-md hover:bg-[#000088] font-bold text-[10px] uppercase tracking-wider transition-all"

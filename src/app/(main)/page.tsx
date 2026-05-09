@@ -84,12 +84,12 @@ export default async function Home() {
           }
         >
           <WelcomeSection
-            journalName={settings.journal_name}
-            journalShortName={settings.journal_short_name}
+            journalName={settings.journal_name || ""}
+            journalShortName={settings.journal_short_name || ""}
             settings={settings}
           />
           <HomeStats />
-          <AimAndScope journalShortName={settings.journal_short_name} />
+          <AimAndScope journalShortName={settings.journal_short_name || ""} />
         </SidebarLayout>
       </Section>
 

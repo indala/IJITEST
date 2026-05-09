@@ -1,9 +1,8 @@
 import { MetadataRoute } from 'next';
 import { getPublishedPapers, getLatestIssuePapers } from '@/actions/archives';
-import { getSettingsData } from '@/actions/settings';
+import { PublishedPaperUI } from '@/db/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const settings = await getSettingsData();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
 
   // 1. Static Routes
@@ -40,7 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const latestPapers = latestRes.success ? latestRes.data ?? [] : [];
     const latestPaperIds = new Set(latestPapers.map(p => p.id));
 
-    const dynamicRoutes = papers.map((paper: any) => {
+    const dynamicRoutes = papers.map((paper: PublishedPaperUI) => {
       const isCurrent = latestPaperIds.has(paper.id);
       const basePath = isCurrent ? 'current-issue' : 'archives';
       const volume = `volume${paper.volume_number || 0}`;

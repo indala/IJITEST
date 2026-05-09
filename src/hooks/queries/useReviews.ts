@@ -4,8 +4,8 @@ import { getActiveReviews, getUnassignedAcceptedPapers, assignReviewer, submitRe
 export interface ReviewAssignment {
     id: number;
     status: 'assigned' | 'completed' | 'withdrawn';
-    assignedAt: string;
-    deadline: string;
+    assignedAt: string | Date | null;
+    deadline: string | Date;
     reviewRound: number;
     submissionId: number;
     paperId: string;

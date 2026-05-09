@@ -29,7 +29,7 @@ export default function ReviewerGuidelinesClient({ settings }: ReviewerGuideline
                 <div className="lg:col-span-2 space-y-20">
                     <section className="space-y-4">
                         <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-serif font-semibold text-primary leading-tight">
-                            "Peer reviewers are fundamental to scientific discourse, ensuring the rigorous validation and ethical integrity of published research."
+                            &quot;Peer reviewers are fundamental to scientific discourse, ensuring the rigorous validation and ethical integrity of published research.&quot;
                         </h2>
                     </section>
 
@@ -60,7 +60,7 @@ export default function ReviewerGuidelinesClient({ settings }: ReviewerGuideline
                             <div className="space-y-2">
                                 <h3 className="text-sm font-semibold text-primary">Confidentiality Protocol</h3>
                                 <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-primary/20 pl-6">
-                                    "Reviewers must treat all manuscript assets as privileged intellectual property. Unauthorized dissemination or use of unpublished data is strictly prohibited."
+                                    &quot;Reviewers must treat all manuscript assets as privileged intellectual property. Unauthorized dissemination or use of unpublished data is strictly prohibited.&quot;
                                 </p>
                             </div>
                         </div>

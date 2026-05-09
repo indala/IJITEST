@@ -11,7 +11,7 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 
 export default async function ResubmitPage({ params }: { params: Promise<{ id: string }> }) {
-    const session: any = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions);
     if (!session?.user) redirect('/login');
     if (session.user.role !== 'author') redirect(`/${session.user.role}`);
 

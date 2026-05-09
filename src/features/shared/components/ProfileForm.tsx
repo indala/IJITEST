@@ -38,9 +38,9 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                 setStatus({ success: true });
                 setTimeout(() => setStatus(null), 5000);
             } else {
-                setStatus({ error: result.error });
+                setStatus({ error: result.error || "Update failed" });
             }
-        } catch (error) {
+        } catch {
             setStatus({ error: "An unexpected error occurred." });
         } finally {
             setIsSubmitting(false);
@@ -70,7 +70,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                     fullName={user.full_name}
                     email={user.email}
                     role={user.role}
-                    photoUrl={user.photo_url}
+                    photoUrl={user.photo_url || ""}
                     previewUrl={previewUrl}
                     onPhotoClick={handlePhotoClick}
                 />
@@ -92,14 +92,14 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                 {/* 2. Professional Details & Institution */}
                 <ProfileInfoCards
                     fullName={user.full_name}
-                    designation={user.designation}
-                    institute={user.institute}
-                    phone={user.phone}
-                    nationality={user.nationality}
+                    designation={user.designation || ""}
+                    institute={user.institute || ""}
+                    phone={user.phone || ""}
+                    nationality={user.nationality || ""}
                 />
 
                 {/* 3. Expertise Dossier */}
-                <ExpertiseDossier bio={user.bio} />
+                <ExpertiseDossier bio={user.bio || ""} />
 
                 {/* 4. Feedback & Actions */}
                 <ProfileFormActions

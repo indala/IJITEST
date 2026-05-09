@@ -78,7 +78,7 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
         .where(eq(users.id, userId))
         .limit(1);
 
-        if (userWithProfile.length === 0) return { success: false, error: "User not found" };
+        if (userWithProfile.length === 0 || !userWithProfile[0]) return { success: false, error: "User not found" };
         const userData = userWithProfile[0];
 
         const profileData: Partial<ProfileData> = { 
@@ -108,13 +108,14 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
             .where(eq(applications.email, userData.email))
             .limit(1);
 
-            if (appRows.length > 0) {
+            const appData = appRows[0];
+            if (appData) {
                 profileData.application = {
-                    institute: appRows[0].institute,
-                    country: appRows[0].country || "",
-                    status: appRows[0].status,
-                    rejection_reason: appRows[0].rejection_reason,
-                    reviewed_at: appRows[0].reviewed_at ? appRows[0].reviewed_at.toISOString() : null
+                    institute: appData.institute,
+                    country: appData.country || "",
+                    status: appData.status,
+                    rejection_reason: appData.rejection_reason,
+                    reviewed_at: appData.reviewed_at ? appData.reviewed_at.toISOString() : null
                 };
                 
                 // Fetch interests from join table
@@ -268,7 +269,7 @@ export async function updateResearchInterests(userId: string, interests: string[
                         interestId = existing[0].id;
                     } else {
                         const [inserted] = await tx.insert(masterInterests).values({ name });
-                        interestId = (inserted as any).insertId;
+                        interestId = inserted.insertId;
                     }
 
                     await tx.insert(applicationInterests).values({

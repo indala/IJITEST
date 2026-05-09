@@ -5,19 +5,19 @@ import {
     BookOpen,
     Hash,
     ArrowLeft,
-    FileText,
-    Eye
+    FileText
 } from "lucide-react";
 import Link from "next/link";
+import { PublishedPaperUI } from "@/db/types";
 import CitationSection from "./CitationSection";
 
 interface PaperDetailClientProps {
-    paper: any;
-    id: string;
+    paper: PublishedPaperUI;
+    id?: string;
     mode?: 'current' | 'archive';
 }
 
-export default function PaperDetailClient({ paper, id, mode = 'archive' }: PaperDetailClientProps) {
+export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDetailClientProps) {
     const isRetracted = paper.status === 'retracted';
 
     return (
@@ -34,8 +34,10 @@ export default function PaperDetailClient({ paper, id, mode = 'archive' }: Paper
                             Please refer to the official retraction notice for detailed reasoning.
                         </p>
                     </div>
+                    {/* @ts-expect-error - retraction_notice_url might be missing in some states */}
                     {paper.retraction_notice_url && (
                         <a 
+                            // @ts-expect-error - retraction_notice_url might be missing on PublishedPaperUI
                             href={paper.retraction_notice_url} 
                             className="bg-red-900 text-white px-8 py-4 rounded-xl font-black text-[10px] tracking-[0.2em] hover:bg-red-800 transition-colors shadow-lg shadow-red-900/20"
                         >
@@ -61,7 +63,7 @@ export default function PaperDetailClient({ paper, id, mode = 'archive' }: Paper
                                     </span>
                                 )}
                                 <span className="bg-primary/5 text-primary text-md px-4 py-2 rounded-full  border border-gray-200">
-                                    Published: {new Date(paper.published_at || paper.updated_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                    Published: {new Date((paper.published_at || paper.updated_at || new Date()) as string | number | Date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                                 </span>
                             </div>
 
@@ -76,9 +78,9 @@ export default function PaperDetailClient({ paper, id, mode = 'archive' }: Paper
                                         <span className="font-normal leading-tight">{paper.author_name}</span>
                                         {paper.co_authors && (() => {
                                             try {
-                                                const coAuthors = JSON.parse(paper.co_authors);
+                                                const coAuthors = JSON.parse(paper.co_authors as string);
                                                 if (!Array.isArray(coAuthors)) return null;
-                                                return coAuthors.map((author: any, idx: number) => (
+                                                return coAuthors.map((author: { name: string }, idx: number) => (
                                                     <div key={idx} className="flex items-center gap-2">
                                                         <span className="text-gray-900 font-bold">,</span>
                                                         <span className=" font-normal leading-tight">{author.name}</span>
@@ -190,7 +192,11 @@ export default function PaperDetailClient({ paper, id, mode = 'archive' }: Paper
                     */}
                     
                     {/* Citation Widget (Client Component) */}
-                    <CitationSection paper={paper} />
+                    <CitationSection paper={{
+                        ...paper,
+                        publication_year: paper.publication_year || new Date().getFullYear(),
+                        co_authors: paper.co_authors || null
+                    }} />
 
                     <div className="flex flex-col gap-4 px-4">
                         <Link

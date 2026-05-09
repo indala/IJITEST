@@ -27,7 +27,7 @@ export async function getMessages(filters?: { status?: 'pending' | 'resolved' | 
     try {
         const whereConditions: import("drizzle-orm").SQL[] = [];
 
-        if (filters?.status && filters.status !== ('all' as any)) {
+        if (filters?.status && (filters.status as string) !== 'all') {
             whereConditions.push(eq(contactMessages.status, filters.status));
         }
 

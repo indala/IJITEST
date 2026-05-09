@@ -17,7 +17,7 @@ export const publicKeys = {
     track: (paperId: string, email: string) => [...publicKeys.all, 'track', paperId, email] as const,
 };
 
-export function useEditorialBoard(initialData?: SafeUserWithProfile[]) {
+export function useEditorialBoard(_initialData?: SafeUserWithProfile[]) {
     return useQuery({
         queryKey: publicKeys.editorialBoard(),
         queryFn: () => getEditorialBoard(),
@@ -27,7 +27,7 @@ export function useEditorialBoard(initialData?: SafeUserWithProfile[]) {
     });
 }
 
-export function usePublicArchives(initialData?: PublishedPaperUI[]) {
+export function usePublicArchives(_initialData?: PublishedPaperUI[]) {
     return useQuery({
         queryKey: publicKeys.archives(),
         queryFn: () => getPublishedPapers(),
@@ -37,7 +37,7 @@ export function usePublicArchives(initialData?: PublishedPaperUI[]) {
     });
 }
 
-export function useLatestIssuePapers(initialData?: PublishedPaperUI[]) {
+export function useLatestIssuePapers(_initialData?: PublishedPaperUI[]) {
     return useQuery({
         queryKey: publicKeys.currentIssue(),
         queryFn: () => getLatestIssuePapers(),
@@ -47,7 +47,7 @@ export function useLatestIssuePapers(initialData?: PublishedPaperUI[]) {
     });
 }
 
-export function useArchivePapers(initialData?: PublishedPaperUI[]) {
+export function useArchivePapers(_initialData?: PublishedPaperUI[]) {
     return useQuery({
         queryKey: publicKeys.archivePapers(),
         queryFn: () => getArchivePapers(),

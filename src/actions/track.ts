@@ -3,9 +3,9 @@
 import { db } from "@/lib/db";
 import { submissions, reviews, reviewAssignments, submissionVersions, userProfiles, users } from "@/db/schema";
 import { eq, and, min, desc } from "drizzle-orm";
-import { ActionResponse } from "@/db/types";
+import { ActionResponse, TrackedManuscript } from "@/db/types";
  
-export async function trackManuscript(paperId: string, authorEmail?: string): Promise<ActionResponse<{ manuscript: any }>> {
+export async function trackManuscript(paperId: string, authorEmail?: string): Promise<ActionResponse<{ manuscript: TrackedManuscript }>> {
     try {
         // 1. Get the submission and its latest version
         const result = await db.select({
@@ -44,9 +44,9 @@ export async function trackManuscript(paperId: string, authorEmail?: string): Pr
         .from(reviewAssignments)
         .where(eq(reviewAssignments.submissionId, manuscriptRow.id));
  
-        const manuscript: any = {
+        const manuscript: TrackedManuscript = {
             ...manuscriptRow,
-            review_started_at: assignments[0]?.reviewStartedAt,
+            review_started_at: assignments[0]?.reviewStartedAt ?? null,
             // Map to UI-friendly names (Historical compatibility)
             paper_id: manuscriptRow.paperId,
             submitted_at: manuscriptRow.submittedAt,

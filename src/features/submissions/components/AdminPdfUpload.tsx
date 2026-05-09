@@ -23,7 +23,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
             } else {
                 toast.error(result.error);
             }
-        } catch (error) {
+        } catch {
             toast.error('Failed to synchronize manuscript');
         } finally {
             setIsUploading(false);
@@ -41,7 +41,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
             } else {
                 toast.error(result.error);
             }
-        } catch (error) {
+        } catch {
             toast.error('Critical error during PDF conversion');
         } finally {
             setIsConverting(false);
@@ -52,9 +52,9 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
         return (
             <div className="space-y-4">
                 <div className="flex flex-col gap-3">
-                    <Button 
-                        asChild 
-                        variant="outline" 
+                    <Button
+                        asChild
+                        variant="outline"
                         className="group w-full h-14 gap-3 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 font-black text-xs tracking-widest rounded-xl hover:bg-emerald-500 hover:text-white dark:hover:text-black transition-all cursor-pointer shadow-sm shadow-emerald-500/5"
                     >
                         <a href={currentUrl} download className="flex items-center justify-center w-full">
@@ -133,7 +133,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
                         className="absolute inset-0 opacity-0 cursor-pointer z-10 disabled:cursor-wait"
                         disabled={isUploading || isConverting}
                     />
-                    
+
                     {isUploading ? (
                         <div className="flex flex-col items-center gap-4 animate-pulse">
                             <div className="w-12 h-12 rounded-full border-4 border-primary/10 border-t-primary animate-spin" />

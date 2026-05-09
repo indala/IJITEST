@@ -14,11 +14,10 @@ import { toast } from "sonner";
 
 interface ResubmissionFormProps {
     submissionId: number;
-    paperId: string;
     daysRemaining: number;
 }
 
-export function ResubmissionForm({ submissionId, paperId, daysRemaining }: ResubmissionFormProps) {
+export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFormProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -113,7 +112,7 @@ export function ResubmissionForm({ submissionId, paperId, daysRemaining }: Resub
                         <Info className="w-4 h-4" />
                         <AlertTitle className="text-xs font-black uppercase tracking-widest text-primary/40">Important Note</AlertTitle>
                         <AlertDescription className="text-sm text-primary/60 italic">
-                            Uploading a revision will reset the status to "Submitted" and notify the editors. Please ensure all reviewer comments have been addressed.
+                            Uploading a revision will reset the status to &quot;Submitted&quot; and notify the editors. Please ensure all reviewer comments have been addressed.
                         </AlertDescription>
                     </Alert>
 

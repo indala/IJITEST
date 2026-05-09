@@ -82,7 +82,7 @@ function AimAndScope({ journalShortName }: { journalShortName?: string }) {
                                 Mission Priority
                             </h3>
                             <p className="opacity-70">
-                                "Interdisciplinary research merging engineering with managerial sciences is highly prioritized."
+                                &quot;Interdisciplinary research merging engineering with managerial sciences is highly prioritized.&quot;
                             </p>
                         </article>
 

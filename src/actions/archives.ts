@@ -10,7 +10,7 @@ import {
     userProfiles
 } from "@/db/schema";
 import { eq, desc, and, sql, ne, inArray, asc } from "drizzle-orm";
-import { type PublishedPaperUI, type ActionResponse } from "@/db/types";
+import { type PublishedPaperUI, type ActionResponse, type SubmissionStatus } from "@/db/types";
 import { unstable_cache } from "next/cache";
 
 /**
@@ -82,6 +82,7 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
 
                 if (!issues.length) return { success: true, data: [] };
                 const latestIssue = issues[0];
+                if (!latestIssue) return { success: true, data: [] };
 
                 const rows = await db.select({
                     publication: publications,
@@ -142,7 +143,7 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
                     .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber))
                     .limit(1);
 
-                const latestId = issues.length ? issues[0].id : -1;
+                const latestId = issues[0]?.id ?? -1;
 
                 const rows = await db.select({
                     publication: publications,
@@ -264,6 +265,18 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
 /**
  * HELPER: Map relational Drizzle structure to the flat structure the UI expects
  */
+interface SubmissionAuthor {
+    id: number;
+    submissionId: number;
+    name: string;
+    email: string;
+    phone: string | null;
+    designation: string | null;
+    institution: string | null;
+    isCorresponding: boolean;
+    orderIndex: number;
+}
+
 interface PublicationInput {
     submissionId?: number | null;
     doi?: string | null;
@@ -275,7 +288,7 @@ interface PublicationInput {
         paperId?: string | null;
         status?: string | null;
         updatedAt?: Date | null;
-        authors?: any;
+        authors?: SubmissionAuthor[];
         versions?: Array<{ title?: string | null; abstract?: string | null; keywords?: string | null } | null>;
         correspondingAuthor?: { 
             profile?: { 
@@ -297,15 +310,15 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
     const authorsList = Array.isArray(pub.submission?.authors) ? pub.submission.authors : [];
     
     // Sort authors by orderIndex
-    const sortedAuthors = [...authorsList].sort((a: any, b: any) => (a.orderIndex || 0) - (b.orderIndex || 0));
+    const sortedAuthors = [...authorsList].sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
     
     // Primary author is the one with isCorresponding or the first one
-    const correspondingAuthor = sortedAuthors.find((a: any) => a.isCorresponding) || sortedAuthors[0];
+    const correspondingAuthor = sortedAuthors.find(a => a.isCorresponding) || sortedAuthors[0];
     
     // Co-authors are all except the corresponding one, but user wants them ALL together?
     // "i want coauthor to display alogn side main author wiht comas ','"
     // So I will create a full string of names.
-    const allAuthorsString = sortedAuthors.map((a: any) => a.name).join(', ');
+    const allAuthorsString = sortedAuthors.map(a => a.name).join(', ');
     
     return {
         id: pub.submissionId || 0,
@@ -316,7 +329,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         author_name: allAuthorsString || "Anonymous Author",
         author_email: correspondingAuthor?.email || "N/A",
         affiliation: correspondingAuthor?.institution || "N/A",
-        status: pub.submission?.status || "published",
+        status: (pub.submission?.status as SubmissionStatus) || "published",
         doi: pub.doi || "",
         file_path: pub.finalPdfUrl || "",
         pdf_url: pub.finalPdfUrl || "",
@@ -324,7 +337,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         end_page: pub.endPage || null,
         page_range: pub.startPage && pub.endPage ? `${pub.startPage}-${pub.endPage}` : null,
         published_at: pub.publishedAt ? pub.publishedAt.toISOString() : null,
-        updated_at: pub.submission?.updatedAt ? pub.submission.updatedAt.toISOString() : pub.publishedAt ? pub.publishedAt.toISOString() : null,
+        updated_at: pub.submission?.updatedAt || pub.publishedAt || null,
         volume_number: pub.issue?.volumeNumber || 0,
         issue_number: pub.issue?.issueNumber || 0,
         publication_year: pub.issue?.year || 0,

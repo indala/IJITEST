@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { motion, animate } from 'framer-motion';
+import { AnimationPlaybackControls, motion, animate } from 'framer-motion';
 import { useRef, useEffect } from 'react';
 
 interface PageHeaderProps {
@@ -14,7 +14,7 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, description, breadcrumbs, scrollOnComplete = true }: PageHeaderProps) {
     const sectionRef = useRef<HTMLElement>(null);
-    const animationRef = useRef<any>(null);
+    const animationRef = useRef<AnimationPlaybackControls | null>(null);
 
     useEffect(() => {
         const stopAnimation = () => {

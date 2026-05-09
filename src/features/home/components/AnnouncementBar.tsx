@@ -11,6 +11,7 @@ export default function AnnouncementBar() {
     if (!latestPapers || latestPapers.length === 0 || !isVisible) return null;
 
     const latestIssue = latestPapers[0];
+    if (!latestIssue) return null;
     const publishDate = latestIssue.published_at ? new Date(latestIssue.published_at) : new Date();
     const monthYear = publishDate.toLocaleDateString('en-US', {
         month: 'long',

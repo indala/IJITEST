@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function ReviewerSubmissionView({ params }: { params: Promise<{ id: string }> }) {
     const { id: idStr } = await params;
     const id = parseInt(idStr);
-    const session: any = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions);
     const user = session?.user;
 
     if (!user || user.role !== 'reviewer' && user.role !== 'admin' && user.role !== 'editor') {
@@ -55,7 +55,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
 
     // Verify assignment for reviewers
     if (user.role === 'reviewer') {
-        const isAssigned = submission.allReviews?.some((r: any) => r.reviewerId === user.id);
+        const isAssigned = submission.allReviews?.some((r) => r.reviewerId === user.id);
         if (!isAssigned) {
             return (
                 <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
@@ -117,7 +117,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                     <FileText className="w-5 h-5 2xl:w-9 2xl:h-9" /> Abstract
                                 </h4>
                                 <p className="opacity-70 italic">
-                                    "{submission.abstract || "No abstract provided."}"
+                                    &quot;{submission.abstract || "No abstract provided."}&quot;
                                 </p>
                             </div>
 
@@ -147,13 +147,13 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                         {(() => {
                                             try {
                                                 const coAuthors = JSON.parse(submission.co_authors);
-                                                return coAuthors.map((author: any, idx: number) => (
+                                                return coAuthors.map((author: { name: string; institution: string }, idx: number) => (
                                                     <div key={idx} className="p-4 bg-primary/5 border border-primary/10 rounded-xl space-y-1 shadow-sm">
                                                         <p className="leading-none">{author.name}</p>
                                                         <p className="opacity-60 truncate">{author.institution}</p>
                                                     </div>
                                                 ));
-                                            } catch (e) {
+                                            } catch {
                                                 return <p className="text-[10px] font-black text-rose-500 uppercase">Metadata Conflict</p>;
                                             }
                                         })()}
@@ -174,9 +174,9 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                         </p>
                                     </>
                                 ) : (
-                                    <AdminPdfUpload 
-                                        submissionId={submission.id} 
-                                        currentUrl={getSecureUrl(submission.pdf_url)} 
+                                    <AdminPdfUpload
+                                        submissionId={submission.id}
+                                        currentUrl={getSecureUrl(submission.pdf_url)}
                                     />
                                 )}
                             </div>

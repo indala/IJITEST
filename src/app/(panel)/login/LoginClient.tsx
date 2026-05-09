@@ -37,7 +37,7 @@ export default function LoginClient() {
             setError("Invalid email or password");
         } else {
             const session = await getSession();
-            const role = (session?.user as any)?.role;
+            const role = (session?.user as { role?: string })?.role;
 
             if (role) {
                 window.location.href = `/${role}`;

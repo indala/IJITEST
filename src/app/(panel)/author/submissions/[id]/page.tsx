@@ -8,6 +8,7 @@ import Link from "next/link";
 import dayjs from "@/lib/dayjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getSecureUrl } from "@/lib/utils";
+import { SubmissionFile } from "@/db/types";
 
 export default async function AuthorSubmissionDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = await params;
@@ -88,7 +89,6 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                     {eligibility.eligible && (
                         <ResubmissionForm 
                             submissionId={submissionId} 
-                            paperId={sub.paperId} 
                             daysRemaining={eligibility.daysRemaining || 15} 
                         />
                     )}
@@ -112,7 +112,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             <CardTitle className="text-sm font-black text-primary uppercase tracking-widest">Submitted Files</CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6 space-y-3">
-                            {sub.files.map((file: any) => (
+                            {sub.files.map((file: SubmissionFile) => (
                                 <Link 
                                     key={file.id} 
                                     href={getSecureUrl(file.fileUrl)} 
@@ -128,7 +128,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                             <p className="text-[10px] font-bold text-primary/30 uppercase tracking-widest">{file.fileType.replace('_', ' ')}</p>
                                         </div>
                                     </div>
-                                    <Badge variant="outline" className="text-[10px] border-primary/5 text-primary/40">{(file.fileSize / 1024 / 1024).toFixed(1)}MB</Badge>
+                                    <Badge variant="outline" className="text-[10px] border-primary/5 text-primary/40">{file.fileSize ? (file.fileSize / 1024 / 1024).toFixed(1) : '0'}MB</Badge>
                                 </Link>
                             ))}
                         </CardContent>
@@ -140,14 +140,14 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             <CardTitle className="text-sm font-black text-primary uppercase tracking-widest">Research Authors</CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6 space-y-4">
-                            {sub.authors.map((author: any, idx: number) => (
+                            {sub.authors.map((author: { name: string; institution: string | null; isCorresponding: boolean }, idx: number) => (
                                 <div key={idx} className="flex items-start gap-3">
                                     <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center shrink-0 text-primary/40 font-black text-[10px]">
                                         {idx + 1}
                                     </div>
                                     <div className="space-y-0.5">
                                         <p className="text-xs font-black text-primary/80 leading-none">{author.name}</p>
-                                        <p className="text-[10px] font-bold text-primary/30 tracking-tight leading-none">{author.institution}</p>
+                                        <p className="text-[10px] font-bold text-primary/30 tracking-tight leading-none">{author.institution || 'No Institution'}</p>
                                         {author.isCorresponding && (
                                             <Badge className="mt-2 bg-secondary/10 text-secondary border-0 text-[8px] font-black tracking-widest h-4 px-1.5 uppercase leading-none">Corresponding</Badge>
                                         )}

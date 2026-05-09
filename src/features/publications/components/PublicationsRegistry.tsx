@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
     Plus, BookOpen, Clock, CheckCircle2, Layers, 
     CheckCircle, Save, ChevronDown as ChevronDownIcon, ChevronUp, FileText, Eye, Unlink 
@@ -15,6 +15,7 @@ import {
     useUnassignPaper
 } from '@/hooks/queries/usePublications';
 import { toast } from 'sonner';
+import { Issue } from '@/db/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
     const unassignMutation = useUnassignPaper();
 
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState<any>(null);
+    const [showEditModal, setShowEditModal] = useState<(Issue & { paperCount: number }) | null>(null);
     const [expandedIssue, setExpandedIssue] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -245,7 +246,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                     { label: 'Published', value: stats.publishedIssues, icon: CheckCircle2, colors: 'text-[#000066] bg-[#000066]/5' },
                     { label: 'Open', value: stats.openIssues, icon: Clock, colors: 'text-[#000066] bg-[#000066]/5' },
                     { label: 'Indexed', value: stats.totalPapers, icon: FileText, colors: 'text-[#000066] bg-[#000066]/5' },
-                ].map((item, idx) => (
+                ].map((item) => (
                     <div
                         key={item.label}
                         className="p-6 bg-card rounded-xl shadow-sm border border-border/50"
@@ -266,7 +267,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
 
             {/* Grid of Issues */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-                {volumes.map((v, idx) => (
+                {volumes.map((v) => (
                     <div key={v.id}>
                         <Card className="border-border/50 shadow-sm transition-all bg-card rounded-xl overflow-hidden">
                             <CardContent className="p-0">
@@ -316,7 +317,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                     initial={{ height: 0, opacity: 0 }}
                                                     animate={{ height: 'auto', opacity: 1 }}
                                                     exit={{ height: 0, opacity: 0 }}
-                                                    className="overflow-hidden bg-primary/[0.02] rounded-xl border border-primary/10"
+                                                    className="overflow-hidden bg-primary/2 rounded-xl border border-primary/10"
                                                 >
                                                     <div className="p-4 space-y-3">
                                                         {loadingPapers ? (
@@ -378,7 +379,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                 ))}
 
                 {volumes.length === 0 && (
-                    <div className="col-span-full py-32 bg-primary/[0.02] border border-dashed border-border rounded-2xl flex flex-col items-center justify-center text-center space-y-6">
+                    <div className="col-span-full py-32 bg-primary/2 border border-dashed border-border rounded-2xl flex flex-col items-center justify-center text-center space-y-6">
                         <div className="w-16 h-16 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground/30 shadow-sm">
                             <BookOpen className="w-8 h-8" />
                         </div>
@@ -445,7 +446,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                     name="monthRange"
                                     type="text"
                                     required
-                                    defaultValue={showEditModal.monthRange}
+                                    defaultValue={showEditModal.monthRange || ""}
                                     className="h-10 bg-primary/2 border-primary/10 text-base"
                                 />
                             </div>

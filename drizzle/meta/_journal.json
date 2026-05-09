@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1775067100105,
-      "tag": "0000_secret_skullbuster",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1775068987943,
-      "tag": "0001_vengeful_stryfe",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1775286776620,
-      "tag": "0002_nebulous_thunderbolts",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1775474211211,
-      "tag": "0003_slippery_paper_doll",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1775568182301,
-      "tag": "0004_tidy_alice",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1775579468304,
-      "tag": "0005_outstanding_leo",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1776177872484,
-      "tag": "0006_red_cobalt_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1778169500708,
-      "tag": "0007_chunky_wendigo",
+      "when": 1778310704539,
+      "tag": "0000_mute_tarantula",
       "breakpoints": true
     }
   ]

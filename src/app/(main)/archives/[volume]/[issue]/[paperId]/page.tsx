@@ -8,12 +8,14 @@ import SettingsInitializer from "@/components/providers/SettingsInitializer";
 import { getPublishedPapers } from "@/actions/archives";
 import { JsonLd } from "@/components/shared/JsonLd";
 
+import { PublishedPaperUI } from "@/db/types";
+
 export async function generateStaticParams() {
     try {
         const res = await getPublishedPapers();
         if (!res.success || !res.data) return [];
 
-        return res.data.map((paper: any) => ({
+        return res.data.map((paper: PublishedPaperUI) => ({
             volume: `volume${paper.volume_number}`,
             issue: `issue${paper.issue_number}`,
             paperId: paper.paper_id,
@@ -38,31 +40,36 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
     const baseUrl = settings.journal_website || 'https://www.ijitest.org';
     const mainAuthor = paper.author_name;
     const coAuthors = paper.co_authors ? paper.co_authors.split(',').map((s: string) => s.trim()) : [];
-    const allAuthors = [mainAuthor, ...coAuthors].filter(Boolean);
+    const allAuthors = [mainAuthor, ...coAuthors].filter(Boolean) as string[];
+    const pubYearStr = paper.publication_year ? String(paper.publication_year) : '';
+    const formattedDate: string = (paper.published_at 
+        ? new Date(paper.published_at).toISOString().split('T')[0] 
+        : pubYearStr) as string;
+
+    const description = paper.abstract ? paper.abstract.substring(0, 160) : '';
 
     return {
-        title: `${paper.title} | IJITEST Archive`,
-        description: paper.abstract?.substring(0, 160) + "...",
-        keywords: paper.keywords,
+        title: paper.title,
+        description: description,
         openGraph: {
             title: paper.title,
-            description: paper.abstract?.substring(0, 160),
+            description: description,
             type: 'article',
             authors: allAuthors,
         },
         other: {
             'citation_title': paper.title,
             'citation_author': allAuthors,
-            'citation_publication_date': paper.published_at ? new Date(paper.published_at).toISOString().split('T')[0].replace(/-/g, '/') : (paper.publication_year?.toString() || ''),
+            'citation_publication_date': formattedDate.replace(/-/g, '/'),
             'citation_journal_title': settings.journal_name || 'International Journal of Information Technology (IJITEST)',
-            'citation_volume': paper.volume_number?.toString() || '',
-            'citation_issue': paper.issue_number?.toString() || '',
-            'citation_firstpage': paper.start_page?.toString() || '',
-            'citation_lastpage': paper.end_page?.toString() || '',
+            'citation_volume': paper.volume_number ? String(paper.volume_number) : '',
+            'citation_issue': paper.issue_number ? String(paper.issue_number) : '',
+            'citation_firstpage': paper.start_page ? String(paper.start_page) : '',
+            'citation_lastpage': paper.end_page ? String(paper.end_page) : '',
             'citation_pdf_url': paper.pdf_url ? (paper.pdf_url.startsWith('http') ? paper.pdf_url : `${baseUrl}${paper.pdf_url}`) : '',
             'dc.title': paper.title || '',
             'dc.creator': allAuthors,
-            'dc.date': paper.published_at ? new Date(paper.published_at).toISOString().split('T')[0] : (paper.publication_year?.toString() || ''),
+            'dc.date': formattedDate,
             'dc.subject': paper.keywords || '',
             'dc.description': paper.abstract || '',
         },
@@ -105,7 +112,13 @@ export default async function PaperDetailPage({ params }: { params: Promise<{ vo
                     { name: paper.paper_id, href: `/archives/${volume}/${issue}/${paperId}` },
                 ]}
             />
-            <PaperDetailClient paper={paper} id={paperId} />
+            <PaperDetailClient 
+                paper={{
+                    ...paper,
+                    co_authors: paper.co_authors ?? null
+                }} 
+                id={paperId} 
+            />
 
             <JsonLd
                 id="scholarly-article"

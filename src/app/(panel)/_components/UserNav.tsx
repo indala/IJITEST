@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { LogOut, User, Settings } from 'lucide-react';
+import { LogOut, User as UserIcon, Settings } from 'lucide-react';
 import {
     Avatar,
     AvatarFallback,
@@ -17,8 +17,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
+import { User } from "next-auth";
+
 interface UserNavProps {
-    user: any;
+    user: User | null;
     handleLogout: () => Promise<void>;
     setShowPreferences: (show: boolean) => void;
 }
@@ -45,7 +47,7 @@ export function UserNav({ user, handleLogout, setShowPreferences }: UserNavProps
                 <DropdownMenuSeparator className="bg-primary/5 dark:bg-white/5" />
                 <Link className="cursor-pointer" href={`/${user?.role || 'reviewer'}/profile`}>
                     <DropdownMenuItem className="rounded-xl 2xl:rounded-2xl h-10 xl:h-12 2xl:h-16 gap-4 cursor-pointer px-4 2xl:px-8 font-semibold text-xs xl:text-sm 2xl:text-lg hover:bg-primary/20 transition-colors">
-                        <User className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-8 2xl:h-8 text-primary/40" />
+                        <UserIcon className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-8 2xl:h-8 text-primary/40" />
                         <span>Profile settings</span>
                     </DropdownMenuItem>
                 </Link>

@@ -44,7 +44,9 @@ const getStatusVariant = (status: string) => {
     }
 };
 
-const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: any, onUpdateStatus: (id: number, status: any, txId: string) => Promise<void> }) => (
+import { PaymentRow } from '@/actions/payments';
+
+const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow, onUpdateStatus: (id: number, status: 'pending' | 'paid' | 'verified' | 'failed' | 'waived', txId: string) => Promise<void> }) => (
     <Card key={item.id} className="border-primary/5 shadow-vip hover:shadow-2xl hover:scale-[1.005] transition-all group overflow-hidden bg-card relative 2xl:rounded-3xl">
         <div className={`absolute top-0 left-0 w-1.5 h-full ${item.status === 'verified' ? 'bg-emerald-500/20' : item.status === 'paid' ? 'bg-blue-500/20' : item.status === 'waived' ? 'bg-purple-500/20' : 'bg-orange-500/20'}`} />
         <CardContent className="p-0">
@@ -137,7 +139,7 @@ PaymentItemCard.displayName = 'PaymentItemCard';
 
 export default function PaymentManagement() {
     const { data: payments = [], isLoading: loading } = usePayments();
-    const { data: unpaidPapers = [], isLoading: loadingUnpaid } = useUnpaidPapers();
+    const { data: unpaidPapers = [] } = useUnpaidPapers();
     const initMutation = useInitializePayment();
     const updateMutation = useUpdatePaymentStatus();
 
@@ -160,7 +162,7 @@ export default function PaymentManagement() {
             } else {
                 toast.error(res.error);
             }
-        } catch (error) {
+        } catch {
             toast.error("Failed to initialize transaction");
         }
         setIsSubmitting(false);
@@ -174,7 +176,7 @@ export default function PaymentManagement() {
             } else {
                 toast.error(res.error);
             }
-        } catch (error) {
+        } catch {
             toast.error("Failed to update status");
         }
     }, [updateMutation]);
@@ -352,7 +354,7 @@ export default function PaymentManagement() {
                             <div className="w-20 h-20 rounded-xl bg-muted shadow-sm flex items-center justify-center text-primary/40">
                                 <AlertTriangle className="w-10 h-10" />
                             </div>
-                             <div className="text-center space-y-2">
+                            <div className="text-center space-y-2">
                                 <h3 className="text-primary/60 dark:text-primary/80">Record Depth Null</h3>
                                 <p className="opacity-40 dark:text-primary/60">No financial transactions correlate with your active query.</p>
                             </div>

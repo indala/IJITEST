@@ -15,7 +15,7 @@ export default function Footer({ settings }: { settings?: Record<string, string>
     return (
         <footer className="bg-slate-950 text-white pt-10 pb-5 font-sans relative overflow-hidden">
             {/* Background decorative glow */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary/50 to-transparent opacity-30" />
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-rrom-transparent via-secondary/50 to-transparent opacity-30" />
             <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/20 transition-colors duration-1000" />
             <div className="absolute top-1/4 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-secondary/10 transition-colors duration-1000" />
 
@@ -59,7 +59,7 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                             <div className="space-y-6 2xl:space-y-12">
                                 <div className="flex items-center gap-4 group/support">
                                     <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:scale-110 group-hover/support:bg-white/10 transition-all duration-500 overflow-hidden relative">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
+                                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
                                         <ShieldCheck className="w-4 h-4 2xl:w-8 2xl:h-8 text-secondary" />
                                     </div>
                                     <div>
@@ -69,7 +69,7 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                                 </div>
                                 <div className="flex items-center gap-4 group/support">
                                     <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:scale-110 group-hover/support:bg-white/10 transition-all duration-500 overflow-hidden relative">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
+                                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
                                         <Phone className="w-4 h-4 2xl:w-8 2xl:h-8 text-secondary" />
                                     </div>
                                     <div>
@@ -79,7 +79,7 @@ export default function Footer({ settings }: { settings?: Record<string, string>
                                 </div>
                                 <div className="flex items-center gap-4 group/support">
                                     <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:scale-110 group-hover/support:bg-white/10 transition-all duration-500 overflow-hidden relative">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
+                                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
                                         <MapPin className="w-4 h-4 2xl:w-8 2xl:h-8 text-secondary" />
                                     </div>
                                     <div>

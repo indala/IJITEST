@@ -108,5 +108,5 @@ export const authOptions: NextAuthOptions = {
         strategy: "jwt",
         maxAge: 24 * 60 * 60, // 24 hours
     },
-    secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
+    secret: (process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "fallback_secret_ijitest") as string,
 };

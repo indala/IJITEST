@@ -27,7 +27,7 @@ import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import fs from 'fs/promises';
 import path from 'path';
-import { eq, desc, and, isNull, inArray, or, like, sql } from "drizzle-orm";
+import { eq, desc, and, isNull, inArray, or, like, sql, SQL } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { resolveAbsolutePath, safeDeleteFile } from "@/lib/fs-utils";
@@ -113,13 +113,13 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
         // 6. Map to Domain Types
         const typedAssignments: ReviewWithReviewer[] = assignments.map(a => ({
             ...a.ra,
-            reviewer: { ...a.reviewer, profile: a.profile } as UserWithProfile,
+            reviewer: (a.reviewer && a.profile) ? { ...a.reviewer, profile: a.profile } : ({} as UserWithProfile),
             review: a.review
         }));
 
         const submissionData: SubmissionDetail = {
             ...row.submission,
-            correspondingAuthor: { ...row.author, profile: row.authorProfile } as UserWithProfile,
+            correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } as UserWithProfile : undefined,
             versions: latestVersion ? [{ ...latestVersion, files: files as SubmissionFile[] }] : [],
             authors,
             payment: row.payment,
@@ -133,14 +133,14 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
         const pdfVersion = files.find(f => f.fileType === 'pdf_version');
         const finalPdf = row.publication?.finalPdfUrl;
 
-        const data: SubmissionUI = {
-            ...submissionData,
-            paper_id: submissionData.paperId,
-            submitted_at: submissionData.submittedAt,
-            updated_at: submissionData.updatedAt,
-            title: latestVersion?.title || "Untitled Manuscript",
-            abstract: latestVersion?.abstract || "",
-            keywords: latestVersion?.keywords || "",
+            const data: SubmissionUI = {
+                ...submissionData,
+                paper_id: submissionData.paperId,
+                submitted_at: submissionData.submittedAt,
+                updated_at: submissionData.updatedAt,
+                title: latestVersion?.title || "Untitled Manuscript",
+                abstract: latestVersion?.abstract || null,
+                keywords: latestVersion?.keywords || null,
             file_path: mainManuscript?.fileUrl || "",
             pdf_url: finalPdf || pdfVersion?.fileUrl || "", // Priority: Published PDF > Review PDF
             author_name: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
@@ -176,16 +176,19 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
         }
 
         // 1. Fetch core data + latest versions in one JOIN query
-        const conditions: any[] = [isNull(submissions.deletedAt)];
+        const conditions: SQL[] = [isNull(submissions.deletedAt)];
         if (filters?.status && filters.status !== 'all') {
-            conditions.push(eq(submissions.status, filters.status as any));
+            conditions.push(eq(submissions.status, filters.status as "submitted" | "editor_assigned" | "under_review" | "revision_requested" | "accepted" | "rejected" | "payment_pending" | "published"));
         }
         if (filters?.q) {
             const searchVal = `%${filters.q}%`;
-            conditions.push(or(
+            const searchCondition = or(
                 like(submissions.paperId, searchVal),
                 like(submissionVersions.title, searchVal)
-            ));
+            ) as SQL;
+            if (searchCondition) {
+                conditions.push(searchCondition);
+            }
         }
 
         const latestVersions = db.select({
@@ -261,14 +264,14 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
                 issue_id: row.submission.issueId,
                 latestVersion: row.latestVersion ? { ...row.latestVersion, files: subFiles as SubmissionFile[] } : undefined,
                 allFiles: subFiles as SubmissionFile[],
-                allReviews: [], // Reviews are not typically needed for list view, but can be added if required
+                allReviews: [], 
                 payment: row.payment,
-                correspondingAuthor: { ...row.author, profile: row.authorProfile } as any,
-                authors: subAuthors as any,
-                versions: row.latestVersion ? [{ ...row.latestVersion, files: subFiles as SubmissionFile[] }] as any : [],
+                correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } : undefined,
+                authors: subAuthors,
+                versions: row.latestVersion ? [{ ...row.latestVersion, files: subFiles as SubmissionFile[] }] : [],
                 reviewAssignments: [],
-                issue: row.issue as any,
-                publication: row.publication as any
+                issue: row.issue,
+                publication: row.publication
             };
         });
 
@@ -491,6 +494,7 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
         
         if (!versionRows.length) return { success: false, error: "No version records found for this submission." };
         const latestVersion = versionRows[0];
+        if (!latestVersion) return { success: false, error: "No version records found for this submission." };
 
         // 2. Prepare File Path
         const timestamp = Date.now();
@@ -507,7 +511,10 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
             )).limit(1);
 
             if (existing.length > 0) {
-                await tx.delete(submissionFiles).where(eq(submissionFiles.id, existing[0].id));
+                const existingFile = existing[0];
+                if (existingFile) {
+                    await tx.delete(submissionFiles).where(eq(submissionFiles.id, existingFile.id));
+                }
             }
 
             await tx.insert(submissionFiles).values({
@@ -554,8 +561,8 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
             .orderBy(desc(submissionVersions.versionNumber))
             .limit(1);
         
-        if (!versionRows.length) return { success: false, error: "No version records found." };
         const latestVersion = versionRows[0];
+        if (!latestVersion) return { success: false, error: "No version records found." };
 
         const fileRows = await db.select()
             .from(submissionFiles)
@@ -567,6 +574,7 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
 
         if (!fileRows.length) return { success: false, error: "No DOCX manuscript found for conversion." };
         const docxFile = fileRows[0];
+        if (!docxFile) return { success: false, error: "No DOCX manuscript found for conversion." };
 
         // 2. Read DOCX from disk
         const docxPath = resolveAbsolutePath(docxFile.fileUrl);

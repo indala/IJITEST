@@ -1,11 +1,14 @@
 "use client";
 
 import { Users, UserPlus, Shield, Mail, Trash2, ShieldCheck, UserCog, CheckCircle, AlertCircle, ShieldAlert } from 'lucide-react';
-import { useUsers, useCreateUser, useDeleteUser, useUpdateUserRole } from '@/hooks/queries/useUsers';
+import { useUsers, useDeleteUser, useUpdateUserRole } from '@/hooks/queries/useUsers';
 import { useSession } from 'next-auth/react';
-import React, { useState, useTransition, useCallback, useMemo } from 'react';
+import React, { useState, useTransition, useCallback, useMemo, useActionState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { runCleanupInactiveAuthors } from '@/actions/author-submissions';
+import { createUser } from '@/actions/users';
+import { useQueryClient } from '@tanstack/react-query';
+import { SafeUserWithProfile, ActionResponse } from '@/db/types';
+import { runCleanupInactiveAuthors as cleanupAuthors } from '@/actions/author-submissions';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,9 +70,9 @@ const PERMISSIONS_TABLE_DATA = [
     { role: 'Reviewer', focus: 'Accuracy', publish: false, staff: false },
 ] as const;
 
-const UserItemCard = React.memo(({ user, currentUserId, onDelete, onUpdateRole }: { user: any, currentUserId: string | null, onDelete: (user: any) => void, onUpdateRole: (userId: string, newRole: any) => void }) => {
+const UserItemCard = React.memo(({ user, currentUserId, onDelete, onUpdateRole }: { user: SafeUserWithProfile, currentUserId: string | null, onDelete: (user: SafeUserWithProfile) => void, onUpdateRole: (userId: string, newRole: "admin" | "editor" | "reviewer" | "author") => void }) => {
     const isEditingSelf = currentUserId === String(user.id);
-    
+
     return (
         <Card key={user.id} className="border-border/50 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden bg-card rounded-2xl">
             <CardContent className="p-8">
@@ -125,10 +128,10 @@ const UserItemCard = React.memo(({ user, currentUserId, onDelete, onUpdateRole }
                                         </DialogHeader>
                                         <div className="py-6 space-y-3">
                                             <label className="text-xs font-medium text-muted-foreground">Select role</label>
-                                            <select 
+                                            <select
                                                 title="Select Role"
                                                 defaultValue={user.role}
-                                                onChange={(e) => onUpdateRole(user.id, e.target.value as any)}
+                                                onChange={(e) => onUpdateRole(user.id, e.target.value as "admin" | "editor" | "reviewer" | "author")}
                                                 className="w-full h-11 bg-muted/50 border-border/50 rounded-xl px-4 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/10"
                                             >
                                                 <option value="reviewer">Reviewer</option>
@@ -158,47 +161,51 @@ UserItemCard.displayName = 'UserItemCard';
 export default function UserManagement() {
     const { data: session } = useSession();
     const { data: users = [], isLoading: loading } = useUsers();
-    const createUserMutation = useCreateUser();
+    const queryClient = useQueryClient();
     const deleteUserMutation = useDeleteUser();
     const updateRoleMutation = useUpdateUserRole();
 
     const [showAddModal, setShowAddModal] = useState(false);
-    const [userToDelete, setUserToDelete] = useState<any>(null);
+    const [userToDelete, setUserToDelete] = useState<SafeUserWithProfile | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isCleaning, startCleanup] = useTransition();
 
-    const currentUserId = useMemo(() => session?.user ? String((session.user as any).id) : null, [session]);
+    // React 19: useActionState for invitation form
+    const [createState, createAction, isCreatingStaff] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
+        return await createUser(formData);
+    }, { success: false });
+
+    // Sync ActionState with UI (close modal, show toast, refresh list)
+    useEffect(() => {
+        if (createState.success && !isCreatingStaff) {
+            startCleanup(() => setShowAddModal(false));
+            toast.success("Staff member invited successfully");
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+        } else if (createState.error) {
+            toast.error(createState.error);
+        }
+    }, [createState.success, createState.error, isCreatingStaff, queryClient]);
+
+    const currentUserId = useMemo(() => session?.user?.id ? String(session.user.id) : null, [session]);
 
     const handleCleanup = useCallback(() => {
         startCleanup(async () => {
             try {
-                const result = await runCleanupInactiveAuthors();
+                const result = await cleanupAuthors();
                 if (result.success) {
                     toast.success(`Cleanup complete. Deleted ${result.data?.deletedCount || 0} inactive authors.`);
                 } else {
                     toast.error(result.error || "Failed to perform cleanup");
                 }
-            } catch (error) {
+            } catch {
                 toast.error("An unexpected error occurred during cleanup");
             }
         });
     }, []);
 
-    const handleCreateUser = useCallback(async (formData: FormData) => {
-        try {
-            const result = await createUserMutation.mutateAsync(formData);
-            if (result.success) {
-                setShowAddModal(false);
-                toast.success("Staff member invited successfully");
-            } else {
-                toast.error(result.error);
-            }
-        } catch (error) {
-            toast.error("Failed to invite staff member");
-        }
-    }, [createUserMutation]);
 
-    const handleUpdateRole = useCallback(async (userId: string, role: any) => {
+
+    const handleUpdateRole = useCallback(async (userId: string, role: "admin" | "editor" | "reviewer" | "author") => {
         const toastId = toast.loading('Synchronizing role update...');
         try {
             const result = await updateRoleMutation.mutateAsync({ userId, role });
@@ -207,12 +214,12 @@ export default function UserManagement() {
             } else {
                 toast.error(result.error || "Execution fault", { id: toastId });
             }
-        } catch (error) {
+        } catch {
             toast.error("Internal system error", { id: toastId });
         }
     }, [updateRoleMutation]);
 
-    const handleSetUserToDelete = useCallback((user: any) => {
+    const handleSetUserToDelete = useCallback((user: SafeUserWithProfile) => {
         setUserToDelete(user);
     }, []);
 
@@ -227,7 +234,7 @@ export default function UserManagement() {
             } else {
                 toast.error(result.error);
             }
-        } catch (error) {
+        } catch {
             toast.error("Failed to revoke access");
         } finally {
             setIsDeleting(false);
@@ -245,13 +252,13 @@ export default function UserManagement() {
                     <p className="max-w-2xl">Manage editorial staff and reviewers.</p>
                 </div>
                 <div className="flex flex-wrap gap-4">
-                    <Button 
-                        variant="outline" 
+                    <Button
+                        variant="outline"
                         onClick={handleCleanup}
                         disabled={isCleaning}
                         className="h-10 px-4 gap-2 border-amber-500/20 text-amber-600 hover:bg-amber-500/5 font-medium text-xs rounded-xl transition-all cursor-pointer"
                     >
-                        <ShieldAlert className="w-4 h-4" /> 
+                        <ShieldAlert className="w-4 h-4" />
                         {isCleaning ? "Cleaning..." : "Cleanup inactive authors"}
                     </Button>
                     <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
@@ -260,38 +267,42 @@ export default function UserManagement() {
                                 <UserPlus className="w-4 h-4" /> Add staff
                             </Button>
                         </DialogTrigger>
-                    <DialogContent className="sm:max-w-md rounded-xl p-6 bg-card border-border/50">
-                        <DialogHeader>
-                            <DialogTitle>Invite staff member</DialogTitle>
-                            <DialogDescription className="text-sm text-muted-foreground">
-                                An invitation email will be sent with setup instructions.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <form action={handleCreateUser} className="space-y-4">
-                            <div className="space-y-1.5">
-                                <label htmlFor="staff-fullName" className="text-xs font-medium text-muted-foreground">Full name</label>
-                                <Input id="staff-fullName" name="fullName" required className="h-10 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 text-sm rounded-xl" placeholder="Dr. Jane Smith" />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label htmlFor="staff-email" className="text-xs font-medium text-muted-foreground">Email</label>
-                                <Input id="staff-email" name="email" type="email" required className="h-10 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 text-sm rounded-xl" placeholder="jane@ijitest.com" />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label htmlFor="staff-role" className="text-xs font-medium text-muted-foreground">Role</label>
-                                <select id="staff-role" name="role" required className="flex h-10 w-full rounded-xl bg-muted/50 px-3 py-1 text-sm transition-colors outline-none border-none ring-offset-background focus:ring-1 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 text-foreground">
-                                    <option value="reviewer">Reviewer</option>
-                                    <option value="editor">Editor</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-                            <DialogFooter className="pt-2">
-                                <Button type="submit" className="w-full h-10 font-medium text-sm rounded-xl bg-primary text-white hover:bg-primary/90 cursor-pointer">
-                                    Send invite
-                                </Button>
-                            </DialogFooter>
-                        </form>
-                    </DialogContent>
-                </Dialog>
+                        <DialogContent className="sm:max-w-md rounded-xl p-6 bg-card border-border/50">
+                            <DialogHeader>
+                                <DialogTitle>Invite staff member</DialogTitle>
+                                <DialogDescription className="text-sm text-muted-foreground">
+                                    An invitation email will be sent with setup instructions.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <form action={createAction} className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label htmlFor="staff-fullName" className="text-xs font-medium text-muted-foreground">Full name</label>
+                                    <Input id="staff-fullName" name="fullName" required className="h-10 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 text-sm rounded-xl" placeholder="Dr. Jane Smith" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label htmlFor="staff-email" className="text-xs font-medium text-muted-foreground">Email</label>
+                                    <Input id="staff-email" name="email" type="email" required className="h-10 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 text-sm rounded-xl" placeholder="jane@ijitest.com" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label htmlFor="staff-role" className="text-xs font-medium text-muted-foreground">Role</label>
+                                    <select id="staff-role" name="role" required className="flex h-10 w-full rounded-xl bg-muted/50 px-3 py-1 text-sm transition-colors outline-none border-none ring-offset-background focus:ring-1 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 text-foreground">
+                                        <option value="reviewer">Reviewer</option>
+                                        <option value="editor">Editor</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                                <DialogFooter className="pt-2">
+                                    <Button
+                                        type="submit"
+                                        disabled={isCreatingStaff}
+                                        className="w-full h-10 font-medium text-sm rounded-xl bg-primary text-white hover:bg-primary/90 cursor-pointer"
+                                    >
+                                        {isCreatingStaff ? "Sending..." : "Send invite"}
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </header>
 
@@ -389,7 +400,7 @@ export default function UserManagement() {
                     ))}
                 </div>
 
-                 <div className="border border-border/50 rounded-xl 2xl:rounded-4xl overflow-hidden mt-6 shadow-sm overflow-x-auto">
+                <div className="border border-border/50 rounded-xl 2xl:rounded-4xl overflow-hidden mt-6 shadow-sm overflow-x-auto">
                     <Table>
                         <TableHeader className="bg-muted/30">
                             <TableRow className="border-border/50">

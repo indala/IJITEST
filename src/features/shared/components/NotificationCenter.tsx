@@ -24,7 +24,7 @@ const Badge = ({ count }: { count: number }) => (
 
 export default function NotificationCenter() {
     const { data: session } = useSession();
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as { role?: string })?.role;
 
     const { data: counts = { messages: 0, submissions: 0 } } = useQuery({
         queryKey: ['notificationCounts'],

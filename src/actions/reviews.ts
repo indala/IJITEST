@@ -23,7 +23,7 @@ import { convertDocxToPdf } from "@/lib/ilovepdf";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
-import { ActionResponse } from "@/db/types";
+import { ActionResponse, ActiveReview, UnassignedPaper } from "@/db/types";
 
 /**
  * Assign a reviewer to a submission.
@@ -34,11 +34,11 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
     if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
         return { success: false, error: "Unauthorized: Admin or Editor access required." };
     }
-    
+
     const submissionId = parseInt(formData.get('submissionId') as string);
     const reviewerId = formData.get('reviewerId') as string;
     const deadline = formData.get('deadline') as string;
-    const assignedBy = (session.user as any).id;
+    const assignedBy = session.user.id;
     const pdfFile = formData.get('pdfFile') as File;
 
     try {
@@ -47,7 +47,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
             const [totalAssignments] = await tx.select({ value: count() })
                 .from(reviewAssignments)
                 .where(eq(reviewAssignments.submissionId, submissionId));
-            
+
             if ((totalAssignments?.value || 0) >= 6) {
                 return { success: false, error: "Maximum of 6 reviewers have already been assigned to this submission." };
             }
@@ -56,10 +56,10 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
             const existing = await tx.select()
                 .from(reviewAssignments)
                 .where(and(
-                    eq(reviewAssignments.submissionId, submissionId), 
+                    eq(reviewAssignments.submissionId, submissionId),
                     eq(reviewAssignments.reviewerId, reviewerId)
                 ));
-            
+
             if (existing.length > 0) {
                 return { success: false, error: "This reviewer is already assigned to this submission." };
             }
@@ -69,16 +69,16 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 .from(userProfiles)
                 .where(eq(userProfiles.userId, reviewerId))
                 .limit(1);
-            
+
             const [leadAuthor] = await tx.select({ institution: submissionAuthors.institution })
                 .from(submissionAuthors)
                 .where(and(
-                    eq(submissionAuthors.submissionId, submissionId), 
+                    eq(submissionAuthors.submissionId, submissionId),
                     eq(submissionAuthors.isCorresponding, true)
                 ))
                 .limit(1);
 
-            if (reviewerProfile?.institute && leadAuthor?.institution && 
+            if (reviewerProfile?.institute && leadAuthor?.institution &&
                 reviewerProfile.institute.toLowerCase() === leadAuthor.institution.toLowerCase()) {
                 return { success: false, error: "Conflict of interest: Reviewer and Author belong to the same institution." };
             }
@@ -89,16 +89,17 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 .where(eq(submissionVersions.submissionId, submissionId))
                 .orderBy(desc(submissionVersions.versionNumber))
                 .limit(1);
-            
+
             if (!latestVersions.length) return { success: false, error: "Submission version not found." };
             const version = latestVersions[0];
+            if (!version) return { success: false, error: "Submission version not found." };
 
             // 5. PDF copy for reviewer
             let pdfUrl: string | null = null;
             const existingPdfs = await tx.select()
                 .from(submissionFiles)
                 .where(and(
-                    eq(submissionFiles.versionId, version.id), 
+                    eq(submissionFiles.versionId, version.id),
                     eq(submissionFiles.fileType, 'pdf_version')
                 ))
                 .limit(1);
@@ -117,19 +118,23 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                     originalName: 'reviewer_manuscript.pdf'
                 });
             } else if (existingPdfs.length > 0) {
-                pdfUrl = existingPdfs[0].fileUrl;
+                const existingPdf = existingPdfs[0];
+                if (existingPdf) {
+                    pdfUrl = existingPdf.fileUrl;
+                }
             } else {
                 // Try to find the manuscript and ensure it's a PDF
                 const manuscripts = await tx.select()
                     .from(submissionFiles)
                     .where(and(
-                        eq(submissionFiles.versionId, version.id), 
+                        eq(submissionFiles.versionId, version.id),
                         eq(submissionFiles.fileType, 'main_manuscript')
                     ))
                     .limit(1);
-                
+
                 if (!manuscripts.length) return { success: false, error: "No manuscript file available." };
                 const manuscript = manuscripts[0];
+                if (!manuscript) return { success: false, error: "No manuscript file available." };
 
                 if (manuscript.fileUrl.toLowerCase().endsWith('.pdf')) {
                     pdfUrl = manuscript.fileUrl;
@@ -139,7 +144,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                         const mPath = path.join(process.cwd(), "public", manuscript.fileUrl);
                         const mBuffer = await fs.readFile(mPath);
                         const pdfBuffer = await convertDocxToPdf(mBuffer, manuscript.originalName || "paper.docx");
-                        
+
                         const fileName = `converted_${submissionId}_${Date.now()}.pdf`;
                         const uploadPath = path.join(process.cwd(), "storage/submissions", fileName);
                         await fs.writeFile(uploadPath, pdfBuffer);
@@ -151,7 +156,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                             fileUrl: pdfUrl,
                             originalName: 'system_converted_pdf.pdf'
                         });
-                    } catch (convErr: any) {
+                    } catch {
                         return { success: false, error: "PDF Conversion failed. Please upload a PDF manually." };
                     }
                 }
@@ -180,8 +185,8 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 .where(eq(submissions.id, submissionId));
 
             // 8. Fetch notification data (no email inside transaction)
-            const [staff] = await tx.select({ 
-                email: users.email, 
+            const [staff] = await tx.select({
+                email: users.email,
                 name: userProfiles.fullName,
                 isVerified: users.isEmailVerified,
                 hasPassword: sql<boolean>`${users.passwordHash} IS NOT NULL`
@@ -227,7 +232,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 txResult.paper.title,
                 deadline,
                 txResult.paper.paperId,
-                (txResult as any).setupUrl
+                txResult.setupUrl as string
             );
             sendEmail({ to: txResult.staff.email, subject: template.subject, html: template.html })
                 .catch(e => console.error("Reviewer assignment email failed:", e));
@@ -281,16 +286,17 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                 authorName: userProfiles.fullName,
                 reviewerId: reviewAssignments.reviewerId
             })
-            .from(reviewAssignments)
-            .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
-            .innerJoin(submissionVersions, eq(reviewAssignments.versionId, submissionVersions.id))
-            .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
-            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-            .where(eq(reviewAssignments.id, assignmentId))
-            .limit(1);
+                .from(reviewAssignments)
+                .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
+                .innerJoin(submissionVersions, eq(reviewAssignments.versionId, submissionVersions.id))
+                .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
+                .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+                .where(eq(reviewAssignments.id, assignmentId))
+                .limit(1);
 
             if (!rows.length) throw new Error("Review assignment not found.");
             const info = rows[0];
+            if (!info) throw new Error("Review assignment not found.");
 
             // Verify this reviewer owns the assignment
             if (info.reviewerId !== session.user.id) {
@@ -341,7 +347,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
             };
             const newStatus = statusMap[decision as string];
             if (newStatus) {
-                await tx.update(submissions).set({ status: newStatus as any }).where(eq(submissions.id, info.submissionId));
+                await tx.update(submissions).set({ status: newStatus }).where(eq(submissions.id, info.submissionId));
             }
 
             return { success: true, info };
@@ -371,10 +377,10 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                 };
                 const newStatus = statusMap[decision as string];
                 if (newStatus) {
-                    const template = newStatus === 'rejected' 
+                    const template = newStatus === 'rejected'
                         ? emailTemplates.manuscriptRejection(info.authorName || "Author", info.title || "Untitled Manuscript", info.paperId, commentsToAuthor || "")
                         : emailTemplates.resubmissionRequest(info.authorName || "Author", info.title || "Untitled Manuscript", info.paperId, commentsToAuthor || "");
-                    
+
                     sendEmail({ to: info.authorEmail, subject: template.subject, html: template.html }).catch(err => console.error("Email Error:", err));
                 }
             }
@@ -393,7 +399,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
 /**
  * Fetch all review assignments with joined submission data.
  */
-export async function getActiveReviews(reviewerId?: string): Promise<ActionResponse<any[]>> {
+export async function getActiveReviews(reviewerId?: string): Promise<ActionResponse<ActiveReview[]>> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user) return { success: false, error: "Authentication required." };
@@ -402,23 +408,23 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
         if (reviewerId && session.user.role !== 'admin' && session.user.role !== 'editor' && session.user.id !== reviewerId) {
             return { success: false, error: "Unauthorized" };
         }
-        const manuscriptSubquery = db.select({ 
+        const manuscriptSubquery = db.select({
             manuscriptUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('manuscriptUrl'),
-            versionId: submissionFiles.versionId 
+            versionId: submissionFiles.versionId
         })
-        .from(submissionFiles)
-        .where(eq(submissionFiles.fileType, 'pdf_version'))
-        .groupBy(submissionFiles.versionId)
-        .as('ms');
+            .from(submissionFiles)
+            .where(eq(submissionFiles.fileType, 'pdf_version'))
+            .groupBy(submissionFiles.versionId)
+            .as('ms');
 
-        const feedbackSubquery = db.select({ 
+        const feedbackSubquery = db.select({
             feedbackUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('feedbackUrl'),
-            versionId: submissionFiles.versionId 
+            versionId: submissionFiles.versionId
         })
-        .from(submissionFiles)
-        .where(eq(submissionFiles.fileType, 'feedback'))
-        .groupBy(submissionFiles.versionId)
-        .as('fs');
+            .from(submissionFiles)
+            .where(eq(submissionFiles.fileType, 'feedback'))
+            .groupBy(submissionFiles.versionId)
+            .as('fs');
 
         let query = db.select({
             id: reviewAssignments.id,
@@ -437,21 +443,21 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
             manuscriptPath: manuscriptSubquery.manuscriptUrl,
             feedbackFilePath: feedbackSubquery.feedbackUrl
         })
-        .from(reviewAssignments)
-        .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
-        .innerJoin(submissionVersions, eq(reviewAssignments.versionId, submissionVersions.id))
-        .leftJoin(userProfiles, eq(reviewAssignments.reviewerId, userProfiles.userId))
-        .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId))
-        .leftJoin(manuscriptSubquery, eq(reviewAssignments.versionId, manuscriptSubquery.versionId))
-        .leftJoin(feedbackSubquery, eq(reviewAssignments.versionId, feedbackSubquery.versionId))
-        .$dynamic();
+            .from(reviewAssignments)
+            .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
+            .innerJoin(submissionVersions, eq(reviewAssignments.versionId, submissionVersions.id))
+            .leftJoin(userProfiles, eq(reviewAssignments.reviewerId, userProfiles.userId))
+            .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId))
+            .leftJoin(manuscriptSubquery, eq(reviewAssignments.versionId, manuscriptSubquery.versionId))
+            .leftJoin(feedbackSubquery, eq(reviewAssignments.versionId, feedbackSubquery.versionId))
+            .$dynamic();
 
         if (reviewerId) {
             query = query.where(eq(reviewAssignments.reviewerId, reviewerId));
         }
 
         const rows = await query.orderBy(desc(reviewAssignments.assignedAt));
-        return { success: true, data: rows };
+        return { success: true, data: rows as ActiveReview[] };
     } catch (error) {
         console.error("Get Reviews Error:", error);
         return { success: false, error: error instanceof Error ? error.message : String(error) };
@@ -461,44 +467,44 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
 /**
  * Get papers that are ready to be assigned to reviewers.
  */
-export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<any[]>> {
+export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<UnassignedPaper[]>> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Unauthorized" };
         }
 
-       const latestVersions = db.select({
+        const latestVersions = db.select({
             submissionId: submissionVersions.submissionId,
             maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
         })
-        .from(submissionVersions)
-        .groupBy(submissionVersions.submissionId)
-        .as('lv');
+            .from(submissionVersions)
+            .groupBy(submissionVersions.submissionId)
+            .as('lv');
 
-       const manuscriptPaths = db.select({
+        const manuscriptPaths = db.select({
             versionId: submissionFiles.versionId,
             pdfUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('pdfUrl')
-       })
-       .from(submissionFiles)
-       .where(eq(submissionFiles.fileType, 'pdf_version'))
-       .groupBy(submissionFiles.versionId)
-       .as('mp');
+        })
+            .from(submissionFiles)
+            .where(eq(submissionFiles.fileType, 'pdf_version'))
+            .groupBy(submissionFiles.versionId)
+            .as('mp');
 
-       const rows = await db.select({
+        const rows = await db.select({
             id: submissions.id,
             paperId: submissions.paperId,
             title: submissionVersions.title,
             pdfUrl: manuscriptPaths.pdfUrl
-       })
-       .from(submissions)
-       .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
-       .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
-       .leftJoin(manuscriptPaths, eq(submissionVersions.id, manuscriptPaths.versionId))
-       .where(and(
-           inArray(submissions.status, ['submitted', 'editor_assigned', 'under_review', 'revision_requested']),
-           eq(submissionVersions.versionNumber, latestVersions.maxVersion)
-       ));
+        })
+            .from(submissions)
+            .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+            .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+            .leftJoin(manuscriptPaths, eq(submissionVersions.id, manuscriptPaths.versionId))
+            .where(and(
+                inArray(submissions.status, ['submitted', 'editor_assigned', 'under_review', 'revision_requested']),
+                eq(submissionVersions.versionNumber, latestVersions.maxVersion)
+            ));
 
         return { success: true, data: rows };
     } catch (error) {

@@ -33,7 +33,7 @@ export default function PrivacyClient({ settings }: PrivacyClientProps) {
                 <div className="lg:col-span-2 space-y-20">
                     <section className="space-y-4">
                         <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-serif font-semibold text-primary leading-tight">
-                            "Data privacy is a pillar of scientific integrity. We protect your scholarly contributions with advanced security protocols."
+                            &quot;Data privacy is a pillar of scientific integrity. We protect your scholarly contributions with advanced security protocols.&quot;
                         </h2>
                     </section>
 

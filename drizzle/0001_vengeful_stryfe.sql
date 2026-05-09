@@ -1,1 +1,0 @@
-ALTER TABLE `submission_files` MODIFY COLUMN `file_type` enum('main_manuscript','pdf_version','copyright_form','supplementary','feedback','payment_proof') NOT NULL;

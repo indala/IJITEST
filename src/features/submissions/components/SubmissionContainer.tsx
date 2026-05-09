@@ -33,6 +33,7 @@ import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import SubmissionSearch from './SubmissionSearch';
 import DeleteSubmissionButton from './DeleteSubmissionButton';
+import { SubmissionUI } from '@/db/types';
 
 const getStatusVariant = (status: string) => {
     switch (status) {
@@ -47,7 +48,7 @@ const getStatusVariant = (status: string) => {
     }
 };
 
-const SubmissionMobileCard = React.memo(({ sub, role }: { sub: any, role: string }) => (
+const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, role: string }) => (
     <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -101,7 +102,7 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: any, role: string
             <div className="space-y-1 text-right">
                 <span className="opacity-40">Registry Date</span>
                 <p className="text-foreground">
-                    {new Date(sub.submitted_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
                 </p>
             </div>
         </div>
@@ -114,7 +115,7 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: any, role: string
 
 SubmissionMobileCard.displayName = 'SubmissionMobileCard';
 
-const SubmissionDesktopRow = React.memo(({ sub, idx, role }: { sub: any, idx: number, role: string }) => (
+const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, role: string }) => (
     <TableRow
         key={sub.id}
         className="border-b border-border/50 group hover:bg-muted/30 transition-all"
@@ -126,7 +127,7 @@ const SubmissionDesktopRow = React.memo(({ sub, idx, role }: { sub: any, idx: nu
         </TableCell>
         <TableCell className="px-6 py-6 max-w-96 whitespace-normal">
             <div className="flex flex-col gap-2 ">
-                <h4 className="font-serif text-foreground text-xl leading-tight group-hover:text-primary transition-colors break-words">
+                <h4 className="font-serif text-foreground text-xl leading-tight group-hover:text-primary transition-colors wrap-break-word">
                     {sub.title}
                 </h4>
                 <div className="flex items-center gap-10 opacity-60">
@@ -134,7 +135,7 @@ const SubmissionDesktopRow = React.memo(({ sub, idx, role }: { sub: any, idx: nu
                         <User className="w-4 h-4 text-primary" /> {sub.author_name}
                     </span>
                     <span className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-primary" /> {new Date(sub.submitted_at).toLocaleDateString(undefined, { dateStyle: 'long' })}
+                        <Calendar className="w-4 h-4 text-primary" /> {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'N/A'}
                     </span>
                 </div>
             </div>
@@ -144,7 +145,7 @@ const SubmissionDesktopRow = React.memo(({ sub, idx, role }: { sub: any, idx: nu
                 <Badge className={`h-8 px-4 rounded-lg border-none shadow-sm ${getStatusVariant(sub.status)}`}>
                     {sub.status.replace('_', ' ')}
                 </Badge>
-                {sub.status === 'under_review' && sub.completed_reviews > 0 && (
+                {sub.status === 'under_review' && (sub.completed_reviews ?? 0) > 0 && (
                     <div className="flex items-center gap-2 text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
                         <MessageSquare className="w-4 h-4" />
                         {sub.completed_reviews} REVIEWS
@@ -202,12 +203,12 @@ const SubmissionDesktopRow = React.memo(({ sub, idx, role }: { sub: any, idx: nu
 SubmissionDesktopRow.displayName = 'SubmissionDesktopRow';
 
 interface SubmissionContainerProps {
-    submissions: any[];
+    submissions: SubmissionUI[];
     currentStatus: string;
     role: 'admin' | 'editor';
 }
 
-export default function SubmissionContainer({ submissions, currentStatus, role }: SubmissionContainerProps) {
+export default function SubmissionContainer({ submissions, currentStatus: _currentStatus, role }: SubmissionContainerProps) {
     const [filterQuery, setFilterQuery] = useState('');
 
     const filteredSubmissions = useMemo(() => {
@@ -247,7 +248,7 @@ export default function SubmissionContainer({ submissions, currentStatus, role }
 
             {/* Mobile Card View */}
             <div className="md:hidden divide-y divide-primary/5">
-                {filteredSubmissions.map((sub: any) => (
+                {filteredSubmissions.map((sub) => (
                     <SubmissionMobileCard key={sub.id} sub={sub} role={role} />
                 ))}
             </div>
@@ -264,8 +265,8 @@ export default function SubmissionContainer({ submissions, currentStatus, role }
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredSubmissions.map((sub: any, idx) => (
-                            <SubmissionDesktopRow key={sub.id} sub={sub} idx={idx} role={role} />
+                        {filteredSubmissions.map((sub) => (
+                            <SubmissionDesktopRow key={sub.id} sub={sub} role={role} />
                         ))}
                     </TableBody>
                 </Table>

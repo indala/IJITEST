@@ -19,8 +19,34 @@ import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import fs from "fs/promises";
 import path from "path";
-import { ActionResponse } from "@/db/types";
+import { ActionResponse, SubmissionFile, AuthorDashboardSubmission } from "@/db/types";
 import { safeDeleteFile } from "@/lib/fs-utils";
+import { InferSelectModel } from "drizzle-orm";
+
+interface AuthorSubmissionDetail {
+    id: number;
+    paperId: string;
+    status: string;
+    submittedAt: Date | null;
+    updatedAt: Date | null;
+    versionId: number;
+    versionNumber: number;
+    title: string;
+    abstract: string | null;
+    keywords: string | null;
+    changelog: string | null;
+    files: SubmissionFile[];
+    authors: InferSelectModel<typeof submissionAuthors>[];
+    payment: InferSelectModel<typeof payments> | null;
+    publication: {
+        finalPdfUrl: string | null;
+        doi: string | null;
+        publishedAt: Date | null;
+        volume: number | null;
+        issue: number | null;
+        year: number | null;
+    } | null;
+}
 
 /**
  * Utility to get the current authenticated author.
@@ -35,7 +61,7 @@ async function getAuthorSession() {
  * Fetch all submissions belonging to the logged-in author.
  * Includes joined data for current title, publication info, and payment status.
  */
-export async function getAuthorDashboard(): Promise<ActionResponse<{ submissions: unknown[] }>> {
+export async function getAuthorDashboard(): Promise<ActionResponse<{ submissions: AuthorDashboardSubmission[] }>> {
     try {
         const author = await getAuthorSession();
         if (!author) return { success: false, error: "Unauthorized", data: { submissions: [] } };
@@ -89,7 +115,7 @@ export async function getAuthorDashboard(): Promise<ActionResponse<{ submissions
 /**
  * Fetch detailed view of a single submission for the author.
  */
-export async function getAuthorSubmission(submissionId: number): Promise<ActionResponse<any>> {
+export async function getAuthorSubmission(submissionId: number): Promise<ActionResponse<AuthorSubmissionDetail>> {
     try {
         const author = await getAuthorSession();
         if (!author) return { success: false, error: "Unauthorized" };
@@ -130,6 +156,7 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
 
         if (!subData.length) return { success: false, error: "Submission not found" };
         const sub = subData[0];
+        if (!sub) return { success: false, error: "Submission not found" };
 
         // 2. Files (Restricted to Manuscript and Copyright for Author)
         const files = await db.select()
@@ -173,7 +200,7 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
                 authors: authorsList,
                 payment: paymentData[0] || null,
                 publication: publicationData[0] || null
-            }
+            } as AuthorSubmissionDetail
         };
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -201,8 +228,8 @@ export async function checkResubmissionEligibility(submissionId: number): Promis
         .limit(1);
 
         if (!rows.length) return { success: false, error: "Submission not found", data: { eligible: false, daysRemaining: 0 } };
-
         const sub = rows[0];
+        if (!sub) return { success: false, error: "Submission not found", data: { eligible: false, daysRemaining: 0 } };
         if (sub.correspondingAuthorId !== author.id) return { success: false, error: "Unauthorized access", data: { eligible: false, daysRemaining: 0 } };
 
         if (!['revision_requested', 'rejected'].includes(sub.status)) {
@@ -257,6 +284,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             
             if (!versionsArr.length) throw new Error("Original version records not found.");
             const latest = versionsArr[0];
+            if (!latest) throw new Error("Original version records not found.");
             const nextVersion = latest.versionNumber + 1;
 
             // B. Create New Version Record
@@ -268,7 +296,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                 keywords: latest.keywords,
                 changelog: changelog || "Revised version submission",
             });
-            const verId = (versionInsert as any).insertId;
+            const verId = versionInsert.insertId;
 
             // C. Predictable URLs (DB First)
             const timestamp = Date.now();
@@ -298,10 +326,10 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
 
             await fs.writeFile(path.join(uploadDir, result.cName), Buffer.from(await copyrightFile.arrayBuffer()));
             fileCleanup.push(path.join(uploadDir, result.cName));
-        } catch (ioErr) {
+        } catch {
             // IO failed — cleanup disk and rollback DB
             for (const filePath of fileCleanup) {
-                try { await fs.unlink(filePath); } catch (e) { /* ignore */ }
+                try { await fs.unlink(filePath); } catch { /* ignore */ }
             }
 
             await db.transaction(async (tx) => {
@@ -330,13 +358,21 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             .limit(1);
 
             if (paperData.length > 0) {
-                const { paperId, title, authorName } = paperData[0];
-                const staff = await db.select({ email: users.email, role: users.role }).from(users).where(inArray(users.role, ['admin', 'editor']));
-                
-                await Promise.allSettled(staff.map(s => {
-                    const template = emailTemplates.resubmissionReceived(authorName, title, paperId, submissionId, s.role as 'admin' | 'editor');
-                    return sendEmail({ to: s.email, subject: template.subject, html: template.html });
-                }));
+                const paper = paperData[0];
+                if (paper) {
+                    const staff = await db.select({ email: users.email, role: users.role }).from(users).where(inArray(users.role, ['admin', 'editor']));
+                    
+                    await Promise.allSettled(staff.map(s => {
+                        const template = emailTemplates.resubmissionReceived(
+                            paper.authorName || 'Author',
+                            paper.title || 'Untitled',
+                            paper.paperId || '',
+                            submissionId,
+                            s.role as 'admin' | 'editor'
+                        );
+                        return sendEmail({ to: s.email, subject: template.subject, html: template.html });
+                    }));
+                }
             }
         } catch (mailErr) {
             console.error("Resubmission Notification Error:", mailErr);

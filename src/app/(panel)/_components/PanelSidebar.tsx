@@ -20,10 +20,12 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { User } from "next-auth";
+
 interface PanelSidebarProps {
     pathname: string;
-    user: any;
-    filteredItems: any[];
+    user: User | null;
+    filteredItems: { name: string; fullHref: string; icon?: React.ReactNode; labelOverrides?: Record<string, string> }[];
     handleLogout: () => Promise<void>;
 }
 
@@ -33,7 +35,7 @@ export function PanelSidebar({
     filteredItems,
     handleLogout,
 }: PanelSidebarProps) {
-    const { state, open, setOpen, isMobile, setOpenMobile, toggleSidebar } = useSidebar();
+    const { state, isMobile, setOpenMobile, toggleSidebar } = useSidebar();
     const isCollapsed = state === "collapsed";
 
     return (
@@ -64,7 +66,7 @@ export function PanelSidebar({
             <SidebarHeader className="h-16 flex flex-row items-center justify-between px-6 border-b border-border/20 overflow-hidden">
                 <Link href="/" className="flex items-center gap-3 group cursor-pointer shrink-0" onClick={() => setOpenMobile(false)}>
                     <div className="bg-primary size-8 rounded-lg flex items-center justify-center shadow-lg shadow-primary/10 group-hover:scale-105 transition-transform shrink-0">
-                        <Layers className="size-5 text-white stroke-[2]" />
+                        <Layers className="size-5 text-white stroke-2"/>
                     </div>
                     {!isCollapsed && (
                         <div className="space-y-0 whitespace-nowrap opacity-100 transition-opacity duration-300">

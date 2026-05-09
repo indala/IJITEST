@@ -6,8 +6,8 @@ import LoginClient from "./LoginClient";
 export default async function LoginPage() {
     const session = await getServerSession(authOptions);
 
-    if (session) {
-        const role = (session.user as any)?.role || 'reviewer';
+    if (session?.user) {
+        const role = session.user.role || 'reviewer';
         redirect(`/${role}`);
     }
 

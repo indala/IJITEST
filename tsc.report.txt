@@ -1,0 +1,4 @@
+src/features/home/components/HomeCarousel.tsx(47,34): error TS2532: Object is possibly 'undefined'.
+src/features/shared/components/ArchivesClient.tsx(64,41): error TS2532: Object is possibly 'undefined'.
+src/features/shared/components/ArchivesClient.tsx(64,81): error TS2532: Object is possibly 'undefined'.
+src/features/shared/components/ArchivesClient.tsx(64,115): error TS2532: Object is possibly 'undefined'.

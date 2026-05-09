@@ -35,7 +35,7 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                             <div className="space-y-3">
                                 <h2 className="text-xl font-semibold text-white">Global Visibility</h2>
                                 <p className="text-sm text-white/70 border-l-2 border-white/10 pl-6 m-0 leading-relaxed">
-                                    "Our strategic mandate is to ensure that every validated innovation published in {journalShortName} reaches the global scientific community through premier indexing hubs."
+                                    &quot;Our strategic mandate is to ensure that every validated innovation published in {journalShortName} reaches the global scientific community through premier indexing hubs.&quot;
                                 </p>
                             </div>
                         </div>

@@ -10,7 +10,10 @@ export default async function AdminSubmissions({
 }) {
     const { status, q } = await searchParams;
     const currentStatus = status || 'all';
-    const res = await getAllSubmissions({ status: currentStatus, q });
+    const res = await getAllSubmissions({ 
+        status: currentStatus, 
+        ...(q ? { q } : {}) 
+    });
     const submissions = res.data || [];
     const error = res.error;
     

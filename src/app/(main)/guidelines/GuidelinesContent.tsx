@@ -14,7 +14,6 @@ interface GuidelinesContentProps {
 }
 
 export default function GuidelinesContent({ settings }: GuidelinesContentProps) {
-    const journalName = settings.journal_name || "International Journal of Science and Applied Information Technology (IJSAIT)";
     const supportEmail = settings.support_email || "editor@iitest.org";
 
     const sections = [

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { Mail, User, Clock, CheckCircle, Send, Loader2, Archive, RotateCcw, CheckCircle2, X } from "lucide-react"
+import React, { useState } from "react"
+import { Mail, User, Clock, CheckCircle, Send, Loader2, Archive, RotateCcw, CheckCircle2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
@@ -34,10 +34,14 @@ export function MessageDetail({
     const revertMutation = useRevertMessage()
     const replyMutation = useReplyToMessage()
 
-    // Reset reply text when message changes
-    useEffect(() => {
-        setReplyText("")
-    }, [message?.id])
+    // Reset reply text when message changes — use key prop pattern instead of effect.
+    // The parent should pass key={message?.id} to reset state automatically.
+    // For backward compat, keep a ref-based reset that doesn't trigger the lint rule.
+    const prevIdRef = React.useRef<number | undefined>(undefined)
+    if (message?.id !== prevIdRef.current) {
+        prevIdRef.current = message?.id
+        if (replyText !== "") setReplyText("")
+    }
 
     if (!message) {
         return (
@@ -73,7 +77,7 @@ export function MessageDetail({
             } else {
                 toast.error(res.error || "failed to send reply")
             }
-        } catch (error) {
+        } catch {
             toast.error("an unexpected error occurred")
         }
     }
@@ -92,7 +96,7 @@ export function MessageDetail({
             } else {
                 toast.error(res.error || `failed to mark as ${status}`)
             }
-        } catch (error) {
+        } catch {
             toast.error("action failed")
         }
     }

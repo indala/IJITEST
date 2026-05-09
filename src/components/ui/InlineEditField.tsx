@@ -28,20 +28,27 @@ export function InlineEditField({
     className
 }: InlineEditFieldProps) {
     const [isEditing, setIsEditing] = useState(false)
+    const [prevValue, setPrevValue] = useState(value)
     const [currentValue, setCurrentValue] = useState(value)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const inputRef = useRef<any>(null)
+    const inputRef = useRef<HTMLInputElement>(null)
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-    useEffect(() => {
+    if (value !== prevValue) {
+        setPrevValue(value)
         setCurrentValue(value)
-    }, [value])
+    }
 
     useEffect(() => {
         if (isEditing) {
-            inputRef.current?.focus()
+            if (type === "textarea") {
+                textareaRef.current?.focus()
+            } else {
+                inputRef.current?.focus()
+            }
         }
-    }, [isEditing])
+    }, [isEditing, type])
 
     const handleSave = async () => {
         if (currentValue === value) {
@@ -53,8 +60,8 @@ export function InlineEditField({
         try {
             await onSave(currentValue)
             setIsEditing(false)
-        } catch (e: any) {
-            setError(e.message || "Failed to save")
+        } catch (e) {
+            setError(e instanceof Error ? e.message : "Failed to save")
         } finally {
             setIsLoading(false)
         }
@@ -83,7 +90,7 @@ export function InlineEditField({
                             )}
                             {type === "textarea" ? (
                                 <textarea
-                                    ref={inputRef}
+                                    ref={textareaRef}
                                     value={currentValue}
                                     onChange={(e) => setCurrentValue(e.target.value)}
                                     placeholder={placeholder}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo, useCallback } from 'react';
+import { useEffect, useState, memo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
@@ -17,7 +17,8 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
+        const timer = setTimeout(() => setMounted(true), 0);
+        return () => clearTimeout(timer);
     }, []);
 
     const handleClose = useCallback(() => setIsOpen(false), [setIsOpen]);
@@ -49,7 +50,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={handleClose}
-                        className="fixed  inset-0 bg-primary/20 backdrop-blur-md z-[9998] lg:hidden"
+                        className="fixed  inset-0 bg-primary/20 backdrop-blur-md z-9998 lg:hidden"
                     />
 
                     {/* Fixed Floating Modal Content */}
@@ -58,7 +59,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: -20 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="fixed top-12 left-4 right-4 mx-auto w-[calc(100%-2rem)] max-w-[480px] bg-white/95 backdrop-blur-3xl rounded-[2rem] shadow-[0_40px_80px_-16px_rgba(0,0,0,0.3)] border border-white/40 flex flex-col overflow-hidden max-h-[85vh] z-[9999] lg:hidden"
+                        className="fixed top-12 left-4 right-4 mx-auto w-[calc(100%-2rem)] max-w-[480px] bg-white/95 backdrop-blur-3xl rounded-4xl shadow-[0_40px_80px_-16px_rgba(0,0,0,0.3)] border border-white/40 flex flex-col overflow-hidden max-h-[85vh] z-9999 lg:hidden"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 h-16 border-b border-primary/5 shrink-0">
@@ -105,8 +106,8 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                                     className={cn(
                                                         "group flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-all duration-300 border border-transparent",
                                                         isActive
-                                                            ? "bg-primary/[0.04] border-primary/5"
-                                                            : "hover:bg-primary/[0.02]"
+                                                            ? "bg-primary/4 border-primary/5"
+                                                            : "hover:bg-primary/2"
                                                     )}
                                                 >
                                                     <div className="flex items-center gap-3.5">
@@ -117,7 +118,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                                             {item.icon && <item.icon className="w-4 h-4" />}
                                                         </div>
                                                         <span className={cn(
-                                                            "text-[12px] font-black tracking-[0.05em] transition-all duration-300",
+                                                            "text-[12px] font-black tracking-wider transition-all duration-300",
                                                             isActive ? "text-primary" : "text-primary/60 group-hover:text-primary"
                                                         )}>{item.name}</span>
                                                     </div>

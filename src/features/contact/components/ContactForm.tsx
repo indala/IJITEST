@@ -67,7 +67,7 @@ export default function ContactForm() {
         <div className="space-y-4">
             <div>
                 <h3 className="font-bold text-primary lowercase">direct inquiry form</h3>
-                <p className="text-primary/60 text-[10px] font-medium mt-0.5 lowercase">fill out the form below and we'll get back to you shortly.</p>
+                <p className="text-primary/60 text-[10px] font-medium mt-0.5 lowercase">fill out the form below and we&apos;ll get back to you shortly.</p>
             </div>
 
             <Form {...form}>

@@ -193,7 +193,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                                         {r.status === 'completed' && <CheckCircle className="w-4 h-4 text-emerald-500" />}
                                                     </CardHeader>
                                                     <CardContent className="p-4">
-                                                        <p className="text-xs text-muted-foreground font-medium  leading-relaxed whitespace-pre-wrap">"{r.review?.commentsToAuthor || "Feedback in progress..."}"</p>
+                                                        <p className="text-xs text-muted-foreground font-medium  leading-relaxed whitespace-pre-wrap">&ldquo;{r.review?.commentsToAuthor || "Feedback in progress..."}&rdquo;</p>
                                                     </CardContent>
                                                 </Card>
                                             ))
@@ -370,9 +370,9 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                                     </div>
                                                 </div>
 
-                                                <PublicationAssignment
-                                                    submissionId={submission.id}
-                                                    currentIssueId={submission.issue_id}
+                                                <PublicationAssignment 
+                                                    submissionId={submission.id} 
+                                                    currentIssueId={submission.issue_id ?? null} 
                                                 />
                                             </div>
                                         </div>

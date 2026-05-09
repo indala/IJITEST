@@ -52,7 +52,7 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
                 setErrorMessage(res.error || "Failed to terminate the submission node.");
                 setErrorOpen(true);
             }
-        } catch (error) {
+        } catch {
             setErrorMessage("An architectural error occurred during node termination.");
             setErrorOpen(true);
         } finally {

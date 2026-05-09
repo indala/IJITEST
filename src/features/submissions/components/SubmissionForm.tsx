@@ -165,7 +165,7 @@ export default function SubmissionForm() {
                         Your paper has been successfully submitted. We have sent a confirmation email to the primary author.
                     </p>
                     <p className="text-xs font-bold text-[#000066] mt-4">
-                        Submission ID: {(submissionMutation.data as any)?.paperId}
+                        Submission ID: {(submissionMutation.data as { data?: { paperId: string } })?.data?.paperId}
                     </p>
                 </div>
                 <Button onClick={() => submissionMutation.reset()} variant="outline" className="h-10 px-6 rounded-lg border-border/50 text-[#000066] hover:bg-[#000066]/5 font-semibold text-xs transition-all">

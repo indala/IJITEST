@@ -1,6 +1,7 @@
+import { useId } from 'react';
 
 interface JsonLdProps {
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   id?: string;
 }
 
@@ -10,9 +11,10 @@ interface JsonLdProps {
  * Rendered on the server for maximum SEO compatibility.
  */
 export function JsonLd({ data, id }: JsonLdProps) {
+  const generatedId = useId();
   return (
     <script
-      id={id || `json-ld-${Math.random().toString(36).slice(2, 11)}`}
+      id={id || generatedId}
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />

@@ -63,7 +63,7 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                                         <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary border border-primary/10 transition-colors">
                                             <stage.icon className="w-5 h-5" />
                                         </div>
-                                        {idx !== stages.length - 1 && <div className="w-[1px] h-full bg-border/50 my-2" />}
+                                        {idx !== stages.length - 1 && <div className="w-pxfull bg-border/50 my-2" />}
                                     </div>
                                     <div className="pb-6">
                                         <h3 className="text-base font-semibold text-primary mb-1">
@@ -87,7 +87,7 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                             <div className="space-y-1">
                                 <h3 className="text-lg font-semibold text-primary m-0">Rapid Verdict</h3>
                                 <p className="text-muted-foreground text-sm leading-relaxed m-0 italic">
-                                    "{journalShortName} target first-round decisions within 2-3 days of submission."
+                                    &quot;{journalShortName} target first-round decisions within 2-3 days of submission.&quot;
                                 </p>
                             </div>
                         </div>

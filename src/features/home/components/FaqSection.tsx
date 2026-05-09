@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+
 import {
   Accordion,
   AccordionContent,
@@ -73,7 +73,7 @@ export default function FaqSection() {
 
           <div className="pt-8 text-center border-t border-border/50">
             <p className="text-xs text-muted-foreground italic">
-              Can't find what you're looking for? <a href="/contact" className="text-[#000066] font-semibold underline-offset-4 hover:underline">Contact our support team</a> directly.
+              Can&apos;t find what you&apos;re looking for? <a href="/contact" className="text-[#000066] font-semibold underline-offset-4 hover:underline">Contact our support team</a> directly.
             </p>
           </div>
         </div>

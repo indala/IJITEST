@@ -54,6 +54,8 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
 
         for (let i = 0; i < pages.length; i++) {
             const page = pages[i];
+            if (!page) continue;
+
             const { width, height } = page.getSize();
             const currentPageNumber = (metadata.startPage || 1) + i;
 
@@ -77,7 +79,7 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
 
             // Draw the new header lines
             const textX = 50 + (logoWidth * (35 / logoHeight)) + 20;
-            page.drawText(headerLines[0], {
+            page.drawText(headerLines[0] || "", {
                 x: textX,
                 y: height - 25,
                 size: fontSize + 1,
@@ -85,7 +87,7 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
                 color: rgb(0.5, 0, 0),
             });
 
-            page.drawText(headerLines[1], {
+            page.drawText(headerLines[1] || "", {
                 x: textX,
                 y: height - 40,
                 size: fontSize - 1,
@@ -93,7 +95,7 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
                 color: rgb(0.4, 0, 0.4),
             });
 
-            page.drawText(headerLines[2], {
+            page.drawText(headerLines[2] || "", {
                 x: textX,
                 y: height - 55,
                 size: fontSize - 1,

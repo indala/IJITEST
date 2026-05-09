@@ -9,7 +9,6 @@ interface TermsClientProps {
 
 export default function TermsClient({ settings }: TermsClientProps) {
     const journalName = settings.journal_name || "IJITEST";
-    const supportEmail = settings.support_email || "editor@ijitest.org";
 
     const framework = [
         {
@@ -33,7 +32,7 @@ export default function TermsClient({ settings }: TermsClientProps) {
                 <div className="lg:col-span-2 space-y-20">
                     <section className="space-y-4">
                         <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-serif font-semibold text-primary leading-tight">
-                            "The {journalName} legal framework ensures a transparent, ethical, and professional ecosystem for engineering excellence."
+                            &quot;The {journalName} legal framework ensures a transparent, ethical, and professional ecosystem for engineering excellence.&quot;
                         </h2>
                     </section>
 

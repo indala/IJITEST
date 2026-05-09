@@ -69,8 +69,8 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
             assignMutation.mutateAsync({
                 submissionId,
                 issueId: parseInt(selectedIssueId),
-                startPage: startPage ? parseInt(startPage) : undefined,
-                endPage: endPage ? parseInt(endPage) : undefined
+                ...(startPage ? { startPage: parseInt(startPage) } : {}),
+                ...(endPage ? { endPage: parseInt(endPage) } : {})
             }).then((res) => {
                 if (!res.success) throw new Error(res.error || "Failed to assign paper to issue");
                 return res;
@@ -169,9 +169,9 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
                             className="w-full h-11 bg-background border border-emerald-500/20 rounded-xl px-4 appearance-none outline-none focus:ring-4 focus:ring-emerald-500/5 transition-all text-emerald-900 cursor-pointer"
                         >
                             <option value="">Select Target Issue...</option>
-                            {volumes.map((vi: any) => (
+                            {volumes.map((vi) => (
                                 <option key={vi.id} value={vi.id}>
-                                    VOL {vi.volume_number} ISSUE {vi.issue_number} ({vi.year})
+                                    VOL {vi.volumeNumber} ISSUE {vi.issueNumber} ({vi.year})
                                 </option>
                             ))}
                         </select>

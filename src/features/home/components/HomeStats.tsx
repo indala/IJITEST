@@ -9,8 +9,6 @@ const stats = [
     { label: "Open Access", value: "peer-review", color: "text-amber-600", dotColor: "bg-amber-600", delay: 0.2 }
 ];
 
-const CARD_DURATION = 3;
-const TOTAL_CYCLE = stats.length * CARD_DURATION;
 
 import { Card, CardContent } from "@/components/ui/card";
 

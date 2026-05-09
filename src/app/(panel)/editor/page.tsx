@@ -17,8 +17,7 @@ import * as ss from 'simple-statistics';
 export const dynamic = 'force-dynamic';
 
 export default async function EditorDashboard() {
-    try {
-        const session: any = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions);
         const user = session?.user;
         const mySubmissions = await getMySubmissions();
 
@@ -35,9 +34,9 @@ export default async function EditorDashboard() {
         const currentIssue = latestIssue ? `${latestIssue.year} Edition` : '2026 Edition';
 
         const stats = [
-            { label: 'Submissions', value: totalSubmissions.value, icon: 'FileStack', variant: 'indigo' },
-            { label: 'Reviewing', value: underReview.value, icon: 'ShieldCheck', variant: 'blue' },
-            { label: 'Pending', value: pendingPayments.value, icon: 'CreditCard', variant: 'emerald' },
+            { label: 'Submissions', value: totalSubmissions?.value ?? 0, icon: 'FileStack', variant: 'indigo' },
+            { label: 'Reviewing', value: underReview?.value ?? 0, icon: 'ShieldCheck', variant: 'blue' },
+            { label: 'Pending', value: pendingPayments?.value ?? 0, icon: 'CreditCard', variant: 'emerald' },
             { label: 'Published', value: currentIssue, icon: 'BookOpen', variant: 'amber' },
         ];
 
@@ -66,7 +65,7 @@ export default async function EditorDashboard() {
         const uploadsPath = path.join(process.cwd(), 'public', 'uploads');
         const storagePath = path.join(process.cwd(), 'storage');
         const getDirSize = (p: string): number => {
-            let s = 0; try { fs.readdirSync(p).forEach(f => { const fp = path.join(p, f); const st = fs.statSync(fp); s += st.isDirectory() ? getDirSize(fp) : st.size; }); } catch(e){} return s;
+            let s = 0; try { fs.readdirSync(p).forEach(f => { const fp = path.join(p, f); const st = fs.statSync(fp); s += st.isDirectory() ? getDirSize(fp) : st.size; }); } catch { /* ignore */ } return s;
         };
         const totalStorageBytes = getDirSize(uploadsPath) + getDirSize(storagePath);
         const storageMB = (totalStorageBytes / (1024 * 1024)).toFixed(1);
@@ -82,35 +81,32 @@ export default async function EditorDashboard() {
             { label: 'Health', value: `${healthScore}%`, status: Number(healthScore) > 90 ? 'Excellent' : 'Good', icon: 'Shield' }
         ];
 
-        const pubPercent = totalSubmissions.value > 0 ? (publishedCount.value / totalSubmissions.value) * 100 : 0;
-        // Simplified review rate for editor
-        const revPercent = 85.0; 
+    const totalSubCount = Number(totalSubmissions?.value ?? 0);
+    const pubCount = Number(publishedCount?.value ?? 0);
+    const pubPercent = totalSubCount > 0 ? (pubCount / totalSubCount) * 100 : 0;
+    // Simplified review rate for editor
+    const revPercent = 85.0; 
 
-        return (
-            <DashboardRegistry 
-                role="editor"
-                user={user}
-                stats={stats}
-                recentSubmissions={recentSubmissions}
-                mySubmissions={mySubmissions}
-                healthMetrics={healthMetrics}
-                percentages={{ pub: pubPercent, rev: revPercent }}
-                queueTabLabel="Submissions"
-                recentSubmissionsTitle="Active Submissions"
-                metricsLabels={{ pubRate: "Publication Rate", revRate: "Review Rate" }}
-            >
-                <div className="p-6 border-primary/10 bg-card/30 border-dashed border-2 flex flex-col items-center justify-center text-center rounded-xl">
-                    <TrendingUp className="w-8 h-8 text-primary/20 mb-3" />
-                    <h4 className="mb-1">Support</h4>
-                    <p className="opacity-60 mb-4">Need help with your submissions?</p>
-                    <Button asChild size="sm" variant="outline" className="h-9 px-6 text-xs font-semibold text-primary border-primary/20 hover:bg-primary/5 rounded-lg cursor-pointer">
-                        <Link href="/editor/messages" className="cursor-pointer">Contact</Link>
-                    </Button>
-                </div>
-            </DashboardRegistry>
-        );
-    } catch (error) {
-        console.error("Editor Dashboard Error:", error);
-        return <div>Logical Sync Failure in Sector 0.</div>;
-    }
+    return (
+        <DashboardRegistry 
+            role="editor"
+            user={user}
+            stats={stats}
+            recentSubmissions={recentSubmissions}
+            mySubmissions={mySubmissions}
+            healthMetrics={healthMetrics}
+            percentages={{ pub: pubPercent, rev: revPercent }}
+            recentSubmissionsTitle="Active Submissions"
+            metricsLabels={{ pubRate: "Publication Rate", revRate: "Review Rate" }}
+        >
+            <div className="p-6 border-primary/10 bg-card/30 border-dashed border-2 flex flex-col items-center justify-center text-center rounded-xl">
+                <TrendingUp className="w-8 h-8 text-primary/20 mb-3" />
+                <h4 className="mb-1">Support</h4>
+                <p className="opacity-60 mb-4">Need help with your submissions?</p>
+                <Button asChild size="sm" variant="outline" className="h-9 px-6 text-xs font-semibold text-primary border-primary/20 hover:bg-primary/5 rounded-lg cursor-pointer">
+                    <Link href="/editor/messages" className="cursor-pointer">Contact</Link>
+                </Button>
+            </div>
+        </DashboardRegistry>
+    );
 }

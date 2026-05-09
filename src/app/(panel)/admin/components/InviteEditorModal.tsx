@@ -41,7 +41,7 @@ export default function InviteEditorModal() {
                     description: result.error || "Failed to secure invitation link."
                 });
             }
-        } catch (error) {
+        } catch {
             toast.error("System Error", {
                 description: "Critical failure during invitation protocol."
             });

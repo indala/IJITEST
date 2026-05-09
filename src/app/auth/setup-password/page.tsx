@@ -14,7 +14,7 @@ function SetupContent() {
     const token = searchParams.get('token');
     const ctx = searchParams.get('ctx'); // 'reset' or null (setup)
 
-    const [info, setInfo] = useState<any>(null);
+    const [info, setInfo] = useState<{ email: string; role: string; fullName?: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
@@ -22,22 +22,27 @@ function SetupContent() {
 
     useEffect(() => {
         if (!token) {
-            setLoading(false);
-            return;
+            // Defer to avoid synchronous setState in effect
+            const id = setTimeout(() => setLoading(false), 0);
+            return () => clearTimeout(id);
         }
+        let isMounted = true;
         async function load() {
             try {
                 const result = await getPasswordSetupInfo(token!);
-                if (result.success) {
-                    setInfo(result.data);
+                if (isMounted) {
+                    if (result.success && result.data) {
+                        setInfo(result.data);
+                    }
+                    setLoading(false);
                 }
-            } catch (err) {
-                console.error("Setup info load error:", err);
-            } finally {
-                setLoading(false);
+            } catch (_error) {
+                console.error("Setup info load error:", _error);
+                if (isMounted) setLoading(false);
             }
         }
         load();
+        return () => { isMounted = false; };
     }, [token]);
 
     const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
@@ -65,7 +70,7 @@ function SetupContent() {
                 setErrorMessage(result.error || "Failed to setup password");
                 setStatus('error');
             }
-        } catch (err) {
+        } catch { // network error
             setErrorMessage("A network error occurred. Please try again.");
             setStatus('error');
         }

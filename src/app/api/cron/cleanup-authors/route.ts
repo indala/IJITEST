@@ -68,7 +68,8 @@ export async function GET(req: Request) {
                     .from(submissions)
                     .where(eq(submissions.correspondingAuthorId, authorId!));
                 
-                if (Number(remainingSubmissions[0].count) === 0) {
+                const result = remainingSubmissions[0];
+                if (result && Number(result.count) === 0) {
                     await db.delete(users).where(and(eq(users.id, authorId!), eq(users.role, 'author')));
                     deletedAuthorsCount++;
                 }

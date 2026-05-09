@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense, startTransition } from 'react';
 import {
     ShieldAlert, User, FileUp, CheckCircle, Clock, Search,
     Plus, X, Download, FileText, Eye, RefreshCw, Loader2
@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
-import { useActiveReviews, useUnassignedPapers, useAssignReviewer, useSubmitReview } from '@/hooks/queries/useReviews';
+import { useActiveReviews, useUnassignedPapers, useAssignReviewer, useSubmitReview, ReviewAssignment } from '@/hooks/queries/useReviews';
 import { useUsers } from '@/hooks/queries/useUsers';
 import { decideSubmission, autoSyncManuscriptToPdf } from '@/actions/submissions';
 import { useQueryClient } from '@tanstack/react-query';
@@ -41,12 +41,12 @@ const ReviewItemCard = React.memo(({
     onReject,
     onFeedbackSubmit
 }: {
-    item: any,
-    user: any,
+    item: ReviewAssignment,
+    user: { role?: string } | null | undefined, // session user
     isInternalStaff: boolean,
-    onAccept: (item: any) => void,
-    onReject: (item: any) => void,
-    onFeedbackSubmit: (item: any, formData: FormData) => Promise<void>
+    onAccept: (item: ReviewAssignment) => void,
+    onReject: (item: ReviewAssignment) => void,
+    onFeedbackSubmit: (item: ReviewAssignment, formData: FormData) => Promise<void>
 }) => {
     const [feedbackFile, setFeedbackFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -90,7 +90,7 @@ const ReviewItemCard = React.memo(({
 
                         {item.commentsToAuthor && (
                             <div className="mt-6 p-6 bg-muted/30 rounded-2xl border-l-4 border-l-primary text-base text-foreground leading-relaxed italic">
-                                "{item.commentsToAuthor}"
+                                &quot;{item.commentsToAuthor}&quot;
                             </div>
                         )}
                     </div>
@@ -275,9 +275,8 @@ ReviewItemCard.displayName = "ReviewItemCard";
 export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer' }) {
     const { data: session } = useSession();
     const searchParams = useSearchParams();
+    const reviewerId = role === 'reviewer' ? (session?.user as { id?: string })?.id : undefined;
     const assignIdFromUrl = searchParams.get('assign');
-
-    const reviewerId = role === 'reviewer' ? (session?.user as any)?.id : undefined;
 
     const { data: reviews = [], isLoading: loadingReviews, refetch: refetchReviews } = useActiveReviews(reviewerId);
     const { data: unassigned = [], isLoading: loadingUnassigned } = useUnassignedPapers();
@@ -309,7 +308,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
             } else {
                 toast.error(res.error || "Conversion failed", { id: tid });
             }
-        } catch (e) {
+        } catch {
             toast.error("Failed to connect to conversion engine", { id: tid });
         } finally {
             setIsConverting(false);
@@ -317,13 +316,16 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
     };
 
     useEffect(() => {
-        if (assignIdFromUrl) {
-            setShowAssignModal(true);
-            setSelectedSubmissionId(assignIdFromUrl);
+        const assignId = searchParams.get('assign');
+        if (assignId) {
+            startTransition(() => {
+                setShowAssignModal(true);
+                setSelectedSubmissionId(assignId);
+            });
         }
-    }, [assignIdFromUrl]);
+    }, [searchParams]);
 
-    const handleAccept = useCallback(async (item: any) => {
+    const handleAccept = useCallback(async (item: ReviewAssignment) => {
         if (confirm('Authorize acceptance for this manuscript?')) {
             const res = await decideSubmission(item.submissionId, 'accepted');
             if (res.success) {
@@ -333,7 +335,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
         }
     }, [refetchReviews]);
 
-    const handleReject = useCallback(async (item: any) => {
+    const handleReject = useCallback(async (item: ReviewAssignment) => {
         if (confirm('Commit final rejection?')) {
             const res = await decideSubmission(item.submissionId, 'rejected');
             if (res.success) {
@@ -343,7 +345,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
         }
     }, [refetchReviews]);
 
-    const handleFeedbackSubmit = useCallback(async (item: any, formData: FormData) => {
+    const handleFeedbackSubmit = useCallback(async (item: ReviewAssignment, formData: FormData) => {
         const toastId = toast.loading('Submitting...');
         try {
             const result = await uploadMutation.mutateAsync({ assignmentId: item.id, formData });
@@ -353,7 +355,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
             } else {
                 toast.error(result.error, { id: toastId });
             }
-        } catch (e) {
+        } catch {
             toast.error('Failed to submit findings', { id: toastId });
         }
     }, [uploadMutation, refetchReviews]);
@@ -572,7 +574,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
     );
 }
 
-export default function ReviewsRegistrySuspense(props: any) {
+export default function ReviewsRegistrySuspense(props: { role: 'admin' | 'editor' | 'reviewer' }) {
     return (
         <Suspense fallback={<div className="p-20 text-center text-[10px] font-bold text-primary/20 tracking-widest animate-pulse">SYNCHRONIZING INTERFACE...</div>}>
             <ReviewsRegistry {...props} />

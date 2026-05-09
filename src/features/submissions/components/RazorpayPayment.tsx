@@ -12,9 +12,53 @@ interface RazorpayPaymentProps {
     paperId: string;
 }
 
+interface RazorpayResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+}
+
+interface RazorpayErrorResponse {
+    error: {
+        code: string;
+        description: string;
+        source: string;
+        step: string;
+        reason: string;
+        metadata: {
+            order_id: string;
+            payment_id: string;
+        };
+    };
+}
+
+interface RazorpayOptions {
+    key: string;
+    amount: number;
+    currency: string;
+    name: string;
+    description: string;
+    order_id: string;
+    handler: (response: RazorpayResponse) => void;
+    prefill?: {
+        name?: string;
+        email?: string;
+        contact?: string;
+    };
+    theme?: {
+        color?: string;
+    };
+    modal?: {
+        ondismiss?: () => void;
+    };
+}
+
 declare global {
     interface Window {
-        Razorpay: any;
+        Razorpay: new (options: RazorpayOptions) => {
+            on: (event: string, callback: (response: RazorpayErrorResponse) => void) => void;
+            open: () => void;
+        };
     }
 }
 
@@ -37,14 +81,14 @@ export default function RazorpayPayment({ submissionId, paperId }: RazorpayPayme
 
             const { order } = result;
 
-            const options = {
-                key: order.key,
+            const options: RazorpayOptions = {
+                key: order.key || "",
                 amount: order.amount,
                 currency: order.currency,
                 name: "IJITEST APC Payment",
                 description: `Payment for Manuscript ID: ${paperId}`,
                 order_id: order.id,
-                handler: async function (response: any) {
+                handler: async function (response: RazorpayResponse) {
                     setLoading(true);
                     const verifyData = {
                         razorpay_order_id: response.razorpay_order_id,
@@ -82,7 +126,7 @@ export default function RazorpayPayment({ submissionId, paperId }: RazorpayPayme
             };
 
             const rzp = new window.Razorpay(options);
-            rzp.on('payment.failed', function (response: any) {
+            rzp.on('payment.failed', function (response: RazorpayErrorResponse) {
                 toast.error("Payment Interrupted", {
                     description: response.error.description
                 });

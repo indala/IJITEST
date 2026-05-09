@@ -1,12 +1,19 @@
 CREATE TABLE `activity_logs` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`entity_type` varchar(50) NOT NULL,
-	`entity_id` int NOT NULL,
+	`entity_id` varchar(255) NOT NULL,
 	`action` varchar(100) NOT NULL,
 	`performed_by` varchar(36),
 	`metadata` text,
 	`created_at` timestamp DEFAULT (now()),
 	CONSTRAINT `activity_logs_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `application_interests` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`application_id` int NOT NULL,
+	`interest_id` int NOT NULL,
+	CONSTRAINT `application_interests_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `applications` (
@@ -16,7 +23,10 @@ CREATE TABLE `applications` (
 	`email` varchar(255) NOT NULL,
 	`designation` varchar(255) NOT NULL,
 	`institute` varchar(255) NOT NULL,
+	`cv_url` varchar(500),
+	`photo_url` varchar(500),
 	`status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+	`nationality` varchar(100),
 	`reviewed_by` varchar(36),
 	`reviewed_at` timestamp,
 	`created_at` timestamp DEFAULT (now()),
@@ -35,6 +45,14 @@ CREATE TABLE `contact_messages` (
 	CONSTRAINT `contact_messages_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
+CREATE TABLE `master_interests` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`name` varchar(255) NOT NULL,
+	`created_at` timestamp DEFAULT (now()),
+	CONSTRAINT `master_interests_id` PRIMARY KEY(`id`),
+	CONSTRAINT `master_interests_name_unique` UNIQUE(`name`)
+);
+--> statement-breakpoint
 CREATE TABLE `notifications` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`user_id` varchar(36) NOT NULL,
@@ -51,7 +69,7 @@ CREATE TABLE `payments` (
 	`submission_id` int NOT NULL,
 	`amount` decimal(10,2) NOT NULL,
 	`currency` varchar(10) NOT NULL DEFAULT 'INR',
-	`status` enum('pending','paid','verified','failed') NOT NULL DEFAULT 'pending',
+	`status` enum('pending','paid','verified','failed','waived') NOT NULL DEFAULT 'pending',
 	`provider` varchar(50),
 	`transaction_id` varchar(255),
 	`paid_at` timestamp,
@@ -70,6 +88,9 @@ CREATE TABLE `publications` (
 	`end_page` int,
 	`doi` varchar(100),
 	`published_at` timestamp DEFAULT (now()),
+	`views` int NOT NULL DEFAULT 0,
+	`downloads` int NOT NULL DEFAULT 0,
+	`citations` int NOT NULL DEFAULT 0,
 	CONSTRAINT `publications_id` PRIMARY KEY(`id`),
 	CONSTRAINT `publications_submission_id_unique` UNIQUE(`submission_id`),
 	CONSTRAINT `publications_doi_unique` UNIQUE(`doi`)
@@ -116,7 +137,9 @@ CREATE TABLE `submission_authors` (
 	`submission_id` int NOT NULL,
 	`name` varchar(255) NOT NULL,
 	`email` varchar(255) NOT NULL,
-	`affiliation` varchar(500),
+	`phone` varchar(20),
+	`designation` varchar(255),
+	`institution` varchar(500),
 	`is_corresponding` boolean NOT NULL DEFAULT false,
 	`order_index` int NOT NULL DEFAULT 0,
 	CONSTRAINT `submission_authors_id` PRIMARY KEY(`id`)
@@ -132,7 +155,7 @@ CREATE TABLE `submission_editors` (
 CREATE TABLE `submission_files` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`version_id` int NOT NULL,
-	`file_type` enum('main_manuscript','pdf_version','supplementary','feedback','payment_proof') NOT NULL,
+	`file_type` enum('main_manuscript','pdf_version','copyright_form','supplementary','feedback','payment_proof') NOT NULL,
 	`file_url` varchar(500) NOT NULL,
 	`original_name` varchar(255),
 	`file_size` int,
@@ -175,7 +198,7 @@ CREATE TABLE `submissions` (
 CREATE TABLE `user_invitations` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`email` varchar(255) NOT NULL,
-	`role` enum('editor','reviewer') NOT NULL,
+	`role` enum('editor','reviewer','author') NOT NULL,
 	`token` varchar(255) NOT NULL,
 	`expires_at` timestamp NOT NULL,
 	`invited_by` varchar(36),
@@ -209,6 +232,7 @@ CREATE TABLE `users` (
 	`is_active` boolean NOT NULL DEFAULT true,
 	`is_email_verified` boolean NOT NULL DEFAULT false,
 	`email_verified_at` timestamp,
+	`has_seen_promotion` boolean NOT NULL DEFAULT false,
 	`created_at` timestamp DEFAULT (now()),
 	`updated_at` timestamp DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` timestamp,
@@ -229,6 +253,8 @@ CREATE TABLE `volumes_issues` (
 );
 --> statement-breakpoint
 ALTER TABLE `activity_logs` ADD CONSTRAINT `activity_logs_performed_by_users_id_fk` FOREIGN KEY (`performed_by`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `application_interests` ADD CONSTRAINT `application_interests_application_id_applications_id_fk` FOREIGN KEY (`application_id`) REFERENCES `applications`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `application_interests` ADD CONSTRAINT `application_interests_interest_id_master_interests_id_fk` FOREIGN KEY (`interest_id`) REFERENCES `master_interests`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `applications` ADD CONSTRAINT `applications_reviewed_by_users_id_fk` FOREIGN KEY (`reviewed_by`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `payments` ADD CONSTRAINT `payments_submission_id_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

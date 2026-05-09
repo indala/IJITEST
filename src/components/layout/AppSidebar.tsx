@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
     SendHorizonal
 } from "lucide-react";
@@ -62,11 +61,11 @@ export function AppSidebar({ settings }: { settings?: Record<string, string> }) 
                                     <SidebarMenuItem key={item.name}>
                                         <SidebarMenuButton
                                             asChild
-                                            isActive={isActive}
+                                            isActive={isActive || false}
                                             tooltip={item.name}
                                             className={cn(
                                                 "h-12 px-4 rounded-xl transition-all duration-300",
-                                                isActive ? "bg-primary/5 text-primary font-black" : "text-primary/60 hover:bg-primary/[0.03] hover:text-primary"
+                                                isActive ? "bg-primary/5 text-primary font-black" : "text-primary/60 hover:bg-primary/3 hover:text-primary"
                                             )}
                                         >
                                             <Link className="cursor-pointer" href={item.href} onClick={() => setOpenMobile(false)}>
@@ -115,7 +114,7 @@ export function AppSidebar({ settings }: { settings?: Record<string, string> }) 
                     className="flex items-center justify-center gap-3 w-full h-12 bg-primary text-white rounded-xl font-black  tracking-widest text-[10px] shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all group overflow-hidden relative"
                     onClick={() => setOpenMobile(false)}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-linear-to-r from-secondary to-secondary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <SendHorizonal className="w-4 h-4 relative z-10" />
                     <span className="relative z-10 group-data-[collapsible=icon]:hidden">Submit Paper</span>
                 </Link>

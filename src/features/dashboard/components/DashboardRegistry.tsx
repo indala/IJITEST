@@ -12,6 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NumberTicker } from '@/components/ui/number-ticker';
 
+import { 
+    Application 
+} from '@/db/types';
+
 interface Stat {
     label: string;
     value: number | string;
@@ -20,23 +24,55 @@ interface Stat {
     prefix?: string;
 }
 
+interface HealthMetric {
+    label: string;
+    icon: string;
+    status: string;
+    value: string;
+}
+
 const ICON_MAP: Record<string, React.ElementType> = {
     FileStack, Users, Activity, AlertCircle, TrendingUp, ArrowRight, UserPlus, FileText, Clock, ExternalLink,
     CreditCard, ClipboardList, Download, Shield, ShieldCheck, Box, HardDrive, BookOpen
 };
 
+export interface DashboardUser {
+    id: string;
+    email?: string | null;
+    role: string;
+    name?: string | null;
+    profile?: {
+        fullName: string | null;
+    } | null;
+}
+
+export interface DashboardSubmission {
+    id: number;
+    paper_id: string;
+    status: string;
+    submitted_at: Date | string | null;
+    title: string | null;
+    author_name?: string | null;
+}
+
+export interface DashboardStaff {
+    id: string;
+    email: string | null;
+    role: string;
+    full_name?: string | null;
+}
+
 interface DashboardRegistryProps {
     role: 'admin' | 'editor' | 'author';
-    user: any;
+    user: DashboardUser | null | undefined;
     stats: Stat[];
-    recentSubmissions: any[];
-    mySubmissions: any[];
-    healthMetrics: any[];
-    pendingApplications?: any[];
-    allStaff?: any[];
+    recentSubmissions: DashboardSubmission[];
+    mySubmissions: DashboardSubmission[];
+    healthMetrics: HealthMetric[];
+    pendingApplications?: Application[];
+    allStaff?: DashboardStaff[];
     extraActions?: React.ReactNode;
     recentSubmissionsTitle?: string;
-    queueTabLabel?: string;
     children?: React.ReactNode;
     metricsLabels?: {
         pubRate: string;
@@ -59,7 +95,6 @@ export function DashboardRegistry({
     allStaff = [],
     extraActions,
     recentSubmissionsTitle = "Submissions",
-    queueTabLabel = "Queue",
     metricsLabels = { pubRate: "Publication Rate", revRate: "Review Rate" },
     percentages = { pub: 0, rev: 0 },
     children
@@ -82,7 +117,7 @@ export function DashboardRegistry({
                         {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        Logged in as <span className="font-medium text-foreground">{user?.fullName || user?.name || 'User'}</span>
+                        Logged in as <span className="font-medium text-foreground">{user?.profile?.fullName || user?.name || user?.email || 'User'}</span>
                     </p>
                 </div>
                 <div className="flex flex-wrap sm:flex-nowrap gap-3">
@@ -110,7 +145,7 @@ export function DashboardRegistry({
                             <div className="space-y-0.5">
                                 <p className="text-xs font-medium text-muted-foreground">{stat.label}</p>
                                 <h3 className="text-xl lg:text-2xl font-bold text-foreground">
-                                    {typeof stat.value === 'number' ? <NumberTicker value={stat.value} prefix={stat.prefix} /> : stat.value}
+                                    {typeof stat.value === 'number' ? <NumberTicker value={stat.value} prefix={stat.prefix || ""} /> : stat.value}
                                 </h3>
                             </div>
                         </CardContent>
@@ -143,7 +178,7 @@ export function DashboardRegistry({
                                     <div className="divide-y divide-border/30">
                                         {recentSubmissions.length === 0 ? (
                                             <div className="p-12 text-center text-xs text-muted-foreground/50">No submissions found.</div>
-                                        ) : recentSubmissions.map((sub: any) => (
+                                        ) : recentSubmissions.map((sub) => (
                                             <Link
                                                 href={`/${role}/submissions/${sub.id}`}
                                                 key={sub.id}
@@ -156,13 +191,13 @@ export function DashboardRegistry({
                                                     <div className="min-w-0">
                                                         <h4 className="text-sm font-medium text-foreground truncate group-hover:text-[#000066] transition-colors mb-0.5">{sub.title || "Untitled Project"}</h4>
                                                         <p className="text-xs text-muted-foreground">
-                                                            {sub.author_name} • {new Date(sub.submitted_at).toLocaleDateString()}
+                                                            {sub.author_name} • {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString() : 'N/A'}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <Badge className={`px-2 py-0.5 text-[10px] font-semibold rounded-md border-none ${
                                                         sub.status === 'published' ? 'bg-emerald-50 text-emerald-600' :
-                                                        sub.status === 'retracted' ? 'bg-rose-50 text-rose-600' :
+                                                        sub.status === 'rejected' ? 'bg-rose-50 text-rose-600' :
                                                         'bg-[#000066]/5 text-[#000066]'}`}>
                                                     {sub.status?.replace('_', ' ')}
                                                 </Badge>
@@ -212,11 +247,11 @@ export function DashboardRegistry({
                                     </CardHeader>
                                     <CardContent className="p-0">
                                         <div className="divide-y divide-border/30">
-                                            {pendingApplications.map((app: any) => (
+                                            {pendingApplications.map((app) => (
                                                 <div key={app.id} className="p-4 space-y-2">
                                                     <div className="flex items-center justify-between">
-                                                        <Badge variant="outline" className="text-[10px] font-medium h-5 rounded px-2">{app.applicationType || app.type}</Badge>
-                                                        <span className="text-[10px] text-muted-foreground">{new Date(app.createdAt).toLocaleDateString()}</span>
+                                                        <Badge variant="outline" className="text-[10px] font-medium h-5 rounded px-2">{app.type}</Badge>
+                                                        <span className="text-[10px] text-muted-foreground">{app.createdAt ? new Date(app.createdAt).toLocaleDateString() : 'N/A'}</span>
                                                     </div>
                                                     <h5 className="text-sm font-medium">{app.fullName}</h5>
                                                     <Button asChild size="sm" variant="outline" className="w-full h-8 text-xs rounded-lg hover:bg-muted">
@@ -277,7 +312,7 @@ export function DashboardRegistry({
                                     </Button>
                                 </div>
                             </Card>
-                        ) : mySubmissions.map((paper: any) => (
+                        ) : mySubmissions.map((paper) => (
                             <Card key={paper.id} className="border-border/50 shadow-sm bg-card hover:border-[#000066]/20 transition-all group overflow-hidden rounded-xl">
                                 <div className="p-5 space-y-4">
                                     <div className="flex items-center justify-between">
@@ -292,7 +327,7 @@ export function DashboardRegistry({
                                     </div>
                                     <h3 className="text-sm font-semibold text-foreground line-clamp-2 h-10 group-hover:text-[#000066] transition-colors leading-tight">{paper.title}</h3>
                                     <div className="flex items-center justify-between pt-3 border-t border-border/30">
-                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1.5"><Clock className="w-3 h-3" /> {new Date(paper.submitted_at).toLocaleDateString()}</span>
+                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1.5"><Clock className="w-3 h-3" /> {paper.submitted_at ? new Date(paper.submitted_at).toLocaleDateString() : 'N/A'}</span>
                                         <Button asChild variant="ghost" size="sm" className="h-8 px-3 text-xs text-[#000066] hover:bg-[#000066]/5 rounded-lg">
                                             <Link href={`/track?id=${paper.paper_id}`} className="flex items-center gap-1.5">
                                                 Track <ExternalLink className="w-3 h-3" />
@@ -329,15 +364,15 @@ export function DashboardRegistry({
                                     <div className="p-12 text-center text-xs text-muted-foreground/40">No users found.</div>
                                 ) : (
                                     <div className="divide-y divide-border/30">
-                                        {allStaff.map((staff: any) => (
+                                        {allStaff.map((staff) => (
                                             <div key={staff.id} className="p-3 px-4 flex items-center justify-between hover:bg-muted/30 transition-all">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-lg bg-[#000066]/5 text-[#000066] flex items-center justify-center font-bold text-xs border border-[#000066]/5">
                                                         {staff.full_name?.charAt(0) || staff.email?.charAt(0) || 'U'}
                                                     </div>
                                                     <div>
-                                                        <h5 className="text-sm font-medium text-foreground leading-none mb-1">{staff.full_name || 'User'}</h5>
-                                                        <p className="text-[10px] text-muted-foreground">{staff.email}</p>
+                                                        <h5 className="text-sm font-medium text-foreground leading-none mb-1">{staff.full_name || staff.email || 'User'}</h5>
+                                                        <p className="text-[10px] text-muted-foreground">{staff.role}</p>
                                                     </div>
                                                 </div>
                                                 <Badge variant="outline" className={`text-[9px] font-semibold h-5 border-none px-2 rounded ${

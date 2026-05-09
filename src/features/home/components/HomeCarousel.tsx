@@ -44,7 +44,7 @@ export default function HomeCarousel() {
                         className="absolute inset-0"
                     >
                         <Image
-                            src={slides[currentIndex].image}
+                            src={slides[currentIndex]?.image ?? slides[0]?.image ?? ""}
                             alt="Journal Hero"
                             fill
                             priority
@@ -120,6 +120,6 @@ export default function HomeCarousel() {
 }
 
 // Helper imported locally if not available
-function cn(...inputs: any[]) {
+function cn(...inputs: (string | false | null | undefined)[]) {
     return inputs.filter(Boolean).join(' ');
 }

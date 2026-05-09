@@ -32,7 +32,7 @@ export function useCreateUser() {
 export function useUpdateUserRole() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ userId, role }: { userId: string, role: any }) => {
+        mutationFn: async ({ userId, role }: { userId: string, role: "admin" | "editor" | "reviewer" | "author" }) => {
             return await updateUserRole(userId, role);
         },
         onSuccess: (data) => {

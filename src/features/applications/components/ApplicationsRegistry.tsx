@@ -29,6 +29,8 @@ import {
     useBulkRejectApplications
 } from "@/hooks/queries/useApplications";
 
+import { Application } from "@/db/types";
+
 // --- Sub-components ---
 
 const ApplicationItemCard = React.memo(({ 
@@ -37,10 +39,10 @@ const ApplicationItemCard = React.memo(({
     onToggle, 
     onInspect 
 }: { 
-    app: any; 
+    app: Application; 
     isSelected: boolean; 
     onToggle: (id: number) => void;
-    onInspect: (app: any) => void;
+    onInspect: (app: Application) => void;
 }) => {
     return (
         <Card 
@@ -107,7 +109,7 @@ ApplicationItemCard.displayName = 'ApplicationItemCard';
 
 // --- Main Registry Component ---
 
-export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'editor' }) {
+export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'editor' }) {
     const [filters, setFilters] = useQueryStates({
         role: parseAsString.withDefault('all'),
         status: parseAsString.withDefault('all'),
@@ -116,10 +118,11 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
 
     const { role, status, interest } = filters;
 
-    const { data: applications = [], isLoading: loading } = useApplications({ 
-        role: role === 'all' ? undefined : role as any, 
-        status: status === 'all' ? undefined : status as any, 
-    });
+    const queryParams: { role?: string; status?: string; interest?: string } = {};
+    if (role && role !== 'all') queryParams.role = role;
+    if (status && status !== 'all') queryParams.status = status;
+
+    const { data: applications = [], isLoading: loading } = useApplications(queryParams);
 
     const approveMutation = useApproveApplication();
     const rejectMutation = useRejectApplication();
@@ -127,7 +130,7 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
     const bulkRejectMutation = useBulkRejectApplications();
 
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const [inspectApp, setInspectApp] = useState<any | null>(null);
+    const [inspectApp, setInspectApp] = useState<Application | null>(null);
     const [rejectionMode, setRejectionMode] = useState(false);
     const [rejectionReason, setRejectionReason] = useState("");
     const [bulkRejectionMode, setBulkRejectionMode] = useState(false);
@@ -338,7 +341,7 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
                     <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" />
                     <Drawer.Content className="fixed bottom-0 left-0 right-0 z-50 flex flex-col h-[90vh] bg-card border-t border-primary/5 rounded-t-[32px] outline-none shadow-2xl">
                         <Drawer.Title className="sr-only">Application Details</Drawer.Title>
-                        <Drawer.Description className="sr-only">Detailed overview of the candidate's dossier and research profile.</Drawer.Description>
+                        <Drawer.Description className="sr-only">Detailed overview of the candidate&apos;s dossier and research profile.</Drawer.Description>
                         <div className="mx-auto w-12 h-1.5 shrink-0 rounded-full bg-primary/10 my-4" />
                         <div 
                             className="flex-1 overflow-y-auto min-h-0 px-6 pb-12 custom-scrollbar"
@@ -396,21 +399,21 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
                                                 <span className="font-bold text-xs uppercase tracking-[0.2em]">Candidacy Dossier</span>
                                             </div>
                                             <Button variant="outline" size="sm" asChild className="h-9 px-5 rounded-xl border-primary/10 text-[10px] font-black uppercase tracking-widest shadow-sm">
-                                                <a href={inspectApp.cvUrl} download>
+                                                <a href={inspectApp.cvUrl || undefined} download>
                                                     <Download className="w-4 h-4 mr-2" /> Download Document
                                                 </a>
                                             </Button>
                                         </div>
-
+ 
                                         <div className="flex-1 min-h-[500px] bg-muted/10 relative">
                                             {inspectApp.cvUrl?.toLowerCase().endsWith('.pdf') ? (
-                                                <iframe src={inspectApp.cvUrl} title="Preview" className="w-full h-full border-none dark:invert dark:hue-rotate-180" />
+                                                <iframe src={inspectApp.cvUrl || undefined} title="Preview" className="w-full h-full border-none dark:invert dark:hue-rotate-180" />
                                             ) : (
                                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center space-y-6">
                                                     <FileText className="w-16 h-16 opacity-20" />
                                                     <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Document format requires local viewing.</p>
                                                     <Button asChild className="rounded-2xl h-14 px-10 bg-primary text-white font-black uppercase tracking-widest">
-                                                        <a href={inspectApp.cvUrl} download>Initialize Download</a>
+                                                        <a href={inspectApp.cvUrl || undefined} download>Initialize Download</a>
                                                     </Button>
                                                 </div>
                                             )}
@@ -490,7 +493,7 @@ export function ApplicationsRegistry({ role: panelRole }: { role: 'admin' | 'edi
     );
 }
 
-export default function ApplicationsRegistrySuspense(props: any) {
+export default function ApplicationsRegistrySuspense(props: { role: 'admin' | 'editor' }) {
     return (
         <Suspense fallback={<div className="p-32 text-center text-[10px] font-black text-primary/20 tracking-[0.3em] animate-pulse">SYNCHRONIZING VETTING PIPELINE...</div>}>
             <ApplicationsRegistry {...props} />

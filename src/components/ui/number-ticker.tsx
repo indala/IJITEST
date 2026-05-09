@@ -24,8 +24,8 @@ export function NumberTicker({
             <AnimateNumber
                 format={format || { notation: 'standard' }}
                 transition={{ layout: { type: 'spring', duration: 0.7, bounce: 0 } }}
-                prefix={prefix}
-                suffix={suffix}
+                {...(prefix ? { prefix } : {})}
+                {...(suffix ? { suffix } : {})}
             >
                 {value}
             </AnimateNumber>

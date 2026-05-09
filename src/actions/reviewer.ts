@@ -74,7 +74,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
                 status: 'pending',
                 nationality,
             });
-            const appId = (insertedApp as any).insertId;
+            const appId = insertedApp.insertId;
 
             // Persist Normalized Research Interests
             if (researchInterestsStr && appId) {
@@ -93,7 +93,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
                             interestId = existing[0].id;
                         } else {
                             const [inserted] = await tx.insert(masterInterests).values({ name: trimmedName });
-                            interestId = (inserted as any).insertId;
+                            interestId = inserted.insertId;
                         }
 
                         await tx.insert(applicationInterests).values({
@@ -141,7 +141,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         if (cvUrl) await safeDeleteFile(cvUrl);
         if (photoUrl) await safeDeleteFile(photoUrl);
 
-        if ((error as any)?.code === 'ER_DUP_ENTRY') {
+        if (error && typeof error === 'object' && 'code' in error && error.code === 'ER_DUP_ENTRY') {
             return { success: false, error: "An application with this email already exists for this role." };
         }
         return { success: false, error: "Failed to submit application. Please try again." };

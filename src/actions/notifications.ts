@@ -21,7 +21,7 @@ export async function getNotificationCounts(): Promise<ActionResponse<{ messages
             const [msgResult] = await db.select({ count: count() })
                 .from(contactMessages)
                 .where(eq(contactMessages.status, 'pending'));
-            messageCount = msgResult.count;
+            messageCount = msgResult?.count ?? 0;
         }
 
         // 2. Submissions (Desk Screening): Admins and Editors only
@@ -29,7 +29,7 @@ export async function getNotificationCounts(): Promise<ActionResponse<{ messages
             const [subResult] = await db.select({ count: count() })
                 .from(submissions)
                 .where(eq(submissions.status, 'submitted'));
-            totalSubmissionCount += subResult.count;
+            totalSubmissionCount += subResult?.count ?? 0;
         }
 
         // 3. Review Assignments: Reviewer (and Admins/Editors if they are reviewers)
@@ -39,7 +39,7 @@ export async function getNotificationCounts(): Promise<ActionResponse<{ messages
                 eq(reviewAssignments.reviewerId, userId),
                 inArray(reviewAssignments.status, ['assigned', 'accepted'])
             ));
-        totalSubmissionCount += revResult.count;
+        totalSubmissionCount += revResult?.count ?? 0;
 
         const data = {
             messages: messageCount,

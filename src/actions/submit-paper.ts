@@ -63,7 +63,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         };
 
         const validated = submissionSchema.safeParse(rawData);
-        if (!validated.success) return { success: false, error: validated.error.issues[0].message };
+        if (!validated.success) return { success: false, error: validated.error?.issues[0]?.message || "Validation failed" };
 
         const manuscriptFile = formData.get("manuscript") as File;
         const copyrightFile = formData.get("copyright_form") as File;
@@ -119,7 +119,9 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                     expiresAt: expires,
                 });
             } else {
-                userId = existingUsers[0].id;
+                const existingUser = existingUsers[0];
+                if (!existingUser) throw new Error("Critical: User not found despite query results.");
+                userId = existingUser.id;
                 // Update profile with latest info
                 await tx.update(userProfiles)
                     .set({
@@ -161,7 +163,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 status: "submitted",
                 correspondingAuthorId: userId,
             });
-            const subId = (submissionInsert as any).insertId;
+            const subId = submissionInsert.insertId;
 
             // D. Insert Version 1
             const [versionInsert] = await tx.insert(submissionVersions).values({
@@ -171,10 +173,10 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 abstract: validated.data.abstract,
                 keywords: validated.data.keywords,
             });
-            const verId = (versionInsert as any).insertId;
+            const verId = versionInsert.insertId;
 
             // E. Authors (Lead + Co-authors)
-            const authorsList: any[] = [{
+            const authorsList: (typeof submissionAuthors.$inferInsert)[] = [{
                 submissionId: subId,
                 name: validated.data.author_name,
                 email: validated.data.author_email,
@@ -203,7 +205,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                             });
                         });
                     }
-                } catch (e) {
+                } catch {
                     throw new Error("Invalid co-author data format. Please check your inputs.");
                 }
             }
@@ -213,7 +215,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const timestamp = Date.now();
             const mName = `manuscript_${subId}_${timestamp}.${manuscriptFile.name.split('.').pop()}`;
             const mUrl = `/api/files/submissions/${mName}`;
-            
+
             const fileRecords: (typeof submissionFiles.$inferInsert)[] = [
                 { versionId: verId, fileType: "main_manuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size }
             ];
@@ -244,7 +246,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 await fs.writeFile(path.join(uploadDir, result.cName), Buffer.from(await copyrightFile.arrayBuffer()));
                 fileCleanupList.push(path.join(uploadDir, result.cName));
             }
-        } catch (uploadErr) {
+        } catch {
             // File-system cleanup for orphaned files
             for (const filePath of fileCleanupList) {
                 try { await fs.unlink(filePath); } catch { }
@@ -256,8 +258,9 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             // Orphaned Account Cleanup (if user was newly created during this failed session)
             if (invitationToken) {
                 const userRes = await db.select().from(users).where(eq(users.email, rawData.author_email)).limit(1);
-                if (userRes.length > 0 && !userRes[0].passwordHash) {
-                    await db.delete(users).where(eq(users.id, userRes[0].id));
+                const userToCleanup = userRes[0];
+                if (userToCleanup && !userToCleanup.passwordHash) {
+                    await db.delete(users).where(eq(users.id, userToCleanup.id));
                     await db.delete(userInvitations).where(eq(userInvitations.email, rawData.author_email));
                 }
             }
@@ -306,12 +309,12 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         const staff = await db.select({ email: users.email, role: users.role, profile: userProfiles }).from(users)
             .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
             .where(inArray(users.role, ['admin', 'editor']));
-            
+
         await Promise.allSettled(staff.map(s => {
             const dashboardLink = s.role === 'admin'
                 ? `${baseUrl}/admin/submissions/${result.subId}`
                 : `${baseUrl}/editor/submissions/${result.subId}`;
-            
+
             const staffTemplate = emailTemplates.staffNotification(
                 s.profile.fullName || 'Editor',
                 `New Submission: ${result.paperId}`,

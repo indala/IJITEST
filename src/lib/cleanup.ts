@@ -61,7 +61,7 @@ export async function cleanupInactiveAuthors() {
                     try {
                         const absolutePath = path.join(process.cwd(), "public", f.url);
                         await fs.unlink(absolutePath);
-                    } catch (e) {
+                    } catch {
                         // Ignore if file already deleted or doesn't exist
                     }
                 }

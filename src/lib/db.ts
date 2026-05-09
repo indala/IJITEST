@@ -9,10 +9,10 @@ for (const key of requiredEnvVars) {
     }
 }
 const poolOptions = {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: process.env.DB_HOST as string,
+    user: process.env.DB_USER as string,
+    password: process.env.DB_PASSWORD as string,
+    database: process.env.DB_NAME as string,
     port: Number(process.env.DB_PORT || '3306'),
     waitForConnections: true,
     connectionLimit: 5, // Reduced from 10 to avoid hitting limits on Hostinger

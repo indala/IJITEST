@@ -6,10 +6,10 @@ interface CitationSectionProps {
         title: string;
         author_name: string;
         publication_year: number;
-        volume_number?: number;
-        issue_number?: number;
+        volume_number?: number | null;
+        issue_number?: number | null;
         paper_id: string;
-        co_authors?: string;
+        co_authors?: string | null;
     };
 }
 
@@ -23,7 +23,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
             if (paper.co_authors) {
                 const coAuthors = JSON.parse(paper.co_authors);
                 if (Array.isArray(coAuthors) && coAuthors.length > 0) {
-                    const names = coAuthors.map((a: any) => a.name);
+                    const names = coAuthors.map((a: { name: string }) => a.name);
                     if (names.length === 1) {
                         authStr = `${paper.author_name} & ${names[0]}`;
                     } else {
@@ -56,7 +56,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
 
             <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4 relative group">
                 <p className="text-xs text-gray-600 leading-relaxed font-medium ">
-                    {authors}   <span className="italic"> "  {paper.title}"</span>.
+                    {authors}   <span className="italic"> {"\""} {paper.title}{"\""}</span>.
                     <br />
                     <span className="">International Journal of Innovative Trends in Engineering Science and Technology (IJITEST)</span>,
                     Vol. {paper.volume_number || 'X'}, Issue {paper.issue_number || 'X'} , {paper.publication_year || new Date().getFullYear()}.

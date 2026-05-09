@@ -17,8 +17,11 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { useSettings, useUpdateSettings } from '@/hooks/queries/useSettings';
-import { useState, useTransition } from 'react';
+import { useSettings } from '@/hooks/queries/useSettings';
+import { useState, useActionState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { updateSettings } from '@/actions/settings';
+import { ActionResponse } from '@/db/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,39 +51,35 @@ const itemVariants: Variants = {
 
 export default function SystemSettings() {
     const { data: settings = {}, isLoading: loading } = useSettings();
-    const updateSettingsMutation = useUpdateSettings();
-    const [isSaving, setIsSaving] = useState(false);
-    const [isPending, startTransition] = useTransition();
+    const queryClient = useQueryClient();
     const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
     const [selectedCopyright, setSelectedCopyright] = useState<string | null>(null);
 
-    async function handleSave(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setIsSaving(true);
-        const formData = new FormData(e.currentTarget);
-
+    const [_, formAction, isPending] = useActionState(async (_prevState: ActionResponse | null, formData: FormData) => {
         try {
-            const result = await updateSettingsMutation.mutateAsync(formData);
-
+            const result = await updateSettings(formData);
             if (result.success) {
                 toast.success("System Synchronized", {
                     description: "Core environment successfully synchronized & architectural assets locked."
                 });
+                queryClient.invalidateQueries({ queryKey: ['settings'] });
+                setSelectedTemplate(null);
+                setSelectedCopyright(null);
             } else {
                 toast.error("Synchronization Failed", {
                     description: result.error || "Failed to update core environment."
                 });
             }
-        } catch (error) {
+            return result;
+        } catch {
             toast.error("Synchronization Error", {
                 description: "An unexpected error occurred during synchronization."
             });
-        } finally {
-            setIsSaving(false);
-            setSelectedTemplate(null);
-            setSelectedCopyright(null);
+            return { success: false, error: "Unexpected error" };
         }
-    }
+    }, null);
+
+
 
     if (loading) {
         return (
@@ -103,7 +102,7 @@ export default function SystemSettings() {
             variants={containerVariants}
             className="pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-6"
         >
-            <form onSubmit={handleSave} className="space-y-6">
+            <form action={formAction} className="space-y-6">
                 {/* Header Section */}
                 <motion.header 
                     variants={itemVariants}
@@ -126,15 +125,15 @@ export default function SystemSettings() {
                         <div className="flex gap-4 shrink-0">
                             <Button
                                 type="submit"
-                                disabled={isSaving}
+                                disabled={isPending}
                                 className="h-12 px-8 gap-3 bg-primary text-white font-bold text-[10px] tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group/save"
                             >
-                                {isSaving ? (
+                                {isPending ? (
                                     <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                                 ) : (
                                     <Save className="w-4 h-4 group-hover/save:rotate-12 transition-transform" />
                                 )}
-                                {isSaving ? "SYNCING..." : "SYNC PREFERENCES"}
+                                {isPending ? "SYNCING..." : "SYNC PREFERENCES"}
                             </Button>
                         </div>
                     </div>
@@ -335,7 +334,7 @@ export default function SystemSettings() {
                                                 onChange={(e) => setSelectedTemplate(e.target.files?.[0]?.name || null)}
                                                 className="absolute inset-0 opacity-0 cursor-pointer z-20 h-full w-full"
                                             />
-                                            {isSaving && selectedTemplate ? (
+                                            {isPending && selectedTemplate ? (
                                                 <div className="flex flex-col items-center gap-2">
                                                     <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
                                                     <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest animate-pulse">Uploading...</span>
@@ -352,7 +351,7 @@ export default function SystemSettings() {
                                                 </>
                                             )}
 
-                                            {isSaving && selectedTemplate && (
+                                            {isPending && selectedTemplate && (
                                                 <motion.div 
                                                     initial={{ width: 0 }}
                                                     animate={{ width: "100%" }}
@@ -401,7 +400,7 @@ export default function SystemSettings() {
                                                 onChange={(e) => setSelectedCopyright(e.target.files?.[0]?.name || null)}
                                                 className="absolute inset-0 opacity-0 cursor-pointer z-20 h-full w-full"
                                             />
-                                            {isSaving && selectedCopyright ? (
+                                            {isPending && selectedCopyright ? (
                                                 <div className="flex flex-col items-center gap-2">
                                                     <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
                                                     <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Uploading...</span>
@@ -418,7 +417,7 @@ export default function SystemSettings() {
                                                 </>
                                             )}
 
-                                            {isSaving && selectedCopyright && (
+                                            {isPending && selectedCopyright && (
                                                 <motion.div 
                                                     initial={{ width: 0 }}
                                                     animate={{ width: "100%" }}

@@ -9,31 +9,31 @@ import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidg
 import { useLatestIssuePapers, useArchivePapers } from '@/hooks/queries/usePublic';
 import { InputGroup,InputGroupAddon,InputGroupInput } from '@/components/ui/input-group';
 import { Card } from '@/components/ui/card';
+import { PublishedPaperUI } from '@/db/types';
 
 interface ArchivesClientProps {
-    initialPapers: any[];
+    initialPapers: PublishedPaperUI[];
     settings: Record<string, string>;
     mode?: 'current' | 'archive';
 }
 
-export default function ArchivesClient({ initialPapers, settings, mode = 'archive' }: ArchivesClientProps) {
+export default function ArchivesClient({ initialPapers, mode = 'archive' }: ArchivesClientProps) {
     const currentIssueQuery = useLatestIssuePapers(mode === 'current' ? initialPapers : []);
     const archiveQuery = useArchivePapers(mode === 'archive' ? initialPapers : []);
     
-    const papers = (mode === 'current' ? currentIssueQuery.data : archiveQuery.data) || [];
     const isLoading = mode === 'current' ? currentIssueQuery.isLoading : archiveQuery.isLoading;
 
     const [searchQuery, setSearchQuery] = useState('');
-    const journalShortName = settings.journal_short_name || "IJITEST";
 
     const filteredPapers = useMemo(() => {
-        return (papers || []).filter((p: any) =>
+        const papers = (mode === 'current' ? currentIssueQuery.data : archiveQuery.data) || [];
+        return papers.filter((p) =>
             p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             p.author_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.keywords?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (p.keywords && p.keywords.toLowerCase().includes(searchQuery.toLowerCase())) ||
             p.paper_id.toLowerCase().includes(searchQuery.toLowerCase())
         );
-    }, [papers, searchQuery]);
+    }, [mode, currentIssueQuery.data, archiveQuery.data, searchQuery]);
 
     return (
         <section className=" px-5 mx-auto section-padding">
@@ -61,7 +61,7 @@ export default function ArchivesClient({ initialPapers, settings, mode = 'archiv
                     {!isLoading && filteredPapers.length > 0 && (
                         <div className="mb-8 border-b border-border/50 pb-4">
                             <h2 className="text-xl font-semibold text-[#000066]">
-                                Volume {filteredPapers[0].volume_number} Issue {filteredPapers[0].issue_number} ({filteredPapers[0].publication_year})
+                                Volume {filteredPapers[0]?.volume_number ?? ""} Issue {filteredPapers[0]?.issue_number ?? ""} ({filteredPapers[0]?.publication_year ?? ""})
                             </h2>
                         </div>
                     )}
@@ -74,7 +74,7 @@ export default function ArchivesClient({ initialPapers, settings, mode = 'archiv
                     ) : filteredPapers.length > 0 ? (
                         <div className="space-y-6">
                             <div className="space-y-4">
-                                {filteredPapers.map((paper: any) => (
+                                {filteredPapers.map((paper) => (
                                     <PaperCard key={paper.paper_id} paper={paper} basePath={mode === 'current' ? '/current-issue' : '/archives'} />
                                 ))}
                             </div>

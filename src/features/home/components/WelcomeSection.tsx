@@ -8,7 +8,7 @@ interface WelcomeSectionProps {
     settings: Record<string, string>;
 }
 
-function WelcomeSection({ journalName, journalShortName, settings }: WelcomeSectionProps) {
+function WelcomeSection({ journalName, journalShortName }: WelcomeSectionProps) {
     const name = journalName || "International Journal of Innovative Trends in Engineering Science and Technology";
     const shortName = journalShortName || "IJITEST";
 

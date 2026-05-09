@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, memo, useCallback } from "react"
+import { useEffect, useState, memo, useCallback } from "react"
 import { useLenis } from "lenis/react"
 import { ArrowUp } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -38,7 +38,7 @@ function ScrollToTopComponent() {
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 20 }}
-          className="fixed bottom-8 right-8 z-[100] "
+          className="fixed bottom-8 right-8 z-100 "
         >
           <Button
             onClick={scrollToTop}

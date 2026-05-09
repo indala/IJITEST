@@ -266,7 +266,7 @@ export const emailTemplates = {
         };
     },
 
-    manuscriptRejection: (authorName: string, paperTitle: string, paperId: string, feedback: string) => {
+    manuscriptRejection: (authorName: string, _paperTitle: string, paperId: string, feedback: string) => {
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
             <p>Thank you for giving us the opportunity to evaluate your manuscript <strong>(ID: ${paperId})</strong>.</p>
@@ -389,7 +389,7 @@ export const emailTemplates = {
         };
     },
 
-    resubmissionRequest: (authorName: string, paperTitle: string, paperId: string, comments?: string, subId?: number) => {
+    resubmissionRequest: (authorName: string, _paperTitle: string, paperId: string, comments?: string, subId?: number) => {
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
         const resubmitLink = subId ? `${baseUrl}/author/submissions/${subId}/resubmit` : `${baseUrl}/author/submissions`;
         const content = `
