@@ -35,6 +35,25 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
         );
     }, [mode, currentIssueQuery.data, archiveQuery.data, searchQuery]);
 
+    const groupedPapers = useMemo(() => {
+        const groups: Record<string, { label: string; papers: PublishedPaperUI[] }> = {};
+        filteredPapers.forEach(paper => {
+            const sortKey = `${paper.volume_number.toString().padStart(4, '0')}-${paper.issue_number.toString().padStart(4, '0')}`;
+            if (!groups[sortKey]) {
+                groups[sortKey] = {
+                    label: `Volume ${paper.volume_number} Issue ${paper.issue_number} (${paper.publication_year})`,
+                    papers: []
+                };
+            }
+            groups[sortKey].papers.push(paper);
+        });
+
+        // Sort descending (newest volume/issue first)
+        return Object.keys(groups)
+            .sort((a, b) => b.localeCompare(a))
+            .map(key => groups[key]);
+    }, [filteredPapers]);
+
     return (
         <section className=" px-5 mx-auto section-padding">
             {/* Search Section */}
@@ -57,27 +76,27 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 xl:gap-12">
                 {/* Main Content */}
                 <div className="lg:col-span-8 space-y-20 xl:space-y-32">
-                    {/* Volume and Issue Header */}
-                    {!isLoading && filteredPapers.length > 0 && (
-                        <div className="mb-8 border-b border-border/50 pb-4">
-                            <h2 className="text-xl font-semibold text-[#000066]">
-                                Volume {filteredPapers[0]?.volume_number ?? ""} Issue {filteredPapers[0]?.issue_number ?? ""} ({filteredPapers[0]?.publication_year ?? ""})
-                            </h2>
-                        </div>
-                    )}
-
                     {isLoading ? (
                         <div className="py-24 flex flex-col items-center justify-center gap-4 text-center">
                             <div className="w-12 h-12 border-2 border-primary/10 border-t-primary rounded-full animate-spin" />
                             <p className="text-xs text-muted-foreground font-medium">Fetching Archives...</p>
                         </div>
-                    ) : filteredPapers.length > 0 ? (
-                        <div className="space-y-6">
-                            <div className="space-y-4">
-                                {filteredPapers.map((paper) => (
-                                    <PaperCard key={paper.paper_id} paper={paper} basePath={mode === 'current' ? '/current-issue' : '/archives'} />
-                                ))}
-                            </div>
+                    ) : groupedPapers.length > 0 ? (
+                        <div className="space-y-12">
+                            {groupedPapers.map((group, index) => (
+                                <div key={index} className="space-y-6">
+                                    <div className="border-b border-border/50 pb-4">
+                                        <h2 className="text-xl font-semibold text-[#000066]">
+                                            {group.label}
+                                        </h2>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {group.papers.map((paper) => (
+                                            <PaperCard key={paper.paper_id} paper={paper} basePath={mode === 'current' ? '/current-issue' : '/archives'} />
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     ) : (
                         <Card className="border-dashed border-2 py-16 xl:py-24 text-center rounded-2xl border-border bg-muted/20">
