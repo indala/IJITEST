@@ -14,7 +14,8 @@ import {
 } from "@/db/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { writeFile, mkdir, unlink } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
+import { safeDeleteFile } from "@/lib/fs-utils";
 import path from "path";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -325,10 +326,7 @@ export async function updateProfilePhoto(userId: string, formData: FormData): Pr
             .set({ photoUrl: photoUrl })
             .where(eq(userProfiles.userId, userId));
 
-        if (oldPhoto && oldPhoto.startsWith('/uploads/profiles/')) {
-            const oldPath = path.join(process.cwd(), "public", oldPhoto);
-            try { await unlink(oldPath); } catch (e) {}
-        }
+        await safeDeleteFile(oldPhoto);
 
         revalidatePath("/(panel)", "layout");
         return { success: true, data: photoUrl };

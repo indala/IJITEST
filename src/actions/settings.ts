@@ -5,7 +5,7 @@ import { settings } from "@/db/schema";
 import { ActionResponse } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 import fs from "fs/promises";
 import path from "path";
 

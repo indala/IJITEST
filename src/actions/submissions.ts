@@ -30,6 +30,7 @@ import path from 'path';
 import { eq, desc, and, isNull, inArray, or, like, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { resolveAbsolutePath, safeDeleteFile } from "@/lib/fs-utils";
 
 /**
  * Fetch a unified submission object with all related data joined.
@@ -369,8 +370,7 @@ export async function updateSubmissionStatus(id: number, status: typeof submissi
  */
 export async function requestResubmissionWithComments(
     submissionId: number,
-    comments: string,
-    requestedBy: string
+    comments: string
 ): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
@@ -454,13 +454,7 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
 
         // 3. File system cleanup (All versions)
         for (const file of allSubmissionFiles) {
-            try {
-                const normalizedPath = file.fileUrl.replace(/^\/+/, '');
-                const fullPath = path.join(process.cwd(), 'public', normalizedPath);
-                await fs.unlink(fullPath);
-            } catch (err) { 
-                console.error(`Failed to delete file ${file.fileUrl}:`, err);
-            }
+            await safeDeleteFile(file.fileUrl);
         }
 
         revalidatePath('/admin/submissions');
@@ -501,8 +495,8 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
         // 2. Prepare File Path
         const timestamp = Date.now();
         const fileName = `final_manuscript_${submissionId}_v${latestVersion.versionNumber}_${timestamp}.pdf`;
-        const fileUrl = `/uploads/submissions/${fileName}`;
-        const uploadDir = path.join(process.cwd(), "public/uploads/submissions");
+        const fileUrl = `/api/files/submissions/${fileName}`;
+        const uploadDir = path.join(process.cwd(), "storage/submissions");
 
         // 3. Database Update (Insert File Record)
         await db.transaction(async (tx) => {
@@ -575,7 +569,7 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
         const docxFile = fileRows[0];
 
         // 2. Read DOCX from disk
-        const docxPath = path.join(process.cwd(), 'public', docxFile.fileUrl.replace(/^\/+/, ''));
+        const docxPath = resolveAbsolutePath(docxFile.fileUrl);
         const docxBuffer = await fs.readFile(docxPath);
 
         // 3. Convert to PDF
@@ -584,8 +578,8 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
         // 4. Save PDF to disk
         const timestamp = Date.now();
         const fileName = `auto_final_v${latestVersion.versionNumber}_${timestamp}.pdf`;
-        const fileUrl = `/uploads/submissions/${fileName}`;
-        const uploadDir = path.join(process.cwd(), "public/uploads/submissions");
+        const fileUrl = `/api/files/submissions/${fileName}`;
+        const uploadDir = path.join(process.cwd(), "storage/submissions");
         
         await fs.mkdir(uploadDir, { recursive: true });
         await fs.writeFile(path.join(uploadDir, fileName), pdfBuffer);

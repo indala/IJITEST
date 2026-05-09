@@ -26,6 +26,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { getSecureUrl } from "@/lib/utils";
 
 
 
@@ -128,7 +129,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                         <div className="flex flex-col gap-2 2xl:gap-4 shrink-0">
                             {submission.file_path && (
                                 <Button asChild className="h-10 xl:h-12 2xl:h-14 px-6 gap-2 bg-primary text-white font-semibold text-[9px] xl:text-xs 2xl:text-sm capitalize tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.05] hover:opacity-90 transition-all cursor-pointer">
-                                    <a href={submission.file_path} download>
+                                    <a href={getSecureUrl(submission.file_path)} download>
                                         <Download className="w-4 h-4 2xl:w-6 2xl:h-6" /> Download manuscript
                                     </a>
                                 </Button>
@@ -254,7 +255,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                 <div className="space-y-4">
                                     <Card className="border-primary/10 shadow-sm bg-card/50 overflow-hidden">
                                         <CardContent className="p-6 space-y-6">
-                                            <AdminPdfUpload submissionId={submission.id} currentUrl={submission.pdf_url} />
+                                            <AdminPdfUpload submissionId={submission.id} currentUrl={getSecureUrl(submission.pdf_url)} />
 
                                             <Separator className="bg-primary/5" />
 

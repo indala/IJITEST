@@ -1,6 +1,7 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import fs from 'fs/promises';
 import path from 'path';
+import { resolveAbsolutePath } from './fs-utils';
 
 interface BrandingMetadata {
     journalName: string;
@@ -18,12 +19,10 @@ interface BrandingMetadata {
 
 export async function brandPdf(inputPath: string, outputPath: string, metadata: BrandingMetadata) {
     try {
-        // Normalize paths by stripping leading slashes to prevent path.join from ignoring root segments
-        const cleanIn = inputPath.replace(/^\/+/, '');
         const cleanOut = outputPath.replace(/^\/+/, '');
 
         // 1. Read the existing PDF
-        const fullInputPath = path.join(process.cwd(), 'public', cleanIn);
+        const fullInputPath = resolveAbsolutePath(inputPath);
         const pdfBytes = await fs.readFile(fullInputPath);
         const pdfDoc = await PDFDocument.load(pdfBytes);
         const pages = pdfDoc.getPages();

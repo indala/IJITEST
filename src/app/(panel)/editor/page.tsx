@@ -64,10 +64,12 @@ export default async function EditorDashboard() {
         const dbLatency = (performance.now() - startDb).toFixed(2);
         
         const uploadsPath = path.join(process.cwd(), 'public', 'uploads');
+        const storagePath = path.join(process.cwd(), 'storage');
         const getDirSize = (p: string): number => {
             let s = 0; try { fs.readdirSync(p).forEach(f => { const fp = path.join(p, f); const st = fs.statSync(fp); s += st.isDirectory() ? getDirSize(fp) : st.size; }); } catch(e){} return s;
         };
-        const storageMB = (getDirSize(uploadsPath) / (1024 * 1024)).toFixed(1);
+        const totalStorageBytes = getDirSize(uploadsPath) + getDirSize(storagePath);
+        const storageMB = (totalStorageBytes / (1024 * 1024)).toFixed(1);
         const memUsed = ((os.totalmem() - os.freemem()) / os.totalmem()) * 100;
         const uptimeHours = (os.uptime() / 3600).toFixed(1);
         const healthScore = ss.mean([100 - memUsed, 100 - (Number(dbLatency) / 2), 100 - (Number(storageMB) / 5)]).toFixed(1);

@@ -16,7 +16,7 @@ import fs from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import crypto from 'crypto';
 import { ActionResponse } from "@/db/types";
 
@@ -46,7 +46,6 @@ const submissionSchema = z.object({
 export async function submitPaper(formData: FormData): Promise<ActionResponse<{ paperId: string }>> {
     const fileCleanupList: string[] = [];
     let invitationToken: string | null = null;
-    let submissionToCleanup: number | null = null;
 
     try {
         // 1. Validation
@@ -213,8 +212,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             // F. Predictable File URLs (Saved to DB first as requested)
             const timestamp = Date.now();
             const mName = `manuscript_${subId}_${timestamp}.${manuscriptFile.name.split('.').pop()}`;
-            const cName = `copyright_${subId}_${timestamp}.${copyrightFile.name.split('.').pop()}`;
-            const mUrl = `/uploads/submissions/${mName}`;
+            const mUrl = `/api/files/submissions/${mName}`;
             
             const fileRecords: (typeof submissionFiles.$inferInsert)[] = [
                 { versionId: verId, fileType: "main_manuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size }
@@ -223,7 +221,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             let finalCName: string | undefined = undefined;
             if (copyrightProvided) {
                 const cName = `copyright_${subId}_${timestamp}.${copyrightFile.name.split('.').pop()}`;
-                const cUrl = `/uploads/submissions/${cName}`;
+                const cUrl = `/api/files/submissions/${cName}`;
                 fileRecords.push({ versionId: verId, fileType: "copyright_form" as const, fileUrl: cUrl, originalName: copyrightFile.name, fileSize: copyrightFile.size });
                 finalCName = cName;
             }
@@ -235,8 +233,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
         // 3. File Uploads (Happens post-transaction to strictly follow "DB First" rule)
         // If this fails, the DB record exists but we'll mark it as failed or return an error.
-        submissionToCleanup = result.subId;
-        const uploadDir = path.join(process.cwd(), "public/uploads/submissions");
+        const uploadDir = path.join(process.cwd(), "storage/submissions");
         await fs.mkdir(uploadDir, { recursive: true });
 
         try {

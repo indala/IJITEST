@@ -13,11 +13,11 @@ import {
     Publication
 } from "@/db/types";
 import { eq, and, sql, desc, count } from "drizzle-orm";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 import { getSettingsData } from "./settings";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import path from "path";
 import fs from "fs/promises";
+import { resolveAbsolutePath } from "@/lib/fs-utils";
 import { brandPdf } from "@/lib/pdf-branding";
 import { getSubmissionById } from "./submissions";
 import { getServerSession } from "next-auth/next";
@@ -166,7 +166,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
             if (finalEndPage === undefined) {
                 try {
                     const cleanPath = latestPdf.fileUrl.replace(/^\/+/, '');
-                    const pdfPath = path.join(process.cwd(), 'public', cleanPath);
+                    const pdfPath = resolveAbsolutePath(cleanPath);
                     const pdfBytes = await fs.readFile(pdfPath);
                     const { PDFDocument } = await import('pdf-lib');
                     const pdfDoc = await PDFDocument.load(pdfBytes);

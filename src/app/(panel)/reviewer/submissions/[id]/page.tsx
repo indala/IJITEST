@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import AdminPdfUpload from "@/features/submissions/components/AdminPdfUpload";
+import { getSecureUrl } from "@/lib/utils";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const { id } = await params;
@@ -164,7 +165,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 {submission.pdf_url ? (
                                     <>
                                         <Button asChild className="w-full h-12 2xl:h-20 gap-3 2xl:gap-5 font-bold text-[11px] 2xl:text-xl tracking-widest shadow-xl shadow-primary/20 rounded-xl 2xl:rounded-2xl bg-primary hover:opacity-90 transition-all uppercase cursor-pointer text-white dark:text-black">
-                                            <a href={submission.pdf_url} download>
+                                            <a href={getSecureUrl(submission.pdf_url)} download>
                                                 <Download className="w-4 h-4 2xl:w-8 2xl:h-8" /> Download PDF
                                             </a>
                                         </Button>
@@ -175,7 +176,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 ) : (
                                     <AdminPdfUpload 
                                         submissionId={submission.id} 
-                                        currentUrl={submission.pdf_url} 
+                                        currentUrl={getSecureUrl(submission.pdf_url)} 
                                     />
                                 )}
                             </div>
@@ -189,7 +190,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                             {submission.pdf_url ? (
                                 <div className="flex-1 min-h-[85vh] relative group">
                                     <PdfViewer
-                                        pdfUrl={submission.pdf_url}
+                                        pdfUrl={getSecureUrl(submission.pdf_url)}
                                         title={submission.title}
                                     />
                                     <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5" />

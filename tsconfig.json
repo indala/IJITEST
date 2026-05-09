@@ -19,6 +19,8 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
     "plugins": [
       {
         "name": "next"

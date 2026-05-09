@@ -20,6 +20,7 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 import fs from "fs/promises";
 import path from "path";
 import { ActionResponse } from "@/db/types";
+import { safeDeleteFile } from "@/lib/fs-utils";
 
 /**
  * Utility to get the current authenticated author.
@@ -273,8 +274,8 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             const timestamp = Date.now();
             const mName = `revised_manuscript_${submissionId}_v${nextVersion}_${timestamp}.${manuscriptFile.name.split('.').pop()}`;
             const cName = `revised_copyright_${submissionId}_v${nextVersion}_${timestamp}.${copyrightFile.name.split('.').pop()}`;
-            const mUrl = `/uploads/submissions/${mName}`;
-            const cUrl = `/uploads/submissions/${cName}`;
+            const mUrl = `/api/files/submissions/${mName}`;
+            const cUrl = `/api/files/submissions/${cName}`;
 
             await tx.insert(submissionFiles).values([
                 { versionId: verId, fileType: "main_manuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size },
@@ -290,7 +291,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         });
 
         // 2. FILE SYSTEM OPERATIONS (POST-COMMIT)
-        const uploadDir = path.join(process.cwd(), "public/uploads/submissions");
+        const uploadDir = path.join(process.cwd(), "storage/submissions");
         try {
             await fs.writeFile(path.join(uploadDir, result.mName), Buffer.from(await manuscriptFile.arrayBuffer()));
             fileCleanup.push(path.join(uploadDir, result.mName));
@@ -470,9 +471,7 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
                         ));
                         
                         for (const file of files) {
-                            try {
-                                await fs.unlink(path.join(process.cwd(), 'public', file.fileUrl));
-                            } catch { /* ignore */ }
+                            await safeDeleteFile(file.fileUrl);
                         }
 
                         // Waterfall delete (Drizzle should handle cascade if configured, but we'll be explicit)

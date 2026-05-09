@@ -48,8 +48,8 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
     let photoUrl: string | null = null;
 
     try {
-        // Save files to public/uploads
-        const uploadsDir = path.join(process.cwd(), "public", "uploads", "reviewer-apps");
+        // Save files to private storage
+        const uploadsDir = path.join(process.cwd(), "storage", "reviewer-apps");
         await mkdir(uploadsDir, { recursive: true });
 
         const cvName = `${Date.now()}-${cv.name.replace(/\s/g, '-')}`;
@@ -58,11 +58,11 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         await writeFile(path.join(uploadsDir, cvName), Buffer.from(await cv.arrayBuffer()));
         await writeFile(path.join(uploadsDir, photoName), Buffer.from(await photo.arrayBuffer()));
 
-        cvUrl = `/uploads/reviewer-apps/${cvName}`;
-        photoUrl = `/uploads/reviewer-apps/${photoName}`;
+        cvUrl = `/api/files/reviewer-apps/${cvName}`;
+        photoUrl = `/api/files/reviewer-apps/${photoName}`;
 
         // Save to Database
-        const applicationId = await db.transaction(async (tx) => {
+        await db.transaction(async (tx) => {
             const [insertedApp] = await tx.insert(applications).values({
                 fullName,
                 designation,

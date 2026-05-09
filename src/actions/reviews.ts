@@ -106,9 +106,9 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
             if (pdfFile && pdfFile.size > 0) {
                 const bytes = await pdfFile.arrayBuffer();
                 const fileName = `reviewer_copy_${submissionId}_${Date.now()}.pdf`;
-                const uploadPath = path.join(process.cwd(), "public/uploads/submissions", fileName);
+                const uploadPath = path.join(process.cwd(), "storage/submissions", fileName);
                 await fs.writeFile(uploadPath, Buffer.from(bytes));
-                pdfUrl = `/uploads/submissions/${fileName}`;
+                pdfUrl = `/api/files/submissions/${fileName}`;
 
                 await tx.insert(submissionFiles).values({
                     versionId: version.id,
@@ -141,9 +141,9 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                         const pdfBuffer = await convertDocxToPdf(mBuffer, manuscript.originalName || "paper.docx");
                         
                         const fileName = `converted_${submissionId}_${Date.now()}.pdf`;
-                        const uploadPath = path.join(process.cwd(), "public/uploads/submissions", fileName);
+                        const uploadPath = path.join(process.cwd(), "storage/submissions", fileName);
                         await fs.writeFile(uploadPath, pdfBuffer);
-                        pdfUrl = `/uploads/submissions/${fileName}`;
+                        pdfUrl = `/api/files/submissions/${fileName}`;
 
                         await tx.insert(submissionFiles).values({
                             versionId: version.id,
@@ -163,7 +163,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 .where(eq(reviewAssignments.submissionId, submissionId));
             const reviewRound = (roundRes[0]?.max || 0) + 1;
 
-            const [newAssignment] = await tx.insert(reviewAssignments).values({
+            await tx.insert(reviewAssignments).values({
                 submissionId,
                 reviewerId,
                 versionId: version.id,
@@ -173,7 +173,6 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 deadline: new Date(deadline),
                 assignedAt: new Date(),
             });
-            const assignmentId = (newAssignment as any).insertId;
 
             // 7. Update Submission Status
             await tx.update(submissions)
@@ -264,11 +263,11 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
             const bytes = await feedbackFile.arrayBuffer();
             const buffer = Buffer.from(bytes);
             const fileName = `feedback_${Date.now()}_${feedbackFile.name.replaceAll(' ', '_')}`;
-            const uploadDir = path.join(process.cwd(), "public", "uploads", "submissions");
+            const uploadDir = path.join(process.cwd(), "storage", "submissions");
             await fs.mkdir(uploadDir, { recursive: true });
             const filePath = path.join(uploadDir, fileName);
             await fs.writeFile(filePath, buffer);
-            fileUrl = `/uploads/submissions/${fileName}`;
+            fileUrl = `/api/files/submissions/${fileName}`;
         }
 
         const result = await db.transaction(async (tx) => {

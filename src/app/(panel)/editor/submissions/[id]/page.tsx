@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { PdfViewer } from "@/components/reviewer/PdfViewer";
+import { getSecureUrl } from "@/lib/utils";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const { id } = await params;
@@ -129,7 +130,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                         <div className="flex flex-col gap-2 shrink-0">
                             {submission.file_path && (
                                 <Button asChild className="h-10 px-6 gap-2 bg-primary text-white font-semibold text-[10px] xl:text-[11px] tracking-widest rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all cursor-pointer capitalize">
-                                    <a href={submission.file_path} download>
+                                    <a href={getSecureUrl(submission.file_path)} download>
                                         <Download className="w-4 h-4" /> Download manuscript
                                     </a>
                                 </Button>
@@ -159,9 +160,9 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                     <div className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
                                         <Shield className="w-4 h-4" /> Secure manuscript preview
                                     </div>
-                                    <div className="rounded-2xl border border-border/50 overflow-hidden shadow-vip-hover h-[100vh] bg-muted/10 relative group">
+                                    <div className="rounded-2xl border border-border/50 overflow-hidden shadow-vip-hover h-screen bg-muted/10 relative group">
                                         <PdfViewer
-                                            pdfUrl={submission.pdf_url}
+                                            pdfUrl={getSecureUrl(submission.pdf_url)}
                                             title={submission.title}
                                         />
                                         <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5" />
@@ -241,7 +242,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                 </div>
                                 <Card className="border-border/50 shadow-sm bg-background">
                                     <CardContent className="p-5 space-y-4">
-                                        <AdminPdfUpload submissionId={submission.id} currentUrl={submission.pdf_url} />
+                                        <AdminPdfUpload submissionId={submission.id} currentUrl={getSecureUrl(submission.pdf_url)} />
                                         {submission.pdf_url ? (
                                             <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />

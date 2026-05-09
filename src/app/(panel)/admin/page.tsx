@@ -21,7 +21,6 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { performance } from 'perf_hooks';
-import * as ss from 'simple-statistics';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,10 +49,7 @@ export default async function AdminDashboard() {
             db.select({ value: count() }).from(reviews).where(sql`${reviews.submittedAt} IS NOT NULL`)
         ]);
 
-        const paidRevenue = paidRevenueRes[0].total || 0;
-        const pendingRevenue = pendingRevenueRes[0].total || 0;
         const totalReviews = reviewStatsRes[0].value || 0;
-        const completedReviews = completedReviewsRes[0]?.value || 0;
 
         const stats = [
             { label: 'Revenue', value: Number(paidRevenueRes[0].total) || 0, icon: 'TrendingUp', variant: 'emerald', prefix: '₹' },
@@ -95,13 +91,14 @@ export default async function AdminDashboard() {
         const dbLatency = (performance.now() - startDb).toFixed(2);
         
         const uploadsPath = path.join(process.cwd(), 'public', 'uploads');
+        const storagePath = path.join(process.cwd(), 'storage');
         const getDirSize = (p: string): number => {
             let s = 0; try { fs.readdirSync(p).forEach(f => { const fp = path.join(p, f); const st = fs.statSync(fp); s += st.isDirectory() ? getDirSize(fp) : st.size; }); } catch(e){} return s;
         };
-        const storageMB = (getDirSize(uploadsPath) / (1024 * 1024)).toFixed(1);
-        const memUsed = ((os.totalmem() - os.freemem()) / os.totalmem()) * 100;
+        const totalStorageBytes = getDirSize(uploadsPath) + getDirSize(storagePath);
+        const storageMB = (totalStorageBytes / (1024 * 1024)).toFixed(1);
         const uptimeHours = (os.uptime() / 3600).toFixed(1);
-        const healthScore = ss.mean([100 - memUsed, 100 - (Number(dbLatency) / 2), 100 - (Number(storageMB) / 5)]).toFixed(1);
+        const revPercent = totalReviews > 0 ? (Number(completedReviewsRes[0]?.value || 0) / totalReviews) * 100 : 0;
 
         const healthMetrics = [
             { label: 'Database', value: `${dbLatency}ms`, icon: 'Activity', status: Number(dbLatency) < 100 ? 'Optimal' : 'Checking' },
@@ -110,7 +107,6 @@ export default async function AdminDashboard() {
         ];
 
         const pubPercent = subCountRes[0].value > 0 ? (publishedCountRes[0].value / subCountRes[0].value) * 100 : 0;
-        const revPercent = totalReviews > 0 ? (Number(completedReviews) / totalReviews) * 100 : 0;
 
         return (
             <DashboardRegistry 

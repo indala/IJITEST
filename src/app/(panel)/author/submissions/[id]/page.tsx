@@ -7,6 +7,7 @@ import { Calendar, Download, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import dayjs from "@/lib/dayjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { getSecureUrl } from "@/lib/utils";
 
 export default async function AuthorSubmissionDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = await params;
@@ -114,7 +115,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             {sub.files.map((file: any) => (
                                 <Link 
                                     key={file.id} 
-                                    href={file.fileUrl} 
+                                    href={getSecureUrl(file.fileUrl)} 
                                     target="_blank"
                                     className="flex items-center justify-between p-4 rounded-xl border border-primary/5 hover:bg-primary/5 hover:border-secondary transition-all group"
                                 >
@@ -159,7 +160,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                     {/* Published Link (if applicable) */}
                     {sub.publication && (
                         <Link 
-                            href={sub.publication.finalPdfUrl}
+                            href={getSecureUrl(sub.publication.finalPdfUrl)}
                             target="_blank"
                             className="flex flex-col items-center justify-center gap-4 p-8 bg-primary rounded-3xl text-white text-center shadow-2xl shadow-primary/40 hover:scale-[1.02] transition-transform"
                         >
