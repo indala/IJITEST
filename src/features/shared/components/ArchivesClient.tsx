@@ -38,10 +38,12 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
     const groupedPapers = useMemo(() => {
         const groups: Record<string, { label: string; papers: PublishedPaperUI[] }> = {};
         filteredPapers.forEach(paper => {
-            const sortKey = `${paper.volume_number.toString().padStart(4, '0')}-${paper.issue_number.toString().padStart(4, '0')}`;
+            const vol = paper.volume_number ?? 0;
+            const iss = paper.issue_number ?? 0;
+            const sortKey = `${vol.toString().padStart(4, '0')}-${iss.toString().padStart(4, '0')}`;
             if (!groups[sortKey]) {
                 groups[sortKey] = {
-                    label: `Volume ${paper.volume_number} Issue ${paper.issue_number} (${paper.publication_year})`,
+                    label: `Volume ${paper.volume_number ?? 'N/A'} Issue ${paper.issue_number ?? 'N/A'} (${paper.publication_year ?? 'N/A'})`,
                     papers: []
                 };
             }
@@ -87,11 +89,11 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                 <div key={index} className="space-y-6">
                                     <div className="border-b border-border/50 pb-4">
                                         <h2 className="text-xl font-semibold text-[#000066]">
-                                            {group.label}
+                                            {group?.label}
                                         </h2>
                                     </div>
                                     <div className="space-y-4">
-                                        {group.papers.map((paper) => (
+                                        {group?.papers?.map((paper) => (
                                             <PaperCard key={paper.paper_id} paper={paper} basePath={mode === 'current' ? '/current-issue' : '/archives'} />
                                         ))}
                                     </div>
