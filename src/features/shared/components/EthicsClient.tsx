@@ -55,7 +55,7 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
             title: "Archiving Policy",
             content: (
                 <p>
-                    All the papers published in IJITEST utilizes Amazon Web Services System to store the published articles as permanent archives for purposes of preservation and restoration.
+                    All the papers published in IJITEST utilizes a secure, multi-layered Cloud Archival System to store the published articles as permanent archives for purposes of preservation and restoration.
                 </p>
             )
         },

@@ -17,7 +17,7 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
         { title: "SJIF Evaluation", desc: "Annual impact factor assessment by SJIF for scientific validation.", icon: BarChart3 },
         { title: "OAI-PMH", desc: "Standard metadata harvesting interface for global repository integration.", icon: Globe },
         { title: "XML Delivery", desc: "Automated indexing feeding systems via high-quality JATS XML.", icon: Binary },
-        { title: "Archival Sync", desc: "Long-term preservation orchestration with Amazon S3 and ROAD.", icon: Layers }
+        { title: "Archival Sync", desc: "Long-term preservation orchestration with Encrypted Cloud Storage and ROAD.", icon: Layers }
     ];
 
     return (

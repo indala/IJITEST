@@ -1,12 +1,12 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { 
-    publications, 
-    submissions, 
+import {
+    publications,
+    submissions,
     submissionAuthors,
-    submissionVersions, 
-    volumesIssues, 
+    submissionVersions,
+    volumesIssues,
     userProfiles
 } from "@/db/schema";
 import { eq, desc, and, sql, ne, inArray, asc } from "drizzle-orm";
@@ -26,10 +26,10 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
                     submission: submissions,
                     issue: volumesIssues,
                 })
-                .from(publications)
-                .leftJoin(submissions, eq(publications.submissionId, submissions.id))
-                .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
-                .orderBy(asc(submissions.paperId));
+                    .from(publications)
+                    .leftJoin(submissions, eq(publications.submissionId, submissions.id))
+                    .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+                    .orderBy(asc(submissions.paperId));
 
                 if (!rows.length) return { success: true, data: [] };
 
@@ -47,7 +47,7 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
                 const data = rows.map(row => {
                     const paperAuthors = authorsList.filter(a => a.submissionId === row.submission?.id);
                     const paperVersions = versionsList.filter(v => v.submissionId === row.submission?.id);
-                    
+
                     return mapPublicationToUI({
                         ...row.publication,
                         submission: {
@@ -89,11 +89,11 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
                     submission: submissions,
                     issue: volumesIssues,
                 })
-                .from(publications)
-                .where(eq(publications.issueId, latestIssue.id))
-                .leftJoin(submissions, eq(publications.submissionId, submissions.id))
-                .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
-                .orderBy(asc(submissions.paperId));
+                    .from(publications)
+                    .where(eq(publications.issueId, latestIssue.id))
+                    .leftJoin(submissions, eq(publications.submissionId, submissions.id))
+                    .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+                    .orderBy(asc(submissions.paperId));
 
                 if (!rows.length) return { success: true, data: [] };
 
@@ -110,7 +110,7 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
                 const data = rows.map(row => {
                     const paperAuthors = authorsList.filter(a => a.submissionId === row.submission?.id);
                     const paperVersions = versionsList.filter(v => v.submissionId === row.submission?.id);
-                    
+
                     return mapPublicationToUI({
                         ...row.publication,
                         submission: {
@@ -150,13 +150,13 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
                     submission: submissions,
                     issue: volumesIssues,
                 })
-                .from(publications)
-                .where(ne(publications.issueId, latestId))
-                .leftJoin(submissions, eq(publications.submissionId, submissions.id))
-                .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
-                .orderBy(asc(submissions.paperId))
-                .limit(limit)
-                .offset(offset);
+                    .from(publications)
+                    .where(ne(publications.issueId, latestId))
+                    .leftJoin(submissions, eq(publications.submissionId, submissions.id))
+                    .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+                    .orderBy(asc(submissions.paperId))
+                    .limit(limit)
+                    .offset(offset);
 
                 if (!rows.length) return { success: true, data: [] };
 
@@ -173,7 +173,7 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
                 const data = rows.map(row => {
                     const paperAuthors = authorsList.filter(a => a.submissionId === row.submission?.id);
                     const paperVersions = versionsList.filter(v => v.submissionId === row.submission?.id);
-                    
+
                     return mapPublicationToUI({
                         ...row.publication,
                         submission: {
@@ -209,9 +209,9 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
                     submissionId: submissionVersions.submissionId,
                     maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
                 })
-                .from(submissionVersions)
-                .groupBy(submissionVersions.submissionId)
-                .as('lv');
+                    .from(submissionVersions)
+                    .groupBy(submissionVersions.submissionId)
+                    .as('lv');
 
                 const rows = await db.select({
                     publication: publications,
@@ -220,17 +220,17 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
                     issue: volumesIssues,
                     authorProfile: userProfiles
                 })
-                .from(publications)
-                .where(whereClause)
-                .leftJoin(submissions, eq(publications.submissionId, submissions.id))
-                .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
-                .leftJoin(submissionVersions, and(
-                    eq(submissions.id, submissionVersions.submissionId),
-                    eq(submissionVersions.versionNumber, latestVersions.maxVersion)
-                ))
-                .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
-                .leftJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
-                .limit(1);
+                    .from(publications)
+                    .where(whereClause)
+                    .leftJoin(submissions, eq(publications.submissionId, submissions.id))
+                    .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+                    .leftJoin(submissionVersions, and(
+                        eq(submissions.id, submissionVersions.submissionId),
+                        eq(submissionVersions.versionNumber, latestVersions.maxVersion)
+                    ))
+                    .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+                    .leftJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
+                    .limit(1);
 
                 const row = rows[0];
                 if (!row || !row.submission) return { success: false, error: "Paper data is incomplete" };
@@ -290,11 +290,11 @@ interface PublicationInput {
         updatedAt?: Date | null;
         authors?: SubmissionAuthor[];
         versions?: Array<{ title?: string | null; abstract?: string | null; keywords?: string | null } | null>;
-        correspondingAuthor?: { 
-            profile?: { 
+        correspondingAuthor?: {
+            profile?: {
                 fullName?: string | null,
-                institute?: string | null 
-            } | null 
+                institute?: string | null
+            } | null
         } | null;
     } | null;
     issue?: {
@@ -308,24 +308,33 @@ interface PublicationInput {
 function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
     const latestVersion = pub.submission?.versions?.[0];
     const authorsList = Array.isArray(pub.submission?.authors) ? pub.submission.authors : [];
-    
+
     // Sort authors by orderIndex
     const sortedAuthors = [...authorsList].sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
-    
+
     // Primary author is the one with isCorresponding or the first one
     const correspondingAuthor = sortedAuthors.find(a => a.isCorresponding) || sortedAuthors[0];
-    
+
     // Co-authors are all except the corresponding one, but user wants them ALL together?
     // "i want coauthor to display alogn side main author wiht comas ','"
     // So I will create a full string of names.
     const allAuthorsString = sortedAuthors.map(a => a.name).join(', ');
-    
+
     return {
         id: pub.submissionId || 0,
         paper_id: pub.submission?.paperId || "",
         title: latestVersion?.title || "Untitled Paper",
         abstract: latestVersion?.abstract || "",
-        keywords: latestVersion?.keywords || "",
+        keywords: (() => {
+            const raw = latestVersion?.keywords || "";
+            try {
+                if (raw.startsWith('[') && raw.endsWith(']')) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) return parsed.join(', ');
+                }
+            } catch (e) {}
+            return raw;
+        })(),
         author_name: allAuthorsString || "Anonymous Author",
         author_email: correspondingAuthor?.email || "N/A",
         affiliation: correspondingAuthor?.institution || "N/A",
@@ -342,6 +351,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         issue_number: pub.issue?.issueNumber || 0,
         publication_year: pub.issue?.year || 0,
         month_range: pub.issue?.monthRange || "",
-        co_authors: null // We've bundled them into author_name per requirements
+        co_authors: null, // We've bundled them into author_name per requirements
+        authors_list: sortedAuthors.map(a => a.name)
     };
 }

@@ -217,6 +217,7 @@ export type PublishedPaperUI = {
     co_authors: string | null | undefined;
     affiliation: string | null;
     author_email: string | null;
+    authors_list: string[];
 };
 
 export interface TrackedManuscript {

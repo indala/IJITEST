@@ -1,0 +1,62 @@
+# IJITEST Route Mapping (Auto-generated)
+
+## Public Routes (Main)
+- / (Home)
+- /about (About)
+- /archives (Archives)
+- /archives/[volume]/[issue]/[paperId] (Individual Paper)
+- /contact (Contact)
+- /current-issue (Current Issue)
+- /current-issue/[volume]/[issue]/[paperId] (Latest Paper)
+- /editorial-board (Editorial Board)
+- /ethics (Ethics)
+- /guidelines (Guidelines)
+- /indexing (Indexing - HIDDEN)
+- /join-us (Join Us)
+- /peer-review (Peer Review)
+- /privacy (Privacy)
+- /reviewer-guidelines (Reviewer Guidelines)
+- /submit (Submit Paper)
+- /terms (Terms)
+- /track (Track Manuscript)
+
+## Auth Routes
+- /login (Login)
+- /auth/forgot-password (Forgot Password)
+- /auth/setup-password (Setup Password)
+
+## Panel Routes (Protected)
+### Admin
+- /admin (Dashboard)
+- /admin/submissions (Submissions Management)
+- /admin/submissions/[id] (Submission Detail)
+- /admin/users (User Management)
+- /admin/publications (Publication Management)
+- /admin/reviews (Review Management)
+- /admin/payments (Payment Tracking)
+- /admin/messages (Contact Messages)
+- /admin/applications (Editorial Applications)
+- /admin/settings (Site Settings)
+- /admin/profile (Profile)
+
+### Editor
+- /editor (Dashboard)
+- ... (Similar to admin but restricted)
+
+### Reviewer
+- /reviewer (Dashboard)
+- /reviewer/reviews (My Reviews)
+- /reviewer/submissions/[id] (Assigned Paper)
+
+### Author
+- /author (Dashboard)
+- /author/submissions (My Submissions)
+- /author/submissions/[id] (Submission Detail)
+- /author/submissions/[id]/resubmit (Revision)
+
+## API & System
+- /api/auth/[...nextauth] (NextAuth)
+- /api/files/[...path] (Secure File Proxy)
+- /api/cron/cleanup (Maintenance)
+- /robots.txt
+- /sitemap.xml

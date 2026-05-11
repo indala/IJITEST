@@ -65,7 +65,7 @@ export async function getApplications(filters?: { role?: string, status?: string
             };
         });
 
-        // 4. Client-side filter for interest if needed (since it's a join/relation filter)
+    // 4. Client-side filter for interest if needed (since it's a join/relation filter)
         // Note: For large datasets, this should be done in SQL with an EXISTS clause.
         let finalData = mappedData;
         if (filters?.interest) {

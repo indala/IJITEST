@@ -38,9 +38,6 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
     if (!paper) return { title: 'Article Not Found | IJITEST' };
 
     const baseUrl = settings.journal_website || 'https://www.ijitest.org';
-    const mainAuthor = paper.author_name;
-    const coAuthors = paper.co_authors ? paper.co_authors.split(',').map((s: string) => s.trim()) : [];
-    const allAuthors = [mainAuthor, ...coAuthors].filter(Boolean) as string[];
     const pubYearStr = paper.publication_year ? String(paper.publication_year) : '';
     const formattedDate: string = (paper.published_at 
         ? new Date(paper.published_at).toISOString().split('T')[0] 
@@ -55,23 +52,29 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
             title: paper.title,
             description: description,
             type: 'article',
-            authors: allAuthors,
+            authors: paper.authors_list,
         },
         other: {
             'citation_title': paper.title,
-            'citation_author': allAuthors,
+            'citation_author': paper.authors_list,
             'citation_publication_date': formattedDate.replace(/-/g, '/'),
-            'citation_journal_title': settings.journal_name || 'International Journal of Information Technology (IJITEST)',
+            'citation_journal_title': settings.journal_name || 'IJITEST',
+            'citation_issn': settings.issn_number || '',
+            'citation_doi': paper.doi || '',
             'citation_volume': paper.volume_number ? String(paper.volume_number) : '',
             'citation_issue': paper.issue_number ? String(paper.issue_number) : '',
             'citation_firstpage': paper.start_page ? String(paper.start_page) : '',
             'citation_lastpage': paper.end_page ? String(paper.end_page) : '',
             'citation_pdf_url': paper.pdf_url ? (paper.pdf_url.startsWith('http') ? paper.pdf_url : `${baseUrl}${paper.pdf_url}`) : '',
+            'citation_fulltext_html_url': `${baseUrl}/archives/${volume}/${issue}/${paperId}`,
             'dc.title': paper.title || '',
-            'dc.creator': allAuthors,
+            'dc.creator': paper.authors_list,
             'dc.date': formattedDate,
             'dc.subject': paper.keywords || '',
             'dc.description': paper.abstract || '',
+            'dc.identifier': paper.doi || '',
+            'dc.language': 'en',
+            'dc.type': 'Research Article',
         },
         alternates: {
             canonical: `${baseUrl}/archives/${volume}/${issue}/${paperId}`
@@ -96,9 +99,6 @@ export default async function PaperDetailPage({ params }: { params: Promise<{ vo
     if (!paper) notFound();
 
     const baseUrl = settings.journal_website || 'https://www.ijitest.org';
-    const mainAuthor = paper.author_name;
-    const coAuthors = paper.co_authors ? paper.co_authors.split(',').map((s: string) => s.trim()) : [];
-    const allAuthors = [mainAuthor, ...coAuthors].filter(Boolean);
 
     return (
         <div className="bg-white min-h-screen pb-20">
@@ -127,7 +127,8 @@ export default async function PaperDetailPage({ params }: { params: Promise<{ vo
                     "@type": "ScholarlyArticle",
                     "headline": paper.title,
                     "description": paper.abstract,
-                    "author": allAuthors.map(author => ({
+                    "inLanguage": "en",
+                    "author": paper.authors_list.map(author => ({
                         "@type": "Person",
                         "name": author
                     })),
@@ -142,13 +143,15 @@ export default async function PaperDetailPage({ params }: { params: Promise<{ vo
                     },
                     "isPartOf": {
                         "@type": "ScholarlyJournal",
-                        "name": settings.journal_name || "IJITEST"
+                        "name": settings.journal_name || "IJITEST",
+                        "issn": settings.issn_number || ""
                     },
                     "pageStart": paper.start_page?.toString(),
                     "pageEnd": paper.end_page?.toString(),
                     "volumeNumber": paper.volume_number?.toString(),
                     "issueNumber": paper.issue_number?.toString(),
                     "keywords": paper.keywords,
+                    "identifier": paper.doi || "",
                     "url": `${baseUrl}/archives/${volume}/${issue}/${paperId}`,
                     "mainEntityOfPage": {
                         "@type": "WebPage",

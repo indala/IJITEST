@@ -15,10 +15,10 @@ import {
     volumesIssues,
     publications,
 } from "@/db/schema";
-import { 
-    SubmissionDetail, 
+import {
+    SubmissionDetail,
     SubmissionUI,
-    ActionResponse, 
+    ActionResponse,
     UserWithProfile,
     SubmissionFile,
     ReviewWithReviewer,
@@ -50,14 +50,14 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
             publication: publications,
             payment: payments
         })
-        .from(submissions)
-        .where(and(eq(submissions.id, id), isNull(submissions.deletedAt)))
-        .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
-        .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
-        .leftJoin(publications, eq(submissions.id, publications.submissionId))
-        .leftJoin(payments, eq(submissions.id, payments.submissionId))
-        .limit(1);
+            .from(submissions)
+            .where(and(eq(submissions.id, id), isNull(submissions.deletedAt)))
+            .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
+            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
+            .leftJoin(publications, eq(submissions.id, publications.submissionId))
+            .leftJoin(payments, eq(submissions.id, payments.submissionId))
+            .limit(1);
 
         const row = submissionRows[0];
         if (!row) return { success: false, error: "Submission not found" };
@@ -83,7 +83,7 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
             .where(eq(submissionVersions.submissionId, id))
             .orderBy(desc(submissionVersions.versionNumber))
             .limit(1);
-        
+
         const latestVersion = versionRows[0];
 
         // 3. Fetch Authors (Co-authors)
@@ -99,15 +99,15 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
             profile: userProfiles,
             review: reviews
         })
-        .from(reviewAssignments)
-        .where(eq(reviewAssignments.submissionId, id))
-        .leftJoin(users, eq(reviewAssignments.reviewerId, users.id))
-        .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId));
+            .from(reviewAssignments)
+            .where(eq(reviewAssignments.submissionId, id))
+            .leftJoin(users, eq(reviewAssignments.reviewerId, users.id))
+            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId));
 
         // 5. Fetch Files for the Latest Version
-        const files = latestVersion 
-            ? await db.select().from(submissionFiles).where(eq(submissionFiles.versionId, latestVersion.id)) 
+        const files = latestVersion
+            ? await db.select().from(submissionFiles).where(eq(submissionFiles.versionId, latestVersion.id))
             : [];
 
         // 6. Map to Domain Types
@@ -133,14 +133,14 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
         const pdfVersion = files.find(f => f.fileType === 'pdf_version');
         const finalPdf = row.publication?.finalPdfUrl;
 
-            const data: SubmissionUI = {
-                ...submissionData,
-                paper_id: submissionData.paperId,
-                submitted_at: submissionData.submittedAt,
-                updated_at: submissionData.updatedAt,
-                title: latestVersion?.title || "Untitled Manuscript",
-                abstract: latestVersion?.abstract || null,
-                keywords: latestVersion?.keywords || null,
+        const data: SubmissionUI = {
+            ...submissionData,
+            paper_id: submissionData.paperId,
+            submitted_at: submissionData.submittedAt,
+            updated_at: submissionData.updatedAt,
+            title: latestVersion?.title || "Untitled Manuscript",
+            abstract: latestVersion?.abstract || null,
+            keywords: latestVersion?.keywords || null,
             file_path: mainManuscript?.fileUrl || "",
             pdf_url: finalPdf || pdfVersion?.fileUrl || "", // Priority: Published PDF > Review PDF
             author_name: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
@@ -195,9 +195,9 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
             submissionId: submissionVersions.submissionId,
             maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
         })
-        .from(submissionVersions)
-        .groupBy(submissionVersions.submissionId)
-        .as('lv');
+            .from(submissionVersions)
+            .groupBy(submissionVersions.submissionId)
+            .as('lv');
 
         const rows = await db.select({
             submission: submissions,
@@ -208,19 +208,19 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
             issue: volumesIssues,
             publication: publications
         })
-        .from(submissions)
-        .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
-        .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
-        .leftJoin(submissionVersions, and(
-            eq(submissions.id, submissionVersions.submissionId),
-            eq(submissionVersions.versionNumber, latestVersions.maxVersion)
-        ))
-        .leftJoin(payments, eq(submissions.id, payments.submissionId))
-        .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
-        .leftJoin(publications, eq(submissions.id, publications.submissionId))
-        .where(and(...conditions))
-        .orderBy(desc(submissions.submittedAt));
+            .from(submissions)
+            .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
+            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+            .leftJoin(submissionVersions, and(
+                eq(submissions.id, submissionVersions.submissionId),
+                eq(submissionVersions.versionNumber, latestVersions.maxVersion)
+            ))
+            .leftJoin(payments, eq(submissions.id, payments.submissionId))
+            .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
+            .leftJoin(publications, eq(submissions.id, publications.submissionId))
+            .where(and(...conditions))
+            .orderBy(desc(submissions.submittedAt));
 
         if (rows.length === 0) return { success: true, data: [] };
 
@@ -229,9 +229,9 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
 
         // 2. Bulk fetch Co-Authors
         const allCoAuthors = await db.select().from(submissionAuthors).where(inArray(submissionAuthors.submissionId, subIds));
-        
+
         // 3. Bulk fetch Files
-        const allFiles = versionIds.length > 0 
+        const allFiles = versionIds.length > 0
             ? await db.select().from(submissionFiles).where(inArray(submissionFiles.versionId, versionIds))
             : [];
 
@@ -239,7 +239,7 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
         const data: SubmissionUI[] = rows.map(row => {
             const subAuthors = allCoAuthors.filter(a => a.submissionId === row.submission.id);
             const subFiles = row.latestVersion ? allFiles.filter(f => f.versionId === row.latestVersion!.id) : [];
-            
+
             const mainManuscript = subFiles.find(f => f.fileType === 'main_manuscript');
             const pdfVersion = subFiles.find(f => f.fileType === 'pdf_version');
             const finalPdf = row.publication?.finalPdfUrl;
@@ -264,7 +264,7 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
                 issue_id: row.submission.issueId,
                 latestVersion: row.latestVersion ? { ...row.latestVersion, files: subFiles as SubmissionFile[] } : undefined,
                 allFiles: subFiles as SubmissionFile[],
-                allReviews: [], 
+                allReviews: [],
                 payment: row.payment,
                 correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } : undefined,
                 authors: subAuthors,
@@ -317,7 +317,7 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
         });
 
         // Email is fire-and-forget — SMTP failure should not rollback the decision
-        const template = decision === 'accepted' 
+        const template = decision === 'accepted'
             ? emailTemplates.manuscriptAcceptance(submission.author_name, submission.title, submission.paperId, isFree)
             : emailTemplates.manuscriptRejection(submission.author_name, submission.title, submission.paperId, "Does not meet editorial criteria.");
 
@@ -351,9 +351,9 @@ export async function updateSubmissionStatus(id: number, status: typeof submissi
             const isFree = (apcRows[0]?.settingValue || '0') === '0';
 
             const template = emailTemplates.statusUpdate(
-                submission.author_name, 
-                submission.title, 
-                status, 
+                submission.author_name,
+                submission.title,
+                status,
                 submission.paperId,
                 isFree
             );
@@ -421,9 +421,9 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
         const allSubmissionFiles = await db.select({
             fileUrl: submissionFiles.fileUrl
         })
-        .from(submissionFiles)
-        .innerJoin(submissionVersions, eq(submissionFiles.versionId, submissionVersions.id))
-        .where(eq(submissionVersions.submissionId, id));
+            .from(submissionFiles)
+            .innerJoin(submissionVersions, eq(submissionFiles.versionId, submissionVersions.id))
+            .where(eq(submissionVersions.submissionId, id));
 
         // 2. Database cleanup
         await db.transaction(async (tx) => {
@@ -432,7 +432,7 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
                 .select({ id: reviewAssignments.id })
                 .from(reviewAssignments)
                 .where(eq(reviewAssignments.submissionId, id));
-            
+
             if (assignmentRows.length > 0) {
                 const aIds = assignmentRows.map(a => a.id);
                 await tx.delete(reviews).where(inArray(reviews.assignmentId, aIds));
@@ -491,7 +491,7 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
             .where(eq(submissionVersions.submissionId, submissionId))
             .orderBy(desc(submissionVersions.versionNumber))
             .limit(1);
-        
+
         if (!versionRows.length) return { success: false, error: "No version records found for this submission." };
         const latestVersion = versionRows[0];
         if (!latestVersion) return { success: false, error: "No version records found for this submission." };
@@ -534,7 +534,7 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');
-        
+
         return { success: true };
     } catch (error) {
         console.error("Upload PDF Error:", error);
@@ -560,7 +560,7 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
             .where(eq(submissionVersions.submissionId, submissionId))
             .orderBy(desc(submissionVersions.versionNumber))
             .limit(1);
-        
+
         const latestVersion = versionRows[0];
         if (!latestVersion) return { success: false, error: "No version records found." };
 
@@ -588,7 +588,7 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
         const fileName = `auto_final_v${latestVersion.versionNumber}_${timestamp}.pdf`;
         const fileUrl = `/api/files/submissions/${fileName}`;
         const uploadDir = path.join(process.cwd(), "storage/submissions");
-        
+
         await fs.mkdir(uploadDir, { recursive: true });
         await fs.writeFile(path.join(uploadDir, fileName), pdfBuffer);
 
@@ -613,7 +613,7 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/reviewer/submissions/${submissionId}`);
-        
+
         return { success: true };
     } catch (error) {
         console.error("Auto Sync PDF Error:", error);
