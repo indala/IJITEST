@@ -140,26 +140,24 @@ export async function createUser(formData: FormData): Promise<ActionResponse> {
                 fullName,
             });
 
-            // Only editor/reviewer roles can receive invitations
-            if (role === 'editor' || role === 'reviewer') {
+            // All roles except admin can receive setup invitations
+            if (role !== 'admin') {
                 await tx.insert(userInvitations).values({
                     email,
-                    role: role,
+                    role: role as "editor" | "reviewer" | "author",
                     token: invitationToken,
                     expiresAt: expires,
                 });
             }
         });
 
-        // Send invitation email
-        const setupUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/setup-password?token=${invitationToken}`;
-
-        const template = emailTemplates.boardInvitation(fullName, role, setupUrl);
-        sendEmail({
-            to: email,
-            subject: template.subject,
-            html: template.html
-        });
+        // Only send setup email for non-admin roles (admin has no invitation row)
+        if (role !== 'admin') {
+            const setupUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/setup-password?token=${invitationToken}`;
+            const template = emailTemplates.boardInvitation(fullName, role, setupUrl);
+            sendEmail({ to: email, subject: template.subject, html: template.html })
+                .catch(e => console.error("Invitation email failed:", e));
+        }
 
         revalidatePath('/admin/users');
         return { success: true };
@@ -263,18 +261,28 @@ export async function requestPasswordReset(formData: FormData): Promise<ActionRe
         const expires = new Date();
         expires.setHours(expires.getHours() + 1);
 
-        // Delete any existing reset tokens for this email first
-        await db.delete(userInvitations).where(eq(userInvitations.email, email));
+        // Wrap delete + insert in a transaction to prevent token loss on insert failure.
+        // Only delete tokens that match the reset context (expiresAt <= 1 hour from now)
+        // to avoid nuking pending account-setup invitations (which have 7-day expiry).
+        const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000 + 5000); // 1hr + 5s buffer
+        await db.transaction(async (tx) => {
+            await tx.delete(userInvitations).where(
+                and(
+                    eq(userInvitations.email, email),
+                    sql`${userInvitations.expiresAt} <= ${oneHourFromNow}`
+                )
+            );
 
-        await db.insert(userInvitations).values({
-            email,
-            // INTENTIONAL WORKAROUND: The `userInvitations.role` mysqlEnum constraint does not allow 'admin'.
-            // Since this is a password reset token, the role stored here is ignored during setupPassword 
-            // (it only uses the email to update the existing user). We map 'admin' to 'reviewer' purely 
-            // to satisfy the schema constraint without needing to alter the schema or create a separate table.
-            role: (user.role === 'admin' ? 'reviewer' : user.role) as "editor" | "reviewer" | "author",
-            token: resetToken,
-            expiresAt: expires,
+            await tx.insert(userInvitations).values({
+                email,
+                // INTENTIONAL WORKAROUND: The `userInvitations.role` mysqlEnum constraint does not allow 'admin'.
+                // Since this is a password reset token, the role stored here is ignored during setupPassword
+                // (it only uses the email to update the existing user). We map 'admin' to 'reviewer' purely
+                // to satisfy the schema constraint without needing to alter the schema or create a separate table.
+                role: (user.role === 'admin' ? 'reviewer' : user.role) as "editor" | "reviewer" | "author",
+                token: resetToken,
+                expiresAt: expires,
+            });
         });
 
         const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/setup-password?token=${resetToken}&ctx=reset`;

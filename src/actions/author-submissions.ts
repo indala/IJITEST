@@ -273,6 +273,12 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         if (!manuscriptFile || manuscriptFile.size === 0) return { success: false, error: "Revised manuscript is required." };
         if (!copyrightFile || copyrightFile.size === 0) return { success: false, error: "New copyright form is required." };
 
+        // Enforce .docx only policy (same as original submission)
+        const docxMime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        const isDocx = (f: File) => f.name.toLowerCase().endsWith(".docx") || f.type === docxMime;
+        if (!isDocx(manuscriptFile)) return { success: false, error: "Strict Policy: Only .docx files are accepted for the revised manuscript." };
+        if (!isDocx(copyrightFile)) return { success: false, error: "Strict Policy: The Copyright Form must be a .docx file." };
+
         // 1. DATABASE TRANSACTION (RECORD COMMIT)
         const result = await db.transaction(async (tx) => {
             // A. Get Latest Version to find current metadata

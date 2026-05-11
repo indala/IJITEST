@@ -126,6 +126,11 @@ export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> 
  */
 export async function assignPaperToIssue(submissionId: number, issueId: number, startPage?: number, endPage?: number): Promise<ActionResponse> {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized" };
+        }
+
         // 1. Fetch Composite Submission Details OUTSIDE transaction
         const subRes = await getSubmissionById(submissionId);
         if (!subRes.success || !subRes.data) {
@@ -238,9 +243,6 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         revalidatePath('/admin/submissions');
         revalidatePath('/admin/publications');
         revalidatePath('/archives');
-        revalidatePath('/admin/submissions');
-        revalidatePath('/admin/publications');
-        revalidatePath('/archives', 'page');
         revalidatePath('/', 'layout');
         return { success: true };
     } catch (error) {
@@ -288,6 +290,11 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
  */
 export async function getPapersByIssueId(issueId: number): Promise<ActionResponse<PaperWithPublication[]>> {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized" };
+        }
+
         // Return structured data for the issue listing
         const latestVersions = db.select({
             submissionId: submissionVersions.submissionId,
@@ -345,8 +352,6 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
                 .where(eq(submissions.id, submissionId));
         });
 
-        revalidatePath('/admin/publications');
-        revalidatePath('/admin/submissions');
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');

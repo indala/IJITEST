@@ -196,15 +196,7 @@ export async function rejectApplication(id: number, reason: string): Promise<Act
         
         const role = app.type || 'reviewer';
 
-        // 1. Send Rejection Email
-        const template = emailTemplates.boardRejection(app.fullName, role, reason);
-        await sendEmail({
-            to: app.email,
-            subject: template.subject,
-            html: template.html
-        });
-
-        // 2. Update status to rejected
+        // 1. Update status to rejected first (DB is source of truth)
         await db.update(applications)
             .set({ 
                 status: 'rejected', 
@@ -212,6 +204,14 @@ export async function rejectApplication(id: number, reason: string): Promise<Act
                 reviewedBy: adminId 
             })
             .where(eq(applications.id, id));
+
+        // 2. Send Rejection Email (fire-and-forget — DB already committed)
+        const template = emailTemplates.boardRejection(app.fullName, role, reason);
+        sendEmail({
+            to: app.email,
+            subject: template.subject,
+            html: template.html
+        }).catch(e => console.error("Rejection email failed:", e));
 
         revalidatePath("/admin/applications");
         return { success: true };

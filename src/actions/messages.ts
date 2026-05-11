@@ -25,6 +25,11 @@ export interface ContactMessageRow {
  */
 export async function getMessages(filters?: { status?: 'pending' | 'resolved' | 'archived', search?: string }): Promise<ActionResponse<ContactMessageRow[]>> {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized access." };
+        }
+
         const whereConditions: import("drizzle-orm").SQL[] = [];
 
         if (filters?.status && (filters.status as string) !== 'all') {
@@ -70,7 +75,7 @@ export async function getMessages(filters?: { status?: 'pending' | 'resolved' | 
 export async function updateMessageStatus(id: number, status: 'resolved' | 'archived' | 'pending'): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || session.user.role !== 'admin') {
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Unauthorized access." };
         }
 
@@ -93,7 +98,7 @@ export async function updateMessageStatus(id: number, status: 'resolved' | 'arch
 export async function bulkUpdateMessageStatus(ids: number[], status: 'resolved' | 'archived' | 'pending'): Promise<ActionResponse<{ count: number }>> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || session.user.role !== 'admin') {
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Unauthorized access." };
         }
 
@@ -116,7 +121,7 @@ export async function bulkUpdateMessageStatus(ids: number[], status: 'resolved' 
 export async function deleteMessage(id: number): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || session.user.role !== 'admin') {
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Unauthorized access." };
         }
 
@@ -136,7 +141,7 @@ export async function deleteMessage(id: number): Promise<ActionResponse> {
 export async function replyToMessage(id: number, replyContent: string): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || session.user.role !== 'admin') {
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Unauthorized access." };
         }
 

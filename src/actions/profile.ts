@@ -182,6 +182,13 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
 }
 
 export async function updateProfileField(userId: string, field: string, value: string): Promise<ActionResponse<string>> {
+    // Auth: verify the caller owns this profile
+    const session = await getServerSession(authOptions);
+    if (!session?.user) return { success: false, error: "Unauthorized" };
+    if (session.user.id !== userId && session.user.role !== 'admin') {
+        return { success: false, error: "Unauthorized: You can only edit your own profile." };
+    }
+
     const whitelist = ['name', 'designation', 'orcid_id', 'phone', 'institute', 'nationality', 'bio'];
     if (!whitelist.includes(field)) {
         return { success: false, error: 'Field not permitted' };
@@ -213,7 +220,7 @@ export async function updateProfileField(userId: string, field: string, value: s
     }
 
     try {
-        const updateDoc: Record<string, string> = {};
+        const updateDoc: Partial<typeof userProfiles.$inferInsert> = {};
         if (field === 'name') updateDoc.fullName = trimmedValue;
         else if (field === 'orcid_id') updateDoc.orcidId = trimmedValue;
         else if (field === 'designation') updateDoc.designation = trimmedValue;
@@ -236,6 +243,13 @@ export async function updateProfileField(userId: string, field: string, value: s
 }
 
 export async function updateResearchInterests(userId: string, interests: string[]): Promise<ActionResponse<string[]>> {
+    // Auth: verify the caller owns this profile
+    const session = await getServerSession(authOptions);
+    if (!session?.user) return { success: false, error: "Unauthorized" };
+    if (session.user.id !== userId && session.user.role !== 'admin') {
+        return { success: false, error: "Unauthorized: You can only update your own interests." };
+    }
+
     if (!Array.isArray(interests)) return { success: false, error: "Invalid interests format" };
     const cleanInterests = interests.map(i => i.trim()).filter(Boolean).slice(0, 20);
 
@@ -257,29 +271,29 @@ export async function updateResearchInterests(userId: string, interests: string[
             
             const applicationId = appRows[0]?.id;
 
-            if (applicationId) {
-                // Also update the legacy many-to-many system for consistency
-                await tx.delete(applicationInterests).where(eq(applicationInterests.applicationId, applicationId));
-                
-                for (const name of cleanInterests) {
-                    let interestId: number;
-                    const existing = await tx.select().from(masterInterests).where(eq(masterInterests.name, name)).limit(1);
-                    
-                    if (existing[0]) {
-                        interestId = existing[0].id;
-                    } else {
-                        const [inserted] = await tx.insert(masterInterests).values({ name });
-                        interestId = inserted.insertId;
-                    }
-
-                    await tx.insert(applicationInterests).values({
-                        applicationId,
-                        interestId
-                    });
-                }
+            if (!applicationId) {
+                throw new Error("No application record found for this user. Cannot update research interests.");
             }
 
-            // Interests are stored only in the join table (masterInterests + applicationInterests)
+            // Update the many-to-many interests join table
+            await tx.delete(applicationInterests).where(eq(applicationInterests.applicationId, applicationId));
+            
+            for (const name of cleanInterests) {
+                let interestId: number;
+                const existing = await tx.select().from(masterInterests).where(eq(masterInterests.name, name)).limit(1);
+                
+                if (existing[0]) {
+                    interestId = existing[0].id;
+                } else {
+                    const [inserted] = await tx.insert(masterInterests).values({ name });
+                    interestId = inserted.insertId;
+                }
+
+                await tx.insert(applicationInterests).values({
+                    applicationId,
+                    interestId
+                });
+            }
         });
         
         revalidatePath("/(panel)", "layout");
@@ -292,6 +306,13 @@ export async function updateResearchInterests(userId: string, interests: string[
 }
 
 export async function updateProfilePhoto(userId: string, formData: FormData): Promise<ActionResponse<string>> {
+    // Auth: verify the caller owns this profile
+    const session = await getServerSession(authOptions);
+    if (!session?.user) return { success: false, error: "Unauthorized" };
+    if (session.user.id !== userId && session.user.role !== 'admin') {
+        return { success: false, error: "Unauthorized: You can only update your own photo." };
+    }
+
     const file = formData.get("file") as File;
     if (!file) return { success: false, error: "No file provided" };
 

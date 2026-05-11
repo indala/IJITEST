@@ -137,7 +137,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const currentYear = new Date().getFullYear().toString();
             const seqKey = `submission_sequence_${currentYear}`;
 
-            // Ensure sequence entry exists
+            // Ensure sequence entry exists (no-op on duplicate — preserve existing value)
             await tx.insert(settings)
                 .values({ settingKey: seqKey, settingValue: '0' })
                 .onDuplicateKeyUpdate({ set: { settingKey: seqKey } });
@@ -151,7 +151,9 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const newSeq = lastSeq + 1;
 
             // Update sequence
-            await tx.update(settings).set({ settingValue: newSeq.toString() }).where(eq(settings.settingKey, seqKey));
+            await tx.update(settings)
+                .set({ settingValue: newSeq.toString() })
+                .where(eq(settings.settingKey, seqKey));
 
             const paperId = `IJITEST-${currentYear}-${String(newSeq).padStart(3, "0")}`;
             const slug = paperId.toLowerCase().replace(/-/g, "");

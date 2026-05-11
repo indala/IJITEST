@@ -162,11 +162,13 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 }
             }
 
-            // 6. Record Assignment — all reviewers in same batch share the same round
+            // 6. Record Assignment — all reviewers assigned together share the same review round
             const roundRes = await tx.select({ max: sql<number>`MAX(${reviewAssignments.reviewRound})` })
                 .from(reviewAssignments)
                 .where(eq(reviewAssignments.submissionId, submissionId));
-            const reviewRound = (roundRes[0]?.max || 0) + 1;
+            // Use current max round (not +1) so concurrent assignments share the same round.
+            // Only increment when a new round is explicitly started (e.g. after revision).
+            const reviewRound = roundRes[0]?.max || 1;
 
             await tx.insert(reviewAssignments).values({
                 submissionId,
@@ -280,6 +282,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
             const rows = await tx.select({
                 submissionId: reviewAssignments.submissionId,
                 versionId: reviewAssignments.versionId,
+                assignmentStatus: reviewAssignments.status,
                 paperId: submissions.paperId,
                 title: submissionVersions.title,
                 authorEmail: users.email,
@@ -301,6 +304,11 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
             // Verify this reviewer owns the assignment
             if (info.reviewerId !== session.user.id) {
                 throw new Error("Unauthorized: This assignment does not belong to you.");
+            }
+
+            // Guard against double submission
+            if (info.assignmentStatus === 'completed') {
+                throw new Error("This review has already been submitted.");
             }
 
             // 2. Insert/Update Review

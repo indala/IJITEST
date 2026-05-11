@@ -41,7 +41,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
     };
 
     const authors = getFormattedAuthors();
-    const citationText = `${authors} (${paper.publication_year || new Date().getFullYear()}). "${paper.title}". International Journal of Innovative Trends in Engineering Science and Technology (IJITEST), Vol. ${paper.volume_number || 'X'}, Issue ${paper.issue_number || 'X'}. Paper ID: ${paper.paper_id}`;
+    const citationText = `${authors} (${paper.publication_year || new Date().getFullYear()}). "${paper.title}". ${settings.journal_name || 'International Journal of Innovative Trends in Engineering Science and Technology'} (${settings.journal_short_name || 'IJITEST'}), Vol. ${paper.volume_number || 'X'}, Issue ${paper.issue_number || 'X'}. Paper ID: ${paper.paper_id}`;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(citationText);
@@ -59,7 +59,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                 <p className="text-xs text-gray-600 leading-relaxed font-medium ">
                     {authors}   <span className="italic"> {"\""} {paper.title}{"\""}</span>.
                     <br />
-                    <span className="">International Journal of Innovative Trends in Engineering Science and Technology (IJITEST)</span>,
+                    <span className="">{settings.journal_name || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings.journal_short_name || 'IJITEST'})</span>,
                     Vol. {paper.volume_number || 'X'}, Issue {paper.issue_number || 'X'} , {paper.publication_year || new Date().getFullYear()}.
                     <br />
                 </p>

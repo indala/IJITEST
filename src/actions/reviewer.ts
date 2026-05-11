@@ -52,8 +52,9 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         const uploadsDir = path.join(process.cwd(), "storage", "reviewer-apps");
         await mkdir(uploadsDir, { recursive: true });
 
-        const cvName = `${Date.now()}-${cv.name.replace(/\s/g, '-')}`;
-        const photoName = `${Date.now()}-${photo.name.replace(/\s/g, '-')}`;
+        const timestamp = Date.now();
+        const cvName = `${timestamp}-cv-${cv.name.replace(/\s/g, '-')}`;
+        const photoName = `${timestamp}-photo-${photo.name.replace(/\s/g, '-')}`;
 
         await writeFile(path.join(uploadsDir, cvName), Buffer.from(await cv.arrayBuffer()));
         await writeFile(path.join(uploadsDir, photoName), Buffer.from(await photo.arrayBuffer()));
