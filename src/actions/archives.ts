@@ -284,6 +284,9 @@ interface PublicationInput {
     startPage?: number | null;
     endPage?: number | null;
     publishedAt?: Date | null;
+    views?: number | null;
+    downloads?: number | null;
+    citations?: number | null;
     submission?: {
         paperId?: string | null;
         status?: string | null;
@@ -352,6 +355,9 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         publication_year: pub.issue?.year || 0,
         month_range: pub.issue?.monthRange || "",
         co_authors: null, // We've bundled them into author_name per requirements
-        authors_list: sortedAuthors.map(a => a.name)
+        authors_list: sortedAuthors.map(a => a.name),
+        views: pub.views || 0,
+        downloads: pub.downloads || 0,
+        citations: pub.citations || 0
     };
 }

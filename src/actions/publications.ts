@@ -421,3 +421,33 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
         revalidatePath('/admin/publications');
     }
 }
+
+/**
+ * Increment view count for a published paper
+ */
+export async function incrementPaperViews(submissionId: number): Promise<ActionResponse> {
+    try {
+        await db.update(publications)
+            .set({ views: sql`views + 1` })
+            .where(eq(publications.submissionId, submissionId));
+        return { success: true };
+    } catch (error) {
+        console.error("Increment Views Error:", error);
+        return { success: false, error: "Failed to increment views" };
+    }
+}
+
+/**
+ * Increment download count for a published paper
+ */
+export async function incrementPaperDownloads(submissionId: number): Promise<ActionResponse> {
+    try {
+        await db.update(publications)
+            .set({ downloads: sql`downloads + 1` })
+            .where(eq(publications.submissionId, submissionId));
+        return { success: true };
+    } catch (error) {
+        console.error("Increment Downloads Error:", error);
+        return { success: false, error: "Failed to increment downloads" };
+    }
+}

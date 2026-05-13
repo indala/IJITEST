@@ -5,11 +5,15 @@ import {
     BookOpen,
     Hash,
     ArrowLeft,
-    FileText
+    FileText,
+    Eye,
+    Quote
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { PublishedPaperUI } from "@/db/types";
 import CitationSection from "./CitationSection";
+import { incrementPaperViews, incrementPaperDownloads } from "@/actions/publications";
 
 interface PaperDetailClientProps {
     paper: PublishedPaperUI;
@@ -19,6 +23,30 @@ interface PaperDetailClientProps {
 
 export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDetailClientProps) {
     const isRetracted = paper.status === 'retracted';
+
+    useEffect(() => {
+        const paperId = paper.id;
+        const storageKey = `v_${paperId}`;
+        if (!localStorage.getItem(storageKey)) {
+            incrementPaperViews(paperId).then((res) => {
+                if (res.success) {
+                    localStorage.setItem(storageKey, '1');
+                }
+            });
+        }
+    }, [paper.id]);
+
+    const handleDownload = () => {
+        const paperId = paper.id;
+        const storageKey = `d_${paperId}`;
+        if (!localStorage.getItem(storageKey)) {
+            incrementPaperDownloads(paperId).then((res) => {
+                if (res.success) {
+                    localStorage.setItem(storageKey, '1');
+                }
+            });
+        }
+    };
 
     return (
         <div className="container-responsive -mt-10">
@@ -67,6 +95,33 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                 </span>
                             </div>
 
+                            {/* Metrics Section */}
+                            <div className="flex flex-wrap items-center gap-6 py-4 px-6 bg-muted/30 rounded-2xl border border-border/50 w-fit">
+                                <div className="flex items-center gap-2">
+                                    <Eye className="w-4 h-4 text-primary/60" />
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Views</span>
+                                        <span className="text-sm font-black text-primary tabular-nums">{(paper.views || 0).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                                <div className="w-px h-8 bg-border/50" />
+                                <div className="flex items-center gap-2">
+                                    <Download className="w-4 h-4 text-emerald-600/60" />
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Downloads</span>
+                                        <span className="text-sm font-black text-emerald-700 tabular-nums">{(paper.downloads || 0).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                                <div className="w-px h-8 bg-border/50" />
+                                <div className="flex items-center gap-2">
+                                    <Quote className="w-4 h-4 text-amber-600/60" />
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Citations</span>
+                                        <span className="text-sm font-black text-amber-700 tabular-nums">{(paper.citations || 0).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <h1 className=" font-serif font-black text-gray-900 leading-[1.15]">
                                 {paper.title}
                             </h1>
@@ -97,6 +152,7 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                 <a
                                     href={paper.file_path}
                                     download
+                                    onClick={handleDownload}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="hidden md:flex items-center justify-center gap-3 bg-primary text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-[0.2em] shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-1 whitespace-nowrap"
@@ -171,6 +227,7 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                         <a
                             href={paper.file_path}
                             download
+                            onClick={handleDownload}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full flex items-center justify-center gap-3 bg-primary text-white py-5 rounded-2xl font-black text-[10px] sm:text-xs tracking-[0.2em] shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-1 z-10"

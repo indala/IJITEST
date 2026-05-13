@@ -7,7 +7,7 @@ import PaperCard from '@/features/archives/components/PaperCard';
 import { Button } from "@/components/ui/button";
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { useLatestIssuePapers, useArchivePapers } from '@/hooks/queries/usePublic';
-import { InputGroup,InputGroupAddon,InputGroupInput } from '@/components/ui/input-group';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Card } from '@/components/ui/card';
 import { PublishedPaperUI } from '@/db/types';
 
@@ -20,7 +20,7 @@ interface ArchivesClientProps {
 export default function ArchivesClient({ initialPapers, mode = 'archive' }: ArchivesClientProps) {
     const currentIssueQuery = useLatestIssuePapers(mode === 'current' ? initialPapers : []);
     const archiveQuery = useArchivePapers(mode === 'archive' ? initialPapers : []);
-    
+
     const isLoading = mode === 'current' ? currentIssueQuery.isLoading : archiveQuery.isLoading;
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -65,8 +65,8 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                         <InputGroupAddon align="inline-start" className="pl-4">
                             <Search className="w-5 h-5 text-muted-foreground/50" />
                         </InputGroupAddon>
-                        <InputGroupInput 
-                            placeholder="Find by Title, Author, or Keywords..." 
+                        <InputGroupInput
+                            placeholder="Find by Title, Author, or Keywords..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="text-sm xl:text-base placeholder:text-muted-foreground/30 border-none bg-transparent"
@@ -132,7 +132,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
 
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 pl-3 border-l-2 border-[#000066]">
-                             <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Information</p>
+                            <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Information</p>
                         </div>
                         <Card className="p-6 border-border/50 bg-card rounded-xl">
                             <div className="w-10 h-10 bg-[#000066]/5 rounded-lg flex items-center justify-center mb-4 text-[#000066]">

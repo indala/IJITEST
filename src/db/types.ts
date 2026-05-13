@@ -20,7 +20,7 @@ import {
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
 // 🏷️ Global Literal Types (Enums)
-export type UserRole = 'admin' | 'editor' | 'reviewer' | 'author';
+export type UserRole = InferSelectModel<typeof users>['role']
 
 export type SubmissionStatus = 
     | 'submitted' 
@@ -42,9 +42,9 @@ export type PaymentStatus = 'pending' | 'paid' | 'verified' | 'failed' | 'waived
 export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
 
 // 👤 Users & Profiles
-export type User = Omit<InferSelectModel<typeof users>, 'role'> & {
-    role: UserRole;
-};
+export type User = InferSelectModel<typeof users>
+
+
 export type NewUser = Omit<InferInsertModel<typeof users>, 'role'> & {
     role: UserRole;
 };
@@ -218,6 +218,9 @@ export type PublishedPaperUI = {
     affiliation: string | null;
     author_email: string | null;
     authors_list: string[];
+    views: number;
+    downloads: number;
+    citations: number;
 };
 
 export interface TrackedManuscript {
