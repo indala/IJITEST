@@ -10,7 +10,7 @@ import {
     userProfiles
 } from "@/db/schema";
 import { eq, desc, and, sql, ne, inArray, asc } from "drizzle-orm";
-import { type PublishedPaperUI, type ActionResponse, type SubmissionStatus } from "@/db/types";
+import { type PublishedPaperUI, type ActionResponse, type SubmissionStatus, type Author } from "@/db/types";
 import { unstable_cache } from "next/cache";
 
 /**
@@ -313,19 +313,17 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
     const authorsList = Array.isArray(pub.submission?.authors) ? pub.submission.authors : [];
 
     // Sort authors by orderIndex
-    const sortedAuthors = [...authorsList].sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+    const sortedAuthors = [...authorsList].sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0)) as Author[];
 
     // Primary author is the one with isCorresponding or the first one
     const correspondingAuthor = sortedAuthors.find(a => a.isCorresponding) || sortedAuthors[0];
 
-    // Co-authors are all except the corresponding one, but user wants them ALL together?
-    // "i want coauthor to display alogn side main author wiht comas ','"
-    // So I will create a full string of names.
+    // Combine all names for the display authorName field
     const allAuthorsString = sortedAuthors.map(a => a.name).join(', ');
 
     return {
         id: pub.submissionId || 0,
-        paper_id: pub.submission?.paperId || "",
+        paperId: pub.submission?.paperId || "",
         title: latestVersion?.title || "Untitled Paper",
         abstract: latestVersion?.abstract || "",
         keywords: (() => {
@@ -338,24 +336,24 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
             } catch (e) {}
             return raw;
         })(),
-        author_name: allAuthorsString || "Anonymous Author",
-        author_email: correspondingAuthor?.email || "N/A",
+        authorName: allAuthorsString || "Anonymous Author",
+        authorEmail: correspondingAuthor?.email || "N/A",
         affiliation: correspondingAuthor?.institution || "N/A",
         status: (pub.submission?.status as SubmissionStatus) || "published",
         doi: pub.doi || "",
-        file_path: pub.finalPdfUrl || "",
-        pdf_url: pub.finalPdfUrl || "",
-        start_page: pub.startPage || null,
-        end_page: pub.endPage || null,
-        page_range: pub.startPage && pub.endPage ? `${pub.startPage}-${pub.endPage}` : null,
-        published_at: pub.publishedAt ? pub.publishedAt.toISOString() : null,
-        updated_at: pub.submission?.updatedAt || pub.publishedAt || null,
-        volume_number: pub.issue?.volumeNumber || 0,
-        issue_number: pub.issue?.issueNumber || 0,
-        publication_year: pub.issue?.year || 0,
-        month_range: pub.issue?.monthRange || "",
-        co_authors: null, // We've bundled them into author_name per requirements
-        authors_list: sortedAuthors.map(a => a.name),
+        filePath: pub.finalPdfUrl || "",
+        pdfUrl: pub.finalPdfUrl || "",
+        startPage: pub.startPage || null,
+        endPage: pub.endPage || null,
+        pageRange: pub.startPage && pub.endPage ? `${pub.startPage}-${pub.endPage}` : null,
+        publishedAt: pub.publishedAt ? pub.publishedAt.toISOString() : null,
+        updatedAt: pub.submission?.updatedAt || pub.publishedAt || null,
+        volumeNumber: pub.issue?.volumeNumber || 0,
+        issueNumber: pub.issue?.issueNumber || 0,
+        publicationYear: pub.issue?.year || 0,
+        monthRange: pub.issue?.monthRange || "",
+        coAuthors: sortedAuthors, 
+        authorsList: sortedAuthors.map(a => a.name),
         views: pub.views || 0,
         downloads: pub.downloads || 0,
         citations: pub.citations || 0

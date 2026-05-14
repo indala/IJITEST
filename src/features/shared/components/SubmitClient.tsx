@@ -6,10 +6,6 @@ import SubmissionForm from '@/features/submissions/components/SubmissionForm';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
 
-interface SubmitClientProps {
-    settings: Record<string, string>;
-}
-
 const REQUIREMENTS = [
     { title: "Formatting", desc: "Manuscripts must follow the IEEE standard format." },
     { title: "Originality", desc: "Submissions must be original and not published elsewhere." },
@@ -17,7 +13,7 @@ const REQUIREMENTS = [
     { title: "Copyright", desc: "A signed copyright transfer form is required upon acceptance." }
 ];
 
-export default function SubmitClient({ settings: _settings }: SubmitClientProps) {
+export default function SubmitClient() {
 
     return (
         <section className="container-responsive section-padding">

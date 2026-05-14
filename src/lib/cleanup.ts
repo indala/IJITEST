@@ -10,7 +10,7 @@ import path from "path";
  * 
  * Logic:
  * 1. Find all authors whose ONLY submissions are older than 15 days and in 'stalled' status.
- * 2. If an author has ANY 'published' or 'under_review' paper, we DO NOT delete the account.
+ * 2. If an author has ANY 'published' or 'underReview' paper, we DO NOT delete the account.
  * 3. Delete files from disk before removing DB records.
  */
 export async function cleanupInactiveAuthors() {
@@ -25,7 +25,7 @@ export async function cleanupInactiveAuthors() {
         })
         .from(submissions)
         .where(and(
-            inArray(submissions.status, ['rejected', 'revision_requested']),
+            inArray(submissions.status, ['rejected', 'revisionRequested']),
             lte(submissions.updatedAt, fifteenDaysAgo)
         ));
 
@@ -40,7 +40,7 @@ export async function cleanupInactiveAuthors() {
                 .from(submissions)
                 .where(and(
                     eq(submissions.correspondingAuthorId, sub.authorId),
-                    notInArray(submissions.status, ['rejected', 'revision_requested']),
+                    notInArray(submissions.status, ['rejected', 'revisionRequested']),
                     notInArray(submissions.id, [sub.id])
                 ))
                 .limit(1);

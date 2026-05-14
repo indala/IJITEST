@@ -194,7 +194,7 @@ export default function ReviewerApplicationForm() {
         }
 
         const submissionData = new FormData();
-        submissionData.append('application_type', 'reviewer');
+        submissionData.append('applicationType', 'reviewer');
         submissionData.append('fullName', formData.fullName);
         submissionData.append('designation', formData.designation);
         submissionData.append('email', formData.email);
@@ -202,7 +202,7 @@ export default function ReviewerApplicationForm() {
         submissionData.append('nationality', formData.nationality);
         submissionData.append('cv', formData.cv);
         submissionData.append('photo', formData.photo);
-        submissionData.append('research_interests', JSON.stringify(formData.researchInterests));
+        submissionData.append('researchInterests', JSON.stringify(formData.researchInterests));
 
         reviewerMutation.mutate(submissionData);
     }, [formData, reviewerMutation]);

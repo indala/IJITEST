@@ -61,7 +61,7 @@ export async function getApplications(filters?: { role?: string, status?: string
             
             return {
                 ...app,
-                research_interests: appInterests
+                researchInterests: appInterests
             };
         });
 
@@ -71,7 +71,7 @@ export async function getApplications(filters?: { role?: string, status?: string
         if (filters?.interest) {
             const search = filters.interest.toLowerCase();
             finalData = mappedData.filter(app => 
-                app.research_interests?.some(interest => interest.toLowerCase().includes(search))
+                app.researchInterests?.some(interest => interest.toLowerCase().includes(search))
             );
         }
 

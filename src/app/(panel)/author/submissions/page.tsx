@@ -13,12 +13,12 @@ export const dynamic = 'force-dynamic';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
     submitted: { label: 'Under Review', color: 'text-blue-600', bg: 'bg-blue-500/10' },
-    editor_assigned: { label: 'Editor Assigned', color: 'text-indigo-600', bg: 'bg-indigo-500/10' },
-    under_review: { label: 'Peer Review', color: 'text-amber-600', bg: 'bg-amber-500/10' },
-    revision_requested: { label: 'Revision Required', color: 'text-orange-600', bg: 'bg-orange-500/10' },
+    editorAssigned: { label: 'Editor Assigned', color: 'text-indigo-600', bg: 'bg-indigo-500/10' },
+    underReview: { label: 'Peer Review', color: 'text-amber-600', bg: 'bg-amber-500/10' },
+    revisionRequested: { label: 'Revision Required', color: 'text-orange-600', bg: 'bg-orange-500/10' },
     accepted: { label: 'Accepted', color: 'text-emerald-600', bg: 'bg-emerald-500/10' },
     rejected: { label: 'Not Accepted', color: 'text-rose-600', bg: 'bg-rose-500/10' },
-    payment_pending: { label: 'Payment Pending', color: 'text-purple-600', bg: 'bg-purple-500/10' },
+    paymentPending: { label: 'Payment Pending', color: 'text-purple-600', bg: 'bg-purple-500/10' },
     published: { label: 'Published', color: 'text-emerald-700', bg: 'bg-emerald-500/15' },
 };
 
@@ -39,7 +39,7 @@ export default async function AuthorSubmissionsList() {
     // Attach eligibility data in parallel
     const withEligibility = await Promise.all(
         submissions.map(async (sub: AuthorDashboardSubmission) => {
-            if (['revision_requested', 'rejected'].includes(sub.status)) {
+            if (['revisionRequested', 'rejected'].includes(sub.status)) {
                 const el = await checkResubmissionEligibility(sub.id);
                 return { ...sub, eligibility: el };
             }

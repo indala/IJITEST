@@ -11,9 +11,9 @@ interface PaperCardProps {
 }
 
 const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: PaperCardProps) {
-    const volumeSegment = `volume${paper.volume_number || 0}`;
-    const issueSegment = `issue${paper.issue_number || 0}`;
-    const paperUrl = `${basePath}/${volumeSegment}/${issueSegment}/${paper.paper_id}`;
+    const volumeSegment = `volume${paper.volumeNumber || 0}`;
+    const issueSegment = `issue${paper.issueNumber || 0}`;
+    const paperUrl = `${basePath}/${volumeSegment}/${issueSegment}/${paper.paperId}`;
 
     return (
         <Card className="font-serif border-primary/10 shadow-sm hover:shadow-md transition-shadow group relative rounded-lg border-t-2 border-t-transparent hover:border-t-secondary/40">
@@ -30,7 +30,7 @@ const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: Pap
                                 <span className="border-b text-base xl:text-lg 2xl:text-xl border-red-600">Authors</span>
                                 <span className="text-red-500 font-bold">:</span>
                                 <div className="space-y-1">
-                                    <p className="text-primary text-base xl:text-lg 2xl:text-xl m-0 tracking-wide">{paper.author_name}</p>
+                                    <p className="text-primary text-base xl:text-lg 2xl:text-xl m-0 tracking-wide">{paper.authorName}</p>
                                 </div>
                             </div>
                         </div>

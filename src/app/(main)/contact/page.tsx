@@ -22,8 +22,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export const revalidate = 3600;
 
 export default async function Contact() {
-    const settings = await getSettingsData();
-
     return (
         <main className="bg-background min-h-screen">
             <PageHeader
@@ -34,7 +32,7 @@ export default async function Contact() {
                     { name: 'Contact', href: '/contact' },
                 ]}
             />
-            <ContactClient settings={settings} />
+            <ContactClient />
         </main>
     );
 }

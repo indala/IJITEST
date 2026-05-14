@@ -20,7 +20,7 @@ export default async function AdminSubmissions({
     const statsResult = {
         total: submissions?.length || 0,
         submitted: submissions?.filter(s => s.status === 'submitted').length || 0,
-        underReview: submissions?.filter(s => s.status === 'under_review').length || 0,
+        underReview: submissions?.filter(s => s.status === 'underReview').length || 0,
         published: submissions?.filter(s => s.status === 'published').length || 0,
         rejected: submissions?.filter(s => s.status === 'rejected').length || 0
     };

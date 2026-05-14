@@ -47,7 +47,7 @@ export async function getNotificationCounts(): Promise<ActionResponse<{ messages
                 .from(submissions)
                 .where(and(
                     eq(submissions.correspondingAuthorId, userId),
-                    inArray(submissions.status, ['revision_requested', 'payment_pending'])
+                    inArray(submissions.status, ['revisionRequested', 'paymentPending'])
                 ));
             totalSubmissionCount += actionResult?.count ?? 0;
         }

@@ -57,7 +57,7 @@ export function SubmissionDecisionActions({
         }
     }, [waiveState, isWaiving]);
 
-    if (status === 'under_review') {
+    if (status === 'underReview') {
         return (
             <div className="grid grid-cols-1 gap-2 2xl:gap-4">
                 <form action={decideAction}>

@@ -24,8 +24,8 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
         switch (status) {
             case 'accepted': return 'bg-green-100 text-green-700 border-green-200';
             case 'rejected': return 'bg-red-100 text-red-700 border-red-200';
-            case 'under_review': return 'bg-blue-100 text-blue-700 border-blue-200';
-            case 'revision_requested': return 'bg-orange-100 text-orange-700 border-orange-200';
+            case 'underReview': return 'bg-blue-100 text-blue-700 border-blue-200';
+            case 'revisionRequested': return 'bg-orange-100 text-orange-700 border-orange-200';
             default: return 'bg-gray-100 text-gray-700 border-gray-200';
         }
     };
@@ -93,7 +93,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                         />
                     )}
 
-                    {!eligibility.eligible && sub.status === 'revision_requested' && (
+                    {!eligibility.eligible && sub.status === 'revisionRequested' && (
                         <Alert className="bg-red-50 border-red-100 rounded-2xl">
                             <AlertTriangle className="w-4 h-4 text-red-600" />
                             <AlertTitle className="text-xs font-black uppercase tracking-widest text-red-900">Window Expired</AlertTitle>
@@ -168,7 +168,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             <div className="space-y-1">
                                 <h3 className="text-lg font-black tracking-tight">Paper Published!</h3>
                                 <p className="text-xs text-white/60 font-black uppercase tracking-widest">
-                                    Volume {sub.publication.volume}, Issue {sub.publication.issue}
+                                    Volume {sub.publication.volumeNumber}, Issue {sub.publication.issueNumber}
                                 </p>
                             </div>
                             <Badge className="bg-white/20 text-white border-0 text-[10px] tracking-widest font-black h-8 px-5 rounded-full backdrop-blur-sm">VIEW ARCHIVE</Badge>

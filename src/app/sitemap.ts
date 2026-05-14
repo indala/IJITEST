@@ -42,13 +42,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const dynamicRoutes = papers.map((paper: PublishedPaperUI) => {
       const isCurrent = latestPaperIds.has(paper.id);
       const basePath = isCurrent ? 'current-issue' : 'archives';
-      const volume = `volume${paper.volume_number || 0}`;
-      const issue = `issue${paper.issue_number || 0}`;
-      const paperId = paper.paper_id;
+      const volume = `volume${paper.volumeNumber || 0}`;
+      const issue = `issue${paper.issueNumber || 0}`;
+      const paperId = paper.paperId;
 
       return {
         url: `${baseUrl}/${basePath}/${volume}/${issue}/${paperId}`,
-        lastModified: new Date(paper.updated_at || new Date()),
+        lastModified: new Date(paper.updatedAt || new Date()),
         changeFrequency: 'weekly' as const,
         priority: 0.6,
       };

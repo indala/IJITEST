@@ -16,7 +16,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AuthorGuidelines() {
-    const settings = await getSettingsData();
-
-    return <GuidelinesContent settings={settings} />;
+    return <GuidelinesContent />;
 }

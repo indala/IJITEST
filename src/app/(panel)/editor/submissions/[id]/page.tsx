@@ -36,8 +36,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const submission = response.data;
 
     return {
-        title: `Editorial: ${submission.paper_id} | IJITEST`,
-        description: `Editorial management for manuscript ${submission.paper_id}: ${submission.title}`,
+        title: `Editorial: ${submission.paperId} | IJITEST`,
+        description: `Editorial management for manuscript ${submission.paperId}: ${submission.title}`,
     };
 }
 
@@ -80,7 +80,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
     const getStatusVariant = (status: string) => {
         switch (status) {
             case 'submitted': return 'bg-indigo-500/10 text-indigo-600 border-none';
-            case 'under_review': return 'bg-amber-500/10 text-amber-600 border-none';
+            case 'underReview': return 'bg-amber-500/10 text-amber-600 border-none';
             case 'accepted': return 'bg-purple-500/10 text-purple-600 border-none';
             case 'paid': return 'bg-emerald-500/10 text-emerald-600 border-none';
             case 'published': return 'bg-cyan-500/10 text-cyan-600 border-none';
@@ -113,11 +113,11 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                             <div className="flex flex-wrap items-center gap-6 text-[10px] xl:text-[11px] font-semibold text-muted-foreground tracking-widest capitalize">
                                 <div className="flex items-center gap-2">
                                     <Calendar className="w-3.5 h-3.5 opacity-50" />
-                                    <span>{submission.submitted_at ? new Date(submission.submitted_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) : 'Unknown Date'}</span>
+                                    <span>{submission.submittedAt ? new Date(submission.submittedAt).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) : 'Unknown Date'}</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-primary/80">
                                     <Shield className="w-3.5 h-3.5" />
-                                    <span className="uppercase">{submission.paper_id}</span>
+                                    <span className="uppercase">{submission.paperId}</span>
                                 </div>
                                 {submission.keywords && (
                                     <div className="flex items-center gap-2">
@@ -128,14 +128,14 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                             </div>
                         </div>
                         <div className="flex flex-col gap-2 shrink-0">
-                            {submission.file_path && (
+                            {submission.filePath && (
                                 <Button asChild className="h-10 px-6 gap-2 bg-primary text-white font-semibold text-[10px] xl:text-[11px] tracking-widest rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all cursor-pointer capitalize">
-                                    <a href={getSecureUrl(submission.file_path)} download>
+                                    <a href={getSecureUrl(submission.filePath)} download>
                                         <Download className="w-4 h-4" /> Download manuscript
                                     </a>
                                 </Button>
                             )}
-                            <p className="text-[9px] font-semibold text-muted-foreground text-center tracking-widest opacity-60 capitalize">Authored by {submission.author_name}</p>
+                            <p className="text-[9px] font-semibold text-muted-foreground text-center tracking-widest opacity-60 capitalize">Authored by {submission.authorName}</p>
                         </div>
                     </div>
                 </CardHeader>
@@ -155,14 +155,14 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                 </div>
                             </div>
 
-                            {submission.pdf_url && (
+                            {submission.pdfUrl && (
                                 <div className="space-y-4 pt-4 border-t border-border/30">
                                     <div className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
                                         <Shield className="w-4 h-4" /> Secure manuscript preview
                                     </div>
                                     <div className="rounded-2xl border border-border/50 overflow-hidden shadow-vip-hover h-screen bg-muted/10 relative group">
                                         <PdfViewer
-                                            pdfUrl={getSecureUrl(submission.pdf_url)}
+                                            pdfUrl={getSecureUrl(submission.pdfUrl)}
                                             title={submission.title}
                                         />
                                         <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5" />
@@ -215,7 +215,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                             </div>
                                             <div className="min-w-0">
                                                 <p className="text-[9px] font-semibold  tracking-widest text-muted-foreground opacity-60 mb-0.5">Author Name</p>
-                                                <p className="font-semibold text-xs text-foreground tracking-wider">{submission.author_name}</p>
+                                                <p className="font-semibold text-xs text-foreground tracking-wider">{submission.authorName}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
@@ -224,7 +224,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                             </div>
                                             <div className="min-w-0">
                                                 <p className="text-[9px] font-semibold  tracking-widest text-muted-foreground opacity-60 mb-0.5">Email Address</p>
-                                                <p className="font-semibold text-xs text-foreground tracking-wider truncate">{submission.author_email}</p>
+                                                <p className="font-semibold text-xs text-foreground tracking-wider truncate">{submission.authorEmail}</p>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -242,8 +242,8 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                 </div>
                                 <Card className="border-border/50 shadow-sm bg-background">
                                     <CardContent className="p-5 space-y-4">
-                                        <AdminPdfUpload submissionId={submission.id} currentUrl={getSecureUrl(submission.pdf_url)} />
-                                        {submission.pdf_url ? (
+                                        <AdminPdfUpload submissionId={submission.id} currentUrl={getSecureUrl(submission.pdfUrl)} />
+                                        {submission.pdfUrl ? (
                                             <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                                                 <span className="text-[9px] font-semibold text-emerald-600 uppercase tracking-widest">Active Asset</span>
@@ -277,7 +277,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                         </div>
                                     )}
 
-                                    {submission.status === 'under_review' && (
+                                    {submission.status === 'underReview' && (
                                         <div className="space-y-4">
                                             <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-1">
                                                 <p className="text-[10px] font-semibold  text-primary tracking-widest">Editorial Threshold</p>
@@ -344,7 +344,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                                     <div className="space-y-3">
                                                         <div className="flex items-center justify-between">
                                                             <p className="text-[10px] font-semibold  text-white/40 tracking-widest">Volume Node</p>
-                                                            <p className="text-xs font-semibold">{submission.volume_number && `Vol ${submission.volume_number}, Issue ${submission.issue_number}`}</p>
+                                                            <p className="text-xs font-semibold">{submission.volumeNumber && `Vol ${submission.volumeNumber}, Issue ${submission.issueNumber}`}</p>
                                                         </div>
                                                         <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-white/5 hover:bg-white/10 text-white font-semibold text-[10px]  tracking-widest border border-white/10 rounded-xl cursor-pointer">
                                                             <Link className="cursor-pointer" href="/archives">
@@ -372,7 +372,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
 
                                                 <PublicationAssignment 
                                                     submissionId={submission.id} 
-                                                    currentIssueId={submission.issue_id ?? null} 
+                                                    currentIssueId={submission.issueId ?? null} 
                                                 />
                                             </div>
                                         </div>

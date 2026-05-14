@@ -58,7 +58,7 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
                             const isLast = idx === breadcrumbs.length - 1;
                             return (
                                 <motion.li 
-                                    key={idx} 
+                                    key={crumb.href + idx} 
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.6, delay: idx * 0.1, ease: "easeOut" }}

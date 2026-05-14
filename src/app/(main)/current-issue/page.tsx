@@ -22,7 +22,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CurrentIssue() {
     const res = await getLatestIssuePapers();
     const papers = res.data || [];
-    const settings = await getSettingsData();
 
     return (
         <div className="bg-background min-h-screen">
@@ -37,7 +36,7 @@ export default async function CurrentIssue() {
                 scrollOnComplete={true}
             />
 
-            <ArchivesClient initialPapers={papers} settings={settings} mode="current" />
+            <ArchivesClient initialPapers={papers} mode="current" />
         </div>
     );
 }

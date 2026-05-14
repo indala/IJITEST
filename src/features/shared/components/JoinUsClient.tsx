@@ -1,5 +1,9 @@
+'use client';
+
 import ReviewerApplicationForm from "@/features/reviewer/components/ReviewerApplicationForm";
 import { CheckCircle2, Globe, Users, Award, ShieldCheck } from 'lucide-react';
+import { useSettingsStore } from '@/store/useSettingsStore';
+
 
 const BENEFITS = [
     {
@@ -26,12 +30,11 @@ const REQUIREMENTS = [
     "Affiliation with a recognized academic or research institution"
 ];
 
-interface JoinUsClientProps {
-    settings: Record<string, string>;
-}
 
-export default function JoinUsClient({ settings }: JoinUsClientProps) {
-    const journalShortName = settings.journal_short_name || "IJITEST";
+
+export default function JoinUsClient() {
+    const settings = useSettingsStore((state) => state.settings);
+    const journalShortName = settings.journalShortName || '';
 
     return (
         <section className="container-responsive py-12 sm:py-24" aria-labelledby="join-us-heading">

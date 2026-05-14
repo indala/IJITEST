@@ -1,0 +1,3 @@
+ALTER TABLE `reviews` MODIFY COLUMN `decision` enum('accept','minorRevision','majorRevision','reject') NOT NULL;--> statement-breakpoint
+ALTER TABLE `submission_files` MODIFY COLUMN `file_type` enum('mainManuscript','pdfVersion','copyrightForm','supplementary','feedback','paymentProof') NOT NULL;--> statement-breakpoint
+ALTER TABLE `submissions` MODIFY COLUMN `status` enum('submitted','editorAssigned','underReview','revisionRequested','accepted','rejected','paymentPending','published','retracted') NOT NULL DEFAULT 'submitted';

@@ -9,12 +9,11 @@ import Link from 'next/link';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
-interface GuidelinesContentProps {
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function GuidelinesContent({ settings }: GuidelinesContentProps) {
-    const supportEmail = settings.support_email || "editor@iitest.org";
+export default function GuidelinesContent() {
+    const settings = useSettingsStore((state) => state.settings);
+    const supportEmail = settings.supportEmail || "editor@ijitest.org";
 
     const sections = [
         {
@@ -62,7 +61,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
             content: (
                 <div className="space-y-4">
                     <p>
-                        Publication fee for Indian Authors is <span className="text-secondary">Rs. {settings.apc_inr}</span> and <span className="text-secondary">USD {settings.apc_usd}</span> for Foreign Authors for maximum of 5 authors upto 8 pages.
+                        Publication fee for Indian Authors is <span className="text-secondary">Rs. {settings.apcInr}</span> and <span className="text-secondary">USD {settings.apcUsd}</span> for Foreign Authors for maximum of 5 authors upto 8 pages.
                     </p>
                 </div>
             )
@@ -149,12 +148,12 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                             <Link href="/submit">Submit Manuscript</Link>
                         </Button>
                         <Button asChild variant="outline" size="lg" className="btn-outline">
-                            <a href={settings.template_url || "/docs/template.docx"} download>
+                            <a href={settings.templateUrl || "/docs/template.docx"} download>
                                 <Download className="w-5 h-5 2xl:w-8 2xl:h-8 mr-2" /> Download Template
                             </a>
                         </Button>
                         <Button asChild variant="outline" size="lg" className="btn-outline">
-                            <a href={settings.copyright_url || "/docs/copyright-form.docx"} download>
+                            <a href={settings.copyrightUrl || "/docs/copyright-form.docx"} download>
                                 <Download className="w-5 h-5 2xl:w-8 2xl:h-8 mr-2" /> Copyright Form
                             </a>
                         </Button>
@@ -168,7 +167,7 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
         <main className="bg-background min-h-screen">
             <PageHeader
                 title="Author Guidelines"
-                description={`Comprehensive protocol for submitting manuscripts to ${settings.journal_short_name || 'IJITEST'}.`}
+                description={`Comprehensive protocol for submitting manuscripts to ${settings.journalShortName || 'IJITEST'}.`}
                 breadcrumbs={[
                     { name: 'Home', href: '/' },
                     { name: 'Guidelines', href: '/guidelines' },

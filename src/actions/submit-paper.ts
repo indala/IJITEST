@@ -21,20 +21,20 @@ import crypto from 'crypto';
 import { ActionResponse } from "@/db/types";
 
 const submissionSchema = z.object({
-    author_name: z.string().min(2, "Author name is required").max(255, "Author name cannot exceed 255 characters"),
-    author_email: z.email("Invalid email address").max(255, "Email address cannot exceed 255 characters"),
-    author_phone: z.string()
+    authorName: z.string().min(2, "Author name is required").max(255, "Author name cannot exceed 255 characters"),
+    authorEmail: z.email("Invalid email address").max(255, "Email address cannot exceed 255 characters"),
+    authorPhone: z.string()
         .regex(/^[0-9]+$/, "Author phone must contain only numbers")
         .max(20, "Phone number cannot exceed 20 characters")
         .optional()
         .or(z.literal('')),
-    author_designation: z.string().min(2, "Author designation is required").max(255, "Designation cannot exceed 255 characters"),
+    authorDesignation: z.string().min(2, "Author designation is required").max(255, "Designation cannot exceed 255 characters"),
     affiliation: z.string().min(2, "Affiliation is required").max(500, "Institution name cannot exceed 500 characters"),
     title: z.string().min(10, "Title must be at least 10 characters").max(1000, "Title cannot exceed 1000 characters"),
     abstract: z.string().min(50, "Abstract must be at least 50 characters"),
     keywords: z.string().min(5, "Keywords are required").max(500, "Keywords cannot exceed 500 characters"),
-    co_authors: z.string().optional(),
-    terms_accepted: z.string().refine(val => val === "on", {
+    coAuthors: z.string().optional(), // Still receiving as string from FormData, will parse to Author[]
+    termsAccepted: z.string().refine(val => val === "on", {
         message: "You must accept the terms and guidelines"
     }),
 });
@@ -48,25 +48,25 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
     let invitationToken: string | null = null;
 
     try {
-        // 1. Validation
+        // 1. Validation (Mapping snake_case FormData to camelCase Schema)
         const rawData = {
-            author_name: formData.get("author_name") as string,
-            author_email: formData.get("author_email") as string,
-            author_phone: formData.get("author_phone") as string,
-            author_designation: formData.get("author_designation") as string,
+            authorName: formData.get("authorName") as string,
+            authorEmail: formData.get("authorEmail") as string,
+            authorPhone: formData.get("authorPhone") as string,
+            authorDesignation: formData.get("authorDesignation") as string,
             affiliation: formData.get("affiliation") as string,
             title: formData.get("title") as string,
             abstract: formData.get("abstract") as string,
             keywords: formData.get("keywords") as string,
-            co_authors: formData.get("co_authors") as string,
-            terms_accepted: formData.get("terms_accepted") as string,
+            coAuthors: formData.get("coAuthors") as string,
+            termsAccepted: formData.get("termsAccepted") as string,
         };
 
         const validated = submissionSchema.safeParse(rawData);
         if (!validated.success) return { success: false, error: validated.error?.issues[0]?.message || "Validation failed" };
 
         const manuscriptFile = formData.get("manuscript") as File;
-        const copyrightFile = formData.get("copyright_form") as File;
+        const copyrightFile = formData.get("copyrightForm") as File;
 
         if (!manuscriptFile || manuscriptFile.size === 0) return { success: false, error: "Manuscript file is mandatory" };
         const copyrightProvided = copyrightFile && copyrightFile.size > 0;
@@ -88,7 +88,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         // 2. Transactional Database Operations (Save everything BUT don't upload files yet)
         const result = await db.transaction(async (tx) => {
             // A. User/Author Account Management
-            const existingUsers = await tx.select().from(users).where(eq(users.email, validated.data.author_email)).limit(1);
+            const existingUsers = await tx.select().from(users).where(eq(users.email, validated.data.authorEmail)).limit(1);
             let userId: string;
 
             if (existingUsers.length === 0) {
@@ -99,21 +99,21 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
                 await tx.insert(users).values({
                     id: userId,
-                    email: validated.data.author_email,
+                    email: validated.data.authorEmail,
                     role: "author",
                     passwordHash: null, // Force setup
                 });
 
                 await tx.insert(userProfiles).values({
                     userId,
-                    fullName: validated.data.author_name,
+                    fullName: validated.data.authorName,
                     institute: validated.data.affiliation,
-                    phone: validated.data.author_phone,
-                    designation: validated.data.author_designation,
+                    phone: validated.data.authorPhone,
+                    designation: validated.data.authorDesignation,
                 });
 
                 await tx.insert(userInvitations).values({
-                    email: validated.data.author_email,
+                    email: validated.data.authorEmail,
                     role: "author",
                     token: invitationToken,
                     expiresAt: expires,
@@ -125,10 +125,10 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 // Update profile with latest info
                 await tx.update(userProfiles)
                     .set({
-                        fullName: validated.data.author_name,
+                        fullName: validated.data.authorName,
                         institute: validated.data.affiliation,
-                        phone: validated.data.author_phone,
-                        designation: validated.data.author_designation,
+                        phone: validated.data.authorPhone,
+                        designation: validated.data.authorDesignation,
                     })
                     .where(eq(userProfiles.userId, userId));
             }
@@ -180,18 +180,18 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             // E. Authors (Lead + Co-authors)
             const authorsList: (typeof submissionAuthors.$inferInsert)[] = [{
                 submissionId: subId,
-                name: validated.data.author_name,
-                email: validated.data.author_email,
-                phone: validated.data.author_phone,
-                designation: validated.data.author_designation,
+                name: validated.data.authorName,
+                email: validated.data.authorEmail,
+                phone: validated.data.authorPhone,
+                designation: validated.data.authorDesignation,
                 institution: validated.data.affiliation,
                 isCorresponding: true,
                 orderIndex: 0,
             }];
 
-            if (validated.data.co_authors) {
+            if (validated.data.coAuthors) {
                 try {
-                    const coAuthors = JSON.parse(validated.data.co_authors);
+                    const coAuthors = JSON.parse(validated.data.coAuthors);
                     if (Array.isArray(coAuthors)) {
                         coAuthors.forEach((ca, idx) => {
                             if (!ca.name || !ca.email) return; // Skip empty rows if any
@@ -219,14 +219,14 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const mUrl = `/api/files/submissions/${mName}`;
 
             const fileRecords: (typeof submissionFiles.$inferInsert)[] = [
-                { versionId: verId, fileType: "main_manuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size }
+                { versionId: verId, fileType: "mainManuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size }
             ];
 
             let finalCName: string | undefined = undefined;
             if (copyrightProvided) {
                 const cName = `copyright_${subId}_${timestamp}.${copyrightFile.name.split('.').pop()}`;
                 const cUrl = `/api/files/submissions/${cName}`;
-                fileRecords.push({ versionId: verId, fileType: "copyright_form" as const, fileUrl: cUrl, originalName: copyrightFile.name, fileSize: copyrightFile.size });
+                fileRecords.push({ versionId: verId, fileType: "copyrightForm" as const, fileUrl: cUrl, originalName: copyrightFile.name, fileSize: copyrightFile.size });
                 finalCName = cName;
             }
 
@@ -236,7 +236,6 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         });
 
         // 3. File Uploads (Happens post-transaction to strictly follow "DB First" rule)
-        // If this fails, the DB record exists but we'll mark it as failed or return an error.
         const uploadDir = path.join(process.cwd(), "storage/submissions");
         await fs.mkdir(uploadDir, { recursive: true });
 
@@ -259,11 +258,11 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
             // Orphaned Account Cleanup (if user was newly created during this failed session)
             if (invitationToken) {
-                const userRes = await db.select().from(users).where(eq(users.email, rawData.author_email)).limit(1);
+                const userRes = await db.select().from(users).where(eq(users.email, validated.data.authorEmail)).limit(1);
                 const userToCleanup = userRes[0];
                 if (userToCleanup && !userToCleanup.passwordHash) {
                     await db.delete(users).where(eq(users.id, userToCleanup.id));
-                    await db.delete(userInvitations).where(eq(userInvitations.email, rawData.author_email));
+                    await db.delete(userInvitations).where(eq(userInvitations.email, validated.data.authorEmail));
                 }
             }
             throw new Error("File upload failed. Our servers might be busy. Please try again.");
@@ -275,27 +274,27 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
         // Author Notification
         const authorTemplate = emailTemplates.submissionReceived(
-            validated.data.author_name,
+            validated.data.authorName,
             validated.data.title,
             result.paperId,
             invitationToken ? `${baseUrl}/auth/setup?token=${invitationToken}` : loginUrl
         );
 
         await sendEmail({
-            to: validated.data.author_email,
+            to: validated.data.authorEmail,
             subject: authorTemplate.subject,
             html: authorTemplate.html
         });
 
         // Co-author Notifications
-        if (validated.data.co_authors) {
-            const coAuthors = JSON.parse(validated.data.co_authors);
+        if (validated.data.coAuthors) {
+            const coAuthors = JSON.parse(validated.data.coAuthors);
             if (Array.isArray(coAuthors)) {
-                await Promise.allSettled(coAuthors.map(ca => {
+                await Promise.allSettled(coAuthors.map((ca: any) => {
                     const coTemplate = emailTemplates.coAuthorNotification(
                         ca.name,
                         validated.data.title,
-                        validated.data.author_name,
+                        validated.data.authorName,
                         result.paperId
                     );
                     return sendEmail({
@@ -320,7 +319,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const staffTemplate = emailTemplates.staffNotification(
                 s.profile.fullName || 'Editor',
                 `New Submission: ${result.paperId}`,
-                `A new manuscript titled <strong>"${validated.data.title}"</strong> has been submitted by <strong>${validated.data.author_name}</strong> and requires initial screening.`,
+                `A new manuscript titled <strong>"${validated.data.title}"</strong> has been submitted by <strong>${validated.data.authorName}</strong> and requires initial screening.`,
                 dashboardLink
             );
 

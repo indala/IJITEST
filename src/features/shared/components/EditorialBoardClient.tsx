@@ -3,25 +3,27 @@
 import { Mail, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useEditorialBoard } from '@/hooks/queries/usePublic';
-import { staticEditorialBoardMembers, BoardMember } from '../data/editorial-board';
+import { staticEditorialBoardMembers, type BoardMember } from '../data/editorial-board';
 import { SafeUserWithProfile } from '@/db/types';
 
+import { useSettingsStore } from '@/store/useSettingsStore';
+
 interface EditorialBoardClientProps {
-    settings: Record<string, string>;
     initialMembers: SafeUserWithProfile[];
 }
 
-export default function EditorialBoardClient({ settings, initialMembers }: EditorialBoardClientProps) {
+export default function EditorialBoardClient({ initialMembers }: EditorialBoardClientProps) {
     const { data: dynamicMembers = [], isLoading } = useEditorialBoard(initialMembers);
-    const supportEmail = settings.support_email || "editor@ijitest.org";
+    const settings = useSettingsStore((state) => state.settings);
+    const supportEmail = settings.supportEmail || '';
 
     const groupedBoard = useMemo(() => {
         const mappedDynamic = dynamicMembers.map(m => ({
-            full_name: m.profile?.fullName || "Staff",
-            designation: m.profile?.designation || "Editor",
-            institute: m.profile?.institute || "IJITEST",
-            nationality: m.profile?.nationality || "",
-            email: m.email,
+            full_name: m.profile!.fullName!,
+            designation: m.profile!.designation!,
+            institute: m.profile!.institute!,
+            nationality: m.profile!.nationality!,
+            email: m.email!,
             role: m.role
         }));
 
@@ -47,42 +49,63 @@ export default function EditorialBoardClient({ settings, initialMembers }: Edito
     }
 
     return (
-        <section className=" space-y-12 max-w-5xl 2xl:container-responsive">
+        <section className="space-y-12 max-w-full lg:max-w-6xl 2xl:max-w-7xl mx-auto pb-12">
             {groupedBoard.map((category, idx) => (
-                <section key={idx} className="overflow-hidden rounded-xl border border-primary/10 shadow-sm">
+                <section key={idx} className="overflow-hidden rounded-xl border border-primary/20 shadow-md bg-slate-200/60">
                     <div className="bg-[#000066] p-4 px-6 xl:px-8">
-                        <h2 className="text-white m-0 font-serif font-semibold text-lg xl:text-xl 2xl:text-2xl">
+                        <h2 className="text-white m-0 font-serif font-semibold text-lg xl:text-xl 2xl:text-3xl">
                             {category.role}
                         </h2>
                     </div>
 
                     <div className="divide-y divide-primary/5">
                         {category.members.map((member: BoardMember, mIdx: number) => (
-                            <article key={mIdx} className="group">
-                                <header className="bg-muted/30 py-3 px-6 xl:px-8 border-b border-border/50">
-                                    <h3 className="text-primary m-0 font-semibold text-sm xl:text-base 2xl:text-lg">
+                            <article key={mIdx} className="group hover:bg-primary/[0.03] transition-colors border-b border-primary/5 last:border-0">
+                                <header className="bg-muted/70 py-3 px-6 xl:px-8 border-b border-border/50">
+                                    <h3 className="text-primary m-0 font-semibold text-sm xl:text-lg 2xl:text-xl">
                                         {member.full_name}
                                     </h3>
                                 </header>
 
-                                <div className="bg-card py-4 px-6 xl:px-8 space-y-2">
-                                    <div className="flex gap-3 text-muted-foreground text-xs xl:text-sm">
-                                        <p className="m-0 leading-relaxed">
-                                            <span className="font-medium text-foreground">{member.designation}</span> • {member.institute}
+                                <div className="py-5 px-6 xl:px-8 space-y-4">
+                                    <div className="flex flex-row flex-wrap items-baseline gap-x-3 gap-y-1 text-muted-foreground">
+                                        <p className="m-0 leading-relaxed font-medium text-foreground text-sm xl:text-base 2xl:text-xl shrink-0">
+                                            {member.designation}
+                                            {member.department && ` • ${member.department}`}
+                                        </p>
+                                        <p className="m-0 leading-relaxed italic text-xs xl:text-sm 2xl:text-lg opacity-90">
+                                            <span className="hidden sm:inline mr-2 text-muted-foreground">|</span>
+                                            {member.institute}
                                             {member.nationality && member.institute.toLowerCase().indexOf(member.nationality.toLowerCase()) === -1
                                                 ? ` • ${member.nationality}`
                                                 : ""
                                             }
                                         </p>
                                     </div>
-                                    {member.email && (idx === 0 || member.role === 'admin') && (
-                                        <div className="flex items-center gap-2 text-xs text-primary/70">
-                                            <Mail className="w-3.5 h-3.5 text-primary/40 shrink-0" />
-                                            <a href={`mailto:${member.email}`} className="hover:text-primary hover:underline transition-colors truncate">
-                                                {member.email}
-                                            </a>
-                                        </div>
-                                    )}
+                                    
+                                    <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-primary/5">
+                                        {member.email && (
+                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-lg text-primary/70">
+                                                <Mail className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-primary/40 shrink-0" />
+                                                <a href={`mailto:${member.email}`} className="hover:text-primary hover:underline transition-colors font-medium">
+                                                    {member.email}
+                                                </a>
+                                            </div>
+                                        )}
+                                        {member.profileLink && (
+                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-lg">
+                                                <a 
+                                                    href={member.profileLink} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="text-primary/60 hover:text-primary flex items-center gap-1.5 transition-all group/link"
+                                                >
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover/link:bg-primary transition-colors" />
+                                                    Institutional Profile
+                                                </a>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </article>
                         ))}
@@ -90,20 +113,35 @@ export default function EditorialBoardClient({ settings, initialMembers }: Edito
                 </section>
             ))}
 
-            <section className="pt-8 border-t border-border/50">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-8">
-                    <div className="text-center sm:text-left">
-                        <h3 className="text-lg font-semibold text-primary mb-1">Editorial Support</h3>
-                        <p className="text-xs text-muted-foreground">For inquiries related to editor roles or board selection.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-12 border-t border-border/50">
+                <section className="bg-slate-200/80 rounded-2xl p-8 xl:p-10 border border-primary/10 shadow-sm">
+                    <h3 className="text-xl xl:text-2xl font-serif font-bold text-[#000066] mb-6">Editorial Headquarters</h3>
+                    <div className="space-y-4 text-muted-foreground text-sm xl:text-lg 2xl:text-xl">
+                        <p className="text-foreground whitespace-pre-line">
+                            {settings.officeAddress || ''}
+                        </p>
+                        <div className="pt-4 flex items-center gap-3">
+                            <Mail className="w-5 h-5 text-primary/40" />
+                            <a href={`mailto:${supportEmail}`} className="text-[#000066] font-semibold hover:underline">
+                                {supportEmail}
+                            </a>
+                        </div>
                     </div>
+                </section>
+
+                <section className="bg-primary/[0.02] rounded-2xl p-8 xl:p-10 border border-primary/5 flex flex-col justify-center">
+                    <h3 className="text-xl xl:text-2xl font-serif font-bold text-primary mb-2">Join Our Board</h3>
+                    <p className="text-sm xl:text-lg 2xl:text-xl text-muted-foreground mb-6">
+                        We are constantly looking for experts to join our editorial team. If you are interested in contributing, please reach out to us.
+                    </p>
                     <a
                         href={`mailto:${supportEmail}`}
-                        className="text-primary font-semibold text-lg xl:text-xl border-b border-primary/20 hover:border-primary transition-all pb-0.5"
+                        className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#000066] text-white font-semibold hover:bg-[#000066]/90 transition-all w-fit"
                     >
-                        {supportEmail}
+                        Contact Us
                     </a>
-                </div>
-            </section>
+                </section>
+            </div>
         </section>
     );
 }

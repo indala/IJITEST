@@ -3,13 +3,12 @@
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
-interface EthicsClientProps {
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function EthicsClient({ settings }: EthicsClientProps) {
-    const journalName = settings.journal_name || "International Journal of Science and Applied Information Technology (IJITEST)";
-    const supportEmail = settings.support_email || "editor@ijitest.org";
+export default function EthicsClient() {
+    const settings = useSettingsStore((state) => state.settings);
+    const journalName = settings.journalName || '';
+    const supportEmail = settings.supportEmail || '';
 
     const sections = [
         {

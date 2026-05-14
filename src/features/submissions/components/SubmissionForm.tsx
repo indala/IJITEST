@@ -39,15 +39,15 @@ const coAuthorSchema = z.object({
 
 const formSchema = z.object({
     title: z.string().min(10, "Title must be at least 10 characters"),
-    author_name: z.string().min(2, "Author name must be at least 2 characters"),
-    author_email: z.string().email("Invalid email address"),
-    author_phone: z.string().optional().or(z.literal('')),
-    author_designation: z.string().min(2, "Designation required"),
+    authorName: z.string().min(2, "Author name must be at least 2 characters"),
+    authorEmail: z.string().email("Invalid email address"),
+    authorPhone: z.string().optional().or(z.literal('')),
+    authorDesignation: z.string().min(2, "Designation required"),
     affiliation: z.string().min(5, "Affiliation must be at least 5 characters"),
     abstract: z.string().min(100, "Abstract must be at least 100 characters"),
     keywords: z.string().min(10, "Provide at least 5 keywords"),
-    co_authors: z.array(coAuthorSchema).max(5, "Maximum 5 authors allowed").optional(),
-    terms_accepted: z.boolean().refine(val => val === true, {
+    coAuthors: z.array(coAuthorSchema).max(5, "Maximum 5 authors allowed").optional(),
+    termsAccepted: z.boolean().refine(val => val === true, {
         message: "You must accept the terms and guidelines"
     }),
 });
@@ -62,21 +62,21 @@ export default function SubmissionForm() {
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: "",
-            author_name: "",
-            author_email: "",
-            author_phone: "",
-            author_designation: "",
+            authorName: "",
+            authorEmail: "",
+            authorPhone: "",
+            authorDesignation: "",
             affiliation: "",
             abstract: "",
             keywords: "",
-            co_authors: [],
-            terms_accepted: false,
+            coAuthors: [],
+            termsAccepted: false,
         },
     });
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        name: "co_authors" as const,
+        name: "coAuthors" as const,
     });
 
     const onSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
@@ -86,18 +86,12 @@ export default function SubmissionForm() {
             });
             return;
         }
-        if (!manuscriptFile) {
-            toast.error("Manuscript Missing", {
-                description: "Primary research document is required."
-            });
-            return;
-        }
 
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
-            if (key === "co_authors") {
+            if (key === "coAuthors") {
                 formData.append(key, JSON.stringify(value));
-            } else if (key === "terms_accepted") {
+            } else if (key === "termsAccepted") {
                 formData.append(key, value ? "on" : "off");
             } else {
                 formData.append(key, value as string);
@@ -106,7 +100,7 @@ export default function SubmissionForm() {
         
         formData.append("manuscript", manuscriptFile);
         if (copyrightFile) {
-            formData.append("copyright_form", copyrightFile);
+            formData.append("copyrightForm", copyrightFile);
         }
 
         submissionMutation.mutate(formData, {
@@ -206,7 +200,7 @@ export default function SubmissionForm() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <FormField
                             control={form.control}
-                            name="author_name"
+                            name="authorName"
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
@@ -227,7 +221,7 @@ export default function SubmissionForm() {
                         />
                         <FormField
                             control={form.control}
-                            name="author_email"
+                            name="authorEmail"
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
@@ -249,7 +243,7 @@ export default function SubmissionForm() {
                         />
                         <FormField
                             control={form.control}
-                            name="author_phone"
+                            name="authorPhone"
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
@@ -274,7 +268,7 @@ export default function SubmissionForm() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormField
                             control={form.control}
-                            name="author_designation"
+                            name="authorDesignation"
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
@@ -423,7 +417,7 @@ export default function SubmissionForm() {
                                             <div className="space-y-4 pt-2">
                                                 <FormField
                                                     control={form.control}
-                                                    name={`co_authors.${index}.name`}
+                                                    name={`coAuthors.${index}.name`}
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormControl>
@@ -435,7 +429,7 @@ export default function SubmissionForm() {
                                                 />
                                                 <FormField
                                                     control={form.control}
-                                                    name={`co_authors.${index}.email`}
+                                                    name={`coAuthors.${index}.email`}
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormControl>
@@ -448,7 +442,7 @@ export default function SubmissionForm() {
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                     <FormField
                                                         control={form.control}
-                                                        name={`co_authors.${index}.phone`}
+                                                        name={`coAuthors.${index}.phone`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormControl>
@@ -460,7 +454,7 @@ export default function SubmissionForm() {
                                                     />
                                                     <FormField
                                                         control={form.control}
-                                                        name={`co_authors.${index}.designation`}
+                                                        name={`coAuthors.${index}.designation`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormControl>
@@ -473,7 +467,7 @@ export default function SubmissionForm() {
                                                 </div>
                                                 <FormField
                                                     control={form.control}
-                                                    name={`co_authors.${index}.institution`}
+                                                    name={`coAuthors.${index}.institution`}
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormControl>
@@ -517,9 +511,9 @@ export default function SubmissionForm() {
                                     </div>
                                     <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider m-0">Manuscript Upload</FormLabel>
                                 </div>
-                                {settings.template_url && (
+                                {settings.templateUrl && (
                                     <Button asChild variant="ghost" size="sm" className="h-8 text-[#000066] font-bold text-[9px] uppercase tracking-wider hover:bg-[#000066]/5">
-                                        <a href={settings.template_url} download>
+                                        <a href={settings.templateUrl} download>
                                             <Download className="w-3 h-3 mr-2" />
                                             Template
                                         </a>
@@ -572,9 +566,9 @@ export default function SubmissionForm() {
                                     </div>
                                     <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider m-0">Copyright Agreement (Optional)</FormLabel>
                                 </div>
-                                {settings.copyright_url && (
+                                {settings.copyrightUrl && (
                                     <Button asChild variant="ghost" size="sm" className="h-8 text-[#000066] font-bold text-[9px] uppercase tracking-wider hover:bg-[#000066]/5">
-                                        <a href={settings.copyright_url} download>
+                                        <a href={settings.copyrightUrl} download>
                                             <Download className="w-3 h-3 mr-2" />
                                             Agreement Form
                                         </a>
@@ -624,7 +618,7 @@ export default function SubmissionForm() {
                 <div className="space-y-8 pt-10 border-t border-border/50">
                     <FormField
                         control={form.control}
-                        name="terms_accepted"
+                        name="termsAccepted"
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center space-x-4 space-y-0 p-6 rounded-xl bg-muted/20 border border-border/50 shadow-sm">
                                 <FormControl>
@@ -670,5 +664,3 @@ export default function SubmissionForm() {
         </Form>
     );
 }
-
-

@@ -244,9 +244,9 @@ export default async function ReviewerDashboard() {
                             <Card key={paper.id} className="border-border/50 shadow-sm bg-background hover:shadow-md transition-all group overflow-hidden rounded-xl">
                                 <div className="p-6 space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <Badge variant="outline" className="text-[9px] border-none bg-muted px-2 py-0.5">ID: {paper.paper_id}</Badge>
-                                        <Badge className={`text-[9px] font-bold uppercase py-0.5 px-2 border-none ${paper.status === 'published' ? 'bg-emerald-500/10 text-emerald-600' :
-                                            paper.status === 'rejected' ? 'bg-rose-500/10 text-rose-600' :
+                                        <Badge variant="outline" className="text-[9px] border-none bg-muted px-2 py-0.5">ID: {paper.paperId}</Badge>
+                                        <Badge className={`text-[9px] font-bold uppercase py-0.5 px-2 border-none ${paper.status === 'published' ? 'bg-emerald-50 text-emerald-600' :
+                                            paper.status === 'rejected' ? 'bg-rose-50 text-rose-600' :
                                                 'bg-primary/10 text-primary'
                                             }`}>
                                             {paper.status}
@@ -254,9 +254,9 @@ export default async function ReviewerDashboard() {
                                     </div>
                                     <h3 className="font-bold text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors h-10">{paper.title}</h3>
                                     <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-4 border-t border-border/10">
-                                        <span className="flex items-center gap-1.5 font-medium uppercase"><Clock className="w-3 h-3 opacity-50" /> {paper.submitted_at ? new Date(paper.submitted_at).toLocaleDateString() : 'N/A'}</span>
+                                        <span className="flex items-center gap-1.5 font-medium uppercase"><Clock className="w-3 h-3 opacity-50" /> {paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : 'N/A'}</span>
                                         <Button asChild variant="ghost" size="sm" className="h-7 px-3 text-primary hover:bg-primary/15 rounded-md font-bold uppercase text-[9px] cursor-pointer">
-                                            <Link href={`/track?id=${paper.paper_id}`} className="flex items-center gap-1.5 cursor-pointer">
+                                            <Link href={`/track?id=${paper.paperId}`} className="flex items-center gap-1.5 cursor-pointer">
                                                 Trace <ExternalLink className="w-3 h-3" />
                                             </Link>
                                         </Button>

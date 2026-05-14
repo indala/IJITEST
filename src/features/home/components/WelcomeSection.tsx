@@ -2,15 +2,12 @@
 import { motion } from 'framer-motion';
 import { memo } from 'react';
 
-interface WelcomeSectionProps {
-    journalName?: string;
-    journalShortName?: string;
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-function WelcomeSection({ journalName, journalShortName }: WelcomeSectionProps) {
-    const name = journalName || "International Journal of Innovative Trends in Engineering Science and Technology";
-    const shortName = journalShortName || "IJITEST";
+function WelcomeSection() {
+    const settings = useSettingsStore((state) => state.settings);
+    const name = settings.journalName || '';
+    const shortName = settings.journalShortName || '';
 
     return (
         <motion.section

@@ -13,7 +13,6 @@ import { PublishedPaperUI } from '@/db/types';
 
 interface ArchivesClientProps {
     initialPapers: PublishedPaperUI[];
-    settings: Record<string, string>;
     mode?: 'current' | 'archive';
 }
 
@@ -29,21 +28,22 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
         const papers = (mode === 'current' ? currentIssueQuery.data : archiveQuery.data) || [];
         return papers.filter((p) =>
             p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.author_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.authorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (p.keywords && p.keywords.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            p.paper_id.toLowerCase().includes(searchQuery.toLowerCase())
+            p.paperId.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [mode, currentIssueQuery.data, archiveQuery.data, searchQuery]);
 
     const groupedPapers = useMemo(() => {
-        const groups: Record<string, { label: string; papers: PublishedPaperUI[] }> = {};
+        const groups: Record<string, { key: string; label: string; papers: PublishedPaperUI[] }> = {};
         filteredPapers.forEach(paper => {
-            const vol = paper.volume_number ?? 0;
-            const iss = paper.issue_number ?? 0;
+            const vol = paper.volumeNumber ?? 0;
+            const iss = paper.issueNumber ?? 0;
             const sortKey = `${vol.toString().padStart(4, '0')}-${iss.toString().padStart(4, '0')}`;
             if (!groups[sortKey]) {
                 groups[sortKey] = {
-                    label: `Volume ${paper.volume_number ?? 'N/A'} Issue ${paper.issue_number ?? 'N/A'} (${paper.publication_year ?? 'N/A'})`,
+                    key: sortKey,
+                    label: `Volume ${paper.volumeNumber!} Issue ${paper.issueNumber!} ${paper.monthRange ? `(${paper.monthRange} ${paper.publicationYear!})` : `(${paper.publicationYear!})`}`,
                     papers: []
                 };
             }
@@ -53,7 +53,8 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
         // Sort descending (newest volume/issue first)
         return Object.keys(groups)
             .sort((a, b) => b.localeCompare(a))
-            .map(key => groups[key]);
+            .map(key => groups[key])
+            .filter((group): group is NonNullable<typeof group> => !!group);
     }, [filteredPapers]);
 
     return (
@@ -85,8 +86,8 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                         </div>
                     ) : groupedPapers.length > 0 ? (
                         <div className="space-y-12">
-                            {groupedPapers.map((group, index) => (
-                                <div key={index} className="space-y-6">
+                            {groupedPapers.map((group) => (
+                                <div key={group.key} className="space-y-6">
                                     <div className="border-b border-border/50 pb-4">
                                         <h2 className="text-xl font-semibold text-[#000066]">
                                             {group?.label}
@@ -94,7 +95,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                     </div>
                                     <div className="space-y-4">
                                         {group?.papers?.map((paper) => (
-                                            <PaperCard key={paper.paper_id} paper={paper} basePath={mode === 'current' ? '/current-issue' : '/archives'} />
+                                            <PaperCard key={paper.paperId} paper={paper} basePath={mode === 'current' ? '/current-issue' : '/archives'} />
                                         ))}
                                     </div>
                                 </div>

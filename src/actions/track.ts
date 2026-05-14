@@ -46,13 +46,7 @@ export async function trackManuscript(paperId: string, authorEmail?: string): Pr
  
         const manuscript: TrackedManuscript = {
             ...manuscriptRow,
-            review_started_at: assignments[0]?.reviewStartedAt ?? null,
-            // Map to UI-friendly names (Historical compatibility)
-            paper_id: manuscriptRow.paperId,
-            submitted_at: manuscriptRow.submittedAt,
-            updated_at: manuscriptRow.updatedAt,
-            author_name: manuscriptRow.authorName,
-            author_email: manuscriptRow.authorEmail,
+            reviewStartedAt: assignments[0]?.reviewStartedAt ?? null,
         };
  
         // 3. If rejected, fetch reviewer feedback (commentsToAuthor)
@@ -66,7 +60,7 @@ export async function trackManuscript(paperId: string, authorEmail?: string): Pr
                         eq(reviewAssignments.status, "completed")
                     )
                 );
-            manuscript.reviewer_feedback = feedbackRows.map(r => r.feedback).filter(Boolean);
+            manuscript.reviewerFeedback = feedbackRows.map(r => r.feedback).filter(Boolean);
         }
  
         return { success: true, data: { manuscript } };

@@ -23,8 +23,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export const revalidate = 3600;
 
 export default async function JoinUsPage() {
-    const settings = await getSettingsData();
-
     return (
         <main className="bg-background min-h-screen">
             <PageHeader
@@ -35,7 +33,7 @@ export default async function JoinUsPage() {
                     { name: "Join Us", href: "/join-us" }
                 ]}
             />
-            <JoinUsClient settings={settings} />
+            <JoinUsClient />
         </main>
     );
 }

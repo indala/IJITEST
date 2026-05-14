@@ -159,16 +159,16 @@ export default function SystemSettings() {
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Full Publication Handle</Label>
                                     <Input
-                                        name="journal_name"
-                                        defaultValue={settings.journal_name}
+                                        name="journalName"
+                                        defaultValue={settings.journalName}
                                         className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-primary/20 font-bold text-sm shadow-sm rounded-xl px-4 transition-all"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Publishing Syndicate</Label>
                                     <Input
-                                        name="publisher_name"
-                                        defaultValue={settings.publisher_name}
+                                        name="publisherName"
+                                        defaultValue={settings.publisherName}
                                         className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-primary/20 font-bold text-sm shadow-sm rounded-xl px-4"
                                     />
                                 </div>
@@ -176,16 +176,16 @@ export default function SystemSettings() {
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">SEO Cipher</Label>
                                         <Input
-                                            name="journal_short_name"
-                                            defaultValue={settings.journal_short_name}
+                                            name="journalShortName"
+                                            defaultValue={settings.journalShortName}
                                             className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-primary/20 font-black text-sm shadow-sm rounded-xl px-4 tracking-widest"
                                         />
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">ISSN Protocol</Label>
                                         <Input
-                                            name="issn_number"
-                                            defaultValue={settings.issn_number}
+                                            name="issnNumber"
+                                            defaultValue={settings.issnNumber}
                                             className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-primary/20 font-bold text-sm font-mono shadow-sm rounded-xl px-4"
                                         />
                                     </div>
@@ -216,8 +216,8 @@ export default function SystemSettings() {
                                         <div className="relative">
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-emerald-600/50 text-base">₹</span>
                                             <Input
-                                                name="apc_inr"
-                                                defaultValue={settings.apc_inr}
+                                                name="apcInr"
+                                                defaultValue={settings.apcInr}
                                                 className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-emerald-500/20 font-black text-lg pl-8 rounded-xl"
                                             />
                                         </div>
@@ -227,8 +227,8 @@ export default function SystemSettings() {
                                         <div className="relative">
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-emerald-600/50 text-base">$</span>
                                             <Input
-                                                name="apc_usd"
-                                                defaultValue={settings.apc_usd}
+                                                name="apcUsd"
+                                                defaultValue={settings.apcUsd}
                                                 className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-emerald-500/20 font-black text-lg pl-8 rounded-xl"
                                             />
                                         </div>
@@ -237,8 +237,8 @@ export default function SystemSettings() {
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Financial Disclosure Text</Label>
                                     <Textarea
-                                        name="apc_description"
-                                        defaultValue={settings.apc_description}
+                                        name="apcDescription"
+                                        defaultValue={settings.apcDescription}
                                         rows={3}
                                         className="bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-emerald-500/20 font-medium text-xs p-4 rounded-xl resize-none min-h-[100px]"
                                     />
@@ -267,16 +267,16 @@ export default function SystemSettings() {
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Editorial Council Inbox</Label>
                                         <Input
-                                            name="support_email"
-                                            defaultValue={settings.support_email}
+                                            name="supportEmail"
+                                            defaultValue={settings.supportEmail}
                                             className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-amber-500/20 font-bold text-sm rounded-xl px-4"
                                         />
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Direct Operations Phone</Label>
                                         <Input
-                                            name="support_phone"
-                                            defaultValue={settings.support_phone}
+                                            name="supportPhone"
+                                            defaultValue={settings.supportPhone}
                                             className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-amber-500/20 font-bold text-sm rounded-xl px-4"
                                         />
                                     </div>
@@ -284,8 +284,8 @@ export default function SystemSettings() {
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">HQ Physical Architecture</Label>
                                     <Textarea
-                                        name="office_address"
-                                        defaultValue={settings.office_address}
+                                        name="officeAddress"
+                                        defaultValue={settings.officeAddress}
                                         rows={2}
                                         className="bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-amber-500/20 font-bold text-sm p-4 rounded-xl resize-none"
                                     />
@@ -330,7 +330,7 @@ export default function SystemSettings() {
                                         )}>
                                             <Input
                                                 type="file"
-                                                name="template_url"
+                                                name="templateUrl"
                                                 onChange={(e) => setSelectedTemplate(e.target.files?.[0]?.name || null)}
                                                 className="absolute inset-0 opacity-0 cursor-pointer z-20 h-full w-full"
                                             />
@@ -361,16 +361,16 @@ export default function SystemSettings() {
                                             )}
                                         </div>
 
-                                        {settings.template_url && (
+                                        {settings.templateUrl && (
                                             <div className="mt-4 flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
                                                 <div className="flex items-center gap-2 min-w-0">
                                                     <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 shrink-0">
                                                         <FileText className="w-3.5 h-3.5" />
                                                     </div>
-                                                    <p className="truncate text-xs font-medium text-slate-600 dark:text-slate-400">{settings.template_url.split('/').pop()}</p>
+                                                    <p className="truncate text-xs font-medium text-slate-600 dark:text-slate-400">{settings.templateUrl.split('/').pop()}</p>
                                                 </div>
                                                 <Button asChild variant="ghost" size="icon" className="w-7 h-7 rounded-lg hover:bg-blue-50 hover:text-blue-600">
-                                                    <a href={settings.template_url} target="_blank" download title="Download Template"><ExternalLink className="w-3.5 h-3.5" /></a>
+                                                    <a href={settings.templateUrl} target="_blank" download title="Download Template"><ExternalLink className="w-3.5 h-3.5" /></a>
                                                 </Button>
                                             </div>
                                         )}
@@ -396,7 +396,7 @@ export default function SystemSettings() {
                                         )}>
                                             <Input
                                                 type="file"
-                                                name="copyright_url"
+                                                name="copyrightUrl"
                                                 onChange={(e) => setSelectedCopyright(e.target.files?.[0]?.name || null)}
                                                 className="absolute inset-0 opacity-0 cursor-pointer z-20 h-full w-full"
                                             />
@@ -427,16 +427,16 @@ export default function SystemSettings() {
                                             )}
                                         </div>
 
-                                        {settings.copyright_url && (
+                                        {settings.copyrightUrl && (
                                             <div className="mt-4 flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
                                                 <div className="flex items-center gap-2 min-w-0">
                                                     <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 shrink-0">
                                                         <FileText className="w-3.5 h-3.5" />
                                                     </div>
-                                                    <p className="truncate text-xs font-medium text-slate-600 dark:text-slate-400">{settings.copyright_url.split('/').pop()}</p>
+                                                    <p className="truncate text-xs font-medium text-slate-600 dark:text-slate-400">{settings.copyrightUrl.split('/').pop()}</p>
                                                 </div>
                                                 <Button asChild variant="ghost" size="icon" className="w-7 h-7 rounded-lg hover:bg-indigo-50 hover:text-indigo-600">
-                                                    <a href={settings.copyright_url} target="_blank" download title="Download Copyright Form"><ExternalLink className="w-3.5 h-3.5" /></a>
+                                                    <a href={settings.copyrightUrl} target="_blank" download title="Download Copyright Form"><ExternalLink className="w-3.5 h-3.5" /></a>
                                                 </Button>
                                             </div>
                                         )}
@@ -460,8 +460,8 @@ export default function SystemSettings() {
                             </div>
                             <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
                                 <select
-                                    name="is_promotion_active"
-                                    defaultValue={settings.is_promotion_active || "true"}
+                                    name="isPromotionActive"
+                                    defaultValue={settings.isPromotionActive || "true"}
                                     aria-label="Promotion Module Status"
                                     className="h-12 w-full sm:w-56 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all shadow-md text-slate-900 dark:text-white cursor-pointer outline-none ring-offset-background focus:ring-2 focus:ring-purple-200"
                                 >

@@ -5,6 +5,7 @@ import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidg
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AboutClient from '@/features/shared/components/AboutClient';
+import JournalParticulars from '@/features/shared/widgets/JournalParticulars';
 import { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 
@@ -30,8 +31,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export const revalidate = 3600;
 
 export default async function About() {
-    const settings = await getSettingsData();
-
     return (
         <main className="bg-background min-h-screen">
             <PageHeader
@@ -48,6 +47,8 @@ export default async function About() {
                 <SidebarLayout
                     sidebar={
                         <>
+                            <JournalParticulars />
+
                             <div className="p-1 rounded-[2.5rem] bg-linear-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip animate-float">
                                 <div className="bg-white/50 backdrop-blur-sm p-3 rounded-[2.3rem]">
                                     <TrackManuscriptWidget />
@@ -86,7 +87,7 @@ export default async function About() {
                         </>
                     }
                 >
-                    <AboutClient settings={settings} />
+                    <AboutClient />
                 </SidebarLayout>
             </Section>
         </main>

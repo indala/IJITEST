@@ -1,16 +1,19 @@
+'use client';
+
 import { Quote, Share2 } from "lucide-react";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { toast } from "sonner";
+import { Author } from "@/db/types";
 
 interface CitationSectionProps {
     paper: {
         title: string;
-        author_name: string;
-        publication_year: number;
-        volume_number?: number | null;
-        issue_number?: number | null;
-        paper_id: string;
-        co_authors?: string | null;
+        authorName: string;
+        publicationYear: number;
+        volumeNumber?: number | null;
+        issueNumber?: number | null;
+        paperId: string;
+        coAuthors?: Author[] | null;
     };
 }
 
@@ -19,29 +22,24 @@ export default function CitationSection({ paper }: CitationSectionProps) {
 
     // 1. Parse Authors for the citation
     const getFormattedAuthors = () => {
-        let authStr = paper.author_name;
-        try {
-            if (paper.co_authors) {
-                const coAuthors = JSON.parse(paper.co_authors);
-                if (Array.isArray(coAuthors) && coAuthors.length > 0) {
-                    const names = coAuthors.map((a: { name: string }) => a.name);
-                    if (names.length === 1) {
-                        authStr = `${paper.author_name} & ${names[0]}`;
-                    } else {
-                        const allButLast = names.slice(0, -1);
-                        const last = names[names.length - 1];
-                        authStr = `${paper.author_name}, ${allButLast.join(', ')} & ${last}`;
-                    }
-                }
+        let authStr = paper.authorName;
+        const coAuthors = paper.coAuthors;
+        
+        if (Array.isArray(coAuthors) && coAuthors.length > 0) {
+            const names = coAuthors.map((a: Author) => a.name);
+            if (names.length === 1) {
+                authStr = `${paper.authorName} & ${names[0]}`;
+            } else {
+                const allButLast = names.slice(0, -1);
+                const last = names[names.length - 1];
+                authStr = `${paper.authorName}, ${allButLast.join(', ')} & ${last}`;
             }
-        } catch (e) {
-            console.error("Citation parsing error", e);
         }
         return authStr;
     };
 
     const authors = getFormattedAuthors();
-    const citationText = `${authors} (${paper.publication_year || new Date().getFullYear()}). "${paper.title}". ${settings.journal_name || 'International Journal of Innovative Trends in Engineering Science and Technology'} (${settings.journal_short_name || 'IJITEST'}), Vol. ${paper.volume_number || 'X'}, Issue ${paper.issue_number || 'X'}. Paper ID: ${paper.paper_id}`;
+    const citationText = `${authors} (${paper.publicationYear || new Date().getFullYear()}). "${paper.title}". ${settings.journalName || 'International Journal of Innovative Trends in Engineering Science and Technology'} (${settings.journalShortName || 'IJITEST'}), Vol. ${paper.volumeNumber || 'X'}, Issue ${paper.issueNumber || 'X'}. Paper ID: ${paper.paperId}`;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(citationText);
@@ -59,8 +57,8 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                 <p className="text-xs text-gray-600 leading-relaxed font-medium ">
                     {authors}   <span className="italic"> {"\""} {paper.title}{"\""}</span>.
                     <br />
-                    <span className="">{settings.journal_name || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings.journal_short_name || 'IJITEST'})</span>,
-                    Vol. {paper.volume_number || 'X'}, Issue {paper.issue_number || 'X'} , {paper.publication_year || new Date().getFullYear()}.
+                    <span className="">{settings.journalName || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings.journalShortName || 'IJITEST'})</span>,
+                    Vol. {paper.volumeNumber || 'X'}, Issue {paper.issueNumber || 'X'} , {paper.publicationYear || new Date().getFullYear()}.
                     <br />
                 </p>
                 <button
@@ -96,7 +94,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                 <div className="grid grid-cols-1 gap-4">
                     <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 text-center group/meta">
                         <p className="text-[8px] font-black text-gray-400 tracking-[0.2em] uppercase mb-1 group-hover/meta:text-primary transition-colors">ISSN (Online)</p>
-                        <p className="text-sm font-black text-gray-900 ">{settings.issn_number || 'XXXX-XXXX'}</p>
+                        <p className="text-sm font-black text-gray-900 ">{settings.issnNumber || 'XXXX-XXXX'}</p>
                     </div>
                 </div>
             </div>

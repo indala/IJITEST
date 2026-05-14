@@ -5,12 +5,11 @@ import Link from 'next/link';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
 
-interface PeerReviewClientProps {
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
-    const journalShortName = settings.journal_short_name || "IJITEST";
+export default function PeerReviewClient() {
+    const settings = useSettingsStore((state) => state.settings);
+    const journalShortName = settings.journalShortName || '';
 
     const stages = [
         {

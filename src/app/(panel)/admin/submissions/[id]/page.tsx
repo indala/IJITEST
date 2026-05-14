@@ -37,8 +37,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     if (!response.success || !submission) return { title: 'Submission Not Found | Admin' };
 
     return {
-        title: `Manage: ${submission.paper_id} | IJITEST Admin`,
-        description: `Administrative oversight for manuscript ${submission.paper_id}: ${submission.title}`,
+        title: `Manage: ${submission.paperId} | IJITEST Admin`,
+        description: `Administrative oversight for manuscript ${submission.paperId}: ${submission.title}`,
     };
 }
 
@@ -80,7 +80,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
     const getStatusVariant = (status: string) => {
         switch (status) {
             case 'submitted': return 'bg-indigo-500/10 text-indigo-600 border-none';
-            case 'under_review': return 'bg-amber-500/10 text-amber-600 border-none';
+            case 'underReview': return 'bg-amber-500/10 text-amber-600 border-none';
             case 'accepted': return 'bg-purple-500/10 text-purple-600 border-none';
             case 'paid': return 'bg-emerald-500/10 text-emerald-600 border-none';
             case 'published': return 'bg-cyan-500/10 text-cyan-600 border-none';
@@ -105,18 +105,18 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                         <div className="space-y-4 max-w-2xl 2xl:max-w-4xl">
                             <Badge className={`h-5 2xl:h-9 px-1.5 2xl:px-4 text-[9px] 2xl:text-base font-semibold tracking-widest whitespace-nowrap capitalize ${getStatusVariant(submission.status)}`}>
-                                {submission.status.replace('_', ' ')}
+                                {submission.status.replace(/([A-Z])/g, ' $1')}
                             </Badge>
                             <h1 className="font-serif text-2xl xl:text-3xl 2xl:text-4xl font-semibold text-foreground tracking-tight capitalize leading-none">
                                 {submission.title}
                             </h1>
                             <div className="flex flex-wrap items-center gap-6 2xl:gap-10 text-[9px] xl:text-xs 2xl:text-base font-semibold text-muted-foreground tracking-widest capitalize">
                                 <div className="flex items-center gap-2 2xl:gap-4">
-                                    <span>{submission.submitted_at ? new Date(submission.submitted_at).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'Unknown Date'}</span>
+                                    <span>{submission.submittedAt ? new Date(submission.submittedAt).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'Unknown Date'}</span>
                                 </div>
                                 <div className="flex items-center gap-2 2xl:gap-4 text-primary">
                                     <Shield className="w-3.5 h-3.5 2xl:w-5 2xl:h-5" />
-                                    <span>{submission.paper_id}</span>
+                                    <span>{submission.paperId}</span>
                                 </div>
                                 {submission.keywords && (
                                     <div className="flex items-center gap-2 2xl:gap-4">
@@ -127,14 +127,14 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                             </div>
                         </div>
                         <div className="flex flex-col gap-2 2xl:gap-4 shrink-0">
-                            {submission.file_path && (
+                            {submission.filePath && (
                                 <Button asChild className="h-10 xl:h-12 2xl:h-14 px-6 gap-2 bg-primary text-white font-semibold text-[9px] xl:text-xs 2xl:text-sm capitalize tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.05] hover:opacity-90 transition-all cursor-pointer">
-                                    <a href={getSecureUrl(submission.file_path)} download>
+                                    <a href={getSecureUrl(submission.filePath)} download>
                                         <Download className="w-4 h-4 2xl:w-6 2xl:h-6" /> Download manuscript
                                     </a>
                                 </Button>
                             )}
-                            <p className="text-[9px] sm:text-[10px] xl:text-[11px] 2xl:text-base font-semibold text-muted-foreground text-center tracking-widest opacity-60">Authored by {submission.author_name}</p>
+                            <p className="text-[9px] sm:text-[10px] xl:text-[11px] 2xl:text-base font-semibold text-muted-foreground text-center tracking-widest opacity-60">Authored by {submission.authorName}</p>
                         </div>
                     </div>
                 </CardHeader>
@@ -203,7 +203,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                             </div>
                                             <div className="min-w-0">
                                                 <p className="text-[9px] font-semibold tracking-widest text-muted-foreground opacity-60 mb-0.5 uppercase">Corresponding Author</p>
-                                                <p className="font-semibold text-xs 2xl:text-lg text-foreground tracking-wider">{submission.author_name}</p>
+                                                <p className="font-semibold text-xs 2xl:text-lg text-foreground tracking-wider">{submission.authorName}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3 2xl:gap-6">
@@ -212,32 +212,25 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                             </div>
                                             <div className="min-w-0">
                                                 <p className="text-[9px] font-semibold tracking-widest text-muted-foreground opacity-60 mb-0.5 uppercase">Email Address</p>
-                                                <p className="font-semibold text-xs 2xl:text-lg text-foreground tracking-wider truncate">{submission.author_email}</p>
+                                                <p className="font-semibold text-xs 2xl:text-lg text-foreground tracking-wider truncate">{submission.authorEmail}</p>
                                             </div>
                                         </div>
                                     </CardContent>
                                 </Card>
 
-                                {submission.co_authors && (
+                                {submission.coAuthors && submission.coAuthors.length > 0 && (
                                     <div className="space-y-3 pt-2">
                                         <h4 className="text-[9px] 2xl:text-base font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Collaborating Authors</h4>
                                         <div className="space-y-2">
-                                            {(() => {
-                                                try {
-                                                    const coAuthors = JSON.parse(submission.co_authors);
-                                                    return coAuthors.map((author: { name: string, institution: string }, idx: number) => (
-                                                        <div key={idx} className="p-3 bg-white border border-border/50 rounded-xl space-y-1 shadow-sm">
-                                                            <div className="flex items-center justify-between">
-                                                                <p className="font-semibold text-[10px] 2xl:text-lg text-foreground tracking-wider">{author.name}</p>
-                                                                <span className="text-[8px] 2xl:text-xs font-semibold text-primary/30 uppercase tracking-wider">CO-AUTH {idx + 1}</span>
-                                                            </div>
-                                                            <p className="text-[9px] 2xl:text-base font-medium text-muted-foreground truncate">{author.institution}</p>
-                                                        </div>
-                                                    ));
-                                                } catch {
-                                                    return <p className="text-[9px] font-semibold text-rose-500 uppercase tracking-widest">Metadata Corrupted</p>;
-                                                }
-                                            })()}
+                                            {submission.coAuthors.map((author: any, idx: number) => (
+                                                <div key={idx} className="p-3 bg-white border border-border/50 rounded-xl space-y-1 shadow-sm">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="font-semibold text-[10px] 2xl:text-lg text-foreground tracking-wider">{author.name}</p>
+                                                        <span className="text-[8px] 2xl:text-xs font-semibold text-primary/30 uppercase tracking-wider">CO-AUTH {idx + 1}</span>
+                                                    </div>
+                                                    <p className="text-[9px] 2xl:text-base font-medium text-muted-foreground truncate">{author.institution}</p>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
@@ -255,11 +248,11 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                 <div className="space-y-4">
                                     <Card className="border-primary/10 shadow-sm bg-card/50 overflow-hidden">
                                         <CardContent className="p-6 space-y-6">
-                                            <AdminPdfUpload submissionId={submission.id} currentUrl={getSecureUrl(submission.pdf_url)} />
+                                            <AdminPdfUpload submissionId={submission.id} currentUrl={getSecureUrl(submission.pdfUrl)} />
 
                                             <ExpertiseDossier bio={submission.correspondingAuthor?.profile?.bio || "No biography provided."} />
 
-                                            {submission.pdf_url ? (
+                                            {submission.pdfUrl ? (
                                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/3 border border-emerald-500/10 transition-all">
                                                     <div className="relative">
                                                         <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping absolute inset-0" />
@@ -303,7 +296,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                         </div>
                                     )}
 
-                                    {submission.status === 'under_review' && (
+                                    {submission.status === 'underReview' && (
                                         <div className="space-y-4">
                                             <div className="p-4 2xl:p-6 bg-primary/5 border border-primary/20 rounded-xl 2xl:rounded-2xl space-y-1 2xl:space-y-3">
                                                 <p className="text-[10px] 2xl:text-base font-semibold  text-primary tracking-widest">Editorial Threshold</p>
@@ -312,7 +305,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                             <div className="grid grid-cols-1 gap-2 2xl:gap-4">
                                                 <SubmissionDecisionActions
                                                     submissionId={submission.id}
-                                                    paperId={submission.paper_id}
+                                                    paperId={submission.paperId}
                                                     paperTitle={submission.title}
                                                     status={submission.status}
                                                 />
@@ -332,7 +325,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                                 </div>
                                                 <SubmissionDecisionActions
                                                     submissionId={submission.id}
-                                                    paperId={submission.paper_id}
+                                                    paperId={submission.paperId}
                                                     paperTitle={submission.title}
                                                     status={submission.status}
                                                 />
@@ -359,8 +352,8 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                                         <div className="flex items-center justify-between">
                                                             <p className="text-[10px] font-semibold  text-white/40 tracking-widest uppercase">Archive Node</p>
                                                             <p className="text-xs font-semibold">
-                                                                {submission.volume_number && `Vol ${submission.volume_number}, Issue ${submission.issue_number}`}
-                                                                {submission.start_page && `, pp. ${submission.start_page}-${submission.end_page}`}
+                                                                {submission.volumeNumber && `Vol ${submission.volumeNumber}, Issue ${submission.issueNumber}`}
+                                                                {submission.startPage && `, pp. ${submission.startPage}-${submission.endPage}`}
                                                             </p>
                                                         </div>
                                                         <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-white/5 hover:bg-white/10 text-white font-semibold text-[10px]  tracking-widest border border-white/10 rounded-xl cursor-pointer">
@@ -389,7 +382,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
 
                                                 <PublicationAssignment
                                                     submissionId={submission.id}
-                                                    currentIssueId={submission.issue_id ?? null}
+                                                    currentIssueId={submission.issueId ?? null}
                                                 />
 
                                                 <Link

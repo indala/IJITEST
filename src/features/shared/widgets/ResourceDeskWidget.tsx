@@ -1,15 +1,15 @@
+'use client';
+
 import { Download } from 'lucide-react';
+import { useSettingsStore } from '@/store/useSettingsStore';
 import Link from 'next/link';
 import { memo } from 'react';
 
-interface ResourceDeskWidgetProps {
-    settings?: Record<string, string>;
-}
-
-function ResourceDeskWidget({ settings }: ResourceDeskWidgetProps) {
+function ResourceDeskWidget() {
+    const settings = useSettingsStore((state) => state.settings);
     const resources = [
-        { label: "Word Template", type: "DOCX", link: settings?.template_url || "/docs/template.docx" },
-        { label: "Copyright Form", type: "DOCX", link: settings?.copyright_url || "/docs/copyright-form.docx" }
+        { label: "Word Template", type: "DOCX", link: settings?.templateUrl || "/docs/template.docx" },
+        { label: "Copyright Form", type: "DOCX", link: settings?.copyrightUrl || "/docs/copyright-form.docx" }
     ];
 
     return (

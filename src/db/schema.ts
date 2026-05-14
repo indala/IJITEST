@@ -84,9 +84,9 @@ export const submissions = mysqlTable("submissions", {
     
     // Status Flow
     status: mysqlEnum("status", [
-        'submitted', 'editor_assigned', 'under_review', 
-        'revision_requested', 'accepted', 'rejected', 
-        'payment_pending', 'published'
+        'submitted', 'editorAssigned', 'underReview', 
+        'revisionRequested', 'accepted', 'rejected', 
+        'paymentPending', 'published', 'retracted'
     ]).default('submitted').notNull(),
     
     finalDecision: mysqlEnum("final_decision", ['accept', 'reject', 'withdrawn']),
@@ -161,7 +161,7 @@ export const submissionVersionsRelations = relations(submissionVersions, ({ one,
 export const submissionFiles = mysqlTable("submission_files", {
     id: int("id").primaryKey().autoincrement().notNull(),
     versionId: int("version_id").notNull().references(() => submissionVersions.id, { onDelete: "cascade" }),
-    fileType: mysqlEnum("file_type", ['main_manuscript', 'pdf_version','copyright_form','supplementary', 'feedback', 'payment_proof']).notNull(),
+    fileType: mysqlEnum("file_type", ['mainManuscript', 'pdfVersion','copyrightForm','supplementary', 'feedback', 'paymentProof']).notNull(),
     fileUrl: varchar("file_url", { length: 500 }).notNull(),
     originalName: varchar("original_name", { length: 255 }),
     fileSize: int("file_size"),
@@ -263,7 +263,7 @@ export const reviewAssignmentsRelations = relations(reviewAssignments, ({ one })
 export const reviews = mysqlTable("reviews", {
     id: int("id").primaryKey().autoincrement().notNull(),
     assignmentId: int("assignment_id").notNull().references(() => reviewAssignments.id, { onDelete: "cascade" }).unique(),
-    decision: mysqlEnum("decision", ['accept', 'minor_revision', 'major_revision', 'reject']).notNull(),
+    decision: mysqlEnum("decision", ['accept', 'minorRevision', 'majorRevision', 'reject']).notNull(),
     score: int("score"),
     confidence: int("confidence"),
     commentsToAuthor: text("comments_to_author"),

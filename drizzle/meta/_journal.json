@@ -8,6 +8,13 @@
       "when": 1778310704539,
       "tag": "0000_mute_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1778691883404,
+      "tag": "0001_clammy_carnage",
+      "breakpoints": true
     }
   ]
 }

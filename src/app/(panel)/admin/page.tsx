@@ -90,11 +90,11 @@ export default async function AdminDashboard() {
 
         recentSubmissions = await db.select({
             id: submissions.id,
-            paper_id: submissions.paperId,
+            paperId: submissions.paperId,
             status: submissions.status,
-            submitted_at: submissions.submittedAt,
+            submittedAt: submissions.submittedAt,
             title: submissionVersions.title,
-            author_name: userProfiles.fullName
+            authorName: userProfiles.fullName
         })
             .from(submissions)
             .leftJoin(submissionVersions, and(eq(submissions.id, submissionVersions.submissionId), eq(submissionVersions.versionNumber, 1)))
@@ -108,7 +108,7 @@ export default async function AdminDashboard() {
             id: users.id,
             email: users.email,
             role: users.role,
-            full_name: userProfiles.fullName
+            fullName: userProfiles.fullName
         })
             .from(users)
             .leftJoin(userProfiles, eq(users.id, userProfiles.userId))

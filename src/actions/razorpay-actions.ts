@@ -81,37 +81,37 @@ export async function createRazorpayOrder(submissionId: number, paperId: string)
 }
 
 export async function verifyRazorpayPayment(data: {
-    razorpay_order_id: string;
-    razorpay_payment_id: string;
-    razorpay_signature: string;
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
     submissionId: number;
 }) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user) return { success: false, error: "Authentication required" };
-
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, submissionId } = data;
-
+ 
+        const { razorpayOrderId, razorpayPaymentId, razorpaySignature, submissionId } = data;
+ 
         const secret = process.env.RAZORPAY_KEY_SECRET;
         if (!secret) {
             console.error("RAZORPAY_KEY_SECRET is not set");
             return { success: false, error: "Payment configuration error. Please contact support." };
         }
-
-        const generated_signature = crypto
+ 
+        const generatedSignature = crypto
             .createHmac("sha256", secret)
-            .update(razorpay_order_id + "|" + razorpay_payment_id)
+            .update(razorpayOrderId + "|" + razorpayPaymentId)
             .digest("hex");
-
-        if (generated_signature !== razorpay_signature) {
+ 
+        if (generatedSignature !== razorpaySignature) {
             return { success: false, error: "Invalid payment signature" };
         }
-
+ 
         // 1.5 Verify that this order actually belongs to this submission
         const existingPayment = await db.select()
             .from(payments)
             .where(and(
-                eq(payments.transactionId, razorpay_order_id),
+                eq(payments.transactionId, razorpayOrderId),
                 eq(payments.submissionId, submissionId)
             ))
             .limit(1);
@@ -124,7 +124,7 @@ export async function verifyRazorpayPayment(data: {
         await db.update(payments)
             .set({ 
                 status: 'paid', 
-                transactionId: razorpay_payment_id, 
+                transactionId: razorpayPaymentId, 
                 paidAt: new Date() 
             })
             .where(eq(payments.submissionId, submissionId));

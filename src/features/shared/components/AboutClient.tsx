@@ -2,14 +2,13 @@
 
 import { BookOpen, Target, Building2, FlaskConical, Cpu, Globe, Sparkles } from 'lucide-react';
 
-interface AboutClientProps {
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function AboutClient({ settings }: AboutClientProps) {
-    const journalName = settings.journal_name || "International Journal of Innovative Trends in Engineering Science and Technology";
-    const journalShortName = settings.journal_short_name || "IJITEST";
-    const publisherName = settings.publisher_name || "Felix Academic Publications";
+export default function AboutClient() {
+    const settings = useSettingsStore((state) => state.settings);
+    const journalName = settings.journalName || '';
+    const journalShortName = settings.journalShortName || '';
+    const publisherName = settings.publisherName || '';
 
     return (
         <div className="lg:col-span-2 space-y-12 sm:space-y-16">
@@ -23,7 +22,10 @@ export default function AboutClient({ settings }: AboutClientProps) {
                 </div>
                 <div className="text-sm text-muted-foreground space-y-4 border-l-2 border-border pl-6">
                     <p>
-                        {journalName} ({journalShortName}) is an international, peer-reviewed journal that publishes original research articles, review papers, and survey articles in Engineering, Science, Technology, and Management.
+                        {journalName} ({journalShortName}) is an international, peer-reviewed journal that publishes original research articles, review papers, and survey articles.
+                    </p>
+                    <p className="font-medium text-foreground italic bg-primary/5 p-3 rounded-lg border-l-4 border-primary">
+                        Subject: Engineering, Science and Technology • Language: English
                     </p>
                     <p>
                         {journalShortName} is dedicated to the dissemination of high-quality research, covering fundamental and applied research, interdisciplinary studies, and emerging technologies that contribute to academic knowledge and industrial growth.
@@ -132,7 +134,7 @@ export default function AboutClient({ settings }: AboutClientProps) {
                     {[
                         { label: "Commencement", value: "2026" },
                         { label: "Frequency", value: "12 Issues / Year" },
-                        { label: "E-ISSN", value: settings.issn_number || "Applied For" },
+                        { label: "E-ISSN", value: (settings.issnNumber || '') },
                         { label: "Format", value: "Online, Open" }
                     ].map((item, i) => (
                         <div key={i} className="p-4 rounded-xl bg-card border border-border/50">

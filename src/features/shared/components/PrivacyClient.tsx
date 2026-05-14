@@ -3,13 +3,12 @@
 import { Lock, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-interface PrivacyClientProps {
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function PrivacyClient({ settings }: PrivacyClientProps) {
-    const journalName = settings.journal_name || "IJITEST";
-    const supportEmail = settings.support_email || "editor@ijitest.org";
+export default function PrivacyClient() {
+    const settings = useSettingsStore((state) => state.settings);
+    const journalName = settings.journalName || '';
+    const supportEmail = settings.supportEmail || '';
 
     const sections = [
         {

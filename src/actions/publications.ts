@@ -144,7 +144,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
             return { success: false, error: `Paper status is '${submission.status}'. Only accepted papers can be published.` };
         }
 
-        const latestPdf = submission.allFiles.find(f => f.fileType === 'pdf_version');
+        const latestPdf = submission.allFiles.find(f => f.fileType === 'pdfVersion');
         if (!latestPdf) {
             return { success: false, error: "Final styled PDF must be uploaded before publication." };
         }
@@ -191,14 +191,14 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         const cleanInput = latestPdf.fileUrl.replace(/^\/+/, '');
 
         await brandPdf(cleanInput, brandedRelativePath, {
-            journalName: settings.journal_name || "IJITEST",
+            journalName: settings.journalName || "IJITEST",
             journalShortName: "IJITEST",
             volume: issue.volumeNumber,
             issue: issue.issueNumber,
             year: issue.year,
             monthRange: issue.monthRange || "",
-            issn: settings.issn_number || "XXXX-XXXX",
-            website: settings.journal_website || "https://www.ijitest.org",
+            issn: settings.issnNumber || "XXXX-XXXX",
+            website: settings.journalWebsite || "https://www.ijitest.org",
             paperId: submission.paperId,
             startPage: confirmedStartPage,
             endPage: confirmedEndPage
@@ -230,14 +230,14 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
 
         // 7. Email notification AFTER transaction (fire-and-forget)
         const template = emailTemplates.manuscriptPublished(
-            submission.author_name,
+            submission.authorName,
             submission.title,
             submission.paperId,
             issue.volumeNumber,
             issue.issueNumber,
             issue.year
         );
-        sendEmail({ to: submission.author_email, subject: template.subject, html: template.html })
+        sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })
             .catch(e => console.error("Publication email failed:", e));
 
         revalidatePath('/admin/submissions');

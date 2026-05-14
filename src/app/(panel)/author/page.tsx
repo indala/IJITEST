@@ -22,12 +22,12 @@ export const dynamic = 'force-dynamic';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
     submitted: { label: 'Reviewing', color: 'text-blue-600', bg: 'bg-blue-500/10' },
-    editor_assigned: { label: 'Assigned', color: 'text-indigo-600', bg: 'bg-indigo-500/10' },
-    under_review: { label: 'Peer review', color: 'text-amber-600', bg: 'bg-amber-500/10' },
-    revision_requested: { label: 'Revision', color: 'text-orange-600', bg: 'bg-orange-500/10' },
+    editorAssigned: { label: 'Assigned', color: 'text-indigo-600', bg: 'bg-indigo-500/10' },
+    underReview: { label: 'Peer review', color: 'text-amber-600', bg: 'bg-amber-500/10' },
+    revisionRequested: { label: 'Revision', color: 'text-orange-600', bg: 'bg-orange-500/10' },
     accepted: { label: 'Accepted', color: 'text-emerald-600', bg: 'bg-emerald-500/10' },
     rejected: { label: 'Rejected', color: 'text-rose-600', bg: 'bg-rose-500/10' },
-    payment_pending: { label: 'Payment', color: 'text-purple-600', bg: 'bg-purple-500/10' },
+    paymentPending: { label: 'Payment', color: 'text-purple-600', bg: 'bg-purple-500/10' },
     published: { label: 'Published', color: 'text-emerald-700', bg: 'bg-emerald-500/15' },
 };
 
@@ -91,8 +91,8 @@ export default async function AuthorDashboard() {
 
     const stats: DashboardStat[] = [
         { label: 'Submitted', value: submissions.length, icon: <FileStack className="w-5 h-5 text-primary" /> },
-        { label: 'Reviewing', value: submissions.filter((s) => ['submitted', 'editor_assigned', 'under_review'].includes(s.status)).length, icon: <Clock className="w-5 h-5 text-amber-500" /> },
-        { label: 'Accepted', value: submissions.filter((s) => ['accepted', 'payment_pending', 'published'].includes(s.status)).length, icon: <CheckCircle className="w-5 h-5 text-emerald-500" /> },
+        { label: 'Reviewing', value: submissions.filter((s) => ['submitted', 'editorAssigned', 'underReview'].includes(s.status)).length, icon: <Clock className="w-5 h-5 text-amber-500" /> },
+        { label: 'Accepted', value: submissions.filter((s) => ['accepted', 'paymentPending', 'published'].includes(s.status)).length, icon: <CheckCircle className="w-5 h-5 text-emerald-500" /> },
         { label: 'Published', value: submissions.filter((s) => s.status === 'published').length, icon: <BookOpen className="w-5 h-5 text-blue-500" /> },
     ];
 
@@ -164,7 +164,7 @@ export default async function AuthorDashboard() {
                     <div className="grid grid-cols-1 gap-8">
                         {submissions.map((sub) => {
                             const cfg = STATUS_CONFIG[sub.status] || { label: sub.status, color: 'text-muted-foreground', bg: 'bg-muted/30' };
-                            const daysLeft = ['revision_requested', 'rejected'].includes(sub.status) ? getDaysRemaining(sub.updatedAt) : null;
+                            const daysLeft = ['revisionRequested', 'rejected'].includes(sub.status) ? getDaysRemaining(sub.updatedAt) : null;
                             const isUrgent = daysLeft !== null && daysLeft <= 5;
 
                             return (
@@ -223,13 +223,13 @@ export default async function AuthorDashboard() {
                                                                 <BookOpen className="w-4 h-4" /> PDF
                                                             </Link>
                                                         </Button>
-                                                    ) : (sub.status === 'accepted' || sub.status === 'payment_pending') && sub.paymentStatus !== 'paid' ? (
+                                                    ) : (sub.status === 'accepted' || sub.status === 'paymentPending') && sub.paymentStatus !== 'paid' ? (
                                                         <Button asChild size="sm" className="h-9 px-4 bg-primary hover:bg-primary/90 text-white font-semibold text-xs rounded-lg shadow-sm">
                                                             <Link href={`/author/payments`} className="flex items-center gap-2">
                                                                 <CreditCard className="w-4 h-4" /> Pay Fee
                                                             </Link>
                                                         </Button>
-                                                    ) : ['revision_requested', 'rejected'].includes(sub.status) && daysLeft !== null && daysLeft > 0 ? (
+                                                    ) : ['revisionRequested', 'rejected'].includes(sub.status) && daysLeft !== null && daysLeft > 0 ? (
                                                         <Button asChild size="sm" className="h-9 px-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm">
                                                             <Link href={`/author/submissions/${sub.id}/resubmit`} className="flex items-center gap-2">
                                                                 <Upload className="w-4 h-4" /> Resubmit

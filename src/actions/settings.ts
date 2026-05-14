@@ -5,32 +5,40 @@ import { settings } from "@/db/schema";
 import { ActionResponse } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { revalidatePath, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import fs from "fs/promises";
 import path from "path";
+import _ from "lodash";
 
 const ALLOWED_SETTING_KEYS = new Set([
-    'journal_name', 'journal_short_name', 'issn_number', 'apc_inr', 'apc_usd',
-    'support_email', 'support_phone', 'office_address', 'publisher_name',
-    'journal_website', 'apc_description', 'template_url', 'copyright_url',
-    'is_promotion_active'
+    'journalName', 'journalShortName', 'issnNumber', 'apcInr', 'apcUsd',
+    'supportEmail', 'supportPhone', 'officeAddress', 'publisherName',
+    'journalWebsite', 'apcDescription', 'templateUrl', 'copyrightUrl',
+    'isPromotionActive', 'publicationFrequency', 'startingYear', 
+    'publicationFormat', 'journalLanguage', 'journalSubject', 'msmeRegistration'
 ]);
 
 const DEFAULT_SETTINGS: Record<string, string> = {
-    journal_name: 'International Journal of Innovative Trends in Engineering Science and Technology',
-    journal_short_name: 'IJITEST',
-    issn_number: 'XXXX-XXXX',
-    apc_inr: '2500',
-    apc_usd: '50',
-    support_email: 'editor@ijitest.org',
-    support_phone: '+91 8919643590',
-    office_address: 'Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India',
-    publisher_name: 'Felix Academic Publications',
-    journal_website: 'https://www.ijitest.org',
-    apc_description: 'APC covers SJIF impact evaluation, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.',
-    template_url: '/docs/template.docx',
-    copyright_url: '/docs/copyright-form.docx',
-    is_promotion_active: 'true'
+    journalName: 'International Journal of Innovative Trends in Engineering, Science and Technology',
+    journalShortName: 'IJITEST',
+    issnNumber: 'XXXX-XXXX',
+    apcInr: '2500',
+    apcUsd: '50',
+    supportEmail: 'editor@ijitest.org',
+    supportPhone: '+91 8919643590',
+    officeAddress: 'Dr. Ravi babu. T\nFelix academic publications\nSrinivasa Nagar\nDeekshita plaza\nMadhurawada\nVisakhapatnam - 530048\nAndhra Pradesh\nIndia',
+    publisherName: 'Felix Academic Publications',
+    journalWebsite: 'www.ijitest.org',
+    apcDescription: 'APC covers SJIF impact evaluation, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.',
+    templateUrl: '/docs/template.docx',
+    copyrightUrl: '/docs/copyright-form.docx',
+    isPromotionActive: 'true',
+    publicationFrequency: 'Monthly (12 Issues per year)',
+    startingYear: '2026',
+    publicationFormat: 'Online',
+    journalLanguage: 'English',
+    journalSubject: 'Engineering, Science and Technology',
+    msmeRegistration: 'MSME Registered (UDYAM-AP-10-0125617)'
 };
 
 export async function getSettings(): Promise<ActionResponse<Record<string, string>>> {
@@ -43,7 +51,10 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
 
                 rows.forEach((row) => {
                     if (row.settingValue) {
-                        result[row.settingKey] = row.settingValue;
+                        const key = _.camelCase(row.settingKey);
+                        if (ALLOWED_SETTING_KEYS.has(key)) {
+                            result[key] = row.settingValue;
+                        }
                     }
                 });
 
@@ -85,7 +96,7 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
             if (value instanceof File && value.size > 0) {
                 const bytes = await value.arrayBuffer();
                 const fileExt = value.name.split('.').pop();
-                const fileName = `${key.replace(/_/g, '-')}.${fileExt}`;
+                const fileName = `${_.kebabCase(key)}.${fileExt}`;
                 const uploadDir = path.join(process.cwd(), "public/docs");
                 await fs.mkdir(uploadDir, { recursive: true });
                 await fs.writeFile(path.join(uploadDir, fileName), Buffer.from(bytes));
@@ -99,18 +110,15 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
 
         await db.transaction(async (tx) => {
             for (const [key, value] of resolvedEntries) {
+                // Store as camelCase in DB as requested
                 await tx.insert(settings)
                     .values({ settingKey: key, settingValue: value })
                     .onDuplicateKeyUpdate({ set: { settingValue: value } });
             }
         });
 
-        revalidatePath('/admin/settings');
-        revalidatePath('/', 'layout');
-        revalidatePath('/guidelines');
-        revalidatePath('/contact');
-        revalidatePath('/about');
-        revalidatePath('/', 'layout');
+        revalidateTag('settings', {});      // Busts unstable_cache for all pages (Next.js 16 requires 2nd arg)
+        revalidatePath('/', 'layout');       // Re-renders root layout + all children
         return { success: true };
     } catch (error) {
         console.error("Update Settings Error:", error);

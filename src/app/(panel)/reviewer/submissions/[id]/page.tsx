@@ -31,8 +31,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const submission = response.data;
 
     return {
-        title: `Review: ${submission.paper_id} | IJITEST`,
-        description: `Reviewer evaluation for manuscript ${submission.paper_id}`,
+        title: `Review: ${submission.paperId} | IJITEST`,
+        description: `Reviewer evaluation for manuscript ${submission.paperId}`,
     };
 }
 
@@ -102,11 +102,11 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 <div className="flex flex-wrap items-center gap-6 2xl:gap-10 text-[10px] 2xl:text-lg font-black text-primary/40 dark:text-black tracking-[0.2em] uppercase">
                                     <div className="flex items-center gap-2 2xl:gap-4">
                                         <Shield className="w-4 h-4 2xl:w-7 2xl:h-7" />
-                                        <span>{submission.paper_id}</span>
+                                        <span>{submission.paperId}</span>
                                     </div>
                                     <div className="flex items-center gap-2 2xl:gap-4">
                                         <Clock className="w-4 h-4 2xl:w-7 2xl:h-7" />
-                                        <span>{submission.submitted_at ? new Date(submission.submitted_at).toLocaleDateString() : 'Unknown Date'}</span>
+                                        <span>{submission.submittedAt ? new Date(submission.submittedAt).toLocaleDateString() : 'Unknown Date'}</span>
                                     </div>
                                 </div>
                             </div>
@@ -138,34 +138,27 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 </div>
                             )}
 
-                            {submission.co_authors && (
+                            {submission.coAuthors && submission.coAuthors.length > 0 && (
                                 <div className="space-y-4 pt-4 border-t border-primary/5">
                                     <h4 className="flex items-center gap-3">
                                         <History className="w-5 h-5" /> Collaborating Authors
                                     </h4>
                                     <div className="space-y-3">
-                                        {(() => {
-                                            try {
-                                                const coAuthors = JSON.parse(submission.co_authors);
-                                                return coAuthors.map((author: { name: string; institution: string }, idx: number) => (
-                                                    <div key={idx} className="p-4 bg-primary/5 border border-primary/10 rounded-xl space-y-1 shadow-sm">
-                                                        <p className="leading-none">{author.name}</p>
-                                                        <p className="opacity-60 truncate">{author.institution}</p>
-                                                    </div>
-                                                ));
-                                            } catch {
-                                                return <p className="text-[10px] font-black text-rose-500 uppercase">Metadata Conflict</p>;
-                                            }
-                                        })()}
+                                        {submission.coAuthors.map((author: any, idx: number) => (
+                                            <div key={idx} className="p-4 bg-primary/5 border border-primary/10 rounded-xl space-y-1 shadow-sm">
+                                                <p className="leading-none">{author.name}</p>
+                                                <p className="opacity-60 truncate">{author.institution}</p>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}
 
                             <div className="pt-4 2xl:pt-8">
-                                {submission.pdf_url ? (
+                                {submission.pdfUrl ? (
                                     <>
                                         <Button asChild className="w-full h-12 2xl:h-20 gap-3 2xl:gap-5 font-bold text-[11px] 2xl:text-xl tracking-widest shadow-xl shadow-primary/20 rounded-xl 2xl:rounded-2xl bg-primary hover:opacity-90 transition-all uppercase cursor-pointer text-white dark:text-black">
-                                            <a href={getSecureUrl(submission.pdf_url)} download>
+                                            <a href={getSecureUrl(submission.pdfUrl)} download>
                                                 <Download className="w-4 h-4 2xl:w-8 2xl:h-8" /> Download PDF
                                             </a>
                                         </Button>
@@ -176,7 +169,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 ) : (
                                     <AdminPdfUpload
                                         submissionId={submission.id}
-                                        currentUrl={getSecureUrl(submission.pdf_url)}
+                                        currentUrl={getSecureUrl(submission.pdfUrl)}
                                     />
                                 )}
                             </div>
@@ -187,10 +180,10 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                 <div className="lg:col-span-8">
                     <Card className="border-border/50 shadow-sm overflow-hidden h-screen min-h-[85vh] bg-muted/10">
                         <CardContent className="p-0 h-full flex flex-col">
-                            {submission.pdf_url ? (
+                            {submission.pdfUrl ? (
                                 <div className="flex-1 min-h-[85vh] relative group">
                                     <PdfViewer
-                                        pdfUrl={getSecureUrl(submission.pdf_url)}
+                                        pdfUrl={getSecureUrl(submission.pdfUrl)}
                                         title={submission.title}
                                     />
                                     <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5" />

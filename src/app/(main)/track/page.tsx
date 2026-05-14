@@ -24,8 +24,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export const revalidate = 3600;
 
 export default async function TrackManuscript() {
-    const settings = await getSettingsData();
-
     return (
         <main className="bg-background min-h-screen">
             <PageHeader
@@ -42,7 +40,7 @@ export default async function TrackManuscript() {
                     <Loader2 className="w-8 h-8 text-primary animate-spin" />
                 </section>
             }>
-                <TrackClient settings={settings} />
+                <TrackClient />
             </Suspense>
         </main>
     );

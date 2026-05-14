@@ -13,7 +13,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function PaymentPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const settings = await getSettingsData();
 
-    return <PaymentClient id={id} settings={settings} />;
+    return <PaymentClient id={id} />;
 }

@@ -27,7 +27,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export const revalidate = 3600;
 
 export default async function EditorialBoard() {
-    const settings = await getSettingsData();
     const res = await getEditorialBoard();
     const initialMembers = res.success ? res.data || [] : [];
 
@@ -46,7 +45,7 @@ export default async function EditorialBoard() {
             <section className="container-responsive py-10 sm:py-16 2xl:py-24 flex justify-center">
                 <div className="space-y-20">
                     {/* Main Content */}
-                    <EditorialBoardClient settings={settings} initialMembers={initialMembers} />
+                    <EditorialBoardClient initialMembers={initialMembers} />
 
                     {/* Ethics Policy Banner */}
                     <Card className="bg-primary border-none text-white shadow-xl rounded-[2.5rem] overflow-hidden relative group">

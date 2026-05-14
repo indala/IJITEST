@@ -38,11 +38,11 @@ import { SubmissionUI } from '@/db/types';
 const getStatusVariant = (status: string) => {
     switch (status) {
         case 'submitted': return 'bg-blue-600 text-white border-blue-700 shadow-sm';
-        case 'under_review': return 'bg-amber-600 text-white border-amber-700 shadow-sm';
+        case 'underReview': return 'bg-amber-600 text-white border-amber-700 shadow-sm';
         case 'accepted': return 'bg-purple-600 text-white border-purple-700 shadow-sm';
         case 'rejected': return 'bg-rose-600 text-white border-rose-700 shadow-sm';
         case 'retracted': return 'bg-red-700 text-white border-red-800 shadow-sm';
-        case 'paid': return 'bg-emerald-600 text-white border-emerald-700 shadow-sm';
+        case 'paymentPending': return 'bg-emerald-600 text-white border-emerald-700 shadow-sm';
         case 'published': return 'bg-cyan-600 text-white border-cyan-700 shadow-sm';
         default: return 'bg-muted text-muted-foreground border-none';
     }
@@ -59,10 +59,10 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, rol
             <div className="space-y-3 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono bg-muted px-2 py-1 rounded border border-border/50 opacity-60">
-                        {sub.paper_id}
+                        {sub.paperId}
                     </span>
                     <Badge className={`h-6 px-3 rounded-lg border-none ${getStatusVariant(sub.status)}`}>
-                        {sub.status.replace('_', ' ')}
+                        {sub.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                     </Badge>
                 </div>
                 <h4 className="font-serif text-foreground text-xl leading-tight">
@@ -96,13 +96,13 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, rol
             <div className="space-y-1">
                 <span className="opacity-40">Author</span>
                 <p className="text-foreground truncate flex items-center gap-2">
-                    <User className="w-4 h-4 text-primary" /> {sub.author_name}
+                    <User className="w-4 h-4 text-primary" /> {sub.authorName}
                 </p>
             </div>
             <div className="space-y-1 text-right">
                 <span className="opacity-40">Registry Date</span>
                 <p className="text-foreground">
-                    {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
+                    {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
                 </p>
             </div>
         </div>
@@ -122,7 +122,7 @@ const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, rol
     >
         <TableCell className="px-6 py-6">
             <span className="font-mono  bg-muted px-2 py-1 rounded border border-border/50 opacity-60">
-                {sub.paper_id}
+                {sub.paperId}
             </span>
         </TableCell>
         <TableCell className="px-6 py-6 max-w-96 whitespace-normal">
@@ -132,10 +132,10 @@ const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, rol
                 </h4>
                 <div className="flex items-center gap-10 opacity-60">
                     <span className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-primary" /> {sub.author_name}
+                        <User className="w-4 h-4 text-primary" /> {sub.authorName}
                     </span>
                     <span className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-primary" /> {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'N/A'}
+                        <Calendar className="w-4 h-4 text-primary" /> {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'N/A'}
                     </span>
                 </div>
             </div>
@@ -143,12 +143,12 @@ const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, rol
         <TableCell className="px-6 py-6">
             <div className="flex flex-col gap-2 items-center">
                 <Badge className={`h-8 px-4 rounded-lg border-none shadow-sm ${getStatusVariant(sub.status)}`}>
-                    {sub.status.replace('_', ' ')}
+                    {sub.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                 </Badge>
-                {sub.status === 'under_review' && (sub.completed_reviews ?? 0) > 0 && (
+                {sub.status === 'underReview' && (sub.completedReviews ?? 0) > 0 && (
                     <div className="flex items-center gap-2 text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
                         <MessageSquare className="w-4 h-4" />
-                        {sub.completed_reviews} REVIEWS
+                        {sub.completedReviews} REVIEWS
                     </div>
                 )}
             </div>
@@ -183,9 +183,9 @@ const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, rol
                                 <DeleteSubmissionButton submissionId={sub.id} status={sub.status} variant="full" />
                             </div>
                         )}
-                        {role === 'editor' && sub.file_path && (
+                        {role === 'editor' && sub.filePath && (
                             <DropdownMenuItem asChild className="rounded-xl h-12 gap-4 group">
-                                <a href={sub.file_path} download className="flex items-center gap-4">
+                                <a href={sub.filePath} download className="flex items-center gap-4">
                                     <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
                                         <Download className="w-4 h-4 text-emerald-600 group-hover:text-white transition-colors" />
                                     </div>
@@ -215,9 +215,9 @@ export default function SubmissionContainer({ submissions, currentStatus: _curre
         if (!filterQuery) return submissions;
         const q = filterQuery.toLowerCase();
         return submissions.filter(sub =>
-            sub.paper_id.toLowerCase().includes(q) ||
+            sub.paperId.toLowerCase().includes(q) ||
             sub.title.toLowerCase().includes(q) ||
-            sub.author_name.toLowerCase().includes(q)
+            sub.authorName.toLowerCase().includes(q)
         );
     }, [submissions, filterQuery]);
 

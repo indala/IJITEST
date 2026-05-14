@@ -23,7 +23,7 @@ export default async function EditorDashboard() {
 
         // 1. Data Fetching
         const [totalSubmissions] = await db.select({ value: count() }).from(schema.submissions);
-        const [underReview] = await db.select({ value: count() }).from(schema.submissions).where(eq(schema.submissions.status, 'under_review'));
+        const [underReview] = await db.select({ value: count() }).from(schema.submissions).where(eq(schema.submissions.status, 'underReview'));
         const [pendingPayments] = await db.select({ value: count() }).from(schema.payments).where(eq(schema.payments.status, 'pending'));
         const [publishedCount] = await db.select({ value: count() }).from(schema.submissions).where(eq(schema.submissions.status, 'published'));
         
@@ -42,11 +42,11 @@ export default async function EditorDashboard() {
 
         const recentSubmissions = await db.select({
             id: schema.submissions.id,
-            paper_id: schema.submissions.paperId,
+            paperId: schema.submissions.paperId,
             status: schema.submissions.status,
             title: schema.submissionVersions.title,
-            author_name: schema.userProfiles.fullName,
-            submitted_at: schema.submissions.submittedAt
+            authorName: schema.userProfiles.fullName,
+            submittedAt: schema.submissions.submittedAt
         })
         .from(schema.submissions)
         .leftJoin(schema.submissionVersions, and(

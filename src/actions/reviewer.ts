@@ -19,7 +19,7 @@ const schema = z.object({
     designation: z.string().min(2),
     institute: z.string().min(2),
     email: z.string().email(),
-    application_type: z.enum(['reviewer', 'editor']).default('reviewer'),
+    applicationType: z.enum(['reviewer', 'editor']).default('reviewer'),
     nationality: z.string().min(2),
 });
 
@@ -28,14 +28,14 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
     const designation = formData.get("designation") as string;
     const institute = formData.get("institute") as string;
     const email = formData.get("email") as string;
-    const application_type = formData.get("application_type") as string;
+    const applicationType = formData.get("applicationType") as string;
     const nationality = formData.get("nationality") as string;
     const cv = formData.get("cv") as File;
     const photo = formData.get("photo") as File;
-    const researchInterestsStr = formData.get("research_interests") as string;
+    const researchInterestsStr = formData.get("researchInterests") as string;
 
     // Validate textual data
-    const validation = schema.safeParse({ fullName, designation, institute, email, application_type, nationality });
+    const validation = schema.safeParse({ fullName, designation, institute, email, applicationType, nationality });
     if (!validation.success) {
         return { success: false, error: "Please fill in all required fields correctly." };
     }
@@ -71,7 +71,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
                 email,
                 cvUrl,
                 photoUrl,
-                type: application_type as 'reviewer' | 'editor',
+                type: applicationType as 'reviewer' | 'editor',
                 status: 'pending',
                 nationality,
             });
@@ -112,7 +112,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
 
         // Notify Admin via Email
         const adminUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/reviewer-applications`;
-        const roleName = application_type === 'editor' ? 'Editor' : 'Reviewer';
+        const roleName = applicationType === 'editor' ? 'Editor' : 'Reviewer';
 
         const adminTemplate = emailTemplates.adminNotification(
             `New ${roleName} Application`,
@@ -127,7 +127,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         });
 
         // Confirmation to Applicant
-        const applicantTemplate = emailTemplates.boardApplicationReceipt(fullName, application_type);
+        const applicantTemplate = emailTemplates.boardApplicationReceipt(fullName, applicationType);
         sendEmail({
             to: email,
             subject: applicantTemplate.subject,

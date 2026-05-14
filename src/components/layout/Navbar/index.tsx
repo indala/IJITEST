@@ -7,10 +7,13 @@ import { NavbarLinks } from './NavbarLinks';
 import { MobileMenu } from './MobileMenu';
 import Link from 'next/link';
 
-export default function Navbar({ settings }: { settings?: Record<string, string> }) {
+import { useSettingsStore } from '@/store/useSettingsStore';
+
+export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const shortName = settings?.journal_short_name || "IJITEST";
+    const settings = useSettingsStore((state) => state.settings);
+    const shortName = settings.journalShortName;
 
     useEffect(() => {
         if (isOpen) {
@@ -36,7 +39,7 @@ export default function Navbar({ settings }: { settings?: Record<string, string>
                 <div className={`flex justify-between items-center transition-all duration-700 ${isScrolled ? 'h-14 lg:h-16 2xl:h-24' : 'h-16 lg:h-20 xl:h-24 2xl:h-32'}`}>
 
                     {/* Brand */}
-                    <NavbarBrand shortName={shortName} isScrolled={isScrolled} />
+                    <NavbarBrand shortName={shortName || ""} isScrolled={isScrolled} />
 
                     {/* Desktop Navigation */}
                     <NavbarLinks isScrolled={isScrolled} />

@@ -10,13 +10,11 @@ import { useTrackManuscript } from '@/hooks/queries/usePublic';
 import Script from 'next/script';
 import RazorpayPayment from '@/features/submissions/components/RazorpayPayment';
 
-interface PaymentClientProps {
-    id: string;
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function PaymentClient({ id, settings }: PaymentClientProps) {
-    const apcTotal = parseFloat(settings?.apc_inr || '2500');
+export default function PaymentClient({ id }: { id: string }) {
+    const settings = useSettingsStore((state) => state.settings);
+    const apcTotal = parseFloat(settings?.apcInr || '2500');
     const apcFee = Math.floor(apcTotal * 0.85);
     const apcIndexing = apcTotal - apcFee;
 
@@ -38,7 +36,7 @@ export default function PaymentClient({ id, settings }: PaymentClientProps) {
         </div>
     );
 
-    if (error || (manuscript && !['accepted', 'payment_pending', 'published'].includes(manuscript.status))) return (
+    if (error || (manuscript && !['accepted', 'paymentPending', 'published'].includes(manuscript.status))) return (
         <div className="min-h-screen flex items-center justify-center bg-background p-6">
             <div className="max-w-md w-full bg-card border border-border/50 rounded-xl text-center p-8 sm:p-12 shadow-sm border-l-4 border-l-destructive/50">
                 <div className="w-16 h-16 bg-destructive/5 rounded-xl flex items-center justify-center mx-auto mb-8 text-destructive">
@@ -110,7 +108,7 @@ export default function PaymentClient({ id, settings }: PaymentClientProps) {
                                 <h3 className="text-xl font-semibold text-primary m-0 leading-tight">{manuscript.title}</h3>
                                 <div className="flex items-center gap-3 text-muted-foreground pt-4">
                                     <TrendingUp className="w-4 h-4 text-secondary/60" />
-                                    <span className="text-xs font-medium">Manuscript ID: {manuscript.paper_id}</span>
+                                    <span className="text-xs font-medium">Manuscript ID: {manuscript.paperId}</span>
                                 </div>
                             </div>
 
@@ -118,7 +116,7 @@ export default function PaymentClient({ id, settings }: PaymentClientProps) {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">Beneficiary</p>
-                                        <p className="text-base font-semibold text-primary m-0">{manuscript.author_name}</p>
+                                        <p className="text-base font-semibold text-primary m-0">{manuscript.authorName}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">Currency Profile</p>
@@ -173,7 +171,7 @@ export default function PaymentClient({ id, settings }: PaymentClientProps) {
                                 {apcTotal > 0 ? (
                                     <RazorpayPayment
                                         submissionId={manuscript.id}
-                                        paperId={manuscript.paper_id}
+                                        paperId={manuscript.paperId}
                                     />
                                 ) : (
                                     <p className="text-xs font-semibold text-muted-foreground">No payment required.</p>
@@ -193,7 +191,7 @@ export default function PaymentClient({ id, settings }: PaymentClientProps) {
                                 <div className="space-y-1">
                                     <h4 className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">Support Desk</h4>
                                     <p className="text-xs text-muted-foreground/60 leading-relaxed font-medium m-0">
-                                        For disputes or bulk requests, contact <span className="text-secondary font-semibold">{settings.support_email}</span>.
+                                        For disputes or bulk requests, contact <span className="text-secondary font-semibold">{settings.supportEmail}</span>.
                                     </p>
                                 </div>
                             </section>

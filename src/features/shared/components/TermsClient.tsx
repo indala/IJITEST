@@ -3,12 +3,11 @@
 import { ChevronRight, Gavel } from 'lucide-react';
 import Link from 'next/link';
 
-interface TermsClientProps {
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function TermsClient({ settings }: TermsClientProps) {
-    const journalName = settings.journal_name || "IJITEST";
+export default function TermsClient() {
+    const settings = useSettingsStore((state) => state.settings);
+    const journalName = settings.journalName || '';
 
     const framework = [
         {

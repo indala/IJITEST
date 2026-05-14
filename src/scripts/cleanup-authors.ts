@@ -2,7 +2,7 @@
  * Cleanup Authors Script
  *
  * Deactivates author accounts where:
- * - Their submission status is 'rejected' or 'revision_requested'
+ * - Their submission status is 'rejected' or 'revisionRequested'
  * - The status has not changed for more than 15 days (no resubmission made)
  *
  * Run via: npx ts-node src/scripts/cleanup-authors.ts
@@ -30,7 +30,7 @@ async function cleanupStaleAuthors() {
         .from(submissions)
         .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
         .where(and(
-            inArray(submissions.status, ['rejected', 'revision_requested']),
+            inArray(submissions.status, ['rejected', 'revisionRequested']),
             sql`${submissions.updatedAt} < ${fifteenDaysAgo}`,
             eq(users.isActive, true),
             eq(users.role, 'author')

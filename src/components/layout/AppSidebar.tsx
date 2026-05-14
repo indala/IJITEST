@@ -25,10 +25,14 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 
-export function AppSidebar({ settings }: { settings?: Record<string, string> }) {
+import { useSettingsStore } from "@/store/useSettingsStore";
+
+
+export function AppSidebar() {
     const pathname = usePathname();
     const { setOpenMobile, isMobile } = useSidebar();
-    const journalShortName = settings?.journal_short_name || "IJITEST";
+    const settings = useSettingsStore((state) => state.settings);
+    const journalShortName = settings.journalShortName || '';
 
     return (
         <Sidebar collapsible="icon" className={cn("border-r border-primary/5 backdrop-blur-xl 2xl:w-[320px]", isMobile ? "bg-white" : "bg-white/50")}>

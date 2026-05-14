@@ -129,30 +129,24 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
         };
 
         // 7. Map to UI-Friendly Composite Object (Flat properties for historical compatibility)
-        const mainManuscript = files.find(f => f.fileType === 'main_manuscript');
-        const pdfVersion = files.find(f => f.fileType === 'pdf_version');
+        const mainManuscript = files.find(f => f.fileType === 'mainManuscript');
+        const pdfVersion = files.find(f => f.fileType === 'pdfVersion');
         const finalPdf = row.publication?.finalPdfUrl;
 
         const data: SubmissionUI = {
             ...submissionData,
-            paper_id: submissionData.paperId,
-            submitted_at: submissionData.submittedAt,
-            updated_at: submissionData.updatedAt,
             title: latestVersion?.title || "Untitled Manuscript",
             abstract: latestVersion?.abstract || null,
             keywords: latestVersion?.keywords || null,
-            file_path: mainManuscript?.fileUrl || "",
-            pdf_url: finalPdf || pdfVersion?.fileUrl || "", // Priority: Published PDF > Review PDF
-            author_name: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
-            author_email: submissionData.correspondingAuthor?.email || "",
-            co_authors: JSON.stringify(submissionData.authors.map(a => ({
-                name: a.name, email: a.email, institution: a.institution
-            }))),
-            volume_number: submissionData.issue?.volumeNumber,
-            issue_number: submissionData.issue?.issueNumber,
-            start_page: submissionData.publication?.startPage,
-            end_page: submissionData.publication?.endPage,
-            issue_id: submissionData.issueId,
+            filePath: mainManuscript?.fileUrl || "",
+            pdfUrl: finalPdf || pdfVersion?.fileUrl || "", // Priority: Published PDF > Review PDF
+            authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
+            authorEmail: submissionData.correspondingAuthor?.email || "",
+            coAuthors: submissionData.authors,
+            volumeNumber: submissionData.issue?.volumeNumber,
+            issueNumber: submissionData.issue?.issueNumber,
+            startPage: submissionData.publication?.startPage,
+            endPage: submissionData.publication?.endPage,
             latestVersion: latestVersion ? { ...latestVersion, files: files as SubmissionFile[] } : undefined,
             allFiles: files as SubmissionFile[],
             allReviews: typedAssignments,
@@ -178,7 +172,7 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
         // 1. Fetch core data + latest versions in one JOIN query
         const conditions: SQL[] = [isNull(submissions.deletedAt)];
         if (filters?.status && filters.status !== 'all') {
-            conditions.push(eq(submissions.status, filters.status as "submitted" | "editor_assigned" | "under_review" | "revision_requested" | "accepted" | "rejected" | "payment_pending" | "published"));
+            conditions.push(eq(submissions.status, filters.status as "submitted" | "editorAssigned" | "underReview" | "revisionRequested" | "accepted" | "rejected" | "paymentPending" | "published"));
         }
         if (filters?.q) {
             const searchVal = `%${filters.q}%`;
@@ -240,28 +234,24 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
             const subAuthors = allCoAuthors.filter(a => a.submissionId === row.submission.id);
             const subFiles = row.latestVersion ? allFiles.filter(f => f.versionId === row.latestVersion!.id) : [];
 
-            const mainManuscript = subFiles.find(f => f.fileType === 'main_manuscript');
-            const pdfVersion = subFiles.find(f => f.fileType === 'pdf_version');
+            const mainManuscript = subFiles.find(f => f.fileType === 'mainManuscript');
+            const pdfVersion = subFiles.find(f => f.fileType === 'pdfVersion');
             const finalPdf = row.publication?.finalPdfUrl;
 
             return {
                 ...row.submission,
-                paper_id: row.submission.paperId,
-                submitted_at: row.submission.submittedAt,
-                updated_at: row.submission.updatedAt,
                 title: row.latestVersion?.title || "Untitled Manuscript",
                 abstract: row.latestVersion?.abstract || "",
                 keywords: row.latestVersion?.keywords || "",
-                file_path: mainManuscript?.fileUrl || "",
-                pdf_url: finalPdf || pdfVersion?.fileUrl || "",
-                author_name: row.authorProfile?.fullName || "Unknown Author",
-                author_email: row.author?.email || "",
-                co_authors: JSON.stringify(subAuthors.map(a => ({ name: a.name, email: a.email, institution: a.institution }))),
-                volume_number: row.issue?.volumeNumber,
-                issue_number: row.issue?.issueNumber,
-                start_page: row.publication?.startPage,
-                end_page: row.publication?.endPage,
-                issue_id: row.submission.issueId,
+                filePath: mainManuscript?.fileUrl || "",
+                pdfUrl: finalPdf || pdfVersion?.fileUrl || "",
+                authorName: row.authorProfile?.fullName || "Unknown Author",
+                authorEmail: row.author?.email || "",
+                coAuthors: subAuthors,
+                volumeNumber: row.issue?.volumeNumber,
+                issueNumber: row.issue?.issueNumber,
+                startPage: row.publication?.startPage,
+                endPage: row.publication?.endPage,
                 latestVersion: row.latestVersion ? { ...row.latestVersion, files: subFiles as SubmissionFile[] } : undefined,
                 allFiles: subFiles as SubmissionFile[],
                 allReviews: [],
@@ -318,10 +308,10 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
 
         // Email is fire-and-forget — SMTP failure should not rollback the decision
         const template = decision === 'accepted'
-            ? emailTemplates.manuscriptAcceptance(submission.author_name, submission.title, submission.paperId, isFree)
-            : emailTemplates.manuscriptRejection(submission.author_name, submission.title, submission.paperId, "Does not meet editorial criteria.");
+            ? emailTemplates.manuscriptAcceptance(submission.authorName, submission.title, submission.paperId, isFree)
+            : emailTemplates.manuscriptRejection(submission.authorName, submission.title, submission.paperId, "Does not meet editorial criteria.");
 
-        sendEmail({ to: submission.author_email, subject: template.subject, html: template.html })
+        sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })
             .catch(e => console.error("Decision email failed:", e));
 
         revalidatePath('/admin/submissions');
@@ -351,13 +341,13 @@ export async function updateSubmissionStatus(id: number, status: typeof submissi
             const isFree = (apcRows[0]?.settingValue || '0') === '0';
 
             const template = emailTemplates.statusUpdate(
-                submission.author_name,
+                submission.authorName,
                 submission.title,
                 status,
                 submission.paperId,
                 isFree
             );
-            await sendEmail({ to: submission.author_email, subject: template.subject, html: template.html });
+            await sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html });
         }
 
         revalidatePath('/admin/submissions');
@@ -386,17 +376,17 @@ export async function requestResubmissionWithComments(
         const submission = subRes.data;
 
         await db.update(submissions)
-            .set({ status: 'revision_requested' })
+            .set({ status: 'revisionRequested' })
             .where(eq(submissions.id, submissionId));
 
         const emailData = emailTemplates.resubmissionRequest(
-            submission.author_name,
+            submission.authorName,
             submission.title,
             submission.paperId,
             comments,
             submissionId
         );
-        await sendEmail({ to: submission.author_email, subject: emailData.subject, html: emailData.html });
+        await sendEmail({ to: submission.authorEmail, subject: emailData.subject, html: emailData.html });
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         return { success: true };
@@ -507,7 +497,7 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
             // Check if a PDF version already exists for this version
             const existing = await tx.select().from(submissionFiles).where(and(
                 eq(submissionFiles.versionId, latestVersion.id),
-                eq(submissionFiles.fileType, 'pdf_version')
+                eq(submissionFiles.fileType, 'pdfVersion')
             )).limit(1);
 
             if (existing.length > 0) {
@@ -519,7 +509,7 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
 
             await tx.insert(submissionFiles).values({
                 versionId: latestVersion.id,
-                fileType: 'pdf_version',
+                fileType: 'pdfVersion',
                 fileUrl: fileUrl,
                 originalName: pdfFile.name,
                 fileSize: pdfFile.size
@@ -568,7 +558,7 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
             .from(submissionFiles)
             .where(and(
                 eq(submissionFiles.versionId, latestVersion.id),
-                eq(submissionFiles.fileType, 'main_manuscript')
+                eq(submissionFiles.fileType, 'mainManuscript')
             ))
             .limit(1);
 
@@ -597,12 +587,12 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
             // Remove existing PDF version if it exists
             await tx.delete(submissionFiles).where(and(
                 eq(submissionFiles.versionId, latestVersion.id),
-                eq(submissionFiles.fileType, 'pdf_version')
+                eq(submissionFiles.fileType, 'pdfVersion')
             ));
 
             await tx.insert(submissionFiles).values({
                 versionId: latestVersion.id,
-                fileType: 'pdf_version',
+                fileType: 'pdfVersion',
                 fileUrl: fileUrl,
                 originalName: fileName,
                 fileSize: pdfBuffer.length

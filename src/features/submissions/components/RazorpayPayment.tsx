@@ -91,9 +91,9 @@ export default function RazorpayPayment({ submissionId, paperId }: RazorpayPayme
                 handler: async function (response: RazorpayResponse) {
                     setLoading(true);
                     const verifyData = {
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature,
+                        razorpayOrderId: response.razorpay_order_id,
+                        razorpayPaymentId: response.razorpay_payment_id,
+                        razorpaySignature: response.razorpay_signature,
                         submissionId: submissionId,
                     };
 

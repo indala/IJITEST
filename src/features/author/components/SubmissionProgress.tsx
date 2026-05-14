@@ -10,16 +10,16 @@ interface SubmissionProgressProps {
 
 const STEPS = [
     { id: 'submitted', label: 'Submitted', icon: Send, statuses: ['submitted'] },
-    { id: 'review', label: 'Peer Review', icon: Clock, statuses: ['editor_assigned', 'under_review', 'revision_requested'] },
-    { id: 'accepted', label: 'Accepted', icon: CheckCircle2, statuses: ['accepted', 'payment_pending'] },
+    { id: 'review', label: 'Peer Review', icon: Clock, statuses: ['editorAssigned', 'underReview', 'revisionRequested'] },
+    { id: 'accepted', label: 'Accepted', icon: CheckCircle2, statuses: ['accepted', 'paymentPending'] },
     { id: 'published', label: 'Published', icon: BookOpen, statuses: ['published'] },
 ]
 
 export function SubmissionProgress({ status, className }: SubmissionProgressProps) {
     const getCurrentStepIndex = () => {
         if (status === 'published') return 3
-        if (['accepted', 'payment_pending'].includes(status)) return 2
-        if (['editor_assigned', 'under_review', 'revision_requested'].includes(status)) return 1
+        if (['accepted', 'paymentPending'].includes(status)) return 2
+        if (['editorAssigned', 'underReview', 'revisionRequested'].includes(status)) return 1
         return 0
     }
 
@@ -31,8 +31,10 @@ export function SubmissionProgress({ status, className }: SubmissionProgressProp
                 {/* Connector Line */}
                 <div className="absolute top-1/2 left-0 w-full h-0.5 bg-muted -translate-y-1/2 z-0" />
                 <div 
-                    className="absolute top-1/2 left-0 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-1000 ease-in-out" 
-                    style={{ width: `${(currentIdx / (STEPS.length - 1)) * 100}%` }}
+                    className={cn(
+                        "absolute top-1/2 left-0 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-1000 ease-in-out",
+                        ["w-0", "w-1/3", "w-2/3", "w-full"][currentIdx]
+                    )}
                 />
 
                 {/* Steps */}

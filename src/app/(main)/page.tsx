@@ -13,7 +13,6 @@ import CallForPapersWidget from '@/features/shared/widgets/CallForPapersWidget';
 import ResourceDeskWidget from '@/features/shared/widgets/ResourceDeskWidget';
 import EthicsWidget from '@/features/shared/widgets/EthicsWidget';
 import AnnouncementBar from '@/features/home/components/AnnouncementBar';
-import SettingsInitializer from '@/components/providers/SettingsInitializer';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import FaqSection from '@/features/home/components/FaqSection';
@@ -24,22 +23,22 @@ export const revalidate = 3600; // 1 hour
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettingsData();
   return {
-    title: `${settings.journal_name} | Elite Academic Publishing`,
-    description: `Welcome to ${settings.journal_name} (${settings.journal_short_name}). We provide a global platform for breakthrough research in engineering, science, and technology with rapid, high-quality peer review.`,
+    title: `${settings.journalName} | Elite Academic Publishing`,
+    description: `Welcome to ${settings.journalName} (${settings.journalShortName}). We provide a global platform for breakthrough research in engineering, science, and technology with rapid, high-quality peer review.`,
     alternates: {
       canonical: '/',
     },
     openGraph: {
-      title: settings.journal_name,
-      description: `Advancing scientific excellence through innovative trends. Explore peer-reviewed research and elite academic publishing at ${settings.journal_short_name}.`,
+      title: settings.journalName,
+      description: `Advancing scientific excellence through innovative trends. Explore peer-reviewed research and elite academic publishing at ${settings.journalShortName}.`,
       type: 'website',
-      siteName: settings.journal_name,
+      siteName: settings.journalName,
       images: [
         {
           url: '/open_graph_img.png',
           width: 1200,
           height: 630,
-          alt: `${settings.journal_short_name} - Global Research Platform`,
+          alt: `${settings.journalShortName} - Global Research Platform`,
         },
       ],
     }
@@ -47,11 +46,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const settings = await getSettingsData();
-
   return (
     <main className="flex flex-col overflow-hidden bg-background relative">
-      <SettingsInitializer settings={settings} />
       <AnnouncementBar />
       
       {/* Background Decorative Blob */}
@@ -77,23 +73,19 @@ export default async function Home() {
                 <AnnouncementsWidget />
                 <AuthorQuickLinks />
                 <CallForPapersWidget />
-                <ResourceDeskWidget settings={settings} />
+                <ResourceDeskWidget />
                 <EthicsWidget />
               </div>
             </>
           }
         >
-          <WelcomeSection
-            journalName={settings.journal_name || ""}
-            journalShortName={settings.journal_short_name || ""}
-            settings={settings}
-          />
+          <WelcomeSection />
           <HomeStats />
-          <AimAndScope journalShortName={settings.journal_short_name || ""} />
+          <AimAndScope />
         </SidebarLayout>
       </Section>
 
-      <PublisherSection settings={settings} />
+      <PublisherSection />
       <FaqSection />
       
       <JsonLd 

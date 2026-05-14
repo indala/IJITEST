@@ -78,29 +78,26 @@ import ScrollToTop from "@/components/common/ScrollToTop";
 import { NuqsAdapter } from "nuqs/adapters/next";
 
 import { JsonLd } from "@/components/shared/JsonLd";
+import { getSettingsData } from "@/actions/settings";
+import { SettingsProvider } from "@/components/providers/SettingsProvider";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const settings = {
-    journal_name: "IJITEST | International Journal of Innovative Trends in Engineering Science and Technology",
-    journal_short_name: "IJITEST",
-    url: "https://www.ijitest.org",
-    logo: "https://www.ijitest.org/favicon_io/apple-touch-icon.png"
-  };
+  const dynamicSettings = await getSettingsData();
 
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": settings.journal_name,
-    "alternateName": settings.journal_short_name,
-    "url": settings.url,
-    "logo": settings.logo,
+    "name": dynamicSettings.journalName,
+    "alternateName": dynamicSettings.journalShortName,
+    "url": "https://www.ijitest.org",
+    "logo": "https://www.ijitest.org/favicon_io/apple-touch-icon.png",
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "",
+      "telephone": dynamicSettings.supportPhone,
       "contactType": "customer service",
       "availableLanguage": "English"
     }
@@ -109,14 +106,15 @@ export default function RootLayout({
   const journalSchema = {
     "@context": "https://schema.org",
     "@type": "ScholarlyJournal",
-    "name": settings.journal_name,
-    "alternateName": settings.journal_short_name,
-    "url": settings.url,
+    "name": dynamicSettings.journalName,
+    "alternateName": dynamicSettings.journalShortName,
+    "url": "https://www.ijitest.org",
     "publisher": {
       "@type": "Organization",
-      "name": "IJITEST Publishing"
+      "name": `${dynamicSettings.journalShortName} Publishing`
     }
   };
+
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -133,11 +131,13 @@ export default function RootLayout({
             <SmoothScroll>
               <AuthProvider>
                 <QueryProvider>
-                  <TooltipProvider>
-                    {children}
-                    <ScrollToTop />
-                    <Toaster position="top-right" offset={50} richColors closeButton />
-                  </TooltipProvider>
+                  <SettingsProvider initialSettings={dynamicSettings}>
+                    <TooltipProvider>
+                      {children}
+                      <ScrollToTop />
+                      <Toaster position="top-right" offset={50} richColors closeButton />
+                    </TooltipProvider>
+                  </SettingsProvider>
                 </QueryProvider>
               </AuthProvider>
             </SmoothScroll>

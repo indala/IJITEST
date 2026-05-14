@@ -100,7 +100,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 .from(submissionFiles)
                 .where(and(
                     eq(submissionFiles.versionId, version.id),
-                    eq(submissionFiles.fileType, 'pdf_version')
+                    eq(submissionFiles.fileType, 'pdfVersion')
                 ))
                 .limit(1);
 
@@ -113,7 +113,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
 
                 await tx.insert(submissionFiles).values({
                     versionId: version.id,
-                    fileType: 'pdf_version',
+                    fileType: 'pdfVersion',
                     fileUrl: pdfUrl,
                     originalName: 'reviewer_manuscript.pdf'
                 });
@@ -128,7 +128,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                     .from(submissionFiles)
                     .where(and(
                         eq(submissionFiles.versionId, version.id),
-                        eq(submissionFiles.fileType, 'main_manuscript')
+                        eq(submissionFiles.fileType, 'mainManuscript')
                     ))
                     .limit(1);
 
@@ -152,7 +152,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
 
                         await tx.insert(submissionFiles).values({
                             versionId: version.id,
-                            fileType: 'pdf_version',
+                            fileType: 'pdfVersion',
                             fileUrl: pdfUrl,
                             originalName: 'system_converted_pdf.pdf'
                         });
@@ -183,7 +183,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
 
             // 7. Update Submission Status
             await tx.update(submissions)
-                .set({ status: 'under_review', updatedAt: new Date() })
+                .set({ status: 'underReview', updatedAt: new Date() })
                 .where(eq(submissions.id, submissionId));
 
             // 8. Fetch notification data (no email inside transaction)
@@ -257,7 +257,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
         return { success: false, error: "Unauthorized: Reviewer access required." };
     }
 
-    const decision = formData.get('decision') as "accept" | "reject" | "minor_revision" | "major_revision";
+    const decision = formData.get('decision') as "accept" | "reject" | "minorRevision" | "majorRevision";
     const commentsToAuthor = formData.get('commentsToAuthor') as string;
     const commentsToEditor = formData.get('commentsToEditor') as string;
     const score = formData.get('score') ? parseInt(formData.get('score') as string) : null;
@@ -348,9 +348,9 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
             }
 
             // 5. Submission Status Update (Optional: specific to project workflow)
-            const statusMap: Record<string, "revision_requested" | "rejected"> = {
-                minor_revision: 'revision_requested',
-                major_revision: 'revision_requested',
+            const statusMap: Record<string, "revisionRequested" | "rejected"> = {
+                minorRevision: 'revisionRequested',
+                majorRevision: 'revisionRequested',
                 reject: 'rejected'
             };
             const newStatus = statusMap[decision as string];
@@ -378,9 +378,9 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                     html: staffAlert.html
                 })));
             } else {
-                const statusMap: Record<string, "revision_requested" | "rejected"> = {
-                    minor_revision: 'revision_requested',
-                    major_revision: 'revision_requested',
+                const statusMap: Record<string, "revisionRequested" | "rejected"> = {
+                    minorRevision: 'revisionRequested',
+                    majorRevision: 'revisionRequested',
                     reject: 'rejected'
                 };
                 const newStatus = statusMap[decision as string];
@@ -421,7 +421,7 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
             versionId: submissionFiles.versionId
         })
             .from(submissionFiles)
-            .where(eq(submissionFiles.fileType, 'pdf_version'))
+            .where(eq(submissionFiles.fileType, 'pdfVersion'))
             .groupBy(submissionFiles.versionId)
             .as('ms');
 
@@ -495,7 +495,7 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<Unas
             pdfUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('pdfUrl')
         })
             .from(submissionFiles)
-            .where(eq(submissionFiles.fileType, 'pdf_version'))
+            .where(eq(submissionFiles.fileType, 'pdfVersion'))
             .groupBy(submissionFiles.versionId)
             .as('mp');
 
@@ -510,7 +510,7 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<Unas
             .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
             .leftJoin(manuscriptPaths, eq(submissionVersions.id, manuscriptPaths.versionId))
             .where(and(
-                inArray(submissions.status, ['submitted', 'editor_assigned', 'under_review', 'revision_requested']),
+                inArray(submissions.status, ['submitted', 'editorAssigned', 'underReview', 'revisionRequested']),
                 eq(submissionVersions.versionNumber, latestVersions.maxVersion)
             ));
 

@@ -9,9 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useTrackManuscript } from '@/hooks/queries/usePublic';
 
-interface TrackClientProps {
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 import { LucideIcon } from 'lucide-react';
  
@@ -53,7 +51,8 @@ function Milestone({ title, date, description, icon: Icon, active, last }: Miles
     );
 }
 
-export default function TrackClient({ settings }: TrackClientProps) {
+export default function TrackClient() {
+    const settings = useSettingsStore((state) => state.settings);
     const searchParams = useSearchParams();
     const [paperIdInput, setPaperIdInput] = useState(searchParams.get('id') || '');
     const [emailInput, setEmailInput] = useState('');
@@ -67,12 +66,10 @@ export default function TrackClient({ settings }: TrackClientProps) {
     );
 
     const manuscript = data?.success ? data.data?.manuscript : null;
-    const errorMessage = data?.success ? null : (data?.error || (error instanceof Error ? error instanceof Error ? error.message : String(error) : null));
+    const errorMessage = data?.success ? null : (data?.error || (error instanceof Error ? error.message : String(error)));
 
     const resultsRef = useRef<HTMLDivElement>(null);
-    const journalShortName = settings.journal_short_name || "IJITEST";
-
-
+    const journalShortName = settings.journalShortName || '';
 
     useEffect(() => {
         if ((isSuccess || isError) && resultsRef.current) {
@@ -96,8 +93,8 @@ export default function TrackClient({ settings }: TrackClientProps) {
         if (!manuscript) return false;
         const s = manuscript.status;
         if (step === 'submitted') return true;
-        if (step === 'review') return ['under_review', 'revision_requested', 'accepted', 'rejected', 'payment_pending', 'published'].includes(s);
-        if (step === 'decision') return ['accepted', 'rejected', 'payment_pending', 'published'].includes(s);
+        if (step === 'review') return ['underReview', 'revisionRequested', 'accepted', 'rejected', 'paymentPending', 'published'].includes(s);
+        if (step === 'decision') return ['accepted', 'rejected', 'paymentPending', 'published'].includes(s);
         return false;
     };
 
@@ -191,14 +188,14 @@ export default function TrackClient({ settings }: TrackClientProps) {
                                 <div className="flex flex-wrap items-center justify-between gap-6">
                                     <div className="flex items-center gap-3">
                                         <Badge className="bg-primary/5 text-primary border-primary/20 px-4 h-8 rounded-lg">
-                                            Status: {manuscript.status.replace('_', ' ')}
+                                            Status: {manuscript.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                                         </Badge>
                                         <span className="text-[10px] font-mono text-muted-foreground bg-muted/50 px-3 py-1 rounded border border-border/50">
-                                            ID: {manuscript.paper_id}
+                                            ID: {manuscript.paperId}
                                         </span>
                                     </div>
                                     <div className="text-xs text-muted-foreground flex items-center gap-2">
-                                        <Calendar className="w-3.5 h-3.5" /> {manuscript.submitted_at ? new Date(manuscript.submitted_at).getFullYear() : 'N/A'}
+                                        <Calendar className="w-3.5 h-3.5" /> {manuscript.submittedAt ? new Date(manuscript.submittedAt).getFullYear() : 'N/A'}
                                     </div>
                                 </div>
 
@@ -212,7 +209,7 @@ export default function TrackClient({ settings }: TrackClientProps) {
                                     </div>
                                     <div className="space-y-0.5">
                                         <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Corresponding Author</p>
-                                        <p className="text-sm font-semibold">{manuscript.author_name}</p>
+                                        <p className="text-sm font-semibold">{manuscript.authorName}</p>
                                     </div>
                                 </div>
                             </section>
@@ -225,21 +222,21 @@ export default function TrackClient({ settings }: TrackClientProps) {
                                 <div className="space-y-4">
                                     <Milestone
                                         title="Manuscript Received"
-                                        {...(manuscript.submitted_at ? { date: new Date(manuscript.submitted_at).toISOString() } : {})}
+                                        {...(manuscript.submittedAt ? { date: new Date(manuscript.submittedAt).toISOString() } : {})}
                                         description="Initial submission received and queued for editorial screening."
                                         icon={FileText}
                                         active={isStepActive('submitted')}
                                     />
                                     <Milestone
                                         title="Peer Review"
-                                        {...(manuscript.review_started_at ? { date: new Date(manuscript.review_started_at).toISOString() } : {})}
+                                        {...(manuscript.reviewStartedAt ? { date: new Date(manuscript.reviewStartedAt).toISOString() } : {})}
                                         description="Assigned to experts for technical evaluation."
                                         icon={Search}
                                         active={isStepActive('review')}
                                     />
                                     <Milestone
                                         title="Editorial Decision"
-                                        {...((manuscript.status !== 'under_review' && manuscript.status !== 'submitted' && manuscript.updated_at) ? { date: new Date(manuscript.updated_at).toISOString() } : {})}
+                                        {...((manuscript.status !== 'underReview' && manuscript.status !== 'submitted' && manuscript.updatedAt) ? { date: new Date(manuscript.updatedAt).toISOString() } : {})}
                                         description={
                                             manuscript.status === 'accepted' ? "Accepted for publication in the upcoming volume." :
                                             manuscript.status === 'rejected' ? "Returned following scientific evaluation." :
@@ -270,7 +267,7 @@ export default function TrackClient({ settings }: TrackClientProps) {
                                                 </p>
                                             </div>
                                             <Button asChild size="lg" className="h-12 px-8 bg-white text-primary hover:bg-white/90 rounded-lg shadow-sm transition-all shrink-0 font-bold text-xs tracking-wider uppercase">
-                                                <Link href={`/payment/${manuscript.paper_id}`} className="flex items-center gap-2">
+                                                <Link href={`/payment/${manuscript.paperId}`} className="flex items-center gap-2">
                                                     Process Payment <CreditCard className="w-4 h-4" />
                                                 </Link>
                                             </Button>
@@ -307,9 +304,9 @@ export default function TrackClient({ settings }: TrackClientProps) {
                                                 The committee has concluded its review. While the current version does not meet publication criteria, please see the feedback below.
                                             </p>
                                         </div>
-                                        {manuscript.reviewer_feedback && manuscript.reviewer_feedback.length > 0 && (
+                                        {manuscript.reviewerFeedback && manuscript.reviewerFeedback.length > 0 && (
                                             <div className="grid grid-cols-1 gap-4">
-                                                {manuscript.reviewer_feedback.filter((f): f is string => f !== null).map((feedback, i) => (
+                                                {manuscript.reviewerFeedback.filter((f): f is string => f !== null).map((feedback, i) => (
                                                     <div key={i} className="p-6 bg-card border border-border/50 rounded-xl text-sm leading-relaxed flex gap-4">
                                                         <div className="w-1 h-auto bg-destructive/20 rounded-full shrink-0" />
                                                         <div className="italic">&quot;{feedback}&quot;</div>

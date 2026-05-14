@@ -19,35 +19,68 @@ import {
 } from "./schema";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
-// 🏷️ Global Literal Types (Enums)
-export type UserRole = InferSelectModel<typeof users>['role']
 
-export type SubmissionStatus = 
-    | 'submitted' 
-    | 'editor_assigned' 
-    | 'under_review' 
-    | 'revision_requested' 
-    | 'accepted' 
-    | 'rejected' 
-    | 'payment_pending' 
-    | 'published'
-    | 'retracted';
 
-export type ReviewStatus = 'assigned' | 'accepted' | 'declined' | 'completed';
 
-export type ReviewDecision = 'accept' | 'minor_revision' | 'major_revision' | 'reject';
 
-export type PaymentStatus = 'pending' | 'paid' | 'verified' | 'failed' | 'waived';
 
-export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 🏷️ Global Literal Types (Enums derived from Schema)
+export type UserRole = InferSelectModel<typeof users>['role'];
+export type SubmissionStatus = InferSelectModel<typeof submissions>['status'];
+export type ReviewStatus = InferSelectModel<typeof reviewAssignments>['status'];
+export type ReviewDecision = InferSelectModel<typeof reviews>['decision'];
+export type PaymentStatus = InferSelectModel<typeof payments>['status'];
+export type ApplicationStatus = InferSelectModel<typeof applications>['status'];
+export type ApplicationType = InferSelectModel<typeof applications>['type'];
+export type ContactStatus = InferSelectModel<typeof contactMessages>['status'];
+export type VolumeIssueStatus = InferSelectModel<typeof volumesIssues>['status'];
+export type FileType = InferSelectModel<typeof submissionFiles>['fileType'];
+export type FinalDecision = InferSelectModel<typeof submissions>['finalDecision'];
 
 // 👤 Users & Profiles
-export type User = InferSelectModel<typeof users>
+export type User = InferSelectModel<typeof users>;
+export type NewUser = InferInsertModel<typeof users>;
 
-
-export type NewUser = Omit<InferInsertModel<typeof users>, 'role'> & {
-    role: UserRole;
-};
 export type UserProfile = InferSelectModel<typeof userProfiles>;
 export type NewUserProfile = InferInsertModel<typeof userProfiles>;
 
@@ -55,84 +88,78 @@ export type UserWithProfile = User & {
     profile: UserProfile | null;
 };
 
-// 🔒 Safe types (excluding password indices/hashes)
+// 🔒 Safe types (excluding sensitive fields)
 export type SafeUser = Omit<User, 'passwordHash'>;
 export type SafeUserWithProfile = SafeUser & {
     profile: UserProfile | null;
 };
 
 // 📄 Submissions
-export type ShortSubmission = Omit<InferSelectModel<typeof submissions>, 'status'> & {
-    status: SubmissionStatus;
-};
+export type Submission = InferSelectModel<typeof submissions>;
 export type NewSubmission = InferInsertModel<typeof submissions>;
 
 export type Version = InferSelectModel<typeof submissionVersions>;
 export type NewVersion = InferInsertModel<typeof submissionVersions>;
+
 export type SubmissionFile = InferSelectModel<typeof submissionFiles>;
 export type Author = InferSelectModel<typeof submissionAuthors>;
 
-export type SubmissionDetail = ShortSubmission & {
+export type SubmissionDetail = Submission & {
     correspondingAuthor?: UserWithProfile | undefined;
     versions: (Version & { files: SubmissionFile[] })[];
     authors: Author[];
-    payment?: (Omit<InferSelectModel<typeof payments>, 'status'> & { status: PaymentStatus }) | null | undefined;
-    publication: InferSelectModel<typeof publications> | null;
-    issue: InferSelectModel<typeof volumesIssues> | null;
+    payment?: Payment | null | undefined;
+    publication: Publication | null;
+    issue: Issue | null;
     reviewAssignments: ReviewWithReviewer[];
 };
 
 export type SubmissionUI = SubmissionDetail & {
-    paper_id: string;
-    submitted_at: Date | null;
-    updated_at: Date | null;
+    // Computed/Mapped Properties (Standardized to camelCase)
     title: string;
     abstract: string | null;
     keywords: string | null;
-    file_path: string;
-    pdf_url: string;
-    author_name: string;
-    author_email: string;
-    co_authors: string; // JSON string
-    volume_number?: number | undefined;
-    issue_number?: number | undefined;
-    start_page?: number | null | undefined;
-    end_page?: number | null | undefined;
-    issue_id?: number | null | undefined;
+    filePath: string;
+    pdfUrl: string;
+    authorName: string;
+    authorEmail: string;
+    coAuthors: Author[]; 
+    volumeNumber?: number | undefined;
+    issueNumber?: number | undefined;
+    startPage?: number | null | undefined;
+    endPage?: number | null | undefined;
     latestVersion?: (Version & { files: SubmissionFile[] }) | undefined;
     allFiles: SubmissionFile[];
     allReviews: ReviewWithReviewer[];
-    completed_reviews?: number | undefined;
-    deletedAt?: Date | null | undefined;
+    completedReviews?: number | undefined;
 };
 
 // 🧪 Reviews
-export type ReviewAssignment = Omit<InferSelectModel<typeof reviewAssignments>, 'status'> & {
-    status: ReviewStatus;
-};
-export type Review = Omit<InferSelectModel<typeof reviews>, 'decision'> & {
-    decision: ReviewDecision;
-};
+export type ReviewAssignment = InferSelectModel<typeof reviewAssignments>;
+export type NewReviewAssignment = InferInsertModel<typeof reviewAssignments>;
+
+export type Review = InferSelectModel<typeof reviews>;
+export type NewReview = InferInsertModel<typeof reviews>;
 
 export type ReviewWithReviewer = ReviewAssignment & {
     reviewer: UserWithProfile;
     review: Review | null;
 };
 
+// 💰 Payments
+export type Payment = InferSelectModel<typeof payments>;
+export type NewPayment = InferInsertModel<typeof payments>;
+
 // 📚 Publications
 export type Publication = InferSelectModel<typeof publications>;
 export type Issue = InferSelectModel<typeof volumesIssues>;
 
 // 📩 Applications
-export type Application = Omit<InferSelectModel<typeof applications>, 'status' | 'type'> & {
-    status: ApplicationStatus;
-    type: 'reviewer' | 'editor';
-    research_interests?: string[] | undefined;
+export type Application = InferSelectModel<typeof applications> & {
+    researchInterests?: string[] | undefined;
 };
-export type NewApplication = Omit<InferInsertModel<typeof applications>, 'status' | 'type'> & {
-    status: ApplicationStatus;
-    type: 'reviewer' | 'editor';
-};
+export type NewApplication = InferInsertModel<typeof applications>;
+
 export type ApplicationInterest = InferSelectModel<typeof applicationInterests>;
 export type NewApplicationInterest = InferInsertModel<typeof applicationInterests>;
 
@@ -177,16 +204,18 @@ export type AuthorSubmissionDetail = {
         reviewRound: number;
         deadline: string | null;
     }>;
-    payment: (Omit<InferSelectModel<typeof payments>, 'status'> & { status: PaymentStatus }) | null | undefined;
+    payment: Payment | null | undefined;
     publication: (Publication & {
-        issue?: Issue | undefined;
+        volumeNumber?: number | null;
+        issueNumber?: number | null;
+        year?: number | null;
     }) | null | undefined;
 };
 
 // 📬 Correspondence
-export type ContactMessage = Omit<InferSelectModel<typeof contactMessages>, 'status'> & {
-    status: 'pending' | 'resolved' | 'archived';
-};
+export type ContactMessage = InferSelectModel<typeof contactMessages>;
+export type NewContactMessage = InferInsertModel<typeof contactMessages>;
+
 export type Notification = InferSelectModel<typeof notifications>;
 
 // 📜 System
@@ -196,28 +225,28 @@ export type Setting = InferSelectModel<typeof settings>;
 // 📰 UI / Public View Types
 export type PublishedPaperUI = {
     id: number;
-    paper_id: string;
+    paperId: string;
     title: string;
     abstract: string;
     keywords: string;
-    author_name: string;
+    authorName: string;
     status: SubmissionStatus;
     doi: string | null;
-    file_path: string;
-    pdf_url: string;
-    start_page: number | null;
-    end_page: number | null;
-    page_range: string | null;
-    published_at: string | Date | null;
-    updated_at: Date | null;
-    volume_number: number | null;
-    issue_number: number | null;
-    publication_year: number | null;
-    month_range: string | null;
-    co_authors: string | null | undefined;
+    filePath: string;
+    pdfUrl: string;
+    startPage: number | null;
+    endPage: number | null;
+    pageRange: string | null;
+    publishedAt: string | Date | null;
+    updatedAt: Date | null;
+    volumeNumber: number | null;
+    issueNumber: number | null;
+    publicationYear: number | null;
+    monthRange: string | null;
+    coAuthors: Author[];
     affiliation: string | null;
-    author_email: string | null;
-    authors_list: string[];
+    authorEmail: string | null;
+    authorsList: string[];
     views: number;
     downloads: number;
     citations: number;
@@ -226,19 +255,14 @@ export type PublishedPaperUI = {
 export interface TrackedManuscript {
     id: number;
     paperId: string;
-    paper_id: string;
     status: SubmissionStatus;
     submittedAt: Date | null;
-    submitted_at: Date | null;
     updatedAt: Date | null;
-    updated_at: Date | null;
     title: string;
     authorName: string;
-    author_name: string;
     authorEmail: string;
-    author_email: string;
-    review_started_at: Date | null;
-    reviewer_feedback?: (string | null)[] | undefined;
+    reviewStartedAt: Date | null;
+    reviewerFeedback?: (string | null)[] | undefined;
 }
 
 export interface ActiveReview {

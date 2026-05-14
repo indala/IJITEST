@@ -7,15 +7,12 @@ import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidg
 import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';
 
-interface ContactClientProps {
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function ContactClient({ settings }: ContactClientProps) {
-    const supportEmail = settings.support_email || "editor@iitest.org";
-    const supportPhone = settings.support_phone || "+91 8919643590";
-    const officeAddress = settings.office_address || "Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India";
-    const publisherName = settings.publisher_name || "Felix Academic Publications";
+export default function ContactClient() {
+    const settings = useSettingsStore((state) => state.settings);
+    const supportEmail = settings.supportEmail || '';
+    const supportPhone = settings.supportPhone || '';
 
     const contactMethods = [
         {
@@ -30,7 +27,7 @@ export default function ContactClient({ settings }: ContactClientProps) {
             icon: MessageSquare,
             title: "WhatsApp Hotline",
             value: supportPhone,
-            href: `https://wa.me/${supportPhone.replace(/[\s+]/g, '')}`,
+            href: `https://wa.me/${(supportPhone!).replace(/[\s+]/g, "")}`,
             subtext: "Immediate Technical Support",
             accent: "secondary"
         }
@@ -69,9 +66,6 @@ export default function ContactClient({ settings }: ContactClientProps) {
 
                     {/* Contact Form Section */}
                     <section className="space-y-4">
-                        <h2 className="text-lg font-semibold text-primary m-0">
-                            Send us a message
-                        </h2>
                         <Card className="p-6 border-border/50 bg-card rounded-xl">
                             <ContactForm />
                         </Card>
@@ -91,9 +85,9 @@ export default function ContactClient({ settings }: ContactClientProps) {
                                     <MapPin className="w-5 h-5" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className='text-sm font-semibold text-foreground m-0'>Dr. T. Ravi babu,</h3>
-                                    <h3 className="text-sm font-semibold text-foreground m-0">{publisherName},</h3>
-                                    <p className="text-xs text-muted-foreground m-0 leading-relaxed">{officeAddress}</p>
+                                    <p className="text-xs text-muted-foreground m-0 leading-relaxed font-medium whitespace-pre-line">
+                                        {(settings.officeAddress || '')}
+                                    </p>
                                 </div>
                             </div>
                         </Card>

@@ -6,12 +6,11 @@ import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidg
 import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
-interface IndexingClientProps {
-    settings: Record<string, string>;
-}
+import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function IndexingClient({ settings }: IndexingClientProps) {
-    const journalShortName = settings.journal_short_name || "IJITEST";
+export default function IndexingClient() {
+    const settings = useSettingsStore((state) => state.settings);
+    const journalShortName = settings.journalShortName || '';
 
     const techSpecs = [
         { title: "SJIF Evaluation", desc: "Annual impact factor assessment by SJIF for scientific validation.", icon: BarChart3 },

@@ -19,34 +19,8 @@ import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import fs from "fs/promises";
 import path from "path";
-import { ActionResponse, SubmissionFile, AuthorDashboardSubmission } from "@/db/types";
+import { ActionResponse, AuthorDashboardSubmission, AuthorSubmissionDetail } from "@/db/types";
 import { safeDeleteFile } from "@/lib/fs-utils";
-import { InferSelectModel } from "drizzle-orm";
-
-interface AuthorSubmissionDetail {
-    id: number;
-    paperId: string;
-    status: string;
-    submittedAt: Date | null;
-    updatedAt: Date | null;
-    versionId: number;
-    versionNumber: number;
-    title: string;
-    abstract: string | null;
-    keywords: string | null;
-    changelog: string | null;
-    files: SubmissionFile[];
-    authors: InferSelectModel<typeof submissionAuthors>[];
-    payment: InferSelectModel<typeof payments> | null;
-    publication: {
-        finalPdfUrl: string | null;
-        doi: string | null;
-        publishedAt: Date | null;
-        volume: number | null;
-        issue: number | null;
-        year: number | null;
-    } | null;
-}
 
 /**
  * Utility to get the current authenticated author.
@@ -163,7 +137,7 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
             .from(submissionFiles)
             .where(and(
                 eq(submissionFiles.versionId, sub.versionId),
-                inArray(submissionFiles.fileType, ['main_manuscript', 'copyright_form'])
+                inArray(submissionFiles.fileType, ['mainManuscript', 'copyrightForm'])
             ));
 
         // 3. Authors
@@ -183,8 +157,8 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
             finalPdfUrl: publications.finalPdfUrl,
             doi: publications.doi,
             publishedAt: publications.publishedAt,
-            volume: volumesIssues.volumeNumber,
-            issue: volumesIssues.issueNumber,
+            volumeNumber: volumesIssues.volumeNumber,
+            issueNumber: volumesIssues.issueNumber,
             year: volumesIssues.year
         })
         .from(publications)
@@ -232,7 +206,7 @@ export async function checkResubmissionEligibility(submissionId: number): Promis
         if (!sub) return { success: false, error: "Submission not found", data: { eligible: false, daysRemaining: 0 } };
         if (sub.correspondingAuthorId !== author.id) return { success: false, error: "Unauthorized access", data: { eligible: false, daysRemaining: 0 } };
 
-        if (!['revision_requested', 'rejected'].includes(sub.status)) {
+        if (!['revisionRequested', 'rejected'].includes(sub.status)) {
             return { success: false, error: `Manuscript status '${sub.status}' does not allow resubmission.`, data: { eligible: false, daysRemaining: 0 } };
         }
 
@@ -312,8 +286,8 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             const cUrl = `/api/files/submissions/${cName}`;
 
             await tx.insert(submissionFiles).values([
-                { versionId: verId, fileType: "main_manuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size },
-                { versionId: verId, fileType: "copyright_form", fileUrl: cUrl, originalName: copyrightFile.name, fileSize: copyrightFile.size }
+                { versionId: verId, fileType: "mainManuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size },
+                { versionId: verId, fileType: "copyrightForm", fileUrl: cUrl, originalName: copyrightFile.name, fileSize: copyrightFile.size }
             ]);
 
             // D. Set status back to 'submitted'
@@ -344,7 +318,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                     and(eq(submissionVersions.submissionId, submissionId), eq(submissionVersions.versionNumber, result.nextVersion))
                 );
                 await tx.update(submissions)
-                    .set({ status: 'revision_requested', updatedAt: new Date() })
+                    .set({ status: 'revisionRequested', updatedAt: new Date() })
                     .where(eq(submissions.id, submissionId));
             });
             throw new Error("Failed to save files on server. Please try again.");
@@ -435,9 +409,9 @@ export async function getMySubmissions() {
 
         return rows.map(r => ({
             id: r.id,
-            paper_id: r.paperId,
+            paperId: r.paperId,
             status: r.status,
-            submitted_at: r.submittedAt ? r.submittedAt.toISOString() : "",
+            submittedAt: r.submittedAt,
             title: r.title || "Untitled Manuscript"
         }));
     } catch (error) {
@@ -459,14 +433,14 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
 
         const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
 
-        // 1. Find submissions that are 'rejected' or 'revision_requested' and not updated for 15 days
+        // 1. Find submissions that are 'rejected' or 'revisionRequested' and not updated for 15 days
         const targetSubmissions = await db.select({
             id: submissions.id,
             authorId: submissions.correspondingAuthorId
         })
         .from(submissions)
         .where(and(
-            inArray(submissions.status, ['rejected', 'revision_requested']),
+            inArray(submissions.status, ['rejected', 'revisionRequested']),
             sql`${submissions.updatedAt} < ${fifteenDaysAgo}`
         ));
 
@@ -494,7 +468,7 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
                 .from(submissions)
                 .where(and(
                     eq(submissions.correspondingAuthorId, aId),
-                    notInArray(submissions.status, ['rejected', 'revision_requested'])
+                    notInArray(submissions.status, ['rejected', 'revisionRequested'])
                 ))
                 .limit(1);
 

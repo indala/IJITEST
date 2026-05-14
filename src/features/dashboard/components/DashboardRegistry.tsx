@@ -15,6 +15,7 @@ import { NumberTicker } from '@/components/ui/number-ticker';
 import { 
     Application 
 } from '@/db/types';
+import { cn } from '@/lib/utils';
 
 interface Stat {
     label: string;
@@ -48,18 +49,18 @@ export interface DashboardUser {
 
 export interface DashboardSubmission {
     id: number;
-    paper_id: string;
+    paperId: string;
     status: string;
-    submitted_at: Date | string | null;
+    submittedAt: Date | string | null;
     title: string | null;
-    author_name?: string | null;
+    authorName?: string | null;
 }
 
 export interface DashboardStaff {
     id: string;
     email: string | null;
     role: string;
-    full_name?: string | null;
+    fullName?: string | null;
 }
 
 interface DashboardRegistryProps {
@@ -117,7 +118,7 @@ export function DashboardRegistry({
                         {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        Logged in as <span className="font-medium text-foreground">{user?.profile?.fullName || user?.name || user?.email || 'User'}</span>
+                        Logged in as <span className="font-medium text-foreground">{user?.profile!.fullName || user?.name || user?.email}</span>
                     </p>
                 </div>
                 <div className="flex flex-wrap sm:flex-nowrap gap-3">
@@ -186,12 +187,12 @@ export function DashboardRegistry({
                                             >
                                                 <div className="flex items-center gap-4 min-w-0">
                                                     <div className="w-10 h-8 rounded bg-muted flex flex-col items-center justify-center text-[9px] font-bold text-muted-foreground border border-border/50 shrink-0">
-                                                        <span className="text-[#000066]">{sub.paper_id?.split('-').pop() || 'N/A'}</span>
+                                                        <span className="text-[#000066]">{sub.paperId!.split('-').pop()}</span>
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <h4 className="text-sm font-medium text-foreground truncate group-hover:text-[#000066] transition-colors mb-0.5">{sub.title || "Untitled Project"}</h4>
+                                                        <h4 className="text-sm font-medium text-foreground truncate group-hover:text-[#000066] transition-colors mb-0.5">{sub.title!}</h4>
                                                         <p className="text-xs text-muted-foreground">
-                                                            {sub.author_name} • {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString() : 'N/A'}
+                                                            {sub.authorName} • {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString() : ''}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -217,7 +218,10 @@ export function DashboardRegistry({
                                                 <span>{percentages.pub.toFixed(1)}%</span>
                                             </div>
                                             <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                                                <div className="h-full bg-emerald-500" style={{ width: `${percentages.pub}%` }} />
+                                                <div className={cn(
+                                                    "h-full bg-emerald-500 transition-all duration-500",
+                                                    `w-[${Math.round(percentages.pub)}%]`
+                                                )} />
                                             </div>
                                         </div>
                                         <div>
@@ -226,7 +230,10 @@ export function DashboardRegistry({
                                                 <span>{percentages.rev.toFixed(1)}%</span>
                                             </div>
                                             <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                                                <div className="h-full bg-[#000066]" style={{ width: `${percentages.rev}%` }} />
+                                                <div className={cn(
+                                                    "h-full bg-[#000066] transition-all duration-500",
+                                                    `w-[${Math.round(percentages.rev)}%]`
+                                                )} />
                                             </div>
                                         </div>
                                     </div>
@@ -251,7 +258,7 @@ export function DashboardRegistry({
                                                 <div key={app.id} className="p-4 space-y-2">
                                                     <div className="flex items-center justify-between">
                                                         <Badge variant="outline" className="text-[10px] font-medium h-5 rounded px-2">{app.type}</Badge>
-                                                        <span className="text-[10px] text-muted-foreground">{app.createdAt ? new Date(app.createdAt).toLocaleDateString() : 'N/A'}</span>
+                                                        <span className="text-[10px] text-muted-foreground">{app.createdAt ? new Date(app.createdAt).toLocaleDateString() : ''}</span>
                                                     </div>
                                                     <h5 className="text-sm font-medium">{app.fullName}</h5>
                                                     <Button asChild size="sm" variant="outline" className="w-full h-8 text-xs rounded-lg hover:bg-muted">
@@ -316,7 +323,7 @@ export function DashboardRegistry({
                             <Card key={paper.id} className="border-border/50 shadow-sm bg-card hover:border-[#000066]/20 transition-all group overflow-hidden rounded-xl">
                                 <div className="p-5 space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <Badge variant="outline" className="text-[10px] font-medium px-2 py-0.5 rounded">ID: {paper.paper_id}</Badge>
+                                        <Badge variant="outline" className="text-[10px] font-medium px-2 py-0.5 rounded">ID: {paper.paperId}</Badge>
                                         <Badge className={`text-[10px] font-semibold py-0.5 px-2.5 border-none rounded ${
                                                 paper.status === 'published' ? 'bg-emerald-50 text-emerald-600' :
                                                 paper.status === 'rejected' ? 'bg-rose-50 text-rose-600' :
@@ -327,9 +334,9 @@ export function DashboardRegistry({
                                     </div>
                                     <h3 className="text-sm font-semibold text-foreground line-clamp-2 h-10 group-hover:text-[#000066] transition-colors leading-tight">{paper.title}</h3>
                                     <div className="flex items-center justify-between pt-3 border-t border-border/30">
-                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1.5"><Clock className="w-3 h-3" /> {paper.submitted_at ? new Date(paper.submitted_at).toLocaleDateString() : 'N/A'}</span>
+                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1.5"><Clock className="w-3 h-3" /> {paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : ''}</span>
                                         <Button asChild variant="ghost" size="sm" className="h-8 px-3 text-xs text-[#000066] hover:bg-[#000066]/5 rounded-lg">
-                                            <Link href={`/track?id=${paper.paper_id}`} className="flex items-center gap-1.5">
+                                            <Link href={`/track?id=${paper.paperId}`} className="flex items-center gap-1.5">
                                                 Track <ExternalLink className="w-3 h-3" />
                                             </Link>
                                         </Button>
@@ -337,8 +344,10 @@ export function DashboardRegistry({
                                 </div>
                                 <div className="h-1 bg-muted overflow-hidden">
                                     <div
-                                        className={`h-full transition-all duration-700 ${paper.status === 'published' ? 'bg-emerald-500' : 'bg-[#000066]'}`}
-                                        style={{ width: paper.status === 'published' ? '100%' : '20%' }}
+                                        className={cn(
+                                            "h-full transition-all duration-700",
+                                            paper.status === 'published' ? 'bg-emerald-500 w-full' : 'bg-[#000066] w-1/5'
+                                        )}
                                     />
                                 </div>
                             </Card>
@@ -368,10 +377,10 @@ export function DashboardRegistry({
                                             <div key={staff.id} className="p-3 px-4 flex items-center justify-between hover:bg-muted/30 transition-all">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-lg bg-[#000066]/5 text-[#000066] flex items-center justify-center font-bold text-xs border border-[#000066]/5">
-                                                        {staff.full_name?.charAt(0) || staff.email?.charAt(0) || 'U'}
+                                                        {staff.fullName?.charAt(0) || staff.email?.charAt(0) || 'U'}
                                                     </div>
                                                     <div>
-                                                        <h5 className="text-sm font-medium text-foreground leading-none mb-1">{staff.full_name || staff.email || 'User'}</h5>
+                                                        <h5 className="text-sm font-medium text-foreground leading-none mb-1">{staff.fullName || staff.email}</h5>
                                                         <p className="text-[10px] text-muted-foreground">{staff.role}</p>
                                                     </div>
                                                 </div>

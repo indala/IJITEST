@@ -30,20 +30,20 @@ export type ProfileData = {
     phone: string;
     nationality: string;
     bio: string;
-    photo_url: string | null;
-    orcid_id: string | null;
+    photoUrl: string | null;
+    orcidId: string | null;
     application?: {
         institute: string;
         country: string;
         status: string;
-        rejection_reason: string | null;
-        reviewed_at: string | null;
+        rejectionReason: string | null;
+        reviewedAt: string | null;
     };
-    research_interests: string[];
+    researchInterests: string[];
     history: Array<{
         title: string;
-        created_at?: Date | null;
-        updated_at?: Date | null;
+        createdAt?: Date | null;
+        updatedAt?: Date | null;
         status?: string | null;
         decision?: string | null;
     }>;
@@ -70,8 +70,8 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
             phone: userProfiles.phone,
             nationality: userProfiles.nationality,
             bio: userProfiles.bio,
-            photo_url: userProfiles.photoUrl,
-            orcid_id: userProfiles.orcidId,
+            photoUrl: userProfiles.photoUrl,
+            orcidId: userProfiles.orcidId,
         })
         .from(users)
         .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
@@ -90,9 +90,9 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
             phone: userData.phone || "",
             nationality: userData.nationality || "India",
             bio: userData.bio || "",
-            photo_url: userData.photo_url,
-            orcid_id: userData.orcid_id,
-            research_interests: []
+            photoUrl: userData.photoUrl,
+            orcidId: userData.orcidId,
+            researchInterests: []
         };
 
         // 2. Fetch Application Data (if not admin)
@@ -101,8 +101,8 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
                 institute: applications.institute,
                 country: applications.nationality,
                 status: applications.status,
-                rejection_reason: sql<string | null>`NULL`,
-                reviewed_at: applications.reviewedAt
+                rejectionReason: sql<string | null>`NULL`,
+                reviewedAt: applications.reviewedAt
             })
             .from(applications)
             .where(eq(applications.email, userData.email))
@@ -114,8 +114,8 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
                     institute: appData.institute,
                     country: appData.country || "",
                     status: appData.status,
-                    rejection_reason: appData.rejection_reason,
-                    reviewed_at: appData.reviewed_at ? appData.reviewed_at.toISOString() : null
+                    rejectionReason: appData.rejectionReason,
+                    reviewedAt: appData.reviewedAt ? appData.reviewedAt.toISOString() : null
                 };
                 
                 // Fetch interests from join table
@@ -125,15 +125,15 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
                         .innerJoin(applications, eq(applicationInterests.applicationId, applications.id))
                         .innerJoin(masterInterests, eq(applicationInterests.interestId, masterInterests.id))
                         .where(eq(applications.email, userData.email));
-                    profileData.research_interests = interestRows.map(r => r.name);
+                    profileData.researchInterests = interestRows.map(r => r.name);
                 } else {
-                    profileData.research_interests = [];
+                    profileData.researchInterests = [];
                 }
             } else {
-                profileData.research_interests = [];
+                profileData.researchInterests = [];
             }
         } else {
-            profileData.research_interests = [];
+            profileData.researchInterests = [];
         }
 
         // 4. Role-specific History
@@ -142,7 +142,7 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
             const subRows = await db.select({
                 title: submissionVersions.title,
                 status: submissions.status,
-                created_at: submissions.submittedAt
+                createdAt: submissions.submittedAt
             })
             .from(submissions)
             .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
@@ -154,7 +154,7 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
             const revRows = await db.select({
                 title: submissionVersions.title,
                 decision: reviews.decision,
-                updated_at: reviews.submittedAt
+                updatedAt: reviews.submittedAt
             })
             .from(reviews)
             .innerJoin(reviewAssignments, eq(reviews.assignmentId, reviewAssignments.id))
@@ -189,13 +189,13 @@ export async function updateProfileField(userId: string, field: string, value: s
         return { success: false, error: "Unauthorized: You can only edit your own profile." };
     }
 
-    const whitelist = ['name', 'designation', 'orcid_id', 'phone', 'institute', 'nationality', 'bio'];
+    const whitelist = ['name', 'designation', 'orcidId', 'phone', 'institute', 'nationality', 'bio'];
     if (!whitelist.includes(field)) {
         return { success: false, error: 'Field not permitted' };
     }
 
     const trimmedValue = value.trim();
-    if (!trimmedValue && field !== 'orcid_id' && field !== 'phone') {
+    if (!trimmedValue && field !== 'orcidId' && field !== 'phone') {
         return { success: false, error: 'Value cannot be empty' };
     }
 
@@ -205,7 +205,7 @@ export async function updateProfileField(userId: string, field: string, value: s
         designation: 255,
         institute: 255,
         nationality: 100,
-        orcid_id: 50,
+        orcidId: 50,
         phone: 20,
         bio: 2000
     };
@@ -222,7 +222,7 @@ export async function updateProfileField(userId: string, field: string, value: s
     try {
         const updateDoc: Partial<typeof userProfiles.$inferInsert> = {};
         if (field === 'name') updateDoc.fullName = trimmedValue;
-        else if (field === 'orcid_id') updateDoc.orcidId = trimmedValue;
+        else if (field === 'orcidId') updateDoc.orcidId = trimmedValue;
         else if (field === 'designation') updateDoc.designation = trimmedValue;
         else if (field === 'phone') updateDoc.phone = trimmedValue;
         else if (field === 'institute') updateDoc.institute = trimmedValue;
@@ -382,11 +382,10 @@ export async function getProfileCompleteness(profileData: Partial<ProfileData>, 
     check(profileData.bio, 'Biography');
     
     if (role !== 'admin' && role !== 'author') {
-        check(profileData.research_interests, 'Research Interests');
+        check(profileData.researchInterests, 'Research Interests');
     }
-
-    check(profileData.photo_url, 'Profile Photo');
-    check(profileData.orcid_id, 'ORCID ID');
+    check(profileData.photoUrl, 'Profile Photo');
+    check(profileData.orcidId, 'ORCID ID');
     check(profileData.history, role === 'author' ? 'Submission History' : 'Activity History');
 
     return {

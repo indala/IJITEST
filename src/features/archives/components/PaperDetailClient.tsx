@@ -62,11 +62,11 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                             Please refer to the official retraction notice for detailed reasoning.
                         </p>
                     </div>
-                    {/* @ts-expect-error - retraction_notice_url might be missing in some states */}
-                    {paper.retraction_notice_url && (
+                    {/* @ts-expect-error - retractionNoticeUrl might be missing in some states */}
+                    {paper.retractionNoticeUrl && (
                         <a 
-                            // @ts-expect-error - retraction_notice_url might be missing on PublishedPaperUI
-                            href={paper.retraction_notice_url} 
+                            // @ts-expect-error - retractionNoticeUrl might be missing on PublishedPaperUI
+                            href={paper.retractionNoticeUrl} 
                             className="bg-red-900 text-white px-8 py-4 rounded-xl font-black text-[10px] tracking-[0.2em] hover:bg-red-800 transition-colors shadow-lg shadow-red-900/20"
                         >
                             VIEW NOTICE
@@ -85,13 +85,13 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                         <div className="relative z-10 space-y-8">
                             <div className="flex flex-wrap items-center gap-3">
                                 <span className="bg-primary/5 text-primary text-md px-4 py-2 rounded-full  border border-primary/10">Research Article</span>
-                                {paper.volume_number && (
+                                {paper.volumeNumber && (
                                     <span className="flex items-center gap-2 bg-primary/5 text-primary text-md px-4 py-2 rounded-full   border border-secondary/10">
-                                        <BookOpen className="w-3 h-3" /> Volume {paper.volume_number}, Issue {paper.issue_number}
+                                        <BookOpen className="w-3 h-3" /> Volume {paper.volumeNumber}, Issue {paper.issueNumber}
                                     </span>
                                 )}
                                 <span className="bg-primary/5 text-primary text-md px-4 py-2 rounded-full  border border-gray-200">
-                                    Published: {new Date((paper.published_at || paper.updated_at || new Date()) as string | number | Date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                    Published: {new Date((paper.publishedAt || paper.updatedAt || new Date()) as string | number | Date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                                 </span>
                             </div>
 
@@ -130,27 +130,18 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                                     <span className="-black  tracking-widest  shrink-0">Authors <span className="text-red-600 font-bold">:</span></span>
                                     <div className="flex flex-wrap items-center gap-x-2">
-                                        <span className="font-normal leading-tight">{paper.author_name}</span>
-                                        {paper.co_authors && (() => {
-                                            try {
-                                                const coAuthors = JSON.parse(paper.co_authors as string);
-                                                if (!Array.isArray(coAuthors)) return null;
-                                                return coAuthors.map((author: { name: string }, idx: number) => (
-                                                    <div key={idx} className="flex items-center gap-2">
-                                                        <span className="text-gray-900 font-bold">,</span>
-                                                        <span className=" font-normal leading-tight">{author.name}</span>
-                                                    </div>
-                                                ));
-                                            } catch (e) {
-                                                console.error("Failed to parse co-authors", e);
-                                                return null;
-                                            }
-                                        })()}
+                                        <span className="font-normal leading-tight">{paper.authorName}</span>
+                                        {paper.coAuthors && paper.coAuthors.length > 0 && paper.coAuthors.map((author, idx) => (
+                                            <div key={idx} className="flex items-center gap-2">
+                                                <span className="text-gray-900 font-bold">,</span>
+                                                <span className=" font-normal leading-tight">{author.name}</span>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
 
                                 <a
-                                    href={paper.file_path}
+                                    href={paper.filePath}
                                     download
                                     onClick={handleDownload}
                                     target="_blank"
@@ -189,35 +180,6 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                             </div>
                         )}
                     </div>
-
-                    {/* PDF Viewer Section */}
-                    {/* 
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between px-6">
-                            <h2 className=" font-serif font-black text-gray-900">Manuscript Viewer</h2>
-                            <a
-                                href={paper.file_path}
-                                download
-                                className="flex items-center gap-2 text-primary font-black text-[10px]  tracking-widest hover:underline"
-                            >
-                                <Download className="w-4 h-4" /> Download Full Paper (PDF)
-                            </a>
-                        </div>
-                        <div className="w-full h-[800px] bg-gray-100 rounded-[2.5rem] border-4 border-white shadow-2xl overflow-hidden relative group " >
-                            <div className="absolute inset-0 bg-gray-900/5 items-center justify-center flex z-0">
-                                <div className="text-center space-y-4">
-                                    <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                                    <p className="text-xs font-black text-gray-600 tracking-widest">Initialising Digital Reader</p>
-                                </div>
-                            </div>
-                            <iframe
-                                src={`${paper.file_path}#toolbar=0&view=FitH`}
-                                className="w-full h-full relative z-10 border-none"
-                                title="Manuscript Viewer"
-                            />
-                        </div>
-                    </div> 
-                    */}
                 </div>
 
                 {/* Sidebar Utilities */}
@@ -225,7 +187,7 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                     {/* Download Button (Mobile Only) */}
                     <div className="flex flex-col gap-4 px-4 md:hidden">
                         <a
-                            href={paper.file_path}
+                            href={paper.filePath}
                             download
                             onClick={handleDownload}
                             target="_blank"
@@ -235,24 +197,12 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                             <Download className="w-4 h-4" /> DOWNLOAD FULL PAPER
                         </a>
                     </div>
-
-                    {/*
-                    <div className="flex flex-col gap-4 px-4 ">
-                        <a
-                            href={paper.file_path}
-                            target="_blank"
-                            className="w-full flex items-center justify-center gap-3 bg-primary text-white py-5 rounded-2xl font-black text-[10px] sm:text-xs tracking-[0.2em] shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-1 z-10"
-                        >
-                            <Eye className="w-4 h-4" /> Full Screen View
-                        </a>
-                    </div>
-                    */}
                     
                     {/* Citation Widget (Client Component) */}
                     <CitationSection paper={{
                         ...paper,
-                        publication_year: paper.publication_year || new Date().getFullYear(),
-                        co_authors: paper.co_authors || null
+                        publicationYear: paper.publicationYear || new Date().getFullYear(),
+                        coAuthors: paper.coAuthors || []
                     }} />
 
                     <div className="flex flex-col gap-4 px-4">

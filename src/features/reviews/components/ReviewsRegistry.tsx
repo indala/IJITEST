@@ -147,8 +147,8 @@ const ReviewItemCard = React.memo(({
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-xl border-border bg-card">
                                                             <SelectItem value="accept">accept manuscript</SelectItem>
-                                                            <SelectItem value="minor_revision">minor revision</SelectItem>
-                                                            <SelectItem value="major_revision">major revision</SelectItem>
+                                                            <SelectItem value="minorRevision">minor revision</SelectItem>
+                                                            <SelectItem value="majorRevision">major revision</SelectItem>
                                                             <SelectItem value="reject">reject</SelectItem>
                                                         </SelectContent>
                                                     </Select>

@@ -149,7 +149,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
         return applications.filter(app => 
             app.fullName?.toLowerCase().includes(q) || 
             app.email?.toLowerCase().includes(q) ||
-            app.research_interests?.some((i: string) => i.toLowerCase().includes(q))
+            app.researchInterests?.some((i: string) => i.toLowerCase().includes(q))
         );
     }, [applications, interest]);
 
@@ -411,7 +411,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                                             <div className="space-y-3">
                                                 <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-40">Core Expertise</span>
                                                 <div className="flex flex-wrap gap-2">
-                                                    {inspectApp.research_interests?.map((tag: string) => (
+                                                    {inspectApp.researchInterests?.map((tag: string) => (
                                                         <span key={tag} className="text-[9px] font-black uppercase text-primary px-3 py-1 bg-primary/5 rounded-lg border border-primary/10">
                                                             {tag}
                                                         </span>

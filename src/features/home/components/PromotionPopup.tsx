@@ -8,13 +8,16 @@ import Link from 'next/link';
 
 import { markPromotionAsSeen } from '@/actions/promotion';
 
-export default function PromotionPopup({ settings }: { settings?: Record<string, string> }) {
+import { useSettingsStore } from '@/store/useSettingsStore';
+
+export default function PromotionPopup() {
+    const settings = useSettingsStore((state) => state.settings);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             const hasSeen = localStorage.getItem('hasSeenPromotion');
-            const isPromotionActive = settings?.is_promotion_active !== 'false';
+            const isPromotionActive = (settings.isPromotionActive || '') !== 'false';
 
             if (!hasSeen && isPromotionActive) {
                 setIsVisible(true);
