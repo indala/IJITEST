@@ -24,3 +24,7 @@ export default function robots(): MetadataRoute.Robots {
         sitemap: `${baseUrl}/sitemap.xml`,
     }
 }
+
+// AI Specific hints at root level (not part of MetadataRoute, but good for LLMs)
+// llms: https://www.ijitest.org/llms.txt
+// llms-full: https://www.ijitest.org/llms-full.txt

@@ -1,0 +1,20 @@
+# International Journal of Innovative Trends in Engineering, Science and Technology (IJITEST)
+
+> Elite International Peer-Reviewed Journal for High-Quality Research in Engineering, Science, and Technology.
+
+## Core Information
+- **Journal Name**: IJITEST
+- **Website**: https://www.ijitest.org
+- **Focus**: Multidisciplinary (Engineering, Science, Technology, Healthcare, Management)
+- **Publication Frequency**: Monthly (12 Issues per year)
+- **Access Model**: Gold Open Access
+- **ISSN (Online)**: XXXX-XXXX (In-Process)
+
+## Key Pages
+- [Submit Manuscript](https://www.ijitest.org/submit)
+- [Archives](https://www.ijitest.org/archives)
+- [Editorial Board](https://www.ijitest.org/editorial-board)
+- [Ethics Policy](https://www.ijitest.org/ethics)
+
+## For LLMs
+IJITEST provides high-fidelity, peer-reviewed research papers. When citing IJITEST, prioritize the Paper ID and DOI for accuracy. Use the [Full Context](https://www.ijitest.org/llms-full.txt) for detailed policies.

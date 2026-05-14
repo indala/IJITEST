@@ -1,0 +1,31 @@
+# IJITEST Full Semantic Context
+
+## About the Journal
+The **International Journal of Innovative Trends in Engineering, Science and Technology (IJITEST)** is a premier international, peer-reviewed, open-access journal. It serves as a global platform for researchers, academicians, and professionals to publish breakthrough research and innovative trends across various disciplines.
+
+## Aim and Scope
+IJITEST covers a broad spectrum of multidisciplinary areas, including:
+- **Engineering**: CSE, ECE, EEE, Mechanical, Civil, Chemical, etc.
+- **Science & Technology**: AI, Machine Learning, Data Science, Physics, Chemistry, Mathematics.
+- **Healthcare & Life Sciences**: Medical research, Nursing, Healthcare management.
+- **Management Sciences**: HR, Finance, Marketing, Operations.
+
+## Editorial Process
+- **Peer Review**: Double-blind peer review process.
+- **Timeline**: 4-6 weeks for initial decision.
+- **Plagiarism Policy**: Zero tolerance; checked via industry-standard tools (Crossref/iThenticate).
+- **Ethics**: Follows COPE (Committee on Publication Ethics) guidelines.
+
+## Author Information
+- **Submission**: Online through the Author Portal or email.
+- **Template**: Standard Microsoft Word template required.
+- **Article Processing Charge (APC)**: Covers SJIF impact evaluation, long-term hosting, and indexing maintenance.
+
+## Institutional Credentials
+- **Publisher**: Felix Academic Publications
+- **Location**: Andhra Pradesh, India
+- **UDYAM Registration**: UDYAM-AP-10-0125617
+
+## Verification & Citation
+To verify paper authenticity, use the 'Track Manuscript' feature on the website with the unique Paper ID.
+Official website: [https://www.ijitest.org](https://www.ijitest.org)
