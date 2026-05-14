@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { settings } from "@/db/schema";
-import { ActionResponse } from "@/db/types";
+import { ActionResponse, actionSuccess, actionError } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
@@ -42,8 +42,8 @@ const DEFAULT_SETTINGS: Record<string, string> = {
 };
 
 export async function getSettings(): Promise<ActionResponse<Record<string, string>>> {
-    return unstable_cache(
-        async () => {
+    const fetchSettings = unstable_cache(
+        async (): Promise<ActionResponse<Record<string, string>>> => {
             try {
                 const rows = await db.select().from(settings);
 
@@ -58,15 +58,17 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
                     }
                 });
 
-                return { success: true, data: result };
+                return actionSuccess(result);
             } catch (error) {
                 console.error("Get Settings Error:", error);
-                return { success: false, error: error instanceof Error ? error.message : String(error) };
+                return actionError(error instanceof Error ? error.message : String(error));
             }
         },
         ['site-settings-global'],
         { tags: ['settings', 'public-data'], revalidate: 3600 }
-    )();
+    );
+
+    return await fetchSettings();
 }
 
 /**
@@ -82,7 +84,7 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || session.user.role !== 'admin') {
-            return { success: false, error: "Unauthorized" };
+            return actionError("Unauthorized");
         }
 
         const entries = Array.from(formData.entries());
@@ -119,9 +121,9 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
 
         revalidateTag('settings', {});      // Busts unstable_cache for all pages (Next.js 16 requires 2nd arg)
         revalidatePath('/', 'layout');       // Re-renders root layout + all children
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         console.error("Update Settings Error:", error);
-        return { success: false, error: "Failed to update settings: " + (error instanceof Error ? error.message : String(error)) };
+        return actionError("Failed to update settings: " + (error instanceof Error ? error.message : String(error)));
     }
 }

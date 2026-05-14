@@ -26,7 +26,13 @@ export default async function ResubmitPage({ params }: { params: Promise<{ id: s
 
     if (!submissionRes.success || !submissionRes.data) notFound();
     const submission = submissionRes.data;
-    const eligibility = eligibilityRes.data || { eligible: false, daysRemaining: 0 };
+    let eligibility = { eligible: false, daysRemaining: 0 };
+    let eligError = "";
+    if (eligibilityRes.success) {
+        eligibility = eligibilityRes.data;
+    } else {
+        eligError = eligibilityRes.error;
+    }
 
     return (
         <section className="max-w-2xl mx-auto space-y-6 pb-20">
@@ -47,7 +53,7 @@ export default async function ResubmitPage({ params }: { params: Promise<{ id: s
                     <CardContent className="p-10 flex flex-col items-center gap-4 text-center">
                         <XCircle className="w-12 h-12 text-rose-500" />
                         <h3 className="font-black text-xl uppercase tracking-widest text-foreground">Not Eligible</h3>
-                        <p className="text-sm text-muted-foreground max-w-sm">{eligibilityRes.error || "Window Expired"}</p>
+                        <p className="text-sm text-muted-foreground max-w-sm">{eligError || "Window Expired"}</p>
                         <Button asChild variant="outline" size="sm" className="rounded-xl font-bold uppercase text-xs">
                             <Link href="/author">Back to Dashboard</Link>
                         </Button>

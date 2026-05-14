@@ -160,7 +160,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
             formData.append("file", blob, "profile.jpg")
 
             const response = await updateProfilePhoto(userId, formData)
-            if (!response.success || !response.data) throw new Error(response.error || "Failed to update photo")
+            if (!response.success) throw new Error(response.error);
+            if (!response.data) throw new Error("Failed to update photo");
 
             setData(prev => ({ ...prev, photoUrl: response.data || null }))
             toast.success("Profile photo adjusted & updated")
@@ -187,7 +188,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
     const handleSaveInterests = async () => {
         try {
             const res = await updateResearchInterests(userId, tempInterests)
-            if (!res.success || !res.data) throw new Error(res.error || "Failed to update interests")
+            if (!res.success) throw new Error(res.error);
+            if (!res.data) throw new Error("Failed to update interests");
             setData(prev => ({ ...prev, researchInterests: res.data || [] }))
             setIsEditingInterests(false)
             toast.success("Interests updated")

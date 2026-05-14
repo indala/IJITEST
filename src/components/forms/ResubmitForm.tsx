@@ -43,7 +43,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
         const result = await resubmitPaper(submissionId, formData);
         setLoading(false);
 
-        if (result.error) {
+        if (!result.success) {
             setError(result.error);
         } else {
             setSuccess(true);

@@ -10,7 +10,9 @@ import {
 import {
     ActionResponse,
     Issue,
-    Publication
+    Publication,
+    actionSuccess,
+    actionError
 } from "@/db/types";
 import { eq, and, sql, desc, count } from "drizzle-orm";
 import { revalidatePath, unstable_cache } from "next/cache";
@@ -30,7 +32,7 @@ import { authOptions } from "@/lib/auth";
 export async function createVolumeIssue(formData: FormData): Promise<ActionResponse> {
     const session = await getServerSession(authOptions);
     if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-        return { success: false, error: "Unauthorized" };
+        return actionError("Unauthorized");
     }
     
     const volume = parseInt(formData.get('volume') as string);
@@ -47,7 +49,7 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
         )).limit(1);
 
         if (existing.length > 0) {
-            return { success: false, error: "Volume/Issue already exists for this year." };
+            return actionError("Volume/Issue already exists for this year.");
         }
 
         await db.insert(volumesIssues).values({
@@ -59,10 +61,10 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
         });
         revalidatePath('/admin/publications');
         revalidatePath('/', 'layout');
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         console.error("Create Publication Error:", error);
-        return { success: false, error: "Failed to create publication: " + (error instanceof Error ? error.message : String(error)) };
+        return actionError("Failed to create publication: " + (error instanceof Error ? error.message : String(error)));
     }
 }
 
@@ -86,10 +88,10 @@ export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { pape
                     ...r.vi,
                     paperCount: r.paperCount
                 }));
-                return { success: true, data };
+                return actionSuccess(data);
             } catch (error) {
                 console.error("Get Publications Error:", error);
-                return { success: false, error: error instanceof Error ? error.message : String(error) };
+                return actionError<(Issue & { paperCount: number })[]>(error instanceof Error ? error.message : String(error));
             }
         },
         ['volumes-issues-list'],
@@ -109,11 +111,11 @@ export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> 
                     .where(eq(volumesIssues.status, 'published'))
                     .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber))
                     .limit(1);
-                if (!rows[0]) return { success: false, error: "No published issues found" };
-                return { success: true, data: rows[0] };
+                if (!rows[0]) return actionError<Issue>("No published issues found");
+                return actionSuccess(rows[0]);
             } catch (error) {
                 console.error("Get Latest Published Issue Error:", error);
-                return { success: false, error: error instanceof Error ? error.message : String(error) };
+                return actionError<Issue>(error instanceof Error ? error.message : String(error));
             }
         },
         ['latest-published-issue'],
@@ -128,31 +130,31 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized" };
+            return actionError("Unauthorized");
         }
 
         // 1. Fetch Composite Submission Details OUTSIDE transaction
         const subRes = await getSubmissionById(submissionId);
         if (!subRes.success || !subRes.data) {
-            return { success: false, error: subRes.error || "Submission not found" };
+            return actionError(subRes.error || "Submission not found");
         }
         const submission = subRes.data;
 
         // 2. Enforce status gate — only accepted/published papers can be assigned
         const allowedStatuses = ['accepted', 'published'];
         if (!allowedStatuses.includes(submission.status)) {
-            return { success: false, error: `Paper status is '${submission.status}'. Only accepted papers can be published.` };
+            return actionError(`Paper status is '${submission.status}'. Only accepted papers can be published.`);
         }
 
         const latestPdf = submission.allFiles.find(f => f.fileType === 'pdfVersion');
         if (!latestPdf) {
-            return { success: false, error: "Final styled PDF must be uploaded before publication." };
+            return actionError("Final styled PDF must be uploaded before publication.");
         }
 
         // 3. Fetch Issue Details
         const issueRows = await db.select().from(volumesIssues).where(eq(volumesIssues.id, issueId)).limit(1);
         const issue = issueRows[0];
-        if (!issue) return { success: false, error: "Issue not found" };
+        if (!issue) return actionError("Issue not found");
 
         const settings = await getSettingsData();
 
@@ -244,10 +246,10 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         revalidatePath('/admin/publications');
         revalidatePath('/archives');
         revalidatePath('/', 'layout');
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         console.error("Assign Paper Error:", error);
-        return { success: false, error: "Failed to assign paper: " + (error instanceof Error ? error.message : String(error)) };
+        return actionError("Failed to assign paper: " + (error instanceof Error ? error.message : String(error)));
     }
 }
 
@@ -266,7 +268,7 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized" };
+            return actionError("Unauthorized");
         }
 
         await db.update(volumesIssues)
@@ -278,10 +280,10 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         console.error("Publish Issue Error:", error);
-        return { success: false, error: "Failed to publish issue: " + (error instanceof Error ? error.message : String(error)) };
+        return actionError("Failed to publish issue: " + (error instanceof Error ? error.message : String(error)));
     }
 }
 
@@ -292,7 +294,7 @@ export async function getPapersByIssueId(issueId: number): Promise<ActionRespons
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized" };
+            return actionError("Unauthorized");
         }
 
         // Return structured data for the issue listing
@@ -328,10 +330,10 @@ export async function getPapersByIssueId(issueId: number): Promise<ActionRespons
             publication: r.publication
         }));
 
-        return { success: true, data };
+        return actionSuccess(data);
     } catch (error) {
         console.error("Get Papers By Issue Error:", error);
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return actionError<PaperWithPublication[]>(error instanceof Error ? error.message : String(error));
     }
 }
 
@@ -342,7 +344,7 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized" };
+            return actionError("Unauthorized");
         }
 
         await db.transaction(async (tx) => {
@@ -355,9 +357,9 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
-        return { success: false, error: "Failed to unassign paper: " + (error instanceof Error ? error.message : String(error)) };
+        return actionError("Failed to unassign paper: " + (error instanceof Error ? error.message : String(error)));
     }
 }
 
@@ -368,7 +370,7 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized" };
+            return actionError("Unauthorized");
         }
 
         const volume = parseInt(formData.get('volume') as string);
@@ -386,10 +388,10 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
             .where(eq(volumesIssues.id, id));
 
         revalidatePath('/admin/publications');
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         console.error("Update Publication Error:", error);
-        return { success: false, error: "Failed to update: " + (error instanceof Error ? error.message : String(error)) };
+        return actionError("Failed to update: " + (error instanceof Error ? error.message : String(error)));
     }
 }
 
@@ -400,10 +402,10 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || session.user.role !== 'admin') {
-            return { success: false, error: "Unauthorized: Admin access required." };
+            return actionError("Unauthorized: Admin access required.");
         }
 
-        return await db.transaction(async (tx) => {
+        await db.transaction(async (tx) => {
             // 1. Unassign all papers
             await tx.delete(publications).where(eq(publications.issueId, id));
             await tx.update(submissions)
@@ -412,11 +414,11 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
 
             // 2. Delete issue
             await tx.delete(volumesIssues).where(eq(volumesIssues.id, id));
-
-            return { success: true };
         });
+
+        return actionSuccess();
     } catch (error) {
-        return { success: false, error: "Failed to delete: " + (error instanceof Error ? error.message : String(error)) };
+        return actionError("Failed to delete: " + (error instanceof Error ? error.message : String(error)));
     } finally {
         revalidatePath('/admin/publications');
     }
@@ -430,10 +432,10 @@ export async function incrementPaperViews(submissionId: number): Promise<ActionR
         await db.update(publications)
             .set({ views: sql`views + 1` })
             .where(eq(publications.submissionId, submissionId));
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         console.error("Increment Views Error:", error);
-        return { success: false, error: "Failed to increment views" };
+        return actionError("Failed to increment views");
     }
 }
 
@@ -445,9 +447,9 @@ export async function incrementPaperDownloads(submissionId: number): Promise<Act
         await db.update(publications)
             .set({ downloads: sql`downloads + 1` })
             .where(eq(publications.submissionId, submissionId));
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         console.error("Increment Downloads Error:", error);
-        return { success: false, error: "Failed to increment downloads" };
+        return actionError("Failed to increment downloads");
     }
 }

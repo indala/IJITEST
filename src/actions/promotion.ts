@@ -21,7 +21,7 @@ export async function markPromotionAsSeen(): Promise<ActionResponse> {
             .where(eq(users.id, userId));
 
         revalidatePath('/admin/submissions');
-        return { success: true };
+        return { success: true, data: undefined };
 
     } catch (error) {
         console.error("Mark Promotion As Seen Error:", error);

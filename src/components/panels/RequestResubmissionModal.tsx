@@ -35,7 +35,7 @@ export function RequestResubmissionModal({ submissionId, paperId, paperTitle }: 
         setLoading(true);
         const result = await requestResubmissionWithComments(submissionId, comments);
         setLoading(false);
-        if (result.error) {
+        if (!result.success) {
             setError(result.error);
         } else {
             setDone(true);

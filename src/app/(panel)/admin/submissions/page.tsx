@@ -14,8 +14,12 @@ export default async function AdminSubmissions({
         status: currentStatus, 
         ...(q ? { q } : {}) 
     });
+
+    if (!res.success) {
+        return <div className="p-10 text-center font-black uppercase tracking-widest text-rose-500">Error: {res.error}</div>;
+    }
+
     const submissions = res.data || [];
-    const error = res.error;
     
     const statsResult = {
         total: submissions?.length || 0,
@@ -25,7 +29,6 @@ export default async function AdminSubmissions({
         rejected: submissions?.filter(s => s.status === 'rejected').length || 0
     };
 
-    if (error) return <div>Error loading submissions: {error}</div>;
 
     return (
         <SubmissionRegistry 

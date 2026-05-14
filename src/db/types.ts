@@ -1,67 +1,23 @@
-import { 
-    users, 
-    userProfiles, 
-    submissions, 
-    submissionVersions, 
-    submissionFiles, 
-    submissionAuthors, 
-    reviewAssignments, 
-    reviews, 
-    payments, 
-    volumesIssues, 
-    publications, 
+import {
+    users,
+    userProfiles,
+    submissions,
+    submissionVersions,
+    submissionFiles,
+    submissionAuthors,
+    reviewAssignments,
+    reviews,
+    payments,
+    volumesIssues,
+    publications,
     applications,
     applicationInterests,
     contactMessages,
-    notifications, 
-    activityLogs, 
-    settings 
+    notifications,
+    activityLogs,
+    settings
 } from "./schema";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // 🏷️ Global Literal Types (Enums derived from Schema)
@@ -114,20 +70,17 @@ export type SubmissionDetail = Submission & {
     reviewAssignments: ReviewWithReviewer[];
 };
 
-export type SubmissionUI = SubmissionDetail & {
-    // Computed/Mapped Properties (Standardized to camelCase)
-    title: string;
-    abstract: string | null;
-    keywords: string | null;
-    filePath: string;
-    pdfUrl: string;
-    authorName: string;
-    authorEmail: string;
-    coAuthors: Author[]; 
-    volumeNumber?: number | undefined;
-    issueNumber?: number | undefined;
-    startPage?: number | null | undefined;
-    endPage?: number | null | undefined;
+export type SubmissionUI = SubmissionDetail & 
+    Pick<Version, 'title' | 'abstract' | 'keywords'> & {
+    filePath: Pick<SubmissionFile, 'fileUrl'>['fileUrl'];
+    pdfUrl: Pick<Publication, 'finalPdfUrl'>['finalPdfUrl'];
+    authorName: Pick<Author, 'name'>['name'];
+    authorEmail: Pick<Author, 'email'>['email'];
+    coAuthors: Author[];
+    volumeNumber?: Pick<Issue, 'volumeNumber'>['volumeNumber'] | undefined;
+    issueNumber?: Pick<Issue, 'issueNumber'>['issueNumber'] | undefined;
+    startPage?: Pick<Publication, 'startPage'>['startPage'] | undefined;
+    endPage?: Pick<Publication, 'endPage'>['endPage'] | undefined;
     latestVersion?: (Version & { files: SubmissionFile[] }) | undefined;
     allFiles: SubmissionFile[];
     allReviews: ReviewWithReviewer[];
@@ -164,53 +117,29 @@ export type ApplicationInterest = InferSelectModel<typeof applicationInterests>;
 export type NewApplicationInterest = InferInsertModel<typeof applicationInterests>;
 
 // 📝 Author Dashboard / Details
-export type AuthorDashboardSubmission = {
-    id: number;
-    paperId: string;
-    status: SubmissionStatus;
-    submittedAt: Date | null;
-    updatedAt: Date | null;
-    title: string | null;
+export type AuthorDashboardSubmission = Pick<Submission, 'id' | 'paperId' | 'status' | 'submittedAt' | 'updatedAt'> & {
+    title: Pick<Version, 'title'>['title'] | null;
     paymentStatus: PaymentStatus | null;
-    paymentAmount: string | null;
-    finalPdfUrl: string | null;
-    volumeNumber: number | null;
-    issueNumber: number | null;
-    issueYear: number | null;
-    views: number | null;
-    downloads: number | null;
-    citations: number | null;
+    paymentAmount: Pick<Payment, 'amount'>['amount'] | null;
+    finalPdfUrl: Pick<Publication, 'finalPdfUrl'>['finalPdfUrl'] | null;
+    volumeNumber: Pick<Issue, 'volumeNumber'>['volumeNumber'] | null;
+    issueNumber: Pick<Issue, 'issueNumber'>['issueNumber'] | null;
+    issueYear: Pick<Issue, 'year'>['year'] | null;
+    views: Pick<Publication, 'views'>['views'] | null;
+    downloads: Pick<Publication, 'downloads'>['downloads'] | null;
+    citations: Pick<Publication, 'citations'>['citations'] | null;
 };
 
-export type AuthorSubmissionDetail = {
-    id: number;
-    paperId: string;
-    status: SubmissionStatus;
-    submittedAt: Date | null;
-    updatedAt: Date | null;
-    versionId: number;
-    versionNumber: number;
-    title: string;
-    abstract: string;
-    keywords: string;
-    subjectArea: string | null;
-    changelog: string | null;
-    files: (SubmissionFile)[];
-    authors: (Author)[];
-    reviewComments: Array<{
-        commentsToAuthor: string | null;
-        decision: ReviewDecision | null;
-        submittedAt: Date | null;
-        reviewRound: number;
-        deadline: string | null;
-    }>;
-    payment: Payment | null | undefined;
-    publication: (Publication & {
-        volumeNumber?: number | null;
-        issueNumber?: number | null;
-        year?: number | null;
-    }) | null | undefined;
-};
+export type AuthorSubmissionDetail = Pick<Submission, 'id' | 'paperId' | 'status' | 'submittedAt' | 'updatedAt'> &
+    Pick<Version, 'versionNumber' | 'title' | 'abstract' | 'keywords' | 'subjectArea' | 'changelog'> & {
+        versionId: Pick<Version, 'id'>['id'];
+        files: SubmissionFile[];
+        authors: Author[];
+        reviewComments: Array<Pick<Review, 'commentsToAuthor' | 'decision' | 'submittedAt'> &
+            Pick<ReviewAssignment, 'reviewRound' | 'deadline'>>;
+        payment: Payment | null | undefined;
+        publication: (Publication & Pick<Issue, 'volumeNumber' | 'issueNumber' | 'year'>) | null | undefined;
+    };
 
 // 📬 Correspondence
 export type ContactMessage = InferSelectModel<typeof contactMessages>;
@@ -223,77 +152,72 @@ export type ActivityLog = InferSelectModel<typeof activityLogs>;
 export type Setting = InferSelectModel<typeof settings>;
 
 // 📰 UI / Public View Types
-export type PublishedPaperUI = {
-    id: number;
-    paperId: string;
-    title: string;
-    abstract: string;
-    keywords: string;
-    authorName: string;
-    status: SubmissionStatus;
-    doi: string | null;
-    filePath: string;
-    pdfUrl: string;
-    startPage: number | null;
-    endPage: number | null;
-    pageRange: string | null;
-    publishedAt: string | Date | null;
-    updatedAt: Date | null;
-    volumeNumber: number | null;
-    issueNumber: number | null;
-    publicationYear: number | null;
-    monthRange: string | null;
-    coAuthors: Author[];
-    affiliation: string | null;
-    authorEmail: string | null;
-    authorsList: string[];
-    views: number;
-    downloads: number;
-    citations: number;
-};
+export type PublishedPaperUI = Pick<Submission, 'status' | 'updatedAt'> &
+    Omit<Publication, 'submissionId' | 'issueId'> &
+    Pick<Issue, 'volumeNumber' | 'issueNumber' | 'monthRange'> & {
+        paperId: Pick<Submission, 'paperId'>['paperId'];
+        title: Pick<Version, 'title'>['title'];
+        abstract: Pick<Version, 'abstract'>['abstract'];
+        keywords: Pick<Version, 'keywords'>['keywords'];
+        authorName: Pick<Author, 'name'>['name'];
+        authorEmail: Pick<Author, 'email'>['email'] | null;
+        affiliation: Pick<Author, 'institution'>['institution'] | null;
+        filePath: Pick<Publication, 'finalPdfUrl'>['finalPdfUrl'];
+        pdfUrl: Pick<Publication, 'finalPdfUrl'>['finalPdfUrl'];
+        pageRange: string | null; // Fully computed UI field (start-end)
+        publicationYear: Pick<Issue, 'year'>['year'] | null;
+        coAuthors: Author[];
+        authorsList: string[];
+    };
 
-export interface TrackedManuscript {
-    id: number;
-    paperId: string;
-    status: SubmissionStatus;
-    submittedAt: Date | null;
-    updatedAt: Date | null;
-    title: string;
-    authorName: string;
-    authorEmail: string;
-    reviewStartedAt: Date | null;
+export type TrackedManuscript = Pick<Submission, 'id' | 'paperId' | 'status' | 'submittedAt' | 'updatedAt'> & {
+    title: Pick<Version, 'title'>['title'];
+    authorName: Pick<Author, 'name'>['name'];
+    authorEmail: Pick<Author, 'email'>['email'];
+    reviewStartedAt: Pick<ReviewAssignment, 'assignedAt'>['assignedAt'] | null;
     reviewerFeedback?: (string | null)[] | undefined;
-}
-
-export interface ActiveReview {
-    id: number;
-    status: ReviewStatus;
-    assignedAt: Date | null;
-    deadline: Date | null;
-    reviewRound: number;
-    submissionId: number;
-    paperId: string;
-    submissionStatus: SubmissionStatus;
-    title: string;
-    reviewerName: string | null;
-    decision: ReviewDecision | null;
-    commentsToAuthor: string | null;
-    submittedAt: Date | null;
-    manuscriptPath: string | null;
-    feedbackFilePath: string | null;
-}
-
-export interface UnassignedPaper {
-    id: number;
-    paperId: string;
-    title: string;
-    pdfUrl: string | null;
-}
-
-// 🧪 Common Return Types
-export type ActionResponse<T = undefined> = {
-    success: boolean;
-    data?: T | undefined;
-    error?: string | undefined;
-    message?: string | undefined;
 };
+
+export type ActiveReview = Pick<ReviewAssignment, 'id' | 'status' | 'assignedAt' | 'deadline' | 'reviewRound' | 'submissionId'> &
+    Pick<Review, 'decision' | 'commentsToAuthor' | 'submittedAt'> & {
+        paperId: Pick<Submission, 'paperId'>['paperId'];
+        submissionStatus: SubmissionStatus;
+        title: Pick<Version, 'title'>['title'];
+        reviewerName: Pick<UserProfile, 'fullName'>['fullName'] | null;
+        manuscriptPath: Pick<SubmissionFile, 'fileUrl'>['fileUrl'] | null;
+        feedbackFilePath: Pick<SubmissionFile, 'fileUrl'>['fileUrl'] | null;
+    };
+
+export type UnassignedPaper = Pick<Submission, 'id' | 'paperId'> & {
+    title: Pick<Version, 'title'>['title'];
+    pdfUrl: Pick<SubmissionFile, 'fileUrl'>['fileUrl'] | null;
+};
+
+// 🧪 Common Return Types (Discriminated Union)
+// 🛡️ Elite: Discriminated union with conditional requirement for 'data'
+export type ActionResponse<T = void> = 
+    | (T extends void 
+        ? { success: true; data?: T; message?: string } 
+        : { success: true; data: T; message?: string })
+    | { success: false; error: string; data?: never; message?: string };
+
+// 🛠️ Utility Helpers
+export type SuccessResponse<T> = Extract<ActionResponse<T>, { success: true }>;
+export type ErrorResponse = Extract<ActionResponse, { success: false }>;
+
+/**
+ * 🛡️ Elite: Helper to create a successful ActionResponse
+ */
+export function actionSuccess<T = void>(data: T, message?: string): ActionResponse<T>;
+export function actionSuccess(data?: undefined, message?: string): ActionResponse<void>;
+export function actionSuccess<T>(data?: T, message?: string): ActionResponse<T> {
+    return { success: true, data: data as T, message } as ActionResponse<T>;
+}
+
+/**
+ * 🛡️ Elite: Helper to create a failed ActionResponse
+ */
+export function actionError<T = void>(error: string): ActionResponse<T> {
+    return { success: false, error } as ActionResponse<T>;
+}
+

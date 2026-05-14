@@ -173,18 +173,22 @@ export default function UserManagement() {
     // React 19: useActionState for invitation form
     const [createState, createAction, isCreatingStaff] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
         return await createUser(formData);
-    }, { success: false });
+    }, { success: false, error: "" } as ActionResponse);
 
     // Sync ActionState with UI (close modal, show toast, refresh list)
     useEffect(() => {
-        if (createState.success && !isCreatingStaff) {
-            startCleanup(() => setShowAddModal(false));
-            toast.success("Staff member invited successfully");
-            queryClient.invalidateQueries({ queryKey: ['users'] });
-        } else if (createState.error) {
-            toast.error(createState.error);
+        if (createState.success) {
+            if (!isCreatingStaff) {
+                setShowAddModal(false);
+                toast.success("Staff member invited successfully");
+                queryClient.invalidateQueries({ queryKey: ['users'] });
+            }
+        } else {
+            if (createState.error) {
+                toast.error(createState.error);
+            }
         }
-    }, [createState.success, createState.error, isCreatingStaff, queryClient]);
+    }, [createState, isCreatingStaff, queryClient]);
 
     const currentUserId = useMemo(() => session?.user?.id ? String(session.user.id) : null, [session]);
 

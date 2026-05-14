@@ -10,7 +10,14 @@ import {
     userProfiles
 } from "@/db/schema";
 import { eq, desc, and, sql, ne, inArray, asc } from "drizzle-orm";
-import { type PublishedPaperUI, type ActionResponse, type SubmissionStatus, type Author } from "@/db/types";
+import { 
+    type PublishedPaperUI, 
+    type ActionResponse, 
+    type SubmissionStatus, 
+    type Author,
+    actionSuccess,
+    actionError
+} from "@/db/types";
 import { unstable_cache } from "next/cache";
 
 /**
@@ -31,7 +38,7 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
                     .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
                     .orderBy(asc(submissions.paperId));
 
-                if (!rows.length) return { success: true, data: [] };
+                if (!rows.length) return actionSuccess([] as PublishedPaperUI[]);
 
                 const submissionIds = rows.map(r => r.submission?.id).filter(Boolean) as number[];
 
@@ -59,10 +66,10 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
                     });
                 });
 
-                return { success: true, data };
+                return actionSuccess(data);
             } catch (error) {
                 console.error("Get Published Papers Error:", error);
-                return { success: false, error: error instanceof Error ? error.message : String(error) };
+                return actionError<PublishedPaperUI[]>(error instanceof Error ? error.message : String(error));
             }
         },
         ['published-papers-all'],
@@ -80,9 +87,9 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
                     .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber))
                     .limit(1);
 
-                if (!issues.length) return { success: true, data: [] };
+                if (!issues.length) return actionSuccess([] as PublishedPaperUI[]);
                 const latestIssue = issues[0];
-                if (!latestIssue) return { success: true, data: [] };
+                if (!latestIssue) return actionSuccess([] as PublishedPaperUI[]);
 
                 const rows = await db.select({
                     publication: publications,
@@ -95,7 +102,7 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
                     .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
                     .orderBy(asc(submissions.paperId));
 
-                if (!rows.length) return { success: true, data: [] };
+                if (!rows.length) return actionSuccess([] as PublishedPaperUI[]);
 
                 const submissionIds = rows.map(r => r.submission?.id).filter(Boolean) as number[];
 
@@ -122,10 +129,10 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
                     });
                 });
 
-                return { success: true, data };
+                return actionSuccess(data);
             } catch (error) {
                 console.error("Get Latest Issue Papers Error:", error);
-                return { success: false, error: error instanceof Error ? error.message : String(error) };
+                return actionError<PublishedPaperUI[]>(error instanceof Error ? error.message : String(error));
             }
         },
         ['latest-issue-papers'],
@@ -158,7 +165,7 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
                     .limit(limit)
                     .offset(offset);
 
-                if (!rows.length) return { success: true, data: [] };
+                if (!rows.length) return actionSuccess([] as PublishedPaperUI[]);
 
                 const submissionIds = rows.map(r => r.submission?.id).filter(Boolean) as number[];
 
@@ -185,10 +192,10 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
                     });
                 });
 
-                return { success: true, data };
+                return actionSuccess(data);
             } catch (error) {
                 console.error("Get Archive Papers Error:", error);
-                return { success: false, error: error instanceof Error ? error.message : String(error) };
+                return actionError<PublishedPaperUI[]>(error instanceof Error ? error.message : String(error));
             }
         },
         [`archive-papers-${limit}-${offset}`],
@@ -233,7 +240,7 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
                     .limit(1);
 
                 const row = rows[0];
-                if (!row || !row.submission) return { success: false, error: "Paper data is incomplete" };
+                if (!row || !row.submission) return actionError<PublishedPaperUI>("Paper data is incomplete");
 
                 // SECOND QUERY: Fetch all authors separately for the detail view
                 const authorsList = await db.select()
@@ -251,10 +258,10 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
                     },
                     issue: row.issue
                 });
-                return { success: true, data };
+                return actionSuccess(data);
             } catch (error) {
                 console.error("Get Paper By ID Error:", error);
-                return { success: false, error: error instanceof Error ? error.message : String(error) };
+                return actionError<PublishedPaperUI>(error instanceof Error ? error.message : String(error));
             }
         },
         [`paper-${id}`],
@@ -341,12 +348,13 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         affiliation: correspondingAuthor?.institution || "N/A",
         status: (pub.submission?.status as SubmissionStatus) || "published",
         doi: pub.doi || "",
+        finalPdfUrl: pub.finalPdfUrl || "",
         filePath: pub.finalPdfUrl || "",
         pdfUrl: pub.finalPdfUrl || "",
         startPage: pub.startPage || null,
         endPage: pub.endPage || null,
         pageRange: pub.startPage && pub.endPage ? `${pub.startPage}-${pub.endPage}` : null,
-        publishedAt: pub.publishedAt ? pub.publishedAt.toISOString() : null,
+        publishedAt: pub.publishedAt || null,
         updatedAt: pub.submission?.updatedAt || pub.publishedAt || null,
         volumeNumber: pub.issue?.volumeNumber || 0,
         issueNumber: pub.issue?.issueNumber || 0,

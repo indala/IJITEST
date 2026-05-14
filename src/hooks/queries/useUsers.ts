@@ -50,7 +50,7 @@ export function useDeleteUser() {
             return await deleteUser(id);
         },
         onSuccess: (data) => {
-            if (!data?.error) {
+            if (data.success) {
                 queryClient.invalidateQueries({ queryKey: ['users'] });
             }
         },

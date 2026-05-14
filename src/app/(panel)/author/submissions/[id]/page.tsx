@@ -18,7 +18,13 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
     const sub = subResponse.data;
 
     const eligResponse = await checkResubmissionEligibility(submissionId);
-    const eligibility = eligResponse.data || { eligible: false, daysRemaining: 0 };
+    let eligibility = { eligible: false, daysRemaining: 0 };
+    let eligError = "";
+    if (eligResponse.success) {
+        eligibility = eligResponse.data;
+    } else {
+        eligError = eligResponse.error;
+    }
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -98,7 +104,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             <AlertTriangle className="w-4 h-4 text-red-600" />
                             <AlertTitle className="text-xs font-black uppercase tracking-widest text-red-900">Window Expired</AlertTitle>
                             <AlertDescription className="text-sm text-red-700 font-bold">
-                                {eligResponse.error || "Submission window (15 days) has expired."}
+                                {eligError || "Submission window (15 days) has expired."}
                             </AlertDescription>
                         </Alert>
                     )}

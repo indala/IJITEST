@@ -30,7 +30,7 @@ export function SubmissionDecisionActions({
             const decision = formData.get("decision") as "accepted" | "rejected";
             return await decideSubmission(submissionId, decision);
         },
-        { success: false }
+        { success: false, error: "" }
     );
 
     // 2. Waive Action
@@ -38,13 +38,13 @@ export function SubmissionDecisionActions({
         async () => {
             return await waivePayment(submissionId);
         },
-        { success: false }
+        { success: false, error: "" }
     );
 
     useEffect(() => {
         if (decideState.success && !isDeciding) {
             toast.success(decideState.message || "Decision finalized successfully");
-        } else if (decideState.error) {
+        } else if (!decideState.success && decideState.error) {
             toast.error(decideState.error);
         }
     }, [decideState, isDeciding]);
@@ -52,7 +52,7 @@ export function SubmissionDecisionActions({
     useEffect(() => {
         if (waiveState.success && !isWaiving) {
             toast.success("Payment waived successfully");
-        } else if (waiveState.error) {
+        } else if (!waiveState.success && waiveState.error) {
             toast.error(waiveState.error);
         }
     }, [waiveState, isWaiving]);

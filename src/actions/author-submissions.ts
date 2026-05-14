@@ -19,7 +19,13 @@ import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import fs from "fs/promises";
 import path from "path";
-import { ActionResponse, AuthorDashboardSubmission, AuthorSubmissionDetail } from "@/db/types";
+import { 
+    ActionResponse, 
+    AuthorDashboardSubmission, 
+    AuthorSubmissionDetail,
+    actionSuccess,
+    actionError
+} from "@/db/types";
 import { safeDeleteFile } from "@/lib/fs-utils";
 
 /**
@@ -38,7 +44,7 @@ async function getAuthorSession() {
 export async function getAuthorDashboard(): Promise<ActionResponse<{ submissions: AuthorDashboardSubmission[] }>> {
     try {
         const author = await getAuthorSession();
-        if (!author) return { success: false, error: "Unauthorized", data: { submissions: [] } };
+        if (!author) return actionError<{ submissions: AuthorDashboardSubmission[] }>("Unauthorized");
 
         // Unified query using JOINS to avoid multiple calls and raw SQL issues
         const latestVersions = db.select({
@@ -78,11 +84,11 @@ export async function getAuthorDashboard(): Promise<ActionResponse<{ submissions
         .where(eq(submissions.correspondingAuthorId, author.id))
         .orderBy(desc(submissions.submittedAt));
 
-        return { success: true, data: { submissions: rows } };
+        return actionSuccess({ submissions: rows as AuthorDashboardSubmission[] });
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error("Author Dashboard Error:", error);
-        return { success: false, error: "Failed to load dashboard: " + message, data: { submissions: [] } };
+        return actionError<{ submissions: AuthorDashboardSubmission[] }>("Failed to load dashboard: " + message);
     }
 }
 
@@ -128,9 +134,9 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
         ))
         .limit(1);
 
-        if (!subData.length) return { success: false, error: "Submission not found" };
+        if (!subData.length) return actionError<AuthorSubmissionDetail>("Submission not found");
         const sub = subData[0];
-        if (!sub) return { success: false, error: "Submission not found" };
+        if (!sub) return actionError<AuthorSubmissionDetail>("Submission not found");
 
         // 2. Files (Restricted to Manuscript and Copyright for Author)
         const files = await db.select()
@@ -166,20 +172,17 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
         .where(eq(publications.submissionId, submissionId))
         .limit(1);
 
-        return {
-            success: true,
-            data: {
-                ...sub,
-                files,
-                authors: authorsList,
-                payment: paymentData[0] || null,
-                publication: publicationData[0] || null
-            } as AuthorSubmissionDetail
-        };
+        return actionSuccess({
+            ...sub,
+            files,
+            authors: authorsList,
+            payment: paymentData[0] || null,
+            publication: publicationData[0] || null
+        } as AuthorSubmissionDetail);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error("Get Author Submission Error:", error);
-        return { success: false, error: "Failed to fetch submission details: " + message };
+        return actionError<AuthorSubmissionDetail>("Failed to fetch submission details: " + message);
     }
 }
 
@@ -189,7 +192,7 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
 export async function checkResubmissionEligibility(submissionId: number): Promise<ActionResponse<{ eligible: boolean; daysRemaining: number }>> {
     try {
         const author = await getAuthorSession();
-        if (!author) return { success: false, error: "Unauthorized", data: { eligible: false, daysRemaining: 0 } };
+        if (!author) return actionError<{ eligible: boolean; daysRemaining: number }>("Unauthorized");
 
         const rows = await db.select({
             id: submissions.id,
@@ -201,27 +204,23 @@ export async function checkResubmissionEligibility(submissionId: number): Promis
         .where(eq(submissions.id, submissionId))
         .limit(1);
 
-        if (!rows.length) return { success: false, error: "Submission not found", data: { eligible: false, daysRemaining: 0 } };
+        if (!rows.length) return actionError<{ eligible: boolean; daysRemaining: number }>("Submission not found");
         const sub = rows[0];
-        if (!sub) return { success: false, error: "Submission not found", data: { eligible: false, daysRemaining: 0 } };
-        if (sub.correspondingAuthorId !== author.id) return { success: false, error: "Unauthorized access", data: { eligible: false, daysRemaining: 0 } };
+        if (!sub) return actionError<{ eligible: boolean; daysRemaining: number }>("Submission not found");
+        if (sub.correspondingAuthorId !== author.id) return actionError<{ eligible: boolean; daysRemaining: number }>("Unauthorized access");
 
         if (!['revisionRequested', 'rejected'].includes(sub.status)) {
-            return { success: false, error: `Manuscript status '${sub.status}' does not allow resubmission.`, data: { eligible: false, daysRemaining: 0 } };
+            return actionError<{ eligible: boolean; daysRemaining: number }>(`Manuscript status '${sub.status}' does not allow resubmission.`);
         }
 
         const updatedAt = new Date(sub.updatedAt!);
         const daysSinceUpdate = Math.floor((Date.now() - updatedAt.getTime()) / (1000 * 60 * 60 * 24));
         const daysRemaining = 15 - daysSinceUpdate;
 
-        if (daysRemaining <= 0) {
-            return { success: true, data: { eligible: false, daysRemaining: 0 } };
-        }
-
-        return { success: true, data: { eligible: true, daysRemaining } };
+        return actionSuccess({ eligible: true, daysRemaining });
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        return { success: false, error: message, data: { eligible: false, daysRemaining: 0 } };
+        return actionError<{ eligible: boolean; daysRemaining: number }>(message);
     }
 }
 
@@ -236,8 +235,11 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         if (!author) return { success: false, error: "Unauthorized" };
 
         const eligibility = await checkResubmissionEligibility(submissionId);
-        if (!eligibility.success || !eligibility.data?.eligible) {
-            return { success: false, error: eligibility.error || "Resubmission window expired or ineligible status." };
+        if (!eligibility.success) {
+            return actionError(eligibility.error);
+        }
+        if (!eligibility.data.eligible) {
+            return actionError("Resubmission window expired or ineligible status.");
         }
 
         const manuscriptFile = formData.get("manuscript") as File;
@@ -360,12 +362,12 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         }
 
         revalidatePath('/author');
-        return { success: true };
+        return actionSuccess(undefined);
 
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error("Resubmission Failure:", error);
-        return { success: false, error: message || "Failed to process revision." };
+        return actionError(message || "Failed to process revision.");
     }
 }
 
@@ -428,7 +430,7 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || session.user.role !== 'admin') {
-            return { success: false, error: "Unauthorized: Admin privileges required." };
+            return actionError<{ deletedCount: number }>("Unauthorized: Admin privileges required.");
         }
 
         const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
@@ -445,7 +447,7 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
         ));
 
         if (targetSubmissions.length === 0) {
-            return { success: true, data: { deletedCount: 0 }, message: "No inactive submissions found." };
+            return actionSuccess({ deletedCount: 0 }, "No inactive submissions found.");
         }
 
         const authorIds = [...new Set(targetSubmissions.map(s => s.authorId))];
@@ -506,10 +508,10 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
         }
 
         revalidatePath('/admin/users');
-        return { success: true, data: { deletedCount }, message: `Cleanup complete. Deleted ${deletedCount} inactive authors.` };
+        return actionSuccess({ deletedCount }, `Cleanup complete. Deleted ${deletedCount} inactive authors.`);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error("Cleanup Error:", error);
-        return { success: false, error: "Cleanup failed: " + message };
+        return actionError<{ deletedCount: number }>("Cleanup failed: " + message);
     }
 }
