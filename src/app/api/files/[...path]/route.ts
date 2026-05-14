@@ -10,7 +10,7 @@ import {
 } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import fs from 'fs/promises';
-import { getStoragePath } from '@/lib/fs-utils';
+import { getStoragePath, getPublicUploadsPath } from '@/lib/fs-utils';
 import path from 'path';
 
 /**
@@ -68,9 +68,8 @@ export async function GET(
 }
 
 async function serveFile(relativePath: string) {
-    const absolutePath = getStoragePath(relativePath);
-    
     try {
+        const absolutePath = getStoragePath(relativePath);
         await fs.access(absolutePath);
         const fileBuffer = await fs.readFile(absolutePath);
         
@@ -90,8 +89,8 @@ async function serveFile(relativePath: string) {
             },
         });
     } catch { // Fallback to legacy public path for migration period
-        const legacyPath = path.join(process.cwd(), 'public', 'uploads', relativePath);
         try {
+            const legacyPath = getPublicUploadsPath(relativePath);
             await fs.access(legacyPath);
             const fileBuffer = await fs.readFile(legacyPath);
             return new NextResponse(fileBuffer, {

@@ -125,38 +125,37 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-16 items-start">
                 {/* Sticky Navigation Tree */}
-                <aside className="lg:col-span-4 order-2 lg:order-1 lg:sticky lg:top-24 max-h-[calc(100vh-120px)] overflow-y-auto no-scrollbar scroll-smooth">
+                <aside  className="lg:col-span-4 order-2 lg:order-2 lg:sticky lg:top-24 max-h-[calc(100vh-120px)] overflow-y-auto no-scrollbar scroll-smooth">
                     <div className="space-y-8 pr-2">
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                                <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Archive Navigation</p>
+                                <p className="text-[10px] 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Archive Navigation</p>
                             </div>
-                            
+
                             <div className="space-y-3">
                                 {hierarchy.map((vol) => (
                                     <div key={vol.volume} className="space-y-2">
                                         <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 rounded-lg border border-border/50">
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                                            <span className="text-xs font-bold text-foreground">Volume {vol.volume} ({vol.year})</span>
+                                            <span className="text-xs 2xl:text-xl font-bold text-foreground">Volume {vol.volume} ({vol.year})</span>
                                         </div>
                                         <div className="grid grid-cols-1 gap-1 pl-4">
                                             {vol.issues.map((iss) => (
                                                 <button
                                                     key={iss.key}
                                                     onClick={() => setSelectedIssue(iss.key)}
-                                                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-left text-xs transition-all group ${
-                                                        selectedIssue === iss.key 
-                                                        ? 'bg-[#000066] text-white shadow-md shadow-primary/20 scale-[1.02]' 
-                                                        : 'hover:bg-primary/5 text-muted-foreground border border-transparent hover:border-primary/10'
-                                                    }`}
+                                                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-left text-xs 2xl:text-lg transition-all group ${selectedIssue === iss.key
+                                                            ? 'bg-[#000066] text-white shadow-md shadow-primary/20 scale-[1.02]'
+                                                            : 'hover:bg-primary/5 text-muted-foreground border border-transparent hover:border-primary/10'
+                                                        }`}
                                                 >
                                                     <div className="flex items-center gap-2">
-                                                        <ChevronRight className={`w-3.5 h-3.5 transition-transform ${selectedIssue === iss.key ? 'rotate-90 text-white/50' : 'text-primary/30 group-hover:translate-x-0.5'}`} />
+                                                        <ChevronRight className={`w-3.5 h-3.5 2xl:w-5 2xl:h-5 transition-transform ${selectedIssue === iss.key ? 'rotate-90 text-white/50' : 'text-primary/30 group-hover:translate-x-0.5'}`} />
                                                         <span className="font-medium">
                                                             Issue {iss.issue} — {iss.monthRange} {iss.year}
                                                         </span>
                                                     </div>
-                                                    <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${selectedIssue === iss.key ? 'bg-white/20' : 'bg-muted/50 group-hover:bg-primary/10'}`}>
+                                                    <span className={`text-[10px] 2xl:text-xs px-1.5 py-0.5 rounded-md ${selectedIssue === iss.key ? 'bg-white/20' : 'bg-muted/50 group-hover:bg-primary/10'}`}>
                                                         {iss.papers.length}
                                                     </span>
                                                 </button>
@@ -178,14 +177,14 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                 <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Support</p>
                             </div>
                             <div className="p-5 bg-card border border-border/50 rounded-2xl shadow-sm">
-                                 <TrackManuscriptWidget />
+                                <TrackManuscriptWidget />
                             </div>
                         </div>
                     </div>
                 </aside>
 
                 {/* Scrollable Main Content */}
-                <div className="lg:col-span-8 order-1 lg:order-2">
+                <div className="lg:col-span-8 order-1 lg:order-1">
                     {isLoading ? (
                         <div className="py-24 flex flex-col items-center justify-center gap-6 text-center">
                             <div className="w-16 h-16 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />

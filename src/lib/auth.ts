@@ -6,6 +6,11 @@ import { eq } from "drizzle-orm";
 import { users, userProfiles } from "@/db/schema";
 import bcrypt from "bcryptjs";
 
+const authSecret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
+if (!authSecret) {
+    throw new Error("Missing NEXTAUTH_SECRET (or JWT_SECRET). Refusing to start with an insecure auth secret.");
+}
+
 declare module "next-auth" {
     interface Session extends DefaultSession {
         user: {
@@ -108,5 +113,5 @@ export const authOptions: NextAuthOptions = {
         strategy: "jwt",
         maxAge: 24 * 60 * 60, // 24 hours
     },
-    secret: (process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "fallback_secret_ijitest") as string,
+    secret: authSecret,
 };

@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { emailTemplates, sendEmail } from "@/lib/mail";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 import { ActionResponse, actionSuccess, actionError } from "@/db/types";
 import { insertContactSchema } from "@/db/validation";
@@ -195,6 +196,16 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
     }
 
     const { name, email, subject, message } = validated.data;
+    const emailKey = String(email || "").toLowerCase().trim();
+    const rate = await checkRateLimit({
+        key: `contact:${emailKey}`,
+        max: 5,
+        windowMs: 60_000,
+    });
+
+    if (!rate.allowed) {
+        return actionError(`Too many contact requests. Please wait ${rate.retryAfterSeconds} seconds and try again.`);
+    }
 
     try {
         await db.insert(contactMessages).values({

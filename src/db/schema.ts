@@ -1,6 +1,6 @@
 import { 
   mysqlTable, int, mysqlEnum, varchar, timestamp, 
-  text, index, unique, decimal, date, boolean, 
+  text, index, unique, decimal, date, boolean, bigint,
   primaryKey 
 } from "drizzle-orm/mysql-core";
 import { relations } from "drizzle-orm";
@@ -450,3 +450,12 @@ export const settings = mysqlTable("settings", {
     settingValue: text("setting_value"),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
+
+export const rateLimits = mysqlTable("rate_limits", {
+    key: varchar("key", { length: 255 }).primaryKey().notNull(),
+    count: int("count").default(0).notNull(),
+    resetAt: bigint("reset_at", { mode: "number" }).notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
+}, (table) => [
+    index("rate_limits_reset_at_idx").on(table.resetAt),
+]);

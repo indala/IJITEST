@@ -4,9 +4,20 @@ import { db } from "@/lib/db";
 import { submissions, reviews, reviewAssignments, submissionVersions, userProfiles, users } from "@/db/schema";
 import { eq, and, min, desc } from "drizzle-orm";
 import { ActionResponse, TrackedManuscript } from "@/db/types";
+import { checkRateLimit } from "@/lib/rate-limit";
  
 export async function trackManuscript(paperId: string, authorEmail?: string): Promise<ActionResponse<{ manuscript: TrackedManuscript }>> {
     try {
+        const emailPart = (authorEmail || "anon").toLowerCase().trim();
+        const rate = await checkRateLimit({
+            key: `track:${paperId.toLowerCase().trim()}:${emailPart}`,
+            max: 12,
+            windowMs: 60_000,
+        });
+        if (!rate.allowed) {
+            return { success: false, error: `Too many tracking requests. Please wait ${rate.retryAfterSeconds} seconds and try again.` };
+        }
+
         // 1. Get the submission and its latest version
         const result = await db.select({
             id: submissions.id,

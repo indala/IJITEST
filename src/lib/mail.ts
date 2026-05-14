@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 
+const allowInsecureTls = process.env.SMTP_ALLOW_INSECURE_TLS === 'true';
 
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -10,7 +11,9 @@ const transporter = nodemailer.createTransport({
         pass: process.env.SMTP_PASS,
     },
     tls: {
-        rejectUnauthorized: false
+        // Keep certificate validation enabled by default.
+        // Set SMTP_ALLOW_INSECURE_TLS=true only for controlled local troubleshooting.
+        rejectUnauthorized: !allowInsecureTls
     }
 });
 

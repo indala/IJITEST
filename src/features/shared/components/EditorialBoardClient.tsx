@@ -61,36 +61,38 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                         </h2>
                     </div>
 
-                    <div className="divide-y divide-primary/5">
+                    <div className="divide-y divide-primary/20 border-t  border-primary/20">
                         {category.members.map((member: BoardMember, mIdx: number) => (
-                            <article key={mIdx} className="group hover:bg-primary/5 transition-colors border-b border-primary/5 last:border-0">
-                                <header className="bg-muted/70 py-3 px-6 xl:px-8 border-b border-border/50">
-                                    <h3 className="text-primary m-0 font-semibold text-sm xl:text-lg 2xl:text-xl">
+                            <article key={mIdx} className="group hover:bg-primary/5 transition-colors  border-b-2  border-primary/70 last:border-0">
+                                <header className="bg-muted/70 py-2 px-6 xl:px-8 border-b border-primary/10">
+                                    <h3 className="text-primary m-0 font-semibold text-sm xl:text-lg 2xl:text-2xl">
                                         {member.full_name}
                                     </h3>
                                 </header>
 
-                                <div className="py-5 px-6 xl:px-8 space-y-4">
-                                    <div className="flex flex-row flex-wrap items-baseline gap-x-3 gap-y-1 text-slate-700/90">
-                                        <p className="m-0 leading-relaxed font-medium text-foreground text-sm xl:text-base 2xl:text-xl shrink-0">
+                                <div className="py-4   px-8 xl:px-12 space-y-3">
+                                    <div className="flex flex-col sm:flex-row sm:items-baseline gap-x-3 gap-y-1 text-slate-700/90">
+                                        <p className="m-0 leading-relaxed font-medium text-foreground text-sm xl:text-base 2xl:text-2xl wrap-break-word">
                                             {member.designation}
-                                            {member.department && ` • ${member.department}`}
+                                            {member.department && <span className="hidden sm:inline"> • </span>}
+                                            {member.department && <span className="sm:hidden block text-xs opacity-70 italic">{member.department}</span>}
+                                            {member.department && <span className="hidden sm:inline">{member.department}</span>}
                                         </p>
-                                        <p className="m-0 leading-relaxed italic text-xs xl:text-sm 2xl:text-lg text-slate-600 font-medium">
+                                        <p className="m-0 leading-relaxed italic text-xs xl:text-sm 2xl:text-xl text-slate-600 font-medium wrap-break-word">
                                             {member.institute}
                                         </p>
                                     </div>
 
                                     {member.officialAddress && (
-                                        <div className="flex items-start gap-2 text-xs xl:text-sm 2xl:text-lg text-slate-700 leading-relaxed italic bg-muted/30 p-2 rounded border-l-2 border-primary/20">
+                                        <div className="flex items-start gap-2 text-xs xl:text-sm 2xl:text-xl text-slate-700 leading-relaxed italic bg-muted/30 p-2 rounded border-l-2 border-primary/20">
                                             <span className="font-bold text-[10px] uppercase tracking-wider text-primary/40 shrink-0 mt-0.5">Postal address:</span>
                                             <span>{member.officialAddress}</span>
                                         </div>
                                     )}
 
-                                    <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-primary/5">
+                                    <div className="flex flex-wrap items-center gap-4 pt-3 border-t border-primary/20">
                                         {member.email && (
-                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-lg text-primary">
+                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-xl text-primary">
                                                 <Mail className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-primary/40 shrink-0" />
                                                 <a href={`mailto:${member.email}`} className="hover:text-primary hover:underline transition-colors font-medium">
                                                     {member.email}
@@ -98,7 +100,7 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                                             </div>
                                         )}
                                         {member.secondaryEmail && (
-                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-lg text-primary/60 border-l border-primary/20 pl-4">
+                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-xl text-primary/60 border-l border-primary/20 pl-4">
                                                 <Mail className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-primary/40 shrink-0" />
                                                 <a href={`mailto:${member.secondaryEmail}`} className="hover:text-primary hover:underline transition-colors font-medium">
                                                     {member.secondaryEmail}
@@ -106,7 +108,7 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                                             </div>
                                         )}
                                         {member.profileLink && (
-                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-lg">
+                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-xl">
                                                 <a
                                                     href={member.profileLink}
                                                     target="_blank"

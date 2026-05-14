@@ -14,6 +14,7 @@ import path from "path";
 import { emailTemplates, sendEmail } from "@/lib/mail";
 import { safeDeleteFile } from "@/lib/fs-utils";
 import { eq } from "drizzle-orm";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // Local schema extension for application type
 const applicationSchema = insertApplicationSchema.extend({
@@ -35,6 +36,14 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
     const validation = applicationSchema.safeParse({ fullName, designation, institute, email, type, nationality });
     if (!validation.success) {
         return actionError(validation.error.issues[0]?.message || "Please fill in all required fields correctly.");
+    }
+    const appRate = await checkRateLimit({
+        key: `application:${email.toLowerCase().trim()}:${type.toLowerCase().trim()}`,
+        max: 3,
+        windowMs: 10 * 60_000,
+    });
+    if (!appRate.allowed) {
+        return actionError(`Too many application attempts. Please wait ${appRate.retryAfterSeconds} seconds and try again.`);
     }
 
     // Validate files

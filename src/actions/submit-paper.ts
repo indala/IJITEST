@@ -19,6 +19,7 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 import { eq, inArray } from "drizzle-orm";
 import crypto from 'crypto';
 import { ActionResponse } from "@/db/types";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const submissionSchema = z.object({
     authorName: z.string().min(2, "Author name is required").max(255, "Author name cannot exceed 255 characters"),
@@ -64,6 +65,14 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
         const validated = submissionSchema.safeParse(rawData);
         if (!validated.success) return { success: false, error: validated.error?.issues[0]?.message || "Validation failed" };
+        const submissionRate = await checkRateLimit({
+            key: `submit:${validated.data.authorEmail.toLowerCase().trim()}`,
+            max: 2,
+            windowMs: 10 * 60_000,
+        });
+        if (!submissionRate.allowed) {
+            return { success: false, error: `Too many submission attempts. Please wait ${submissionRate.retryAfterSeconds} seconds and try again.` };
+        }
 
         const manuscriptFile = formData.get("manuscript") as File;
         const copyrightFile = formData.get("copyrightForm") as File;
