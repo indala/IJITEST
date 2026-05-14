@@ -246,6 +246,70 @@ export default function SystemSettings() {
                             </CardContent>
                         </Card>
                     </motion.div>
+                    
+                    {/* Academic Metadata */}
+                    <motion.div variants={itemVariants}>
+                        <Card className="group relative overflow-hidden bg-white/60 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 shadow-xl rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-blue-500/5">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:scale-150 transition-transform duration-1000" />
+                            <CardHeader className="p-6 pb-2">
+                                <div className="flex items-center gap-4 mb-2">
+                                    <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shadow-inner">
+                                        <Sparkles className="w-6 h-6" />
+                                    </div>
+                                    <div className="space-y-0.5">
+                                        <CardTitle className="text-slate-900 dark:text-white">Academic Metadata</CardTitle>
+                                        <CardDescription className="text-slate-500 dark:text-slate-400 text-xs">Scholarly indexing & registration.</CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-6 pt-0 space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Starting Year</Label>
+                                        <Input
+                                            name="startingYear"
+                                            defaultValue={settings.startingYear}
+                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Frequency</Label>
+                                        <Input
+                                            name="publicationFrequency"
+                                            defaultValue={settings.publicationFrequency}
+                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Language</Label>
+                                        <Input
+                                            name="journalLanguage"
+                                            defaultValue={settings.journalLanguage}
+                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">UDYAM / MSME</Label>
+                                        <Input
+                                            name="udyamRegistration"
+                                            defaultValue={settings.udyamRegistration}
+                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Subject Area</Label>
+                                    <Input
+                                        name="journalSubject"
+                                        defaultValue={settings.journalSubject}
+                                        className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
 
                     {/* Operational Support */}
                     <motion.div variants={itemVariants} className="lg:col-span-2">

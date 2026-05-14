@@ -25,7 +25,7 @@ export default function AboutClient() {
                         {journalName} ({journalShortName}) is an international, peer-reviewed journal that publishes original research articles, review papers, and survey articles.
                     </p>
                     <p className="font-medium text-foreground italic bg-primary/5 p-3 rounded-lg border-l-4 border-primary">
-                        Subject: Engineering, Science and Technology • Language: English
+                        Subject: {settings.journalSubject || 'Multidisciplinary'} • Language: English
                     </p>
                     <p>
                         {journalShortName} is dedicated to the dissemination of high-quality research, covering fundamental and applied research, interdisciplinary studies, and emerging technologies that contribute to academic knowledge and industrial growth.
@@ -135,7 +135,8 @@ export default function AboutClient() {
                         { label: "Commencement", value: "2026" },
                         { label: "Frequency", value: "12 Issues / Year" },
                         { label: "E-ISSN", value: (settings.issnNumber || '') },
-                        { label: "Format", value: "Online, Open" }
+                        { label: "Format", value: "Online, Open" },
+                        { label: "UDYAM", value: (settings.udyamRegistration || '') }
                     ].map((item, i) => (
                         <div key={i} className="p-4 rounded-xl bg-card border border-border/50">
                             <dt className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase mb-1">{item.label}</dt>

@@ -118,7 +118,7 @@ export function DashboardRegistry({
                         {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        Logged in as <span className="font-medium text-foreground">{user?.profile!.fullName || user?.name || user?.email}</span>
+                        Logged in as <span className="font-medium text-foreground">{user?.profile?.fullName || user?.name || user?.email}</span>
                     </p>
                 </div>
                 <div className="flex flex-wrap sm:flex-nowrap gap-3">

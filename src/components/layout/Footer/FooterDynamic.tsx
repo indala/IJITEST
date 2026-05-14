@@ -21,7 +21,7 @@ export function FooterDynamic({ field, className }: FooterDynamicProps) {
 
     return (
         <p className={`text-white m-0 font-semibold ${className ?? ''}`}>
-            {settings[field]}
+            {settings?.[field]}
         </p>
     );
 }

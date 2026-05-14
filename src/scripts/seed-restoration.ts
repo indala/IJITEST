@@ -10,19 +10,20 @@ async function seed() {
         // 1. SEED SETTINGS
         console.log("📝 Seeding Journal Settings...");
         const journalSettings = [
-            { settingKey: 'apc_description', settingValue: 'APC covers DOI assignment, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.' },
-            { settingKey: 'apc_inr', settingValue: '0' },
-            { settingKey: 'apc_usd', settingValue: '0' },
-            { settingKey: 'copyright_url', settingValue: '/docs/copyright-form.docx' },
-            { settingKey: 'is_promotion_active', settingValue: 'true' },
-            { settingKey: 'issn_number', settingValue: 'XXXX-XXXX' },
-            { settingKey: 'journal_name', settingValue: 'International Journal of Innovative Trends in Engineering Science and Technology' },
-            { settingKey: 'journal_short_name', settingValue: 'IJITEST' },
-            { settingKey: 'office_address', settingValue: 'Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India' },
-            { settingKey: 'publisher_name', settingValue: 'Felix Academic Publications' },
-            { settingKey: 'support_email', settingValue: 'support@ijitest.org' },
-            { settingKey: 'support_phone', settingValue: '+91 8919643590' },
-            { settingKey: 'template_url', settingValue: '/docs/template-url.docx' }
+            { settingKey: 'apcDescription', settingValue: 'APC covers DOI assignment, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.' },
+            { settingKey: 'apcInr', settingValue: '0' },
+            { settingKey: 'apcUsd', settingValue: '0' },
+            { settingKey: 'copyrightUrl', settingValue: '/docs/copyright-form.docx' },
+            { settingKey: 'isPromotionActive', settingValue: 'true' },
+            { settingKey: 'issnNumber', settingValue: 'XXXX-XXXX' },
+            { settingKey: 'journalName', settingValue: 'International Journal of Innovative Trends in Engineering Science and Technology' },
+            { settingKey: 'journalShortName', settingValue: 'IJITEST' },
+            { settingKey: 'officeAddress', settingValue: 'Dr. Ravibabu T.\nAssociate Professor\nDepartment of Electronics and Communication Engineering\nMES Group of Institutions, Vizianagaram,\nAndhra Pradesh, India - 530048' },
+            { settingKey: 'publisherName', settingValue: 'Felix Academic Publications' },
+            { settingKey: 'supportEmail', settingValue: 'support@ijitest.org' },
+            { settingKey: 'supportPhone', settingValue: '+91 8919643590' },
+            { settingKey: 'templateUrl', settingValue: '/docs/template-url.docx' },
+            { settingKey: 'udyamRegistration', settingValue: 'UDYAM-AP-10-0125617' }
         ];
 
         for (const s of journalSettings) {
@@ -40,7 +41,7 @@ async function seed() {
                 email: 'editor@ijitest.org',
                 passwordHash: '$2b$10$HpElpKNYCXaqdUpivIxWA.CLDniLlVW/GIb7VyiDv4Syl3WsKsdqy', // Old Admin Hash
                 role: 'admin' as const,
-                fullName: 'Dr. Ravi Babu T',
+                fullName: 'Dr. Ravibabu T.',
                 designation: 'Associate Professor',
                 institute: 'MES Group of Institution',
                 phone: '+91 8919643590'

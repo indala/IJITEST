@@ -7,20 +7,17 @@ import {
     applicationInterests, 
     masterInterests 
 } from "@/db/schema";
-import { ActionResponse } from "@/db/types";
+import { ActionResponse, actionSuccess, actionError } from "@/db/types";
+import { insertApplicationSchema } from "@/db/validation";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { emailTemplates, sendEmail } from "@/lib/mail";
 import { safeDeleteFile } from "@/lib/fs-utils";
 import { eq } from "drizzle-orm";
 
-const schema = z.object({
-    fullName: z.string().min(2),
-    designation: z.string().min(2),
-    institute: z.string().min(2),
-    email: z.string().email(),
-    applicationType: z.enum(['reviewer', 'editor']).default('reviewer'),
-    nationality: z.string().min(2),
+// Local schema extension for application type
+const applicationSchema = insertApplicationSchema.extend({
+    type: z.enum(['reviewer', 'editor']).default('reviewer'),
 });
 
 export async function submitReviewerApplication(formData: FormData): Promise<ActionResponse> {
@@ -28,21 +25,21 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
     const designation = formData.get("designation") as string;
     const institute = formData.get("institute") as string;
     const email = formData.get("email") as string;
-    const applicationType = formData.get("applicationType") as string;
+    const type = formData.get("applicationType") as string; // Map to DB field name
     const nationality = formData.get("nationality") as string;
     const cv = formData.get("cv") as File;
     const photo = formData.get("photo") as File;
     const researchInterestsStr = formData.get("researchInterests") as string;
 
     // Validate textual data
-    const validation = schema.safeParse({ fullName, designation, institute, email, applicationType, nationality });
+    const validation = applicationSchema.safeParse({ fullName, designation, institute, email, type, nationality });
     if (!validation.success) {
-        return { success: false, error: "Please fill in all required fields correctly." };
+        return actionError(validation.error.issues[0]?.message || "Please fill in all required fields correctly.");
     }
 
     // Validate files
-    if (!cv || cv.size === 0) return { success: false, error: "Please upload your CV." };
-    if (!photo || photo.size === 0) return { success: false, error: "Please upload your Photo." };
+    if (!cv || cv.size === 0) return actionError("Please upload your CV.");
+    if (!photo || photo.size === 0) return actionError("Please upload your Photo.");
 
     let cvUrl: string | null = null;
     let photoUrl: string | null = null;
@@ -65,15 +62,10 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         // Save to Database
         await db.transaction(async (tx) => {
             const [insertedApp] = await tx.insert(applications).values({
-                fullName,
-                designation,
-                institute,
-                email,
+                ...validation.data,
                 cvUrl,
                 photoUrl,
-                type: applicationType as 'reviewer' | 'editor',
                 status: 'pending',
-                nationality,
             });
             const appId = insertedApp.insertId;
 
@@ -112,7 +104,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
 
         // Notify Admin via Email
         const adminUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/reviewer-applications`;
-        const roleName = applicationType === 'editor' ? 'Editor' : 'Reviewer';
+        const roleName = type === 'editor' ? 'Editor' : 'Reviewer';
 
         const adminTemplate = emailTemplates.adminNotification(
             `New ${roleName} Application`,
@@ -127,14 +119,14 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         });
 
         // Confirmation to Applicant
-        const applicantTemplate = emailTemplates.boardApplicationReceipt(fullName, applicationType);
+        const applicantTemplate = emailTemplates.boardApplicationReceipt(fullName, type as any);
         sendEmail({
             to: email,
             subject: applicantTemplate.subject,
             html: applicantTemplate.html
         });
 
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         console.error("Application Error:", error);
 
@@ -143,8 +135,8 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         if (photoUrl) await safeDeleteFile(photoUrl);
 
         if (error && typeof error === 'object' && 'code' in error && error.code === 'ER_DUP_ENTRY') {
-            return { success: false, error: "An application with this email already exists for this role." };
+            return actionError("An application with this email already exists for this role.");
         }
-        return { success: false, error: "Failed to submit application. Please try again." };
+        return actionError("Failed to submit application. Please try again.");
     }
 }

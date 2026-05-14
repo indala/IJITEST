@@ -16,8 +16,8 @@ export const JournalParticulars = () => {
         { label: "Language", value: (settings.journalLanguage || '') },
         { label: "Subject", value: (settings.journalSubject || '') },
         { label: "Publisher", value: (settings.publisherName || '') },
-        { label: "Registration", value: (settings.msmeRegistration || '') },
-        { label: "Email", value: (settings.supportEmail || '') },
+        { label: "UDYAM", value: (settings.udyamRegistration || '') },
+        { label: "Email", value: "felixtecsolutions@gmail.com" },
         { label: "Website", value: (settings.journalWebsite || '') },
     ];
 

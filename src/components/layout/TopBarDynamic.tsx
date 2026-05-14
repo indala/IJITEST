@@ -3,7 +3,7 @@
 import { useSettingsStore } from '@/store/useSettingsStore';
 
 export function TopBarDynamic() {
-    const { journalName, issnNumber, publisherName } = useSettingsStore((s) => s.settings);
+    const { journalName, issnNumber, publisherName } = useSettingsStore((s) => s.settings) || {};
 
     return (
         <div className="flex flex-col items-center text-center space-y-3">

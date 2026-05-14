@@ -11,14 +11,14 @@ import { getEditorialBoard } from '@/actions/users';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Editorial Board | ${settings.journal_name}`,
-        description: `Meet the esteemed editorial board of ${settings.journal_short_name}. Our panel of global academic experts is committed to scientific excellence and rigorous peer review in engineering and technology.`,
+        title: `Editorial Board | ${settings.journalName}`,
+        description: `Meet the esteemed editorial board of ${settings.journalShortName}. Our panel of global academic experts is committed to scientific excellence and rigorous peer review in engineering and technology.`,
         alternates: {
             canonical: '/editorial-board',
         },
         openGraph: {
-            title: `Editorial Board - ${settings.journal_short_name}`,
-            description: `Global academic experts steering the ${settings.journal_name}.`,
+            title: `Editorial Board - ${settings.journalShortName}`,
+            description: `Global academic experts steering the ${settings.journalName}.`,
             type: 'website',
         }
     };

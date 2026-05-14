@@ -7,13 +7,13 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Become a Reviewer | ${settings.journal_name}`,
-        description: `Apply to become a reviewer for ${settings.journal_short_name}. Join our global network of experts and contribute to engineering excellence through high-quality peer review.`,
+        title: `Become a Reviewer | ${settings.journalName}`,
+        description: `Apply to become a reviewer for ${settings.journalShortName}. Join our global network of experts and contribute to engineering excellence through high-quality peer review.`,
         alternates: {
             canonical: '/join-us',
         },
         openGraph: {
-            title: `Editorial Opportunity - ${settings.journal_short_name}`,
+            title: `Editorial Opportunity - ${settings.journalShortName}`,
             description: `Contribute to the future of engineering discourse.`,
             type: 'website',
         }

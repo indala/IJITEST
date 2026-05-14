@@ -15,13 +15,13 @@ import { SidebarLayout } from '@/components/layout/SidebarLayout';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `About the Journal | ${settings.journal_name}`,
-        description: `Learn about ${settings.journal_name} (${settings.journal_short_name}). We focus on rapid yet rigorous peer review for technically sound research in engineering, science, and technology.`,
+        title: `About the Journal | ${settings.journalName}`,
+        description: `Learn about ${settings.journalName} (${settings.journalShortName}). We focus on rapid yet rigorous peer review for technically sound research in engineering, science, and technology.`,
         alternates: {
             canonical: '/about',
         },
         openGraph: {
-            title: `About ${settings.journal_short_name}`,
+            title: `About ${settings.journalShortName}`,
             description: `Quality academic publishing for the modern era.`,
             type: 'website',
         }

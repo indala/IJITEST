@@ -9,10 +9,10 @@ export const revalidate = 3600; // 1 hour
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Journal Archives | ${settings.journal_name}`,
-        description: `Browse the digital repository of ${settings.journal_short_name}. Explore peer-reviewed research, technical reports, and innovative trends in engineering and science since ${settings.journal_name}'s inception.`,
+        title: `Journal Archives | ${settings.journalName}`,
+        description: `Browse the digital repository of ${settings.journalShortName}. Explore peer-reviewed research, technical reports, and innovative trends in engineering and science since ${settings.journalName}'s inception.`,
         openGraph: {
-            title: `Research repository - ${settings.journal_short_name}`,
+            title: `Research repository - ${settings.journalShortName}`,
             description: `Global access to peer-reviewed technical manuscripts.`,
             type: 'website',
         }

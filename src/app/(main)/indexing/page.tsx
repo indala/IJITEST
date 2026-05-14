@@ -6,13 +6,13 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Indexing & Abstracting | ${settings.journal_name}`,
-        description: `Explore the global discovery hubs where ${settings.journal_short_name} research is archived and indexed. Discover our roadmap for major scientific databases including Google Scholar, CrossRef, and more.`,
+        title: `Indexing & Abstracting | ${settings.journalName}`,
+        description: `Explore the global discovery hubs where ${settings.journalShortName} research is archived and indexed. Discover our roadmap for major scientific databases including Google Scholar, CrossRef, and more.`,
         alternates: {
             canonical: '/indexing',
         },
         openGraph: {
-            title: `Global Indexing - ${settings.journal_short_name}`,
+            title: `Global Indexing - ${settings.journalShortName}`,
             description: `Planned discovery hubs for inaugural 2026 volume.`,
             type: 'website',
         }

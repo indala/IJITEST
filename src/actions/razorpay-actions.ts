@@ -22,7 +22,7 @@ export async function createRazorpayOrder(submissionId: number, paperId: string)
         // 1. Fetch APC amount from settings
         const settingsRows = await db.select()
             .from(settings)
-            .where(eq(settings.settingKey, "apc_inr"))
+            .where(eq(settings.settingKey, "apcInr"))
             .limit(1);
         
         const amountInINR = settingsRows[0]?.settingValue || '2500';

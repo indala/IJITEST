@@ -15,7 +15,7 @@ const ALLOWED_SETTING_KEYS = new Set([
     'supportEmail', 'supportPhone', 'officeAddress', 'publisherName',
     'journalWebsite', 'apcDescription', 'templateUrl', 'copyrightUrl',
     'isPromotionActive', 'publicationFrequency', 'startingYear', 
-    'publicationFormat', 'journalLanguage', 'journalSubject', 'msmeRegistration'
+    'publicationFormat', 'journalLanguage', 'journalSubject', 'udyamRegistration'
 ]);
 
 const DEFAULT_SETTINGS: Record<string, string> = {
@@ -24,9 +24,9 @@ const DEFAULT_SETTINGS: Record<string, string> = {
     issnNumber: 'XXXX-XXXX',
     apcInr: '2500',
     apcUsd: '50',
-    supportEmail: 'editor@ijitest.org',
+    supportEmail: 'support@ijitest.org',
     supportPhone: '+91 8919643590',
-    officeAddress: 'Dr. Ravi babu. T\nFelix academic publications\nSrinivasa Nagar\nDeekshita plaza\nMadhurawada\nVisakhapatnam - 530048\nAndhra Pradesh\nIndia',
+    officeAddress: 'Dr. Ravibabu T.\nAssociate Professor\nDepartment of Electronics and Communication Engineering\nMES Group of Institutions, Vizianagaram,\nAndhra Pradesh, India - 530048',
     publisherName: 'Felix Academic Publications',
     journalWebsite: 'www.ijitest.org',
     apcDescription: 'APC covers SJIF impact evaluation, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.',
@@ -37,8 +37,8 @@ const DEFAULT_SETTINGS: Record<string, string> = {
     startingYear: '2026',
     publicationFormat: 'Online',
     journalLanguage: 'English',
-    journalSubject: 'Engineering, Science and Technology',
-    msmeRegistration: 'MSME Registered (UDYAM-AP-10-0125617)'
+    journalSubject: 'Multidisciplinary (Engineering, Science and Technology, Healthcare, Management Sciences)',
+    udyamRegistration: 'UDYAM-AP-10-0125617'
 };
 
 export async function getSettings(): Promise<ActionResponse<Record<string, string>>> {

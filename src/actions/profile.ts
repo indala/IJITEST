@@ -19,7 +19,8 @@ import { safeDeleteFile } from "@/lib/fs-utils";
 import path from "path";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { ActionResponse } from "@/db/types";
+import { ActionResponse, actionSuccess, actionError } from "@/db/types";
+import { insertProfileSchema } from "@/db/validation";
 
 export type ProfileData = {
     id: string;
@@ -58,7 +59,7 @@ export type ProfileData = {
 export async function getProfileData(userId: string, role: 'admin' | 'editor' | 'reviewer' | 'author'): Promise<ActionResponse<ProfileData>> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session) return { success: false, error: "Unauthorized" };
+        if (!session) return actionError("Unauthorized");
 
         // 1. Fetch User Base Info and Profile
         const userWithProfile = await db.select({
@@ -78,7 +79,7 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
         .where(eq(users.id, userId))
         .limit(1);
 
-        if (userWithProfile.length === 0 || !userWithProfile[0]) return { success: false, error: "User not found" };
+        if (userWithProfile.length === 0 || !userWithProfile[0]) return actionError("User not found");
         const userData = userWithProfile[0];
 
         const profileData: Partial<ProfileData> = { 
@@ -173,84 +174,69 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
         // 5. Calculate Completeness
         profileData.completeness = await getProfileCompleteness(profileData, role);
 
-        return { success: true, data: profileData as ProfileData };
+        return actionSuccess(profileData as ProfileData);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.error("getProfileData error:", error);
-        return { success: false, error: "Failed to fetch profile: " + message };
+        return actionError("Failed to fetch profile: " + message);
     }
 }
 
 export async function updateProfileField(userId: string, field: string, value: string): Promise<ActionResponse<string>> {
     // Auth: verify the caller owns this profile
     const session = await getServerSession(authOptions);
-    if (!session?.user) return { success: false, error: "Unauthorized" };
+    if (!session?.user) return actionError("Unauthorized");
     if (session.user.id !== userId && session.user.role !== 'admin') {
-        return { success: false, error: "Unauthorized: You can only edit your own profile." };
+        return actionError("Unauthorized: You can only edit your own profile.");
     }
 
-    const whitelist = ['name', 'designation', 'orcidId', 'phone', 'institute', 'nationality', 'bio'];
-    if (!whitelist.includes(field)) {
-        return { success: false, error: 'Field not permitted' };
-    }
-
-    const trimmedValue = value.trim();
-    if (!trimmedValue && field !== 'orcidId' && field !== 'phone') {
-        return { success: false, error: 'Value cannot be empty' };
-    }
-
-    // Database Guardrails: Ensure lengths match schema.ts
-    const limits: Record<string, number> = {
-        name: 255,
-        designation: 255,
-        institute: 255,
-        nationality: 100,
-        orcidId: 50,
-        phone: 20,
-        bio: 2000
+    const fieldMapping: Record<string, string> = {
+        name: 'fullName',
+        designation: 'designation',
+        orcidId: 'orcidId',
+        phone: 'phone',
+        institute: 'institute',
+        nationality: 'nationality',
+        bio: 'bio'
     };
 
-    if (limits[field] && trimmedValue.length > limits[field]) {
-        return { success: false, error: `Maximum of ${limits[field]} characters allowed for ${field}.` };
-    }
+    const dbField = fieldMapping[field];
+    if (!dbField) return actionError('Field not permitted');
 
-    // Phone validation
-    if (field === 'phone' && trimmedValue && !/^[0-9+ ]+$/.test(trimmedValue)) {
-        return { success: false, error: "Phone number contains invalid characters." };
+    const trimmedValue = value.trim();
+    
+    // 🛡️ Elite: Dynamic schema validation using drizzle-zod .shape
+    const fieldSchema = insertProfileSchema.shape[dbField as keyof typeof insertProfileSchema.shape];
+    const validation = fieldSchema.safeParse(trimmedValue);
+    
+    if (!validation.success) {
+        return actionError(validation.error.issues[0]?.message || "Validation failed");
     }
 
     try {
-        const updateDoc: Partial<typeof userProfiles.$inferInsert> = {};
-        if (field === 'name') updateDoc.fullName = trimmedValue;
-        else if (field === 'orcidId') updateDoc.orcidId = trimmedValue;
-        else if (field === 'designation') updateDoc.designation = trimmedValue;
-        else if (field === 'phone') updateDoc.phone = trimmedValue;
-        else if (field === 'institute') updateDoc.institute = trimmedValue;
-        else if (field === 'nationality') updateDoc.nationality = trimmedValue;
-        else if (field === 'bio') updateDoc.bio = trimmedValue;
+        const updateDoc = { [dbField]: validation.data };
 
         await db.update(userProfiles)
             .set(updateDoc)
             .where(eq(userProfiles.userId, userId));
             
         revalidatePath("/(panel)", "layout");
-        return { success: true, data: trimmedValue };
+        return actionSuccess(trimmedValue);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error("updateProfileField error:", error);
-        return { success: false, error: "Failed to update field: " + message };
+        return actionError("Failed to update field: " + message);
     }
 }
 
 export async function updateResearchInterests(userId: string, interests: string[]): Promise<ActionResponse<string[]>> {
     // Auth: verify the caller owns this profile
     const session = await getServerSession(authOptions);
-    if (!session?.user) return { success: false, error: "Unauthorized" };
+    if (!session?.user) return actionError("Unauthorized");
     if (session.user.id !== userId && session.user.role !== 'admin') {
-        return { success: false, error: "Unauthorized: You can only update your own interests." };
+        return actionError("Unauthorized: You can only update your own interests.");
     }
 
-    if (!Array.isArray(interests)) return { success: false, error: "Invalid interests format" };
+    if (!Array.isArray(interests)) return actionError("Invalid interests format");
     const cleanInterests = interests.map(i => i.trim()).filter(Boolean).slice(0, 20);
 
     try {
@@ -301,28 +287,28 @@ export async function updateResearchInterests(userId: string, interests: string[
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error("updateResearchInterests error:", error);
-        return { success: false, error: "Failed to update interests: " + message };
+        return actionError("Failed to update interests: " + message);
     }
 }
 
 export async function updateProfilePhoto(userId: string, formData: FormData): Promise<ActionResponse<string>> {
     // Auth: verify the caller owns this profile
     const session = await getServerSession(authOptions);
-    if (!session?.user) return { success: false, error: "Unauthorized" };
+    if (!session?.user) return actionError("Unauthorized");
     if (session.user.id !== userId && session.user.role !== 'admin') {
-        return { success: false, error: "Unauthorized: You can only update your own photo." };
+        return actionError("Unauthorized: You can only update your own photo.");
     }
 
     const file = formData.get("file") as File;
-    if (!file) return { success: false, error: "No file provided" };
+    if (!file) return actionError("No file provided");
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-        return { success: false, error: "Invalid file type. Only JPG, PNG and WEBP allowed." };
+        return actionError("Invalid file type. Only JPG, PNG and WEBP allowed.");
     }
 
     if (file.size > 2 * 1024 * 1024) {
-        return { success: false, error: "File too large. Max 2MB allowed." };
+        return actionError("File too large. Max 2MB allowed.");
     }
 
     try {
@@ -355,7 +341,7 @@ export async function updateProfilePhoto(userId: string, formData: FormData): Pr
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error("updateProfilePhoto error:", error);
-        return { success: false, error: "Failed to update photo: " + message };
+        return actionError("Failed to update photo: " + message);
     }
 }
 

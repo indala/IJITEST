@@ -13,7 +13,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function GuidelinesContent() {
     const settings = useSettingsStore((state) => state.settings);
-    const supportEmail = settings.supportEmail || "editor@ijitest.org";
+    const supportEmail = settings.supportEmail || "support@ijitest.org";
 
     const sections = [
         {

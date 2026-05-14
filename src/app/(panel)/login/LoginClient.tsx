@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Lock, Mail, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, getSession } from 'next-auth/react';
 import { useFormStatus } from 'react-dom';
 import { Loader2 } from 'lucide-react';
@@ -28,6 +28,7 @@ function LoadingButton() {
 }
 
 export default function LoginClient() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
     
@@ -52,11 +53,13 @@ export default function LoginClient() {
             const role = (session?.user as { role?: string })?.role;
 
             if (callbackUrl && callbackUrl.startsWith('/')) {
-                window.location.href = callbackUrl;
+                router.push(callbackUrl);
+                router.refresh();
             } else if (role) {
-                window.location.href = `/${role}`;
+                router.push(`/${role}`);
+                router.refresh();
             } else {
-                window.location.href = '/login';
+                router.push('/login');
             }
         }
     }

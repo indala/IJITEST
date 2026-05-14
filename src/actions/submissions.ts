@@ -286,7 +286,7 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
         if (!subRes.success || !subRes.data) return { success: false, error: subRes.error || "Submission not found" };
         const submission = subRes.data;
 
-        const apcRows = await db.select().from(settings).where(eq(settings.settingKey, 'apc_inr')).limit(1);
+        const apcRows = await db.select().from(settings).where(eq(settings.settingKey, 'apcInr')).limit(1);
         const apcAmount = apcRows[0]?.settingValue || '0';
         const apcCurrency = 'INR';
 
@@ -337,7 +337,7 @@ export async function updateSubmissionStatus(id: number, status: typeof submissi
         const subRes = await getSubmissionById(id);
         if (subRes.success && subRes.data) {
             const submission = subRes.data;
-            const apcRows = await db.select().from(settings).where(eq(settings.settingKey, 'apc_inr')).limit(1);
+            const apcRows = await db.select().from(settings).where(eq(settings.settingKey, 'apcInr')).limit(1);
             const isFree = (apcRows[0]?.settingValue || '0') === '0';
 
             const template = emailTemplates.statusUpdate(

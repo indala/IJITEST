@@ -14,6 +14,7 @@ export const staticEditorialBoardMembers: BoardMember[] = [
     {
         full_name: "Dr. Y. Prasanna Kumar",
         designation: "Professor of Mining Engineering",
+        department: "School of Mining Engineering",
         institute: "Papua New Guinea University of Technology, Morobe Province",
         role: "editor",
         nationality: "Papua New Guinea",
@@ -40,7 +41,18 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         role: "editor",
         nationality: "Jordan",
         email: "b_hadidi@bau.edu.jo",
-        profileLink: "https://www.bau.edu.jo/user/@b_hadidi"
+        profileLink: "https://www.bau.edu.jo/user/@b_hadidi",
+        officialAddress: "Al-Salt, Jordan"
+    },
+    {
+        full_name: "Dr. CH. Swapna Priya",
+        designation: "Associate Professor",
+        department: "Dept of Computer Science Engineering",
+        institute: "Vignan's Institute of Information Technology",
+        role: "editor",
+        nationality: "India",
+        email: "swapnavignan@vignaniit.edu.in",
+        officialAddress: "Beside VSEZ, Vadlapudi, Duvvada, Visakhapatnam - 530049, Andhra Pradesh, India."
     },
     {
         full_name: "Dr S Nagamallik Raj",
@@ -65,6 +77,26 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         officialAddress: "T2-A12-6C, School of Electrical Engineering, UiTM Shah Alam, Selangor, Malaysia"
     },
     {
+        full_name: "Dr. Mahendra Narla",
+        designation: "Assistant Professor",
+        department: "Department of Artificial Intelligence and Data Science",
+        institute: "G. Pullaiah College of Engineering & Technology (GPCET)",
+        role: "editor",
+        nationality: "India",
+        email: "narlamahendracai@gpcet.ac.in",
+        officialAddress: "Nandikotkur Road, Near Venkayapalle, Pasupula Village, Kurnool - 518452, Andhra Pradesh, India."
+    },
+    {
+        full_name: "Dr. Oguz Kucur",
+        designation: "Professor",
+        department: "Department of Electronics Engineering",
+        institute: "Gebze Technical University, Turkey",
+        role: "editor",
+        nationality: "Turkey",
+        email: "okucur@gtu.edu.tr",
+        officialAddress: "Block A2, Office: ELM 241, Cumhuriyet, 2254. Sk. No:2, 41400, Turkey"
+    },
+    {
         full_name: "Dr Somasekhar Borugadda",
         designation: "Professor",
         department: "Electronics and Communication Engineering (ECE)",
@@ -76,6 +108,45 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         officialAddress: "Sangivalasa, Bheemunipatnam Mandal, Visakhapatnam District, Andhra Pradesh, India"
     },
     {
+        full_name: "Prof. Dr. Emin Anarım",
+        designation: "Professor",
+        department: "Department of Electrical and Electronic Engineering",
+        institute: "Boğaziçi University, Turkey",
+        role: "editor",
+        nationality: "Turkey",
+        email: "anarim@boun.edu.tr",
+        officialAddress: "North Campus- Square Block, 34342 Bebek/Istanbul, Turkey"
+    },
+    {
+        full_name: "Razalingah",
+        designation: "Professor",
+        department: "Faculty of Electrical Engineering",
+        institute: "Universiti Teknologi Malaysia (UTM), Malaysia",
+        role: "editor",
+        nationality: "Malaysia",
+        email: "razalingah@utm.my",
+        officialAddress: "Skudai, Johor Bahru, Malaysia"
+    },
+    {
+        full_name: "Dr Trinadha Rao Challa",
+        designation: "Associate Professor",
+        institute: "Miracle Educational Society",
+        role: "editor",
+        nationality: "India",
+        email: "tchalla@miracleeducationalsociety.com",
+        officialAddress: "Miracle City, Munjeru Village, Bhogapuram Mandal, Vizianagaram District, Andhra Pradesh, 535216, India"
+    },
+    {
+        full_name: "Dr. K. Murali Krishna",
+        designation: "Professor",
+        department: "Department of Electronics and Communication Engineering",
+        institute: "Vignan's Institute of Information Technology (A)",
+        role: "editor",
+        nationality: "India",
+        email: "muralikrishnadoma@vignan.ac.in",
+        officialAddress: "Beside VSEZ, Vadlapudi Post, Duvvada, Gajuwaka, Visakhapatnam - 530049, Andhra Pradesh, India."
+    },
+    {
         full_name: "Prof. Khan Iftekharuddin",
         designation: "Professor",
         department: "Department of Electrical & Computer Engineering",
@@ -84,7 +155,18 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         nationality: "USA",
         email: "kiftekha@odu.edu",
         profileLink: "https://www.odu.edu/directory/khan-iftekharuddin",
-        officialAddress: "2107 Engineering Systems Building, 1210 West 45th Street, Norfolk, VA 23529, USA"
+        officialAddress: "Frank Batten College of Engineering & Technology, 1210 West 45th Street, Norfolk, VA 23529, USA"
+    },
+    {
+        full_name: "Dr Appalabathula Venkatesh",
+        designation: "Assistant Professor",
+        department: "Dept of Electrical and Electronic Engineering",
+        institute: "Anil Neerukonda Institute of Technology and Sciences",
+        role: "editor",
+        nationality: "India",
+        email: "avenkatesh.eee@anits.edu.in",
+        profileLink: "https://anits.irins.org/profile/150637",
+        officialAddress: "Sangivalasa, Bheemunipatnam Mandal, Visakhapatnam District, Andhra Pradesh, India"
     },
     {
         full_name: "Dr. Srinivasa Rao Thammada",
@@ -96,6 +178,16 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         email: "sthamada@gitam.edu",
         profileLink: "https://www.gitam.edu/faculty/t-srinivasa-rao",
         officialAddress: "Gandhi Nagar, Rushikonda, Visakhapatnam - 530045, Andhra Pradesh, India."
+    },
+    {
+        full_name: "Dr. Ibrahim Altunabas",
+        designation: "Professor",
+        department: "Faculty of Electrical and Electronics Engineering",
+        institute: "Istanbul Technical University, Turkey",
+        role: "editor",
+        nationality: "Turkey",
+        email: "ibraltunbas@itu.edu.tr",
+        officialAddress: "34469, Maslak, İstanbul/TÜRKİYE, Turkey"
     },
     {
         full_name: "Dr. Haris Haralambous",
@@ -142,17 +234,6 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         officialAddress: "Srikakulam District, Andhra Pradesh, India"
     },
     {
-        full_name: "Dr Appalabathula Venkatesh",
-        designation: "Assistant Professor",
-        department: "Dept of Electrical and Electronic Engineering",
-        institute: "Anil Neerukonda Institute of Technology and Sciences",
-        role: "editor",
-        nationality: "India",
-        email: "avenkatesh.eee@anits.edu.in",
-        profileLink: "https://anits.irins.org/profile/150637",
-        officialAddress: "Sangivalasa, Bheemunipatnam Mandal, Visakhapatnam District, Andhra Pradesh, India"
-    },
-    {
         full_name: "Mrs. A Bhagya Lakshmi",
         designation: "Assistant Professor",
         department: "Department of Computers and Data Science",
@@ -162,82 +243,5 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         email: "bhagyalakshmi.csd@anits.edu.in",
         profileLink: "https://anits.irins.org/profile/594758",
         officialAddress: "Sangivalasa, Bheemunipatnam Mandal, Visakhapatnam District, Andhra Pradesh, India"
-    },
-    {
-        full_name: "Dr. CH. Swapna Priya",
-        designation: "Associate Professor",
-        department: "Dept of Computer Science Engineering",
-        institute: "Vignan's Institute of Information Technology",
-        role: "editor",
-        nationality: "India",
-        email: "swapnavignan@vignaniit.edu.in",
-        officialAddress: "Beside VSEZ, Vadlapudi, Duvvada, Visakhapatnam - 530049, Andhra Pradesh, India."
-    },
-    {
-        full_name: "Dr. Mahendra Narla",
-        designation: "Dept of Artificial Intelligence and Data Science",
-        institute: "G. Pullaiah College of Engineering & Technology (GPCET)",
-        role: "editor",
-        nationality: "India",
-        email: "narlamahendracai@gpcet.ac.in",
-        officialAddress: "Nandikotkur Road, Near Venkayapalle, Pasupula Village, Kurnool - 518452, Andhra Pradesh, India."
-    },
-    {
-        full_name: "Dr. Oguz Kucur",
-        designation: "Dept of Electronics Engineering",
-        institute: "Gebze Technical University, Turkey",
-        role: "editor",
-        nationality: "Turkey",
-        email: "okucur@gtu.edu.tr",
-        officialAddress: "Block A2, Office: ELM 241, Cumhuriyet, 2254. Sk. No:2, 41400, Turkey"
-    },
-    {
-        full_name: "Prof. Dr. Emin Anarım",
-        designation: "Professor",
-        department: "Department of Electrical and Electronic Engineering",
-        institute: "Boğaziçi University, Turkey",
-        role: "editor",
-        nationality: "Turkey",
-        email: "anarim@boun.edu.tr",
-        officialAddress: "North Campus- Square Block, 34342 Bebek/Istanbul, Turkey"
-    },
-    {
-        full_name: "Razalingah",
-        designation: "Assoc. Prof",
-        department: "Wireless Communication Centre (WCC)",
-        institute: "Universiti Teknologi Malaysia (UTM), Malaysia",
-        role: "editor",
-        nationality: "Malaysia",
-        email: "razalingah@utm.my",
-        officialAddress: "Block P15 & P15A, Faculty of Electrical Engineering, 81310 UTM Skudai, Johor Darul Ta'zim, Malaysia"
-    },
-    {
-        full_name: "Dr Trinadha Rao Challa",
-        designation: "Associate Professor",
-        institute: "Miracle City, India",
-        role: "editor",
-        nationality: "India",
-        email: "tchalla@miracleeducationalsociety.com",
-        officialAddress: "Munjeru Village, Bhogapuram Mandal, Vizianagaram District, Andhra Pradesh, 535216, India"
-    },
-    {
-        full_name: "Dr. K. Murali Krishna",
-        designation: "Professor",
-        department: "Department of Electronics and Communication Engineering",
-        institute: "Vignan's Institute of Information Technology (A), India",
-        role: "editor",
-        nationality: "India",
-        email: "muralikrishnadoma@vignan.ac.in",
-        officialAddress: "Beside VSEZ, Vadlapudi Post, Duvvada, Gajuwaka, Visakhapatnam - 530049, Andhra Pradesh, India."
-    },
-    {
-        full_name: "Dr. Ibrahim Altunabas",
-        designation: "Professor",
-        department: "Faculty of Electrical and Electronics Engineering",
-        institute: "Istanbul Technical University, Turkey",
-        role: "editor",
-        nationality: "Turkey",
-        email: "ibraltunbas@itu.edu.tr",
-        officialAddress: "Elektronik ve Haberleşme Mühendisliği Bölümü, 34469, Maslak, İstanbul/TÜRKİYE, Turkey"
     }
 ];

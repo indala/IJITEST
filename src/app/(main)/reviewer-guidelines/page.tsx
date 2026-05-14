@@ -6,13 +6,13 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Reviewer Guidelines | ${settings.journal_name}`,
-        description: `Elite protocols and ethical standards for manuscript evaluation at ${settings.journal_short_name}. Detailed directives on methodology, originality, and confidentiality for domain experts.`,
+        title: `Reviewer Guidelines | ${settings.journalName}`,
+        description: `Elite protocols and ethical standards for manuscript evaluation at ${settings.journalShortName}. Detailed directives on methodology, originality, and confidentiality for domain experts.`,
         alternates: {
             canonical: '/reviewer-guidelines',
         },
         openGraph: {
-            title: `Technical Evaluation Protocols - ${settings.journal_short_name}`,
+            title: `Technical Evaluation Protocols - ${settings.journalShortName}`,
             description: `Expert standards for technical evaluation.`,
             type: 'website',
         }

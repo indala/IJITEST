@@ -6,13 +6,13 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Submit Manuscript | ${settings.journal_name}`,
-        description: `Submit your original research technical papers to ${settings.journal_short_name} for high-impact peer review and fast-track publication.`,
+        title: `Submit Manuscript | ${settings.journalName}`,
+        description: `Submit your original research technical papers to ${settings.journalShortName} for high-impact peer review and fast-track publication.`,
         alternates: {
             canonical: '/submit',
         },
         openGraph: {
-            title: `Manuscript Submission - ${settings.journal_short_name}`,
+            title: `Manuscript Submission - ${settings.journalShortName}`,
             description: `Global call for papers in Engineering and Technology.`,
             type: 'website',
         }

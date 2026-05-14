@@ -8,7 +8,8 @@ import { emailTemplates, sendEmail } from "@/lib/mail";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
-import { ActionResponse } from "@/db/types";
+import { ActionResponse, actionSuccess, actionError } from "@/db/types";
+import { insertContactSchema } from "@/db/validation";
 
 export interface ContactMessageRow {
     id: number;
@@ -27,7 +28,7 @@ export async function getMessages(filters?: { status?: 'pending' | 'resolved' | 
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized access." };
+            return actionError("Unauthorized access.");
         }
 
         const whereConditions: import("drizzle-orm").SQL[] = [];
@@ -61,11 +62,10 @@ export async function getMessages(filters?: { status?: 'pending' | 'resolved' | 
         .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
         .orderBy(desc(contactMessages.createdAt));
 
-        return { success: true, data: rows as ContactMessageRow[] };
+        return actionSuccess(rows as ContactMessageRow[]);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.error("Get Messages Error:", error);
-        return { success: false, error: message };
+        return actionError(message);
     }
 }
 
@@ -76,7 +76,7 @@ export async function updateMessageStatus(id: number, status: 'resolved' | 'arch
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized access." };
+            return actionError("Unauthorized access.");
         }
 
         await db.update(contactMessages)
@@ -84,11 +84,10 @@ export async function updateMessageStatus(id: number, status: 'resolved' | 'arch
             .where(eq(contactMessages.id, id));
 
         revalidatePath('/admin/messages');
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.error("Update Message Status Error:", error);
-        return { success: false, error: "Failed to update record: " + message };
+        return actionError("Failed to update record: " + message);
     }
 }
 
@@ -99,7 +98,7 @@ export async function bulkUpdateMessageStatus(ids: number[], status: 'resolved' 
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized access." };
+            return actionError("Unauthorized access.");
         }
 
         await db.update(contactMessages)
@@ -107,11 +106,10 @@ export async function bulkUpdateMessageStatus(ids: number[], status: 'resolved' 
             .where(inArray(contactMessages.id, ids));
 
         revalidatePath('/admin/messages');
-        return { success: true, data: { count: ids.length } };
+        return actionSuccess({ count: ids.length });
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.error("Bulk Update Message Error:", error);
-        return { success: false, error: message };
+        return actionError(message);
     }
 }
 
@@ -122,16 +120,15 @@ export async function deleteMessage(id: number): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized access." };
+            return actionError("Unauthorized access.");
         }
 
         await db.delete(contactMessages).where(eq(contactMessages.id, id));
         revalidatePath('/admin/messages');
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.error("Delete Message Error:", error);
-        return { success: false, error: message };
+        return actionError(message);
     }
 }
 
@@ -142,7 +139,7 @@ export async function replyToMessage(id: number, replyContent: string): Promise<
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized access." };
+            return actionError("Unauthorized access.");
         }
 
         const [message] = await db.select()
@@ -150,7 +147,7 @@ export async function replyToMessage(id: number, replyContent: string): Promise<
             .where(eq(contactMessages.id, id))
             .limit(1);
 
-        if (!message) return { success: false, error: "Message not found." };
+        if (!message) return actionError("Message not found.");
 
         // Send the reply email
         const template = emailTemplates.contactReply(
@@ -173,10 +170,9 @@ export async function replyToMessage(id: number, replyContent: string): Promise<
             .where(eq(contactMessages.id, id));
 
         revalidatePath('/admin/messages');
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
-        console.error("Reply Message Error:", error);
-        return { success: false, error: "Failed to send reply: " + (error instanceof Error ? error.message : String(error)) };
+        return actionError("Failed to send reply: " + (error instanceof Error ? error.message : String(error)));
     }
 }
 
@@ -191,14 +187,14 @@ export async function revertMessageStatus(id: number): Promise<ActionResponse> {
  * Public action: Submit a contact inquiry from the website.
  */
 export async function submitContactMessage(formData: FormData): Promise<ActionResponse> {
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
-    const subject = formData.get('subject') as string;
-    const message = formData.get('message') as string;
-
-    if (!name || !email || !message) {
-        return { success: false, error: "Name, email and message are required." };
+    const rawData = Object.fromEntries(formData.entries());
+    const validated = insertContactSchema.safeParse(rawData);
+    
+    if (!validated.success) {
+        return actionError(validated.error.issues[0]?.message || "Validation failed");
     }
+
+    const { name, email, subject, message } = validated.data;
 
     try {
         await db.insert(contactMessages).values({
@@ -210,9 +206,9 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
         });
 
         // 1. Auto-reply to visitor (fire-and-forget)
-        const receiptTemplate = emailTemplates.contactReceipt(name, subject);
+        const receiptTemplate = emailTemplates.contactReceipt(name || "Visitor", subject || "Inquiry");
         sendEmail({
-            to: email,
+            to: email || "",
             subject: receiptTemplate.subject,
             html: receiptTemplate.html
         }).catch(e => console.error("Auto-reply email failed:", e));
@@ -231,10 +227,9 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
             }).catch(e => console.error("Admin notification email failed:", e));
         }
 
-        return { success: true };
+        return actionSuccess();
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.error("Submit Message Error:", error);
-        return { success: false, error: message };
+        return actionError(message);
     }
 }

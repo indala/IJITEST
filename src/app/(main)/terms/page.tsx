@@ -6,13 +6,13 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Terms & Conditions | ${settings.journal_name}`,
-        description: `Review the legal framework and terms governing your interactions with ${settings.journal_short_name}. Detailed protocols on intellectual sovereignty, submission mandates, and ethical standards.`,
+        title: `Terms & Conditions | ${settings.journalName}`,
+        description: `Review the legal framework and terms governing your interactions with ${settings.journalShortName}. Detailed protocols on intellectual sovereignty, submission mandates, and ethical standards.`,
         alternates: {
             canonical: '/terms',
         },
         openGraph: {
-            title: `Legal Framework - ${settings.journal_short_name}`,
+            title: `Legal Framework - ${settings.journalShortName}`,
             description: `Academic interaction and submission terms.`,
             type: 'website',
         }

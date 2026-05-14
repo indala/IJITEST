@@ -5,10 +5,10 @@ import { Metadata } from 'next';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Author Guidelines | ${settings.journal_name}`,
-        description: `Comprehensive protocol for submitting manuscripts to ${settings.journal_short_name}. Detailed instructions on formatting, templates, and ethical requirements for global research publication.`,
+        title: `Author Guidelines | ${settings.journalName}`,
+        description: `Comprehensive protocol for submitting manuscripts to ${settings.journalShortName}. Detailed instructions on formatting, templates, and ethical requirements for global research publication.`,
         openGraph: {
-            title: `Submission Protocol - ${settings.journal_short_name}`,
+            title: `Submission Protocol - ${settings.journalShortName}`,
             description: `Author resources and manuscript formatting templates.`,
             type: 'website',
         }

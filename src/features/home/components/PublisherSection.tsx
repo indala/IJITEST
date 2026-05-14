@@ -10,7 +10,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 function PublisherSection() {
     const settings = useSettingsStore((state) => state.settings);
     const publisherName = settings.publisherName || "Felix Academic Publications";
-    const supportEmail = settings.supportEmail || "editor@ijitest.org";
+    const supportEmail = settings.supportEmail || "support@ijitest.org";
 
     return (
         <section className="section-padding bg-background relative overflow-hidden border-t border-primary/5  my-5">
