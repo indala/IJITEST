@@ -28,6 +28,8 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                         department: "Department of Electronics and Communication Engineering",
                         institute: "MES Group of Institutions, Vizianagaram, Andhra Pradesh, India",
                         email: "editor@ijitest.org",
+                        secondaryEmail: "rthorlapati@miracleeducationalsociety.com",
+                        profileLink: "https://miracle.edu.in/wp-content/uploads/MESG_STAFF_WEBSITE_2025-26.pdf",
                         officialAddress: "MES Group of Institutions, Vizianagaram, Andhra Pradesh, India - 530048",
                         role: "admin"
                     }
@@ -78,7 +80,7 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                                             {member.institute}
                                         </p>
                                     </div>
-                                    
+
                                     {member.officialAddress && (
                                         <div className="flex items-start gap-2 text-xs xl:text-sm 2xl:text-lg text-slate-700 leading-relaxed italic bg-muted/30 p-2 rounded border-l-2 border-primary/20">
                                             <span className="font-bold text-[10px] uppercase tracking-wider text-primary/40 shrink-0 mt-0.5">Postal address:</span>
@@ -95,11 +97,19 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                                                 </a>
                                             </div>
                                         )}
+                                        {member.secondaryEmail && (
+                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-lg text-primary/60 border-l border-primary/20 pl-4">
+                                                <Mail className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-primary/40 shrink-0" />
+                                                <a href={`mailto:${member.secondaryEmail}`} className="hover:text-primary hover:underline transition-colors font-medium">
+                                                    {member.secondaryEmail}
+                                                </a>
+                                            </div>
+                                        )}
                                         {member.profileLink && (
                                             <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-lg">
-                                                <a 
-                                                    href={member.profileLink} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={member.profileLink}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-primary/60 hover:text-primary flex items-center gap-1.5 transition-all group/link"
                                                 >
