@@ -36,10 +36,10 @@ function AnnouncementsWidget() {
                 <CardHeader className="p-5 pb-0 2xl:p-10 2xl:pb-0">
                     <div className="flex items-center gap-2">
                         <Newspaper className="w-6 h-6 2xl:w-8 2xl:h-8 text-secondary" />
-                        <CardTitle className="m-0">Announcements</CardTitle>
+                        <CardTitle className="m-0 2xl:text-xl">Announcements</CardTitle>
                     </div>
                 </CardHeader>
-                <CardContent className="p-5 pt-4 2xl:p-10 2xl:pt-8 space-y-4 text-justify">
+                <CardContent className="  ">
                     {isLoading ? (
                         <div className="p-8 flex items-center justify-center">
                             <Loader2 className="w-6 h-6 animate-spin text-primary/20" />

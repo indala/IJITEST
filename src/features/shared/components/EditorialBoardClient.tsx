@@ -26,11 +26,11 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                         full_name: "Dr. Ravibabu T.",
                         designation: "Associate Professor",
                         department: "Department of Electronics and Communication Engineering",
-                        institute: "MES Group of Institutions, Vizianagaram, Andhra Pradesh, India",
+                        institute: "MES Group of Institutions",
                         email: "editor@ijitest.org",
                         secondaryEmail: "rthorlapati@miracleeducationalsociety.com",
-                        profileLink: "https://miracle.edu.in/wp-content/uploads/MESG_STAFF_WEBSITE_2025-26.pdf",
-                        officialAddress: "MES Group of Institutions, Vizianagaram, Andhra Pradesh, India - 530048",
+                        profileLink: "",
+                        officialAddress: "Vizianagaram, Andhra Pradesh, India - 530048",
                         role: "admin"
                     }
                 ]
@@ -65,42 +65,33 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                         {category.members.map((member: BoardMember, mIdx: number) => (
                             <article key={mIdx} className="group hover:bg-primary/5 transition-colors  border-b-2  border-primary/70 last:border-0">
                                 <header className="bg-muted/70 py-2 px-6 xl:px-8 border-b border-primary/10">
-                                    <h3 className="text-primary m-0 font-semibold text-sm xl:text-lg 2xl:text-2xl">
+                                    <h3 className="text-primary m-0 font-semibold text-sm xl:text-2xl 2xl:text-2xl">
                                         {member.full_name}
                                     </h3>
                                 </header>
 
                                 <div className="py-4   px-8 xl:px-12 space-y-3">
-                                    <div className="flex flex-col sm:flex-row sm:items-baseline gap-x-3 gap-y-1 text-slate-700/90">
-                                        <p className="m-0 leading-relaxed font-medium text-foreground text-sm xl:text-base 2xl:text-2xl wrap-break-word">
-                                            {member.designation}
-                                            {member.department && <span className="hidden sm:inline"> • </span>}
-                                            {member.department && <span className="sm:hidden block text-xs opacity-70 italic">{member.department}</span>}
-                                            {member.department && <span className="hidden sm:inline">{member.department}</span>}
-                                        </p>
-                                        <p className="m-0 leading-relaxed italic text-xs xl:text-sm 2xl:text-xl text-slate-600 font-medium wrap-break-word">
-                                            {member.institute}
-                                        </p>
+                                    <div className=" sm:items-baseline gap-x-3  text-slate-700/90">
+                                        
+                                            <p className="leading-tight  text-foreground text-sm xl:text-xl 2xl:text-2xl wrap-break-word">{member.designation}</p>
+                                            <p className="leading-tight  text-foreground text-sm xl:text-xl 2xl:text-2xl wrap-break-word">{member.department}</p>
+                                            <p className="leading-tight  text-foreground text-sm xl:text-xl 2xl:text-2xl wrap-break-word">{member.institute}</p>
+                                            <p className="leading-tight  text-foreground text-sm xl:text-xl 2xl:text-2xl wrap-break-word">{member.officialAddress}</p>
                                     </div>
 
-                                    {member.officialAddress && (
-                                        <div className="flex items-start gap-2 text-xs xl:text-sm 2xl:text-xl text-slate-700 leading-relaxed italic bg-muted/30 p-2 rounded border-l-2 border-primary/20">
-                                            <span className="font-bold text-[10px] uppercase tracking-wider text-primary/40 shrink-0 mt-0.5">Postal address:</span>
-                                            <span>{member.officialAddress}</span>
-                                        </div>
-                                    )}
+                                    
 
                                     <div className="flex flex-wrap items-center gap-4 pt-3 border-t border-primary/20">
                                         {member.email && (
-                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-xl text-primary">
+                                            <div className="flex items-center gap-2 text-xs xl:text-xl 2xl:text-xl text-primary">
                                                 <Mail className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-primary/40 shrink-0" />
-                                                <a href={`mailto:${member.email}`} className="hover:text-primary hover:underline transition-colors font-medium">
+                                                <a href={`mailto:${member.email}`} className="hover:text-primary hover:underline transition-colors ">
                                                     {member.email}
                                                 </a>
                                             </div>
                                         )}
                                         {member.secondaryEmail && (
-                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-xl text-primary/60 border-l border-primary/20 pl-4">
+                                            <div className="flex items-center gap-2 text-xs xl:text-xl 2xl:text-xl text-primary/60 border-l border-primary/20 pl-4">
                                                 <Mail className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-primary/40 shrink-0" />
                                                 <a href={`mailto:${member.secondaryEmail}`} className="hover:text-primary hover:underline transition-colors font-medium">
                                                     {member.secondaryEmail}
@@ -108,7 +99,7 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                                             </div>
                                         )}
                                         {member.profileLink && (
-                                            <div className="flex items-center gap-2 text-xs xl:text-base 2xl:text-xl">
+                                            <div className="flex items-center gap-2 text-xs xl:text-xl 2xl:text-xl">
                                                 <a
                                                     href={member.profileLink}
                                                     target="_blank"

@@ -19,6 +19,7 @@ const csp = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  allowedDevOrigins: ['diet-steal-unavailable-divided.trycloudflare.com'],
   experimental: {
     serverActions: {
       bodySizeLimit: "20mb"

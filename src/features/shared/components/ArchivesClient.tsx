@@ -129,7 +129,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                     <div className="space-y-8 pr-2">
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                                <p className="text-[10px] 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Archive Navigation</p>
+                                <p className="text-[12px] 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Archive Navigation</p>
                             </div>
 
                             <div className="space-y-3">
@@ -137,15 +137,15 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                     <div key={vol.volume} className="space-y-2">
                                         <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 rounded-lg border border-border/50">
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                                            <span className="text-xs 2xl:text-xl font-bold text-foreground">Volume {vol.volume} ({vol.year})</span>
+                                            <span className="text-lg 2xl:text-xl  font-bold text-secondary">Volume {vol.volume} ({vol.year})</span>
                                         </div>
                                         <div className="grid grid-cols-1 gap-1 pl-4">
                                             {vol.issues.map((iss) => (
                                                 <button
                                                     key={iss.key}
                                                     onClick={() => setSelectedIssue(iss.key)}
-                                                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-left text-xs 2xl:text-lg transition-all group ${selectedIssue === iss.key
-                                                            ? 'bg-[#000066] text-white shadow-md shadow-primary/20 scale-[1.02]'
+                                                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-left text-lg 2xl:text-lg transition-all group ${selectedIssue === iss.key
+                                                            ? 'bg-green-600 text-white shadow-md shadow-primary/20 scale-[1.02]'
                                                             : 'hover:bg-primary/5 text-muted-foreground border border-transparent hover:border-primary/10'
                                                         }`}
                                                 >
@@ -155,9 +155,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                                             Issue {iss.issue} — {iss.monthRange} {iss.year}
                                                         </span>
                                                     </div>
-                                                    <span className={`text-[10px] 2xl:text-xs px-1.5 py-0.5 rounded-md ${selectedIssue === iss.key ? 'bg-white/20' : 'bg-muted/50 group-hover:bg-primary/10'}`}>
-                                                        {iss.papers.length}
-                                                    </span>
+
                                                 </button>
                                             ))}
                                         </div>
@@ -174,7 +172,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
 
                         <div className="hidden lg:block space-y-4">
                             <div className="flex items-center gap-2 pl-3 border-l-2 border-primary/20">
-                                <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Support</p>
+                                <p className="text-[12px] font-bold tracking-wider text-muted-foreground uppercase m-0">Support</p>
                             </div>
                             <div className="p-5 bg-card border border-border/50 rounded-2xl shadow-sm">
                                 <TrackManuscriptWidget />
@@ -199,8 +197,8 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:scale-150 transition-transform duration-1000" />
                                 <div className="space-y-1 relative z-10">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[10px] px-2 rounded flex items-center gap-1">
-                                            <BadgeCheck className="w-3 h-3" />
+                                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[12px] px-2 rounded flex items-center gap-1">
+                                            <BadgeCheck className="size-4" />
                                             Current Selection
                                         </Badge>
                                         <span className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-widest">Verified Repository</span>
@@ -208,8 +206,8 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                     <h2 className="text-2xl font-serif font-black text-primary m-0">
                                         Volume {activeIssue.volume} Issue {activeIssue.issue}
                                     </h2>
-                                    <p className="text-sm text-muted-foreground font-medium italic">
-                                        {activeIssue.monthRange} {activeIssue.year} • {activeIssue.papers.length} Research Papers Published
+                                    <p className="text-sm xl:text-xl text-muted-foreground font-medium italic">
+                                        {activeIssue.monthRange} {activeIssue.year}
                                     </p>
                                 </div>
                             </header>

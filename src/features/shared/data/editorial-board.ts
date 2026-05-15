@@ -135,7 +135,7 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         role: "editor",
         nationality: "India",
         email: "tchalla@miracleeducationalsociety.com",
-        profileLink: "https://miracle.edu.in/wp-content/uploads/MESG_STAFF_WEBSITE_2025-26.pdf",
+        profileLink: "",
         officialAddress: "Miracle City, Munjeru Village, Bhogapuram Mandal, Vizianagaram District, Andhra Pradesh, 535216, India"
     },
     {

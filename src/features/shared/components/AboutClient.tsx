@@ -136,7 +136,6 @@ export default function AboutClient() {
                         { label: "Frequency", value: "12 Issues / Year" },
                         { label: "E-ISSN", value: (settings.issnNumber || '') },
                         { label: "Format", value: "Online, Open" },
-                        { label: "UDYAM", value: (settings.udyamRegistration || '') }
                     ].map((item, i) => (
                         <div key={i} className="p-4 rounded-xl bg-card border border-border/50">
                             <dt className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase mb-1">{item.label}</dt>

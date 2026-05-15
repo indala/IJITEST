@@ -26,7 +26,7 @@ const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: Pap
                             </h3>
                         </Link>
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2">
-                            <div className="flex items-center gap-2 text-xs xl:text-sm text-muted-foreground font-medium">
+                            <div className="flex items-center gap-2 text-xs xl:text-lg text-muted-foreground font-medium">
                                 <span className="uppercase tracking-widest text-[#000066]/60">Publication:</span>
                                 <span>Volume {paper.volumeNumber}, Issue {paper.issueNumber} {paper.monthRange ? `(${paper.monthRange} ${paper.publicationYear})` : `(${paper.publicationYear})`}</span>
                             </div>
