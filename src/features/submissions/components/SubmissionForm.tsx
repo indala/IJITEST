@@ -182,14 +182,14 @@ export default function SubmissionForm() {
                             <FormItem className="space-y-2">
                                 <div className="flex items-center gap-2 mb-1">
                                     <FileText className="w-4 h-4 text-[#000066]" />
-                                    <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Research Paper Title</FormLabel>
+                                    <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider">Research Paper Title</FormLabel>
                                 </div>
                                 <FormControl>
                                     <Input
                                         placeholder="Full title of your research paper..."
                                         {...field}
                                         value={field.value ?? ""}
-                                        className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm"
+                                        className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm 2xl:text-lg"
                                     />
                                 </FormControl>
                                 <FormMessage className="text-xs font-medium text-destructive px-1" />
@@ -205,14 +205,14 @@ export default function SubmissionForm() {
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
                                         <User className="w-4 h-4 text-[#000066]" />
-                                        <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Author Name</FormLabel>
+                                        <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider">Author Name</FormLabel>
                                     </div>
                                     <FormControl>
                                         <Input
                                             placeholder="Full Name"
                                             {...field}
                                             value={field.value ?? ""}
-                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm"
+                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm 2xl:text-lg"
                                         />
                                     </FormControl>
                                     <FormMessage className="text-xs font-medium text-destructive px-1" />
@@ -226,7 +226,7 @@ export default function SubmissionForm() {
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Mail className="w-4 h-4 text-[#000066]" />
-                                        <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Email Address</FormLabel>
+                                        <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider">Email Address</FormLabel>
                                     </div>
                                     <FormControl>
                                         <Input
@@ -234,7 +234,7 @@ export default function SubmissionForm() {
                                             placeholder="email@example.com"
                                             {...field}
                                             value={field.value ?? ""}
-                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm"
+                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm 2xl:text-lg"
                                         />
                                     </FormControl>
                                     <FormMessage className="text-xs font-medium text-destructive px-1" />
@@ -248,7 +248,7 @@ export default function SubmissionForm() {
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Phone className="w-4 h-4 text-[#000066]" />
-                                        <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Phone Number (Optional)</FormLabel>
+                                        <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider">Phone Number (Optional)</FormLabel>
                                     </div>
                                     <FormControl>
                                         <Input
@@ -256,7 +256,7 @@ export default function SubmissionForm() {
                                             placeholder="+1 234 567 890"
                                             {...field}
                                             value={field.value ?? ""}
-                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm"
+                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm 2xl:text-lg"
                                         />
                                     </FormControl>
                                     <FormMessage className="text-xs font-medium text-destructive px-1" />
@@ -273,14 +273,14 @@ export default function SubmissionForm() {
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Briefcase className="w-4 h-4 text-[#000066]" />
-                                        <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Designation</FormLabel>
+                                        <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider">Designation</FormLabel>
                                     </div>
                                     <FormControl>
                                         <Input
                                             placeholder="e.g. Professor"
                                             {...field}
                                             value={field.value ?? ""}
-                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm"
+                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm 2xl:text-lg"
                                         />
                                     </FormControl>
                                     <FormMessage className="text-xs font-medium text-destructive px-1" />
@@ -295,14 +295,14 @@ export default function SubmissionForm() {
                                 <FormItem className="space-y-2">
                                     <div className="flex items-center gap-2 mb-1">
                                         <School className="w-4 h-4 text-[#000066]" />
-                                        <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Affiliation / Institution</FormLabel>
+                                        <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider">Affiliation / Institution</FormLabel>
                                     </div>
                                     <FormControl>
                                         <Input
                                             placeholder="e.g., Department, University, City, Country"
                                             {...field}
                                             value={field.value ?? ""}
-                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm"
+                                            className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm 2xl:text-lg"
                                         />
                                     </FormControl>
                                     <FormMessage className="text-xs font-medium text-destructive px-1" />
@@ -318,12 +318,12 @@ export default function SubmissionForm() {
                             <FormItem className="space-y-2">
                                 <div className="flex items-center gap-2 mb-1">
                                     <BookOpen className="w-4 h-4 text-[#000066]" />
-                                    <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Abstract</FormLabel>
+                                    <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider">Abstract</FormLabel>
                                 </div>
                                 <FormControl>
                                     <Textarea
                                         placeholder="Summarize your research paper here..."
-                                        className="bg-muted/20 border-border/50 rounded-lg font-medium text-foreground p-4 resize-none min-h-[150px] text-xs xl:text-sm leading-relaxed"
+                                        className="bg-muted/20 border-border/50 rounded-lg font-medium text-foreground p-4 resize-none min-h-[150px] text-xs xl:text-sm 2xl:text-lg leading-relaxed"
                                         {...field}
                                         value={field.value ?? ""}
                                     />
@@ -344,14 +344,14 @@ export default function SubmissionForm() {
                             <FormItem className="space-y-2">
                                 <div className="flex items-center gap-2 mb-1">
                                     <Tag className="w-4 h-4 text-[#000066]" />
-                                    <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Keywords</FormLabel>
+                                    <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider">Keywords</FormLabel>
                                 </div>
                                 <FormControl>
                                     <Input
                                         placeholder="e.g., AI, Machine Learning, Metallurgy..."
                                         {...field}
                                         value={field.value ?? ""}
-                                        className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm"
+                                        className="h-11 bg-muted/20 border-border/50 rounded-lg font-medium text-foreground px-4 text-xs xl:text-sm 2xl:text-lg"
                                     />
                                 </FormControl>
                                 <FormDescription className="text-[10px] text-muted-foreground font-bold uppercase px-1">Separate keywords with commas.</FormDescription>
@@ -421,7 +421,7 @@ export default function SubmissionForm() {
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormControl>
-                                                                 <Input placeholder="Full Name" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs" />
+                                                                 <Input placeholder="Full Name" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -433,7 +433,7 @@ export default function SubmissionForm() {
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormControl>
-                                                                 <Input type="email" placeholder="Email Address" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs" />
+                                                                 <Input type="email" placeholder="Email Address" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -446,7 +446,7 @@ export default function SubmissionForm() {
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormControl>
-                                                                    <Input type="tel" placeholder="Phone (Optional)" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs" />
+                                                                    <Input type="tel" placeholder="Phone (Optional)" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" />
                                                                 </FormControl>
                                                                 <FormMessage />
                                                             </FormItem>
@@ -458,7 +458,7 @@ export default function SubmissionForm() {
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormControl>
-                                                                    <Input placeholder="Designation" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs" />
+                                                                    <Input placeholder="Designation" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" />
                                                                 </FormControl>
                                                                 <FormMessage />
                                                             </FormItem>
@@ -471,7 +471,7 @@ export default function SubmissionForm() {
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormControl>
-                                                                <Input placeholder="Institution / Organization" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs" />
+                                                                <Input placeholder="Institution / Organization" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -509,7 +509,7 @@ export default function SubmissionForm() {
                                     <div className="w-10 h-10 rounded-xl bg-[#000066]/5 text-[#000066] flex items-center justify-center border border-[#000066]/10">
                                         <FileText className="w-5 h-5" />
                                     </div>
-                                    <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider m-0">Manuscript Upload</FormLabel>
+                                    <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider m-0">Manuscript Upload</FormLabel>
                                 </div>
                                 {settings.templateUrl && (
                                     <Button asChild variant="ghost" size="sm" className="h-8 text-[#000066] font-bold text-[9px] uppercase tracking-wider hover:bg-[#000066]/5">
@@ -564,7 +564,7 @@ export default function SubmissionForm() {
                                     <div className="w-10 h-10 rounded-xl bg-[#000066]/5 text-[#000066] flex items-center justify-center border border-[#000066]/10">
                                         <Shield className="w-5 h-5" />
                                     </div>
-                                    <FormLabel className="text-[#000066] text-[11px] font-bold uppercase tracking-wider m-0">Copyright Agreement (Optional)</FormLabel>
+                                    <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider m-0">Copyright Agreement (Optional)</FormLabel>
                                 </div>
                                 {settings.copyrightUrl && (
                                     <Button asChild variant="ghost" size="sm" className="h-8 text-[#000066] font-bold text-[9px] uppercase tracking-wider hover:bg-[#000066]/5">

@@ -72,7 +72,7 @@ export default function FaqSection() {
           </Accordion>
 
           <div className="pt-8 text-center border-t border-border/50">
-            <p className="text-xs text-muted-foreground italic">
+            <p className="text-xs 2xl:text-sm text-muted-foreground italic">
               Can&apos;t find what you&apos;re looking for? <a href="/contact" className="text-[#000066] font-semibold underline-offset-4 hover:underline">Contact our support team</a> directly.
             </p>
           </div>

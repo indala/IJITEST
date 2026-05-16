@@ -61,7 +61,7 @@ export default function Footer() {
                                         <ShieldCheck className="w-4 h-4 2xl:w-8 2xl:h-8 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-white/80 mb-1 m-0 text-xs 2xl:text-base">COPE Compliant</p>
+                                        <p className="text-white/80 mb-1 m-0 text-sm 2xl:text-lg">COPE Compliant</p>
                                         <p className="text-white m-0 font-semibold">Institutional Standards</p>
                                     </div>
                                 </div>
@@ -73,7 +73,7 @@ export default function Footer() {
                                         <Phone className="w-4 h-4 2xl:w-8 2xl:h-8 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-white/80 mb-1 m-0 text-xs 2xl:text-base">Direct Line</p>
+                                        <p className="text-white/80 mb-1 m-0 text-sm 2xl:text-lg">Direct Line</p>
                                         <FooterDynamic field="supportPhone" />
                                     </div>
                                 </div>
@@ -85,8 +85,8 @@ export default function Footer() {
                                         <MapPin className="w-4 h-4 2xl:w-8 2xl:h-8 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-white/80 mb-1 m-0 text-xs 2xl:text-base">Office Location</p>
-                                        <FooterDynamic field="officeAddress" className="text-white/70 m-0 text-sm 2xl:text-lg italic" />
+                                        <p className="text-white/80 mb-1 m-0 text-sm 2xl:text-lg">Office Location</p>
+                                        <FooterDynamic field="officeAddress" className="text-white/70 m-0 text-base 2xl:text-xl italic" />
                                     </div>
                                 </div>
                             </div>

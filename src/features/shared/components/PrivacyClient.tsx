@@ -69,15 +69,15 @@ export default function PrivacyClient() {
                 <aside className="space-y-12">
                     <section className="space-y-4">
                         <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                             <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Nexus Links</p>
+                             <p className="text-xs sm:text-sm font-bold tracking-wider text-muted-foreground uppercase m-0">Nexus Links</p>
                         </div>
                         <div className="space-y-3">
                             <Link href="/terms" className="flex items-center justify-between p-4 bg-card border border-border/50 rounded-xl hover:border-primary/20 transition-all group shadow-sm">
-                                <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">Terms & Conditions</span>
+                                <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Terms & Conditions</span>
                                 <ChevronRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                             </Link>
                             <Link href="/ethics" className="flex items-center justify-between p-4 bg-card border border-border/50 rounded-xl hover:border-primary/20 transition-all group shadow-sm">
-                                <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">Publication Ethics</span>
+                                <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Publication Ethics</span>
                                 <ChevronRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                             </Link>
                         </div>

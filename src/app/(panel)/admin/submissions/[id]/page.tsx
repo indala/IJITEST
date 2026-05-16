@@ -222,7 +222,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                     <div className="space-y-3 pt-2">
                                         <h4 className="text-[9px] 2xl:text-base font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Collaborating Authors</h4>
                                         <div className="space-y-2">
-                                            {submission.coAuthors.map((author: any, idx: number) => (
+                                            {submission.coAuthors.filter((a: any) => !a.isCorresponding).map((author: any, idx: number) => (
                                                 <div key={idx} className="p-3 bg-white border border-border/50 rounded-xl space-y-1 shadow-sm">
                                                     <div className="flex items-center justify-between">
                                                         <p className="font-semibold text-[10px] 2xl:text-lg text-foreground tracking-wider">{author.name}</p>

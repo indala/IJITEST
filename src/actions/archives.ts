@@ -325,8 +325,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
     // Primary author is the one with isCorresponding or the first one
     const correspondingAuthor = sortedAuthors.find(a => a.isCorresponding) || sortedAuthors[0];
 
-    // Combine all names for the display authorName field
-    const allAuthorsString = sortedAuthors.map(a => a.name).join(', ');
+    const primaryAuthorName = correspondingAuthor?.name || sortedAuthors[0]?.name || "Anonymous Author";
 
     return {
         id: pub.submissionId || 0,
@@ -343,7 +342,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
             } catch (e) {}
             return raw;
         })(),
-        authorName: allAuthorsString || "Anonymous Author",
+        authorName: primaryAuthorName,
         authorEmail: correspondingAuthor?.email || "N/A",
         affiliation: correspondingAuthor?.institution || "N/A",
         status: (pub.submission?.status as SubmissionStatus) || "published",

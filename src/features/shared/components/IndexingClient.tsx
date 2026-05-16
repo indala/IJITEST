@@ -46,7 +46,7 @@ export default function IndexingClient() {
                     {/* Technical Standards */}
                     <section className="space-y-8">
                         <h2 className="text-xl font-semibold text-primary flex items-center gap-3">
-                            <span className="text-xs text-muted-foreground font-mono">01.</span>
+                            <span className="text-sm 2xl:text-base text-muted-foreground font-mono">01.</span>
                             Technical Protocols
                         </h2>
 
@@ -56,8 +56,8 @@ export default function IndexingClient() {
                                     <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center text-primary mb-4">
                                         <spec.icon className="w-5 h-5" />
                                     </div>
-                                    <h3 className="text-sm font-semibold text-primary mb-2">{spec.title}</h3>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                    <h3 className="text-base 2xl:text-lg font-semibold text-primary mb-2">{spec.title}</h3>
+                                    <p className="text-sm 2xl:text-base text-muted-foreground leading-relaxed">
                                         {spec.desc}
                                     </p>
                                 </Card>
@@ -76,17 +76,17 @@ export default function IndexingClient() {
 
                     <section className="space-y-4">
                          <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                             <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Strategic Integration</p>
+                             <p className="text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Strategic Integration</p>
                         </div>
                         <Card className="p-6 border-border/50 bg-card rounded-xl hover:border-primary/20 transition-all">
                             <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center mb-4 text-primary">
                                 <Database className="w-5 h-5" />
                             </div>
-                             <h3 className="text-sm font-semibold text-primary mb-2">Inaugural 2026</h3>
-                            <p className="text-xs text-muted-foreground leading-relaxed mb-6">
+                             <h3 className="text-base 2xl:text-lg font-semibold text-primary mb-2">Inaugural 2026</h3>
+                            <p className="text-sm 2xl:text-base text-muted-foreground leading-relaxed mb-6">
                                 Submissions for our 2026 volume are now open. All accepted papers receive priority metadata assignment and SJIF evaluation.
                             </p>
-                            <Button asChild className="w-full h-10 bg-[#000066] hover:bg-[#000088] text-white font-bold text-[10px] tracking-wider rounded-lg transition-all shadow-sm uppercase">
+                            <Button asChild className="w-full h-10 bg-[#000066] hover:bg-[#000088] text-white font-bold text-sm 2xl:text-base tracking-wider rounded-lg transition-all shadow-sm uppercase">
                                 <Link href="/submit">Submit Paper</Link>
                             </Button>
                         </Card>
@@ -94,9 +94,9 @@ export default function IndexingClient() {
 
                     <Card className="p-6 bg-[#000066] rounded-xl text-white relative overflow-hidden">
                         <div className="relative z-10 space-y-4">
-                            <h3 className="text-sm font-semibold text-white">Policy Matrix</h3>
-                            <p className="text-white/60 text-xs leading-relaxed">Our indexing adheres strictly to the Committee on Publication Ethics (COPE) benchmarks.</p>
-                            <Link href="/ethics" className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-white hover:underline transition-all uppercase">
+                            <h3 className="text-base 2xl:text-lg font-semibold text-white">Policy Matrix</h3>
+                            <p className="text-white/60 text-sm 2xl:text-base leading-relaxed">Our indexing adheres strictly to the Committee on Publication Ethics (COPE) benchmarks.</p>
+                            <Link href="/ethics" className="inline-flex items-center gap-1.5 text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-white hover:underline transition-all uppercase">
                                 View Ethics Guide <ChevronRight className="w-3.5 h-3.5" />
                             </Link>
                         </div>

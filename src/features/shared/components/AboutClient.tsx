@@ -56,7 +56,7 @@ export default function AboutClient() {
                         ].map((commitment, i) => (
                             <li key={i} className="flex items-start gap-2.5">
                                 <div className="mt-1.5 w-1.5 h-1.5 bg-primary rounded-full shrink-0" />
-                                <span className="text-xs text-muted-foreground">{commitment}</span>
+                                <span className="text-sm text-muted-foreground">{commitment}</span>
                             </li>
                         ))}
                     </ul>
@@ -114,7 +114,7 @@ export default function AboutClient() {
                                 {category.items.map((item, i) => (
                                     <li key={i} className="flex items-center gap-3">
                                         <div className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
-                                        <span className="text-xs text-muted-foreground group-hover/item:text-primary transition-colors">
+                                        <span className="text-sm text-muted-foreground group-hover/item:text-primary transition-colors">
                                             {item}
                                         </span>
                                     </li>
@@ -138,7 +138,7 @@ export default function AboutClient() {
                         { label: "Format", value: "Online, Open" },
                     ].map((item, i) => (
                         <div key={i} className="p-4 rounded-xl bg-card border border-border/50">
-                            <dt className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase mb-1">{item.label}</dt>
+                            <dt className="text-xs sm:text-sm font-bold tracking-wider text-muted-foreground uppercase mb-1">{item.label}</dt>
                             <dd className="text-sm font-semibold text-foreground">{item.value}</dd>
                         </div>
                     ))}
@@ -157,7 +157,7 @@ export default function AboutClient() {
                     <div className="space-y-6">
                         <div>
                             <h3 className="text-lg font-semibold text-white mb-1">{publisherName}</h3>
-                            <p className="text-xs text-white/50">Foundation for Innovation & Global Excellence</p>
+                            <p className="text-sm text-white/50">Foundation for Innovation & Global Excellence</p>
                         </div>
                         <div className="text-sm text-white/80 space-y-4 max-w-2xl border-l-[3px] border-white/10 pl-8">
                             <p className="text-white/80">

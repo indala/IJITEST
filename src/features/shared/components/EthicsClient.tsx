@@ -294,7 +294,7 @@ export default function EthicsClient() {
                     sidebarClassName="hidden lg:block sticky top-32 h-fit"
                     sidebar={
                         <>
-                            <h3 className="text-sm font-semibold text-primary opacity-60 mb-6">Quick Navigation</h3>
+                            <h3 className="text-base 2xl:text-lg font-semibold text-primary opacity-60 mb-6">Quick Navigation</h3>
                             <nav className="space-y-4 border-l border-primary/10 pl-4">
                                 {sections.map((section, idx) => (
                                     <a

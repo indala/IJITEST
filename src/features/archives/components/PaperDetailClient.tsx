@@ -130,13 +130,7 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                                     <span className="-black  tracking-widest  shrink-0">Authors <span className="text-red-600 font-bold">:</span></span>
                                     <div className="flex flex-wrap items-center gap-x-2">
-                                        <span className="font-normal leading-tight">{paper.authorName}</span>
-                                        {paper.coAuthors && paper.coAuthors.length > 0 && paper.coAuthors.map((author, idx) => (
-                                            <div key={idx} className="flex items-center gap-2">
-                                                <span className="text-gray-900 font-bold">,</span>
-                                                <span className=" font-normal leading-tight">{author.name}</span>
-                                            </div>
-                                        ))}
+                                        <span className="font-normal leading-tight">{paper.authorsList.join(', ')}</span>
                                     </div>
                                 </div>
 

@@ -27,13 +27,13 @@ export default function Error({
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
                 <button
                     onClick={() => reset()}
-                    className="flex items-center justify-center gap-3 px-8 py-4 bg-primary text-white rounded-2xl font-black text-xs  tracking-widest hover:bg-primary/95 transition-all shadow-lg shadow-primary/20"
+                    className="flex items-center justify-center gap-3 px-8 py-4 bg-primary text-white rounded-2xl font-black text-xs 2xl:text-sm tracking-widest hover:bg-primary/95 transition-all shadow-lg shadow-primary/20"
                 >
                     <RotateCcw className="w-4 h-4" /> Restart Segment
                 </button>
                 <Link
                     href="/"
-                    className="flex items-center justify-center px-8 py-4 border-2 border-gray-100 text-gray-400 rounded-2xl font-black text-xs  tracking-widest hover:bg-gray-50 transition-all"
+                    className="flex items-center justify-center px-8 py-4 border-2 border-gray-100 text-gray-400 rounded-2xl font-black text-xs 2xl:text-sm tracking-widest hover:bg-gray-50 transition-all"
                 >
                     Return Home
                 </Link>

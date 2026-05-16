@@ -22,20 +22,21 @@ export default function CitationSection({ paper }: CitationSectionProps) {
 
     // 1. Parse Authors for the citation
     const getFormattedAuthors = () => {
-        let authStr = paper.authorName;
         const coAuthors = paper.coAuthors;
         
         if (Array.isArray(coAuthors) && coAuthors.length > 0) {
             const names = coAuthors.map((a: Author) => a.name);
             if (names.length === 1) {
-                authStr = `${paper.authorName} & ${names[0]}`;
+                return names[0];
+            } else if (names.length === 2) {
+                return `${names[0]} & ${names[1]}`;
             } else {
                 const allButLast = names.slice(0, -1);
                 const last = names[names.length - 1];
-                authStr = `${paper.authorName}, ${allButLast.join(', ')} & ${last}`;
+                return `${allButLast.join(', ')} & ${last}`;
             }
         }
-        return authStr;
+        return paper.authorName;
     };
 
     const authors = getFormattedAuthors();
@@ -54,7 +55,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
             </div>
 
             <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4 relative group">
-                <p className="text-xs text-gray-600 leading-relaxed font-medium ">
+                <p className="text-sm 2xl:text-base text-gray-600 leading-relaxed font-medium ">
                     {authors}   <span className="italic"> {"\""} {paper.title}{"\""}</span>.
                     <br />
                     <span className="">{settings.journalName || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings.journalShortName || 'IJITEST'})</span>,
@@ -63,7 +64,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                 </p>
                 <button
                     onClick={handleCopy}
-                    className="w-full flex items-center justify-center gap-2 bg-white text-gray-400 py-3 rounded-xl text-[10px] font-black  tracking-widest border border-gray-100 hover:text-primary hover:border-primary/20 transition-all font-sans"
+                    className="w-full flex items-center justify-center gap-2 bg-white text-gray-400 py-3 rounded-xl text-xs 2xl:text-sm font-black  tracking-widest border border-gray-100 hover:text-primary hover:border-primary/20 transition-all font-sans"
                 >
                     Copy Citation
                 </button>
@@ -83,18 +84,18 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                             toast.success("Link copied to clipboard!");
                         }
                     }}
-                    className="w-full flex items-center justify-center gap-3 bg-gray-50 text-gray-500 py-4 rounded-2xl font-black text-[10px]  tracking-[0.2em] border border-gray-100 hover:bg-gray-100 transition-all font-sans"
+                    className="w-full flex items-center justify-center gap-3 bg-gray-50 text-gray-500 py-4 rounded-2xl font-black text-xs 2xl:text-sm tracking-[0.2em] border border-gray-100 hover:bg-gray-100 transition-all font-sans"
                 >
                     <Share2 className="w-4 h-4" /> Share Research
                 </button>
             </div>
 
             <div className="pt-6 border-t border-gray-100 space-y-4">
-                <h4 className="text-[10px] font-black text-gray-400 tracking-widest text-center uppercase">Journal Metadata</h4>
+                <h4 className="text-xs 2xl:text-sm font-black text-gray-400 tracking-widest text-center uppercase">Journal Metadata</h4>
                 <div className="grid grid-cols-1 gap-4">
                     <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 text-center group/meta">
-                        <p className="text-[8px] font-black text-gray-400 tracking-[0.2em] uppercase mb-1 group-hover/meta:text-primary transition-colors">ISSN (Online)</p>
-                        <p className="text-sm font-black text-gray-900 ">{settings.issnNumber || 'XXXX-XXXX'}</p>
+                        <p className="text-[10px] 2xl:text-xs font-black text-gray-400 tracking-[0.2em] uppercase mb-1 group-hover/meta:text-primary transition-colors">ISSN (Online)</p>
+                        <p className="text-sm 2xl:text-base font-black text-gray-900 ">{settings.issnNumber || 'XXXX-XXXX'}</p>
                     </div>
                 </div>
             </div>

@@ -83,7 +83,7 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
 
                                     <div className="flex flex-wrap items-center gap-4 pt-3 border-t border-primary/20">
                                         {member.email && (
-                                            <div className="flex items-center gap-2 text-xs xl:text-xl 2xl:text-xl text-primary">
+                                            <div className="flex items-center gap-2 text-sm xl:text-xl 2xl:text-2xl text-primary">
                                                 <Mail className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-primary/40 shrink-0" />
                                                 <a href={`mailto:${member.email}`} className="hover:text-primary hover:underline transition-colors ">
                                                     {member.email}
@@ -91,7 +91,7 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                                             </div>
                                         )}
                                         {member.secondaryEmail && (
-                                            <div className="flex items-center gap-2 text-xs xl:text-xl 2xl:text-xl text-primary/60 border-l border-primary/20 pl-4">
+                                            <div className="flex items-center gap-2 text-sm xl:text-xl 2xl:text-2xl text-primary/60 border-l border-primary/20 pl-4">
                                                 <Mail className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-primary/40 shrink-0" />
                                                 <a href={`mailto:${member.secondaryEmail}`} className="hover:text-primary hover:underline transition-colors font-medium">
                                                     {member.secondaryEmail}
@@ -99,7 +99,7 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                                             </div>
                                         )}
                                         {member.profileLink && (
-                                            <div className="flex items-center gap-2 text-xs xl:text-xl 2xl:text-xl">
+                                            <div className="flex items-center gap-2 text-sm xl:text-xl 2xl:text-2xl">
                                                 <a
                                                     href={member.profileLink}
                                                     target="_blank"
@@ -139,7 +139,7 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
                             </div>
                             <div className="flex items-center gap-3">
                                 <Mail className="w-5 h-5 text-primary/40 opacity-50" />
-                                <a href="mailto:rthorlapati@miracleeducationalsociety.com" className="text-[#000066]/70 text-xs hover:underline">
+                                <a href="mailto:rthorlapati@miracleeducationalsociety.com" className="text-[#000066]/70 text-sm 2xl:text-base hover:underline">
                                     rthorlapati@miracleeducationalsociety.com
                                 </a>
                             </div>

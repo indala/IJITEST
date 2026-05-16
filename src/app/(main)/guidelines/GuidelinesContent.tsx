@@ -106,7 +106,7 @@ export default function GuidelinesContent() {
                     <div>
                         <h3 className="text-secondary  mb-4">6. References</h3>
                         <p className="mb-4">References text type should be 10 point (Times Roman) at the end of the paper. Format as follows:</p>
-                        <div className="space-y-4 bg-primary/5 p-6 rounded-2xl border border-primary/10 font-mono text-xs overflow-x-auto">
+                        <div className="space-y-4 bg-primary/5 p-6 rounded-2xl border border-primary/10 font-mono text-xs 2xl:text-sm overflow-x-auto">
                             <p>[1] Jesmin Nahar and Tasadduq Imam et al,&rdquo; Association rule mining to detect factors which contribute to heart disease in males and females&rdquo;, Journal of Expert Systems with Applications Vol.40, PP.1086&ndash;1093, 2013</p>
                         </div>
                     </div>

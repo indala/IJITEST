@@ -4,25 +4,24 @@ import { navigation } from './nav-data';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
-
-interface NavbarLinksProps {
-    isScrolled: boolean;
-}
-
 import { useQueryClient } from '@tanstack/react-query';
 import { getPublishedPapers } from '@/actions/archives';
 import { getEditorialBoard } from '@/actions/users';
 import { publicKeys } from '@/hooks/queries/usePublic';
 
+interface NavbarLinksProps {
+    isScrolled: boolean;
+}
+
 export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
-    const [hoveredIndex, setHoveredIndex] = useState<string | null>(null);
+    const [activeIndex, setActiveIndex] = useState<string | null>(null);
     const pathname = usePathname();
     const queryClient = useQueryClient();
 
-    const handlePrefetch = useCallback((name: string) => {
-        setHoveredIndex(name);
+    const handleActivate = useCallback((name: string) => {
+        setActiveIndex(name);
 
-        // Prefetch high-priority public data based on link hover
+        // Prefetch high-priority public data based on activation
         if (name === 'Archives') {
             queryClient.prefetchQuery({
                 queryKey: publicKeys.archives(),
@@ -39,28 +38,43 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
         }
     }, [queryClient]);
 
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === 'Escape') {
+            setActiveIndex(null);
+        }
+    }, []);
+
     const memoizedNavigation = useMemo(() => {
         return navigation.map((item) => {
             const isActive = pathname === item.href || (item.children?.some(child => pathname === child.href));
-            const isHovered = hoveredIndex === item.name;
+            const isMenuOpen = activeIndex === item.name;
 
             return (
                 <li
                     key={item.name}
                     className={`relative group transition-all duration-500 ${isScrolled ? 'py-5' : 'py-7 2xl:py-10'}`}
-                    onMouseEnter={() => handlePrefetch(item.name)}
-                    onMouseLeave={() => setHoveredIndex(null)}
+                    onMouseEnter={() => handleActivate(item.name)}
+                    onMouseLeave={() => setActiveIndex(null)}
+                    onFocus={() => handleActivate(item.name)}
+                    onBlur={(e) => {
+                        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                            setActiveIndex(null);
+                        }
+                    }}
+                    onKeyDown={handleKeyDown}
                 >
                     <Link
                         href={item.href}
-                        className={`transition-all duration-300 flex items-center gap-2 relative px-2 lg:px-3 ${isActive ? 'text-primary' : 'text-black hover:text-primary'}`}
+                        aria-haspopup={item.children ? "true" : undefined}
+                        aria-expanded={item.children ? isMenuOpen : undefined}
+                        className={`transition-all duration-300 flex items-center gap-2 2xl:gap-3 relative px-2 lg:px-3 2xl:px-4 text-sm xl:text-base 2xl:text-xl font-semibold ${isActive ? 'text-primary' : 'text-black hover:text-primary'}`}
                     >
                         <span className="relative z-10">{item.name}</span>
                         {item.children && (
-                            <ChevronDown className={`w-3.5 h-3.5 2xl:w-5 2xl:h-5 transition-transform duration-500 text-secondary/50 group-hover:text-secondary ${isHovered ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`w-3.5 h-3.5 2xl:w-5 2xl:h-5 transition-transform duration-500 text-secondary/50 group-hover:text-secondary ${isMenuOpen ? 'rotate-180' : ''}`} />
                         )}
 
-                        {(isHovered || (isActive && !hoveredIndex)) && (
+                        {(isMenuOpen || (isActive && !activeIndex)) && (
                             <motion.span
                                 layoutId="nav-underline"
                                 initial={{ opacity: 0 }}
@@ -73,7 +87,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                     </Link>
 
                     <AnimatePresence>
-                        {item.children && isHovered && (
+                        {item.children && isMenuOpen && (
                             <motion.div
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -107,7 +121,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                 </li>
             );
         });
-    }, [pathname, hoveredIndex, isScrolled, handlePrefetch]);
+    }, [pathname, activeIndex, isScrolled, handleActivate, handleKeyDown]);
 
     return (
         <ul className="hidden lg:flex items-center lg:space-x-1 xl:space-x-1 2xl:space-x-8 list-none p-0">

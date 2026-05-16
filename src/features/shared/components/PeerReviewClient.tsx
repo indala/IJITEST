@@ -105,7 +105,7 @@ export default function PeerReviewClient() {
                             <p className="text-sm text-muted-foreground leading-relaxed mb-8">
                                 Adherence to the Committee on Publication Ethics (COPE) guidelines for transparency and scientific rigor.
                             </p>
-                            <Link href="/ethics" className="inline-flex items-center gap-2 text-[10px] font-bold tracking-wider text-secondary hover:text-primary transition-colors uppercase">
+                            <Link href="/ethics" className="inline-flex items-center gap-2 text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-secondary hover:text-primary transition-colors uppercase">
                                 View Policy <ChevronRight className="w-3.5 h-3.5" />
                             </Link>
                         </div>
@@ -114,8 +114,8 @@ export default function PeerReviewClient() {
                     <section className="p-8 bg-[#000066] rounded-xl shadow-sm relative overflow-hidden text-white">
                         <div className="relative z-10 space-y-4">
                             <h3 className="text-xl font-semibold m-0 text-white">For Reviewers</h3>
-                            <p className="text-white/60 text-xs leading-relaxed">Interested in joining our global panel? Share your technical profile with our board.</p>
-                            <Button asChild className="w-full h-10 bg-white text-primary border-none hover:bg-white/90 font-bold text-[10px] tracking-wider rounded-lg transition-all uppercase">
+                            <p className="text-white/60 text-sm 2xl:text-base leading-relaxed">Interested in joining our global panel? Share your technical profile with our board.</p>
+                            <Button asChild className="w-full h-10 bg-white text-primary border-none hover:bg-white/90 font-bold text-sm 2xl:text-base tracking-wider rounded-lg transition-all uppercase">
                                 <Link href="/join-us" className="w-full h-full flex items-center justify-center">Submit Profile</Link>
                             </Button>
                         </div>

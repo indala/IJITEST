@@ -34,7 +34,7 @@ export default function ReviewerGuidelinesClient() {
 
                     <section className="space-y-8">
                         <h2 className="text-xl font-semibold text-primary flex items-center gap-3">
-                            <span className="text-xs text-muted-foreground font-mono">01.</span>
+                            <span className="text-sm 2xl:text-base text-muted-foreground font-mono">01.</span>
                             Evaluation Directives
                         </h2>
 
@@ -44,8 +44,8 @@ export default function ReviewerGuidelinesClient() {
                                     <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center mb-4 text-primary">
                                         <ShieldCheck className="w-5 h-5" />
                                     </div>
-                                    <h3 className="text-sm font-semibold text-primary mb-2">{item.title}</h3>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                                    <h3 className="text-base 2xl:text-lg font-semibold text-primary mb-2">{item.title}</h3>
+                                    <p className="text-sm 2xl:text-base text-muted-foreground leading-relaxed">{item.desc}</p>
                                 </Card>
                             ))}
                         </div>
@@ -57,8 +57,8 @@ export default function ReviewerGuidelinesClient() {
                                 <ShieldAlert className="w-8 h-8 text-primary" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-sm font-semibold text-primary">Confidentiality Protocol</h3>
-                                <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-primary/20 pl-6">
+                                <h3 className="text-base 2xl:text-lg font-semibold text-primary">Confidentiality Protocol</h3>
+                                <p className="text-sm 2xl:text-base text-muted-foreground leading-relaxed border-l-2 border-primary/20 pl-6">
                                     &quot;Reviewers must treat all manuscript assets as privileged intellectual property. Unauthorized dissemination or use of unpublished data is strictly prohibited.&quot;
                                 </p>
                             </div>
@@ -79,10 +79,10 @@ export default function ReviewerGuidelinesClient() {
                                 </div>
                             </div>
                             <div className="flex flex-col sm:flex-row gap-4 w-full">
-                                <Button asChild size="lg" className="h-12 px-8 bg-white text-primary hover:bg-white/90 text-[10px] font-bold tracking-wider rounded-xl transition-all flex-1 sm:flex-none uppercase">
+                                <Button asChild size="lg" className="h-12 px-8 bg-white text-primary hover:bg-white/90 text-sm 2xl:text-base font-bold tracking-wider rounded-xl transition-all flex-1 sm:flex-none uppercase">
                                     <a href={`mailto:${supportEmail}`}><Mail className="w-4 h-4 mr-2" /> {supportEmail}</a>
                                 </Button>
-                                <Button asChild size="lg" className="h-12 px-8 bg-white/10 text-white hover:bg-white/20 text-[10px] font-bold tracking-wider rounded-xl transition-all border border-white/10 flex-1 sm:flex-none uppercase">
+                                <Button asChild size="lg" className="h-12 px-8 bg-white/10 text-white hover:bg-white/20 text-sm 2xl:text-base font-bold tracking-wider rounded-xl transition-all border border-white/10 flex-1 sm:flex-none uppercase">
                                     <a href={`https://wa.me/${supportPhone.replace(/[\s+]/g, '')}`} className="flex items-center"><MessageCircle className="w-4 h-4 mr-2" /> WhatsApp Support</a>
                                 </Button>
                             </div>
@@ -100,17 +100,17 @@ export default function ReviewerGuidelinesClient() {
 
                     <section className="space-y-4">
                         <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                             <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Compliance Guide</p>
+                             <p className="text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Compliance Guide</p>
                         </div>
                         <Card className="p-6 border-border/50 bg-card rounded-xl hover:border-primary/20 transition-all">
                             <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center mb-4 text-primary">
                                 <CheckCircle2 className="w-5 h-5" />
                             </div>
-                            <h3 className="text-sm font-semibold text-primary mb-2">Ethics Matrix</h3>
-                            <p className="text-xs text-muted-foreground leading-relaxed mb-6">
+                            <h3 className="text-base 2xl:text-lg font-semibold text-primary mb-2">Ethics Matrix</h3>
+                            <p className="text-sm 2xl:text-base text-muted-foreground leading-relaxed mb-6">
                                 All reviewers are expected to follow COPE guidelines for ethical evaluation and disclosure.
                             </p>
-                            <Button asChild variant="link" className="text-primary p-0 h-auto hover:text-primary/80 transition-colors text-xs font-semibold">
+                            <Button asChild variant="link" className="text-primary p-0 h-auto hover:text-primary/80 transition-colors text-sm 2xl:text-base font-semibold">
                                 <Link href="/ethics" className="flex items-center">
                                     View Full Policy <ChevronRight className="w-3.5 h-3.5 ml-1.5" />
                                 </Link>

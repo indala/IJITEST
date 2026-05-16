@@ -31,7 +31,7 @@ export default function PaymentClient({ id }: { id: string }) {
         <div className="min-h-screen flex items-center justify-center bg-background">
             <div className="flex flex-col items-center gap-4">
                 <Loader2 className="w-10 h-10 text-primary animate-spin" />
-                <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase opacity-50">Secure Session Initializing</p>
+                <p className="text-xs sm:text-sm font-bold tracking-widest text-muted-foreground uppercase opacity-50">Secure Session Initializing</p>
             </div>
         </div>
     );
@@ -48,7 +48,7 @@ export default function PaymentClient({ id }: { id: string }) {
                         Credentials could not be verified for active payment processing.
                     </p>
                 </div>
-                <Button asChild className="h-10 mt-8 px-8 bg-[#000066] hover:bg-[#000088] text-white font-bold text-[10px] tracking-wider rounded-lg shadow-sm transition-all uppercase">
+                <Button asChild className="h-10 mt-8 px-8 bg-[#000066] hover:bg-[#000088] text-white font-bold text-sm tracking-wider rounded-lg shadow-sm transition-all uppercase">
                     <Link href="/track">Return home</Link>
                 </Button>
             </div>
@@ -68,7 +68,7 @@ export default function PaymentClient({ id }: { id: string }) {
                     </p>
                 </div>
                 <div className="pt-8 space-y-4">
-                    <Button asChild className="h-10 w-full bg-[#000066] hover:bg-[#000088] text-white font-bold text-[10px] tracking-wider rounded-lg shadow-sm transition-all uppercase">
+                    <Button asChild className="h-10 w-full bg-[#000066] hover:bg-[#000088] text-white font-bold text-sm tracking-wider rounded-lg shadow-sm transition-all uppercase">
                         <Link href="/">Return home</Link>
                     </Button>
                 </div>
@@ -102,24 +102,24 @@ export default function PaymentClient({ id }: { id: string }) {
                         <section className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
                             <div className="p-8 sm:p-10 border-b border-border/50 bg-muted/20">
                                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                                    <Badge className="bg-[#000066]/5 text-[#000066] border-[#000066]/20 px-3 h-6 text-[10px] font-bold tracking-wider uppercase">Official Invoice</Badge>
-                                    <span className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase">Date: {new Date().toLocaleDateString()}</span>
+                                    <Badge className="bg-[#000066]/5 text-[#000066] border-[#000066]/20 px-3 h-6 text-xs sm:text-sm font-bold tracking-wider uppercase">Official Invoice</Badge>
+                                    <span className="text-xs sm:text-sm font-bold text-muted-foreground tracking-wider uppercase">Date: {new Date().toLocaleDateString()}</span>
                                 </div>
                                 <h3 className="text-xl font-semibold text-primary m-0 leading-tight">{manuscript.title}</h3>
                                 <div className="flex items-center gap-3 text-muted-foreground pt-4">
                                     <TrendingUp className="w-4 h-4 text-secondary/60" />
-                                    <span className="text-xs font-medium">Manuscript ID: {manuscript.paperId}</span>
+                                    <span className="text-sm font-medium">Manuscript ID: {manuscript.paperId}</span>
                                 </div>
                             </div>
 
                             <div className="p-8 sm:p-10 space-y-8">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">Beneficiary</p>
+                                        <p className="text-xs sm:text-sm font-bold text-muted-foreground tracking-widest uppercase">Beneficiary</p>
                                         <p className="text-base font-semibold text-primary m-0">{manuscript.authorName}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">Currency Profile</p>
+                                        <p className="text-xs sm:text-sm font-bold text-muted-foreground tracking-widest uppercase">Currency Profile</p>
                                         <p className="text-base font-semibold text-primary m-0">INR (₹) - Unified Settlement</p>
                                     </div>
                                 </div>
@@ -148,7 +148,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                 </div>
                                 <div className="space-y-2">
                                     <h4 className="text-base font-semibold m-0">No Refund Policy</h4>
-                                    <p className="text-white/60 text-xs leading-relaxed border-l-2 border-white/20 pl-6">
+                                    <p className="text-white/60 text-sm leading-relaxed border-l-2 border-white/20 pl-6">
                                         Submission of payment constitutes final agreement. Transactions are non-reversible according to ethics standards.
                                     </p>
                                 </div>
@@ -165,7 +165,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                 </div>
                                 <div className="space-y-1">
                                     <h3 className="text-lg font-semibold text-primary m-0">Secure Settlement</h3>
-                                    <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase opacity-50">256-Bit SSL Active</p>
+                                    <p className="text-xs sm:text-sm font-bold tracking-widest text-muted-foreground uppercase opacity-50">256-Bit SSL Active</p>
                                 </div>
 
                                 {apcTotal > 0 ? (
@@ -174,13 +174,13 @@ export default function PaymentClient({ id }: { id: string }) {
                                         paperId={manuscript.paperId}
                                     />
                                 ) : (
-                                    <p className="text-xs font-semibold text-muted-foreground">No payment required.</p>
+                                    <p className="text-sm font-semibold text-muted-foreground">No payment required.</p>
                                 )}
 
                                 <div className="flex items-center justify-center gap-4 pt-2 opacity-30">
-                                    <span className="text-[10px] font-bold tracking-widest uppercase">VISA</span>
-                                    <span className="text-[10px] font-bold tracking-widest uppercase">MC</span>
-                                    <span className="text-[10px] font-bold tracking-widest uppercase">UPI</span>
+                                    <span className="text-xs sm:text-sm font-bold tracking-widest uppercase">VISA</span>
+                                    <span className="text-xs sm:text-sm font-bold tracking-widest uppercase">MC</span>
+                                    <span className="text-xs sm:text-sm font-bold tracking-widest uppercase">UPI</span>
                                 </div>
                             </section>
 
@@ -189,8 +189,8 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <Handshake className="w-5 h-5" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">Support Desk</h4>
-                                    <p className="text-xs text-muted-foreground/60 leading-relaxed font-medium m-0">
+                                    <h4 className="text-xs sm:text-sm font-bold text-muted-foreground tracking-widest uppercase">Support Desk</h4>
+                                    <p className="text-sm text-muted-foreground/60 leading-relaxed font-medium m-0">
                                         For disputes or bulk requests, contact <span className="text-secondary font-semibold">{settings.supportEmail}</span>.
                                     </p>
                                 </div>

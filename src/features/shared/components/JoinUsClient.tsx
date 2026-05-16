@@ -57,8 +57,8 @@ export default function JoinUsClient() {
                                         <benefit.icon className="w-5 h-5" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <h3 className="text-sm font-semibold text-foreground">{benefit.title}</h3>
-                                        <p className="text-xs text-muted-foreground leading-relaxed">{benefit.desc}</p>
+                                        <h3 className="text-base 2xl:text-lg font-semibold text-foreground">{benefit.title}</h3>
+                                        <p className="text-sm 2xl:text-base text-muted-foreground leading-relaxed">{benefit.desc}</p>
                                     </div>
                                 </div>
                             </article>
@@ -66,12 +66,12 @@ export default function JoinUsClient() {
                     </div>
                     <section className="p-6 rounded-lg bg-muted/20 border border-border/50" aria-labelledby="eligibility-heading">
                         <div className="space-y-5">
-                             <h3 id="eligibility-heading" className="text-sm font-semibold text-[#000066]">Eligibility</h3>
+                             <h3 id="eligibility-heading" className="text-base 2xl:text-lg font-semibold text-[#000066]">Eligibility</h3>
                             <ul className="space-y-3">
                                 {REQUIREMENTS.map((item, i) => (
                                     <li key={i} className="flex items-start gap-3">
                                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                                        <span className="text-xs text-muted-foreground">{item}</span>
+                                        <span className="text-sm 2xl:text-base text-muted-foreground">{item}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -79,7 +79,7 @@ export default function JoinUsClient() {
                     </section>
                      <aside className="p-4 bg-background border border-border/50 rounded-lg flex items-center gap-3">
                         <ShieldCheck className="w-4 h-4 text-[#000066] shrink-0" />
-                        <p className="text-[10px] text-muted-foreground leading-relaxed">
+                        <p className="text-xs sm:text-sm 2xl:text-base text-muted-foreground leading-relaxed">
                             {journalShortName} maintains rigorous ethical standards. Applications are subject to peer audit.
                         </p>
                     </aside>

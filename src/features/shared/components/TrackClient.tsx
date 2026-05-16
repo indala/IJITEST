@@ -40,12 +40,12 @@ function Milestone({ title, date, description, icon: Icon, active, last }: Miles
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
                     <h3 className={`text-sm font-semibold m-0 ${active ? 'text-primary' : 'text-muted-foreground/50'}`}>{title}</h3>
                     {date && (
-                        <span className="text-[10px] text-muted-foreground bg-muted/50 px-2 py-0.5 rounded border border-border/50 font-mono">
+                        <span className="text-xs sm:text-sm text-muted-foreground bg-muted/50 px-2 py-0.5 rounded border border-border/50 font-mono">
                             {new Date(date).toLocaleDateString()}
                         </span>
                     )}
                 </div>
-                <p className={`text-xs leading-relaxed ${active ? 'text-muted-foreground' : 'text-muted-foreground/30'}`}>{description}</p>
+                <p className={`text-sm leading-relaxed ${active ? 'text-muted-foreground' : 'text-muted-foreground/30'}`}>{description}</p>
             </div>
         </div>
     );
@@ -119,7 +119,7 @@ export default function TrackClient() {
                 <div className="p-8 sm:p-12">
                     <form onSubmit={handleTrack} className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
-                            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Manuscript ID</label>
+                            <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider ml-1">Manuscript ID</label>
                             <div className="relative">
                                 <Input
                                     value={paperIdInput}
@@ -137,7 +137,7 @@ export default function TrackClient() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Email Address</label>
+                            <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider ml-1">Email Address</label>
                             <div className="relative">
                                 <Input
                                     type="email"
@@ -159,7 +159,7 @@ export default function TrackClient() {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-12 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all active:scale-[0.99] cursor-pointer font-bold text-xs tracking-wider uppercase"
+                                className="w-full h-12 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all active:scale-[0.99] cursor-pointer font-bold text-sm tracking-wider uppercase"
                             >
                                 {isLoading ? (
                                     <div className="flex items-center gap-3">
@@ -171,7 +171,7 @@ export default function TrackClient() {
                                     </div>
                                 )}
                             </Button>
-                            <p className="text-center mt-6 text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                            <p className="text-center mt-6 text-xs sm:text-sm text-muted-foreground uppercase tracking-widest font-bold">
                                 Global Publication Protocol • v4.0
                             </p>
                         </div>
@@ -190,11 +190,11 @@ export default function TrackClient() {
                                         <Badge className="bg-primary/5 text-primary border-primary/20 px-4 h-8 rounded-lg">
                                             Status: {manuscript.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                                         </Badge>
-                                        <span className="text-[10px] font-mono text-muted-foreground bg-muted/50 px-3 py-1 rounded border border-border/50">
+                                        <span className="text-xs sm:text-sm font-mono text-muted-foreground bg-muted/50 px-3 py-1 rounded border border-border/50">
                                             ID: {manuscript.paperId}
                                         </span>
                                     </div>
-                                    <div className="text-xs text-muted-foreground flex items-center gap-2">
+                                    <div className="text-sm text-muted-foreground flex items-center gap-2">
                                         <Calendar className="w-3.5 h-3.5" /> {manuscript.submittedAt ? new Date(manuscript.submittedAt).getFullYear() : 'N/A'}
                                     </div>
                                 </div>
@@ -208,7 +208,7 @@ export default function TrackClient() {
                                         <User className="w-6 h-6 text-primary" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Corresponding Author</p>
+                                        <p className="text-xs sm:text-sm font-bold tracking-wider text-muted-foreground uppercase m-0">Corresponding Author</p>
                                         <p className="text-sm font-semibold">{manuscript.authorName}</p>
                                     </div>
                                 </div>
@@ -216,7 +216,7 @@ export default function TrackClient() {
 
                             <section className="space-y-10 pt-12 border-t border-border/50 max-w-3xl">
                                 <div className="flex items-center gap-3 mb-8">
-                                    <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Manuscript Timeline</p>
+                                    <p className="text-xs sm:text-sm font-bold tracking-wider text-muted-foreground uppercase m-0">Manuscript Timeline</p>
                                 </div>
 
                                 <div className="space-y-4">
@@ -266,7 +266,7 @@ export default function TrackClient() {
                                                     Your manuscript has been approved. Please finalize the Article Processing Charge (APC) to proceed with publication.
                                                 </p>
                                             </div>
-                                            <Button asChild size="lg" className="h-12 px-8 bg-white text-primary hover:bg-white/90 rounded-lg shadow-sm transition-all shrink-0 font-bold text-xs tracking-wider uppercase">
+                                            <Button asChild size="lg" className="h-12 px-8 bg-white text-primary hover:bg-white/90 rounded-lg shadow-sm transition-all shrink-0 font-bold text-sm tracking-wider uppercase">
                                                 <Link href={`/payment/${manuscript.paperId}`} className="flex items-center gap-2">
                                                     Process Payment <CreditCard className="w-4 h-4" />
                                                 </Link>
@@ -288,7 +288,7 @@ export default function TrackClient() {
                                                 Your research is now live in the global scientific archives.
                                             </p>
                                         </div>
-                                        <Button asChild size="lg" className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm transition-all shrink-0 font-bold text-xs tracking-wider uppercase">
+                                        <Button asChild size="lg" className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm transition-all shrink-0 font-bold text-sm tracking-wider uppercase">
                                             <Link href={`/archive`} className="flex items-center gap-2">
                                                 View in Archive <ArrowRight className="w-4 h-4" />
                                             </Link>
@@ -331,11 +331,11 @@ export default function TrackClient() {
                             <p className="text-muted-foreground text-sm m-0">
                                 Manuscript not found or credentials mismatched.
                             </p>
-                            <p className="text-destructive/60 text-xs italic">&quot;{errorMessage}&quot;</p>
+                            <p className="text-destructive/60 text-sm italic">&quot;{errorMessage}&quot;</p>
                         </div>
                         <Button
                             onClick={() => setSearchTriggered(false)}
-                            className="h-12 px-10 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all cursor-pointer active:scale-95 font-bold text-xs tracking-wider uppercase"
+                            className="h-12 px-10 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all cursor-pointer active:scale-95 font-bold text-sm tracking-wider uppercase"
                         >
                             Try Again
                         </Button>

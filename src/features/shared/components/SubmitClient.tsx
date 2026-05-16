@@ -42,7 +42,7 @@ export default function SubmitClient() {
                     </div>
 
                     <section className="space-y-6">
-                        <h3 className="text-sm font-semibold text-primary m-0">Quick Checklist</h3>
+                        <h3 className="text-base 2xl:text-lg font-semibold text-primary m-0">Quick Checklist</h3>
                         <div className="p-8 bg-card border border-border/50 rounded-xl shadow-sm border-l-4 border-l-secondary/10 transition-all hover:border-l-secondary">
                             <div className="space-y-6 mb-10">
                                 {REQUIREMENTS.map((item, idx) => (
@@ -51,13 +51,13 @@ export default function SubmitClient() {
                                             <CheckCircle2 className="w-3.5 h-3.5 text-secondary" />
                                         </div>
                                         <div>
-                                            <h3 className="text-sm font-semibold text-primary mb-1 m-0">{item.title}</h3>
-                                            <p className="text-muted-foreground m-0 text-xs leading-relaxed">{item.desc}</p>
+                                            <h3 className="text-base 2xl:text-lg font-semibold text-primary mb-1 m-0">{item.title}</h3>
+                                            <p className="text-muted-foreground m-0 text-sm 2xl:text-base leading-relaxed">{item.desc}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <Button asChild className="w-full h-10 bg-[#000066] hover:bg-[#000088] text-white font-bold text-[10px] tracking-wider rounded-lg shadow-sm transition-all uppercase">
+                            <Button asChild className="w-full h-10 bg-[#000066] hover:bg-[#000088] text-white font-bold text-sm 2xl:text-base tracking-wider rounded-lg shadow-sm transition-all uppercase">
                                 <Link href="/guidelines">View Guidelines</Link>
                             </Button>
                         </div>
@@ -69,10 +69,10 @@ export default function SubmitClient() {
                                 <HelpCircle className="w-5 h-5" />
                             </div>
                             <h3 className="text-lg font-semibold m-0 text-white">Need Support?</h3>
-                            <p className="text-white/60 text-xs font-medium leading-relaxed m-0">
+                            <p className="text-white/60 text-sm 2xl:text-base font-medium leading-relaxed m-0">
                                 Encountering technical issues? Our board is available to assist you.
                             </p>
-                            <Link href="/contact" className="text-[10px] font-bold tracking-widest text-white hover:text-secondary inline-flex items-center gap-2 m-0 uppercase transition-colors">
+                            <Link href="/contact" className="text-xs sm:text-sm 2xl:text-base font-bold tracking-widest text-white hover:text-secondary inline-flex items-center gap-2 m-0 uppercase transition-colors">
                                 Contact Support <ChevronRight className="w-3.5 h-3.5" />
                             </Link>
                         </div>

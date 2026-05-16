@@ -66,7 +66,7 @@ export default function ContactForm() {
     return (
         <div className="space-y-4">
             <div>
-                <h3 className="font-bold text-primary ">Direct inquiry form</h3>
+                <h3 className="font-bold text-primary ">Direct enquiry form</h3>
                 <p className="text-primary/60 text-[10px] font-medium mt-0.5 lowercase">fill out the form below and we&apos;ll get back to you shortly.</p>
             </div>
 
@@ -130,7 +130,7 @@ export default function ContactForm() {
                     <Button
                         type="submit"
                         disabled={contactMutation.isPending}
-                        className="w-full h-11 bg-primary text-white rounded-lg font-bold text-xs shadow-sm hover:bg-primary/95 transition-all lowercase"
+                        className="w-full h-11 bg-primary text-white rounded-lg font-bold text-sm 2xl:text-base shadow-sm hover:bg-primary/95 transition-all lowercase"
                     >
                         {contactMutation.isPending ? (
                             <div className="flex items-center justify-center gap-2">

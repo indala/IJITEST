@@ -67,7 +67,7 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
                                     <Link
                                         href={crumb.href}
                                         aria-current={isLast ? "page" : undefined}
-                                        className={`text-[10px] xl:text-xs font-medium tracking-tight transition-all duration-300 ${isLast ? "text-white" : "text-white/50 hover:text-white"}`}
+                                        className={`text-xs xl:text-sm 2xl:text-base font-medium tracking-tight transition-all duration-300 ${isLast ? "text-white" : "text-white/50 hover:text-white"}`}
                                     >
                                         {crumb.name}
                                     </Link>
@@ -86,7 +86,7 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                         onAnimationComplete={handleAnimationComplete}
                     >
-                        <h1 className="font-serif font-semibold text-white mb-4 text-xl xl:text-2xl 2xl:text-3xl">
+                        <h1 className="font-serif font-semibold text-white mb-4 text-2xl xl:text-3xl 2xl:text-4xl">
                             {title}
                         </h1>
                         {description && (
@@ -94,7 +94,7 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 0.9 }}
                                 transition={{ delay: 0.6, duration: 1 }}
-                                className="max-w-2xl text-xs sm:text-sm text-white/80 leading-relaxed border-l-2 border-primary-foreground/30 pl-4"
+                                className="max-w-2xl text-sm sm:text-base 2xl:text-lg text-white/80 leading-relaxed border-l-2 border-primary-foreground/30 pl-4"
                             >
                                 {description}
                             </motion.p>

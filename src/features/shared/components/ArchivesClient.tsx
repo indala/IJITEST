@@ -30,6 +30,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
         return papers.filter((p) =>
             p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             p.authorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (p.authorsList && p.authorsList.some(a => a.toLowerCase().includes(searchQuery.toLowerCase()))) ||
             (p.keywords && p.keywords.toLowerCase().includes(searchQuery.toLowerCase())) ||
             p.paperId.toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -129,7 +130,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                     <div className="space-y-8 pr-2">
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                                <p className="text-[12px] 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Archive Navigation</p>
+                                <p className="text-sm 2xl:text-lg font-bold tracking-wider text-muted-foreground uppercase m-0">Archive Navigation</p>
                             </div>
 
                             <div className="space-y-3">
@@ -137,14 +138,14 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                     <div key={vol.volume} className="space-y-2">
                                         <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 rounded-lg border border-border/50">
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                                            <span className="text-lg 2xl:text-xl  font-bold text-secondary">Volume {vol.volume} ({vol.year})</span>
+                                        <span className="text-lg 2xl:text-2xl  font-bold text-secondary">Volume {vol.volume} ({vol.year})</span>
                                         </div>
                                         <div className="grid grid-cols-1 gap-1 pl-4">
                                             {vol.issues.map((iss) => (
                                                 <button
                                                     key={iss.key}
                                                     onClick={() => setSelectedIssue(iss.key)}
-                                                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-left text-lg 2xl:text-lg transition-all group ${selectedIssue === iss.key
+                                                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-left text-lg 2xl:text-xl transition-all group ${selectedIssue === iss.key
                                                             ? 'bg-green-600 text-white shadow-md shadow-primary/20 scale-[1.02]'
                                                             : 'hover:bg-primary/5 text-muted-foreground border border-transparent hover:border-primary/10'
                                                         }`}
@@ -164,7 +165,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
 
                                 {hierarchy.length === 0 && !isLoading && (
                                     <div className="p-12 text-center border-2 border-dashed rounded-2xl border-border bg-muted/10 opacity-60">
-                                        <p className="text-xs font-medium text-muted-foreground">No archives matching search.</p>
+                                        <p className="text-sm 2xl:text-base font-medium text-muted-foreground">No archives matching search.</p>
                                     </div>
                                 )}
                             </div>
@@ -172,7 +173,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
 
                         <div className="hidden lg:block space-y-4">
                             <div className="flex items-center gap-2 pl-3 border-l-2 border-primary/20">
-                                <p className="text-[12px] font-bold tracking-wider text-muted-foreground uppercase m-0">Support</p>
+                                <p className="text-sm 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Support</p>
                             </div>
                             <div className="p-5 bg-card border border-border/50 rounded-2xl shadow-sm">
                                 <TrackManuscriptWidget />
@@ -188,7 +189,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                             <div className="w-16 h-16 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />
                             <div className="space-y-1">
                                 <p className="text-sm font-bold text-foreground">Loading Repository</p>
-                                <p className="text-xs text-muted-foreground">Synchronizing digital archives...</p>
+                                <p className="text-sm 2xl:text-base text-muted-foreground">Synchronizing digital archives...</p>
                             </div>
                         </div>
                     ) : activeIssue ? (
@@ -197,11 +198,11 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:scale-150 transition-transform duration-1000" />
                                 <div className="space-y-1 relative z-10">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[12px] px-2 rounded flex items-center gap-1">
+                                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-sm 2xl:text-base px-2 rounded flex items-center gap-1">
                                             <BadgeCheck className="size-4" />
                                             Current Selection
                                         </Badge>
-                                        <span className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-widest">Verified Repository</span>
+                                        <span className="text-xs 2xl:text-sm text-muted-foreground/60 font-medium uppercase tracking-widest">Verified Repository</span>
                                     </div>
                                     <h2 className="text-2xl font-serif font-black text-primary m-0">
                                         Volume {activeIssue.volume} Issue {activeIssue.issue}
@@ -231,7 +232,7 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                     </p>
                                 </div>
                                 <div className="flex justify-center gap-3">
-                                    <Button asChild className="h-11 px-8 bg-[#000066] text-white rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-primary/20 hover:scale-105 transition-all border-none">
+                                    <Button asChild className="h-11 px-8 bg-[#000066] text-white rounded-xl font-bold text-sm 2xl:text-base uppercase tracking-wider shadow-lg shadow-primary/20 hover:scale-105 transition-all border-none">
                                         <Link href="/submit" className="flex items-center gap-2">
                                             Submit Paper <ChevronRight className="w-4 h-4" />
                                         </Link>

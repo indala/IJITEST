@@ -47,14 +47,14 @@ export default function ContactClient() {
                                         <method.icon className="w-5 h-5" />
                                     </div>
                                     <div className="space-y-1 min-w-0">
-                                        <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">{method.title}</p>
+                                        <p className="text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">{method.title}</p>
                                         <a
                                             href={method.href}
-                                            className="text-sm xl:text-base font-semibold text-primary hover:underline transition-all block wrap-break-word"
+                                            className="text-sm xl:text-base 2xl:text-lg font-semibold text-primary hover:underline transition-all block wrap-break-word"
                                         >
                                             {method.value}
                                         </a>
-                                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                                        <div className="flex items-center gap-1.5 text-xs sm:text-sm 2xl:text-base text-muted-foreground">
                                             <Clock className="w-3 h-3 opacity-50" />
                                             {method.subtext}
                                         </div>
@@ -77,7 +77,7 @@ export default function ContactClient() {
                     {/* Office Address Card */}
                     <section className="space-y-3">
                         <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                             <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase m-0">Editorial Headquarters</p>
+                             <p className="text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Editorial Headquarters</p>
                         </div>
                         <Card className="p-6 border-border/50 bg-card rounded-xl hover:border-primary/20 transition-all">
                             <div className="flex items-start gap-4">
@@ -85,7 +85,7 @@ export default function ContactClient() {
                                     <MapPin className="w-5 h-5" />
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground m-0 leading-relaxed font-medium whitespace-pre-line">
+                                    <p className="text-sm 2xl:text-base text-muted-foreground m-0 leading-relaxed font-medium whitespace-pre-line">
                                         {(settings.officeAddress || '')}
                                     </p>
                                 </div>
@@ -106,9 +106,9 @@ export default function ContactClient() {
                                 <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/10">
                                     <ShieldAlert className="w-6 h-6 text-white" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-white m-0">Publication Ethics</h3>
-                                <p className="text-xs text-white/60 m-0 leading-relaxed">IJITEST strictly adheres to COPE guidelines for scientific integrity and peer-review ethics.</p>
-                                <Button asChild variant="link" className="text-white p-0 h-auto hover:text-white transition-colors m-0 text-xs">
+                                <h3 className="text-lg 2xl:text-xl font-semibold text-white m-0">Publication Ethics</h3>
+                                <p className="text-sm 2xl:text-base text-white/60 m-0 leading-relaxed">IJITEST strictly adheres to COPE guidelines for scientific integrity and peer-review ethics.</p>
+                                <Button asChild variant="link" className="text-white p-0 h-auto hover:text-white transition-colors m-0 text-sm 2xl:text-base">
                                     <Link href="/ethics" className="flex items-center">
                                         View Policy <ChevronRight className="w-3.5 h-3.5 ml-2" />
                                     </Link>
