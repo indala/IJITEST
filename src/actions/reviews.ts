@@ -23,7 +23,7 @@ import { convertDocxToPdf } from "@/lib/ilovepdf";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
-import { ActionResponse, ActiveReview, UnassignedPaper } from "@/db/types";
+import { type ActionResponse, type ActiveReview, type UnassignedPaper } from "@/db/types";
 
 /**
  * Assign a reviewer to a submission.
@@ -213,7 +213,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                     set: { token: invitationToken, expiresAt: expires }
                 });
 
-                const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+                const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000';
                 setupUrl = `${baseUrl}/auth/setup-password?token=${invitationToken}`;
             }
 
@@ -370,7 +370,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                     "Editor",
                     `Review Decision: Accept [${info.paperId}]`,
                     `A reviewer has submitted a recommendation of <strong>'Accept'</strong> for the manuscript <strong>"${info.title}"</strong>.`,
-                    `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/submissions/${info.submissionId}`
+                    `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/admin/submissions/${info.submissionId}`
                 );
                 Promise.allSettled(admins.map(a => sendEmail({
                     to: a.email,

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Issue } from '@/db/types';
+import { Issue, PaperWithPublication } from '@/db/types';
 import {
     getVolumesIssues,
     createVolumeIssue,
@@ -9,7 +9,6 @@ import {
     updateVolumeIssue,
     deleteVolumeIssue,
     assignPaperToIssue,
-    PaperWithPublication
 } from '@/actions/publications';
 
 export function useVolumesIssues() {

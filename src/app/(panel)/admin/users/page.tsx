@@ -3,11 +3,11 @@
 import { Users, UserPlus, Shield, Mail, Trash2, ShieldCheck, UserCog, CheckCircle, AlertCircle, ShieldAlert } from 'lucide-react';
 import { useUsers, useDeleteUser, useUpdateUserRole } from '@/hooks/queries/useUsers';
 import { useSession } from 'next-auth/react';
-import React, { useState, useTransition, useCallback, useMemo, useActionState, useEffect } from 'react';
+import React, { useState, useTransition, useCallback, useMemo, useActionState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { createUser } from '@/actions/users';
 import { useQueryClient } from '@tanstack/react-query';
-import { SafeUserWithProfile, ActionResponse } from '@/db/types';
+import { type SafeUserWithProfile, type ActionResponse } from '@/db/types';
 import { runCleanupInactiveAuthors as cleanupAuthors } from '@/actions/author-submissions';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -175,18 +175,25 @@ export default function UserManagement() {
         return await createUser(formData);
     }, { success: false, error: "" } as ActionResponse);
 
+    const prevSuccessRef = useRef(false);
+
     // Sync ActionState with UI (close modal, show toast, refresh list)
     useEffect(() => {
-        if (createState.success) {
+        if (createState.success && !prevSuccessRef.current) {
             if (!isCreatingStaff) {
-                setShowAddModal(false);
-                toast.success("Staff member invited successfully");
-                queryClient.invalidateQueries({ queryKey: ['users'] });
+                prevSuccessRef.current = true;
+                setTimeout(() => {
+                    setShowAddModal(false);
+                    toast.success("Staff member invited successfully");
+                    queryClient.invalidateQueries({ queryKey: ['users'] });
+                }, 0);
             }
-        } else {
-            if (createState.error) {
-                toast.error(createState.error);
-            }
+        } else if (!createState.success && prevSuccessRef.current) {
+            prevSuccessRef.current = false;
+        }
+
+        if (!createState.success && createState.error) {
+            toast.error(createState.error);
         }
     }, [createState, isCreatingStaff, queryClient]);
 

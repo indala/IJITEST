@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import dayjs from "@/lib/dayjs"
 import { cn } from "@/lib/utils"
 
-import { ContactMessageRow } from "@/actions/messages"
+import { type ContactMessageRow } from "@/db/types"
 
 interface MessageListProps {
     messages: ContactMessageRow[]

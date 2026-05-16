@@ -1,13 +1,13 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { 
-    users, 
-    userProfiles, 
-    applications, 
-    applicationInterests, 
+import {
+    users,
+    userProfiles,
+    applications,
+    applicationInterests,
     masterInterests,
-    submissions, 
+    submissions,
     reviews,
     submissionVersions,
     reviewAssignments
@@ -19,42 +19,10 @@ import { safeDeleteFile } from "@/lib/fs-utils";
 import path from "path";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { ActionResponse, actionSuccess, actionError } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError, type ProfileData } from "@/db/types";
 import { insertProfileSchema } from "@/db/validation";
 
-export type ProfileData = {
-    id: string;
-    name: string;
-    email: string;
-    designation: string;
-    institute: string;
-    phone: string;
-    nationality: string;
-    bio: string;
-    photoUrl: string | null;
-    orcidId: string | null;
-    application?: {
-        institute: string;
-        country: string;
-        status: string;
-        rejectionReason: string | null;
-        reviewedAt: string | null;
-    };
-    researchInterests: string[];
-    history: Array<{
-        title: string;
-        createdAt?: Date | null;
-        updatedAt?: Date | null;
-        status?: string | null;
-        decision?: string | null;
-    }>;
-    completeness: {
-        score: number;
-        total: number;
-        percentage: number;
-        missing: string[];
-    };
-};
+
 
 export async function getProfileData(userId: string, role: 'admin' | 'editor' | 'reviewer' | 'author'): Promise<ActionResponse<ProfileData>> {
     try {
@@ -74,15 +42,15 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
             photoUrl: userProfiles.photoUrl,
             orcidId: userProfiles.orcidId,
         })
-        .from(users)
-        .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .where(eq(users.id, userId))
-        .limit(1);
+            .from(users)
+            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .where(eq(users.id, userId))
+            .limit(1);
 
         if (userWithProfile.length === 0 || !userWithProfile[0]) return actionError("User not found");
         const userData = userWithProfile[0];
 
-        const profileData: Partial<ProfileData> = { 
+        const profileData: Partial<ProfileData> = {
             id: userData.id,
             email: userData.email,
             name: userData.name || "",
@@ -105,9 +73,9 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
                 rejectionReason: sql<string | null>`NULL`,
                 reviewedAt: applications.reviewedAt
             })
-            .from(applications)
-            .where(eq(applications.email, userData.email))
-            .limit(1);
+                .from(applications)
+                .where(eq(applications.email, userData.email))
+                .limit(1);
 
             const appData = appRows[0];
             if (appData) {
@@ -116,9 +84,9 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
                     country: appData.country || "",
                     status: appData.status,
                     rejectionReason: appData.rejectionReason,
-                    reviewedAt: appData.reviewedAt ? appData.reviewedAt.toISOString() : null
+                    reviewedAt: appData.reviewedAt
                 };
-                
+
                 // Fetch interests from join table
                 if (role === 'reviewer' || role === 'editor') {
                     const interestRows = await db.select({ name: masterInterests.name })
@@ -143,13 +111,13 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
             const subRows = await db.select({
                 title: submissionVersions.title,
                 status: submissions.status,
-                createdAt: submissions.submittedAt
+                submittedAt: submissions.submittedAt
             })
-            .from(submissions)
-            .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
-            .where(eq(submissions.correspondingAuthorId, userId))
-            .orderBy(desc(submissions.submittedAt))
-            .limit(10);
+                .from(submissions)
+                .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+                .where(eq(submissions.correspondingAuthorId, userId))
+                .orderBy(desc(submissions.submittedAt))
+                .limit(10);
             history = subRows;
         } else if (role === 'reviewer') {
             const revRows = await db.select({
@@ -157,16 +125,16 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
                 decision: reviews.decision,
                 updatedAt: reviews.submittedAt
             })
-            .from(reviews)
-            .innerJoin(reviewAssignments, eq(reviews.assignmentId, reviewAssignments.id))
-            .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
-            .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
-            .where(and(
-                eq(reviewAssignments.reviewerId, userId),
-                eq(reviewAssignments.status, 'completed')
-            ))
-            .orderBy(desc(reviews.submittedAt))
-            .limit(10);
+                .from(reviews)
+                .innerJoin(reviewAssignments, eq(reviews.assignmentId, reviewAssignments.id))
+                .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
+                .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+                .where(and(
+                    eq(reviewAssignments.reviewerId, userId),
+                    eq(reviewAssignments.status, 'completed')
+                ))
+                .orderBy(desc(reviews.submittedAt))
+                .limit(10);
             history = revRows;
         }
         profileData.history = history;
@@ -203,11 +171,11 @@ export async function updateProfileField(userId: string, field: string, value: s
     if (!dbField) return actionError('Field not permitted');
 
     const trimmedValue = value.trim();
-    
+
     // 🛡️ Elite: Dynamic schema validation using drizzle-zod .shape
     const fieldSchema = insertProfileSchema.shape[dbField as keyof typeof insertProfileSchema.shape];
     const validation = fieldSchema.safeParse(trimmedValue);
-    
+
     if (!validation.success) {
         return actionError(validation.error.issues[0]?.message || "Validation failed");
     }
@@ -218,7 +186,7 @@ export async function updateProfileField(userId: string, field: string, value: s
         await db.update(userProfiles)
             .set(updateDoc)
             .where(eq(userProfiles.userId, userId));
-            
+
         revalidatePath("/(panel)", "layout");
         return actionSuccess(trimmedValue);
     } catch (error) {
@@ -246,7 +214,7 @@ export async function updateResearchInterests(userId: string, interests: string[
                 .from(users)
                 .where(eq(users.id, userId))
                 .limit(1);
-            
+
             const email = userRows[0]?.email;
             if (!email) throw new Error("User not found");
 
@@ -254,7 +222,7 @@ export async function updateResearchInterests(userId: string, interests: string[
                 .from(applications)
                 .where(eq(applications.email, email))
                 .limit(1);
-            
+
             const applicationId = appRows[0]?.id;
 
             if (!applicationId) {
@@ -263,11 +231,11 @@ export async function updateResearchInterests(userId: string, interests: string[
 
             // Update the many-to-many interests join table
             await tx.delete(applicationInterests).where(eq(applicationInterests.applicationId, applicationId));
-            
+
             for (const name of cleanInterests) {
                 let interestId: number;
                 const existing = await tx.select().from(masterInterests).where(eq(masterInterests.name, name)).limit(1);
-                
+
                 if (existing[0]) {
                     interestId = existing[0].id;
                 } else {
@@ -281,7 +249,7 @@ export async function updateResearchInterests(userId: string, interests: string[
                 });
             }
         });
-        
+
         revalidatePath("/(panel)", "layout");
         return { success: true, data: cleanInterests };
     } catch (error) {
@@ -325,11 +293,11 @@ export async function updateProfilePhoto(userId: string, formData: FormData): Pr
             .from(userProfiles)
             .where(eq(userProfiles.userId, userId))
             .limit(1);
-        
+
         const oldPhoto = rows[0]?.photoUrl;
 
         await writeFile(filePath, Buffer.from(await file.arrayBuffer()));
-        
+
         await db.update(userProfiles)
             .set({ photoUrl: photoUrl })
             .where(eq(userProfiles.userId, userId));
@@ -366,7 +334,7 @@ export async function getProfileCompleteness(profileData: Partial<ProfileData>, 
     check(profileData.nationality, 'Nationality/Country');
     check(profileData.phone, 'Phone Number');
     check(profileData.bio, 'Biography');
-    
+
     if (role !== 'admin' && role !== 'author') {
         check(profileData.researchInterests, 'Research Interests');
     }

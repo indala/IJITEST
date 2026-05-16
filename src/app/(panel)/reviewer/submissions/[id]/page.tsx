@@ -22,8 +22,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import AdminPdfUpload from "@/features/submissions/components/AdminPdfUpload";
 import { getSecureUrl } from "@/lib/utils";
+import { type SubmissionIdParam } from "@/db/types";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<SubmissionIdParam> }): Promise<Metadata> {
     const { id } = await params;
     const response = await getSubmissionById(parseInt(id));
     if (!response.success || !response.data) return { title: 'Manuscript Not Found | Reviewer' };
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
 }
 
-export default async function ReviewerSubmissionView({ params }: { params: Promise<{ id: string }> }) {
+export default async function ReviewerSubmissionView({ params }: { params: Promise<SubmissionIdParam> }) {
     const { id: idStr } = await params;
     const id = parseInt(idStr);
     const session = await getServerSession(authOptions);
@@ -144,7 +145,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                         <History className="w-5 h-5" /> Collaborating Authors
                                     </h4>
                                     <div className="space-y-3">
-                                        {submission.coAuthors.map((author: any, idx: number) => (
+                                        {submission.coAuthors.map((author, idx: number) => (
                                             <div key={idx} className="p-4 bg-primary/5 border border-primary/10 rounded-xl space-y-1 shadow-sm">
                                                 <p className="leading-none">{author.name}</p>
                                                 <p className="opacity-60 truncate">{author.institution}</p>

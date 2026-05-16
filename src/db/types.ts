@@ -50,6 +50,32 @@ export type SafeUserWithProfile = SafeUser & {
     profile: UserProfile | null;
 };
 
+export type ProfileData = Pick<User, 'id' | 'email'> & 
+    Omit<UserProfile, 'userId' | 'createdAt' | 'updatedAt' | 'fullName' | 'id'> & {
+    name: UserProfile['fullName'];
+    application?: {
+        institute: Application['institute'];
+        country: Application['nationality'];
+        status: Application['status'];
+        rejectionReason: string | null;
+        reviewedAt: Application['reviewedAt'];
+    };
+    researchInterests: string[];
+    history: Array<{
+        title: Pick<Version, 'title'>['title'];
+        submittedAt?: Submission['submittedAt'];
+        updatedAt?: Submission['updatedAt'];
+        status?: Submission['status'] | null;
+        decision?: Review['decision'] | null;
+    }>;
+    completeness: {
+        score: number;
+        total: number;
+        percentage: number;
+        missing: string[];
+    };
+};
+
 // 📄 Submissions
 export type Submission = InferSelectModel<typeof submissions>;
 export type NewSubmission = InferInsertModel<typeof submissions>;
@@ -103,9 +129,26 @@ export type ReviewWithReviewer = ReviewAssignment & {
 export type Payment = InferSelectModel<typeof payments>;
 export type NewPayment = InferInsertModel<typeof payments>;
 
+export type PaymentRow = Payment & {
+    title: Pick<Version, 'title'>['title'];
+    paperId: Submission['paperId'];
+    authorName: UserProfile['fullName'];
+    authorEmail: User['email'];
+};
+
+export type UnpaidPaperRow = Pick<Submission, 'id' | 'paperId'> & {
+    title: Pick<Version, 'title'>['title'];
+    authorName: UserProfile['fullName'];
+};
+
 // 📚 Publications
 export type Publication = InferSelectModel<typeof publications>;
 export type Issue = InferSelectModel<typeof volumesIssues>;
+
+export type PaperWithPublication = Pick<Submission, 'id' | 'paperId' | 'status'> & {
+    title: Version['title'];
+    publication: Publication | null;
+};
 
 // 📩 Applications
 export type Application = InferSelectModel<typeof applications> & {
@@ -145,6 +188,8 @@ export type AuthorSubmissionDetail = Pick<Submission, 'id' | 'paperId' | 'status
 export type ContactMessage = InferSelectModel<typeof contactMessages>;
 export type NewContactMessage = InferInsertModel<typeof contactMessages>;
 
+export type ContactMessageRow = Pick<ContactMessage, 'id' | 'name' | 'email' | 'subject' | 'message' | 'status' | 'createdAt'>;
+
 export type Notification = InferSelectModel<typeof notifications>;
 
 // 📜 System
@@ -169,6 +214,20 @@ export type PublishedPaperUI = Pick<Submission, 'status' | 'updatedAt'> &
         coAuthors: Author[];
         authorsList: string[];
     };
+
+// 🗺️ Route Param Types (for Next.js [dynamic] pages — derived from schema)
+// volume/issue use template literals over the schema integer types so the
+// shape stays tied to Issue.volumeNumber / Issue.issueNumber.
+export type PaperDetailParams = {
+    volume: `volume${Issue['volumeNumber']}`;
+    issue: `issue${Issue['issueNumber']}`;
+    paperId: Submission['paperId'];
+};
+
+// Panel pages that receive a numeric submission ID as a URL string
+export type SubmissionIdParam = {
+    id: string;
+};
 
 export type TrackedManuscript = Pick<Submission, 'id' | 'paperId' | 'status' | 'submittedAt' | 'updatedAt'> & {
     title: Pick<Version, 'title'>['title'];

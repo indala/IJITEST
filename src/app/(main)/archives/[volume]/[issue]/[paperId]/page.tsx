@@ -7,7 +7,7 @@ import { getSettingsData } from '@/actions/settings';
 import { getPublishedPapers } from "@/actions/archives";
 import { JsonLd } from "@/components/shared/JsonLd";
 
-import { PublishedPaperUI } from "@/db/types";
+import { type PublishedPaperUI, type PaperDetailParams } from "@/db/types";
 
 export async function generateStaticParams() {
     try {
@@ -33,7 +33,7 @@ export async function generateStaticParams() {
     }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ volume: string, issue: string, paperId: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<PaperDetailParams> }): Promise<Metadata> {
     const { volume, issue, paperId } = await params;
     const [paperRes, settings] = await Promise.all([
         getPaperById(paperId),
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
 
     if (!paper) return { title: 'Article Not Found | IJITEST' };
 
-    const baseUrl = settings.journalWebsite || 'https://www.ijitest.org';
+    const baseUrl = settings['journalWebsite'] || 'https://www.ijitest.org';
     const pubYearStr = paper.publicationYear ? String(paper.publicationYear) : '';
     const formattedDate: string = (paper.publishedAt 
         ? new Date(paper.publishedAt).toISOString().split('T')[0] 
@@ -65,8 +65,8 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
             'citation_title': paper.title,
             'citation_author': paper.authorsList,
             'citation_publication_date': formattedDate.replace(/-/g, '/'),
-            'citation_journal_title': settings.journalName || 'IJITEST',
-            'citation_issn': settings.issnNumber || '',
+            'citation_journal_title': settings['journalName'] || 'IJITEST',
+            'citation_issn': settings['issnNumber'] || '',
             'citation_doi': paper.doi || '',
             'citation_volume': paper.volumeNumber ? String(paper.volumeNumber) : '',
             'citation_issue': paper.issueNumber ? String(paper.issueNumber) : '',
@@ -94,7 +94,7 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
     };
 }
 
-export default async function PaperDetailPage({ params }: { params: Promise<{ volume: string, issue: string, paperId: string }> }) {
+export default async function PaperDetailPage({ params }: { params: Promise<PaperDetailParams> }) {
     const { volume, issue, paperId } = await params;
     const [paperRes, settings] = await Promise.all([
         getPaperById(paperId),
@@ -105,7 +105,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<{ vo
 
     if (!paper) notFound();
 
-    const baseUrl = settings.journalWebsite || 'https://www.ijitest.org';
+    const baseUrl = settings['journalWebsite'] || 'https://www.ijitest.org';
 
     return (
         <div className="bg-white min-h-screen pb-20">
@@ -141,7 +141,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<{ vo
                     "datePublished": paper.publishedAt ? new Date(paper.publishedAt).toISOString() : (paper.publicationYear?.toString() || ""),
                     "publisher": {
                         "@type": "Organization",
-                        "name": settings.journalName || "IJITEST",
+                        "name": settings['journalName'] || "IJITEST",
                         "logo": {
                             "@type": "ImageObject",
                             "url": `${baseUrl}/favicon_io/apple-touch-icon.png`
@@ -149,8 +149,8 @@ export default async function PaperDetailPage({ params }: { params: Promise<{ vo
                     },
                     "isPartOf": {
                         "@type": "ScholarlyJournal",
-                        "name": settings.journalName || "IJITEST",
-                        "issn": settings.issnNumber || ""
+                        "name": settings['journalName'] || "IJITEST",
+                        "issn": settings['issnNumber'] || ""
                     },
                     "pageStart": paper.startPage?.toString(),
                     "pageEnd": paper.endPage?.toString(),

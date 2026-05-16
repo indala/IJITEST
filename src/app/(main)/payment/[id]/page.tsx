@@ -1,6 +1,7 @@
 import PaymentClient from '@/features/shared/components/PaymentClient';
 import { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
+import { SubmissionIdParam } from '@/db/types';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
@@ -11,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default async function PaymentPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PaymentPage({ params }: { params: Promise<SubmissionIdParam> }) {
     const { id } = await params;
 
     return <PaymentClient id={id} />;

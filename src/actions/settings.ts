@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { settings } from "@/db/schema";
-import { ActionResponse, actionSuccess, actionError } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";

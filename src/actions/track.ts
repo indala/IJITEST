@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { submissions, reviews, reviewAssignments, submissionVersions, userProfiles, users } from "@/db/schema";
 import { eq, and, min, desc } from "drizzle-orm";
-import { ActionResponse, TrackedManuscript } from "@/db/types";
+import { type ActionResponse, type TrackedManuscript } from "@/db/types";
 import { checkRateLimit } from "@/lib/rate-limit";
  
 export async function trackManuscript(paperId: string, authorEmail?: string): Promise<ActionResponse<{ manuscript: TrackedManuscript }>> {

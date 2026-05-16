@@ -7,10 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { XCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { SubmissionIdParam } from "@/db/types";
 
 export const dynamic = 'force-dynamic';
 
-export default async function ResubmitPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ResubmitPage({ params }: { params: Promise<SubmissionIdParam> }) {
     const session = await getServerSession(authOptions);
     if (!session?.user) redirect('/login');
     if (session.user.role !== 'author') redirect(`/${session.user.role}`);

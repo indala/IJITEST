@@ -17,10 +17,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-import { User } from "next-auth";
+import type { Session } from "next-auth";
 
 interface UserNavProps {
-    user: User | null;
+    user: Session['user'] | null;
     handleLogout: () => Promise<void>;
     setShowPreferences: (show: boolean) => void;
 }

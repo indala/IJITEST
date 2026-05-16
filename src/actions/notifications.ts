@@ -5,7 +5,7 @@ import { contactMessages, submissions, reviewAssignments } from "@/db/schema";
 import { eq, count, and, inArray } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { ActionResponse } from "@/db/types";
+import { type ActionResponse } from "@/db/types";
 
 export async function getNotificationCounts(): Promise<ActionResponse<{ messages: number, submissions: number }>> {
     try {

@@ -18,7 +18,7 @@ import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { eq, inArray } from "drizzle-orm";
 import crypto from 'crypto';
-import { ActionResponse } from "@/db/types";
+import { type ActionResponse } from "@/db/types";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const submissionSchema = z.object({
@@ -278,7 +278,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         }
 
         // 4. Notifications
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org';
         const loginUrl = `${baseUrl}/login`;
 
         // Author Notification
@@ -299,7 +299,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         if (validated.data.coAuthors) {
             const coAuthors = JSON.parse(validated.data.coAuthors);
             if (Array.isArray(coAuthors)) {
-                await Promise.allSettled(coAuthors.map((ca: any) => {
+                await Promise.allSettled(coAuthors.map((ca: { name: string; email: string }) => {
                     const coTemplate = emailTemplates.coAuthorNotification(
                         ca.name,
                         validated.data.title,

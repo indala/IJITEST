@@ -7,7 +7,7 @@ import { getSettingsData } from '@/actions/settings';
 import { getLatestIssuePapers } from "@/actions/archives";
 import { JsonLd } from "@/components/shared/JsonLd";
 
-import { PublishedPaperUI } from "@/db/types";
+import { PublishedPaperUI, PaperDetailParams } from "@/db/types";
 
 export async function generateStaticParams() {
     try {
@@ -33,7 +33,7 @@ export async function generateStaticParams() {
     }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ volume: string, issue: string, paperId: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<PaperDetailParams> }): Promise<Metadata> {
     const { volume, issue, paperId } = await params;
     const [paperRes, settings] = await Promise.all([
         getPaperById(paperId),
@@ -96,7 +96,7 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
     };
 }
 
-export default async function PaperDetailPage({ params }: { params: Promise<{ volume: string, issue: string, paperId: string }> }) {
+export default async function PaperDetailPage({ params }: { params: Promise<PaperDetailParams> }) {
     const { volume, issue, paperId } = await params;
     const [paperRes, settings] = await Promise.all([
         getPaperById(paperId),

@@ -27,8 +27,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { PdfViewer } from "@/components/reviewer/PdfViewer";
 import { getSecureUrl } from "@/lib/utils";
+import { SubmissionIdParam } from "@/db/types";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<SubmissionIdParam> }): Promise<Metadata> {
     const { id } = await params;
     const response = await getSubmissionById(parseInt(id));
     if (!response.success || !response.data) return { title: 'Submission Not Found | Editor' };
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
 }
 
-export default async function SubmissionDetails({ params }: { params: Promise<{ id: string }> }) {
+export default async function SubmissionDetails({ params }: { params: Promise<SubmissionIdParam> }) {
     const { id: idStr } = await params;
     const id = parseInt(idStr);
 

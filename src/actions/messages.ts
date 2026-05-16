@@ -9,18 +9,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-import { ActionResponse, actionSuccess, actionError } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError, type ContactMessageRow } from "@/db/types";
 import { insertContactSchema } from "@/db/validation";
-
-export interface ContactMessageRow {
-    id: number;
-    name: string;
-    email: string;
-    subject: string;
-    message: string;
-    status: 'pending' | 'resolved' | 'archived';
-    createdAt: Date | null;
-}
 
 /**
  * Fetch contact messages for the admin panel with filtering and search.
@@ -225,7 +215,7 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
         }).catch(e => console.error("Auto-reply email failed:", e));
 
         // 2. Notify Admin (fire-and-forget)
-        const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER;
+        const adminEmail = process.env['ADMIN_EMAIL'] || process.env['SMTP_USER'];
         if (adminEmail) {
             const adminTemplate = emailTemplates.adminNotification(
                 `New Inquiry: ${subject || 'Contact Form'}`,

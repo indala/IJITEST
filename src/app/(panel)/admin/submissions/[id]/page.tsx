@@ -25,12 +25,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getSecureUrl } from "@/lib/utils";
-import { ReviewWithReviewer } from "@/db/types";
+import { type ReviewWithReviewer, type SubmissionIdParam } from "@/db/types";
 import { ExpertiseDossier } from "@/features/shared/components/profile/ExpertiseDossier";
 
 
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<SubmissionIdParam> }): Promise<Metadata> {
     const { id } = await params;
     const response = await getSubmissionById(parseInt(id));
     const submission = response.data;
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
 }
 
-export default async function SubmissionDetails({ params }: { params: Promise<{ id: string }> }) {
+export default async function SubmissionDetails({ params }: { params: Promise<SubmissionIdParam> }) {
     const { id: idStr } = await params;
     const id = parseInt(idStr);
 
@@ -222,7 +222,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<{ 
                                     <div className="space-y-3 pt-2">
                                         <h4 className="text-[9px] 2xl:text-base font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Collaborating Authors</h4>
                                         <div className="space-y-2">
-                                            {submission.coAuthors.filter((a: any) => !a.isCorresponding).map((author: any, idx: number) => (
+                                            {submission.coAuthors.filter((a) => !a.isCorresponding).map((author, idx: number) => (
                                                 <div key={idx} className="p-3 bg-white border border-border/50 rounded-xl space-y-1 shadow-sm">
                                                     <div className="flex items-center justify-between">
                                                         <p className="font-semibold text-[10px] 2xl:text-lg text-foreground tracking-wider">{author.name}</p>

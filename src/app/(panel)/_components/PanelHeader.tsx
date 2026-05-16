@@ -5,12 +5,12 @@ import { Separator } from "@/components/ui/separator";
 import NotificationCenter from '@/features/shared/components/NotificationCenter';
 import { UserNav } from './UserNav';
 
-import { User } from "next-auth";
+import type { Session } from "next-auth";
 
 interface PanelHeaderProps {
     filteredItems: { name: string; fullHref: string; [key: string]: unknown }[];
     pathname: string;
-    user: User | null;
+    user: Session['user'] | null;
     handleLogout: () => Promise<void>;
     setShowPreferences: (show: boolean) => void;
 }

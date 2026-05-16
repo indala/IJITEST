@@ -16,12 +16,12 @@ import {
     publications,
 } from "@/db/schema";
 import {
-    SubmissionDetail,
-    SubmissionUI,
-    ActionResponse,
-    UserWithProfile,
-    SubmissionFile,
-    ReviewWithReviewer,
+    type SubmissionDetail,
+    type SubmissionUI,
+    type ActionResponse,
+    type UserWithProfile,
+    type SubmissionFile,
+    type ReviewWithReviewer,
 } from "@/db/types";
 import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";

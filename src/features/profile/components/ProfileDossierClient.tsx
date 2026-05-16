@@ -27,9 +27,9 @@ import Link from "next/link"
 import {
     updateProfileField,
     updateResearchInterests,
-    updateProfilePhoto,
-    ProfileData
+    updateProfilePhoto
 } from "@/actions/profile"
+import { ProfileData } from "@/db/types"
 import { toast } from "sonner"
 
 interface ProfileDossierClientProps {
@@ -94,7 +94,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
         try {
             const res = await updateProfileField(userId, field, value)
             if (!res.success) throw new Error(res.error || "Failed to update profile")
-            setData(prev => ({ ...prev, [field === 'name' ? 'name' : field]: value }))
+            setData((prev: ProfileData) => ({ ...prev, [field === 'name' ? 'name' : field]: value }))
             toast.success(`Profile updated: ${field}`)
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Failed to update profile")
@@ -163,7 +163,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
             if (!response.success) throw new Error(response.error);
             if (!response.data) throw new Error("Failed to update photo");
 
-            setData(prev => ({ ...prev, photoUrl: response.data || null }))
+            setData((prev: ProfileData) => ({ ...prev, photoUrl: response.data || null }))
             toast.success("Profile photo adjusted & updated")
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Failed to upload photo")
@@ -173,7 +173,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
     }
 
     const toggleInterest = (interest: string) => {
-        setTempInterests(prev =>
+        setTempInterests((prev: string[]) =>
             prev.includes(interest) ? prev.filter(i => i !== interest) : [...prev, interest]
         )
     }
@@ -190,7 +190,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
             const res = await updateResearchInterests(userId, tempInterests)
             if (!res.success) throw new Error(res.error);
             if (!res.data) throw new Error("Failed to update interests");
-            setData(prev => ({ ...prev, researchInterests: res.data || [] }))
+            setData((prev: ProfileData) => ({ ...prev, researchInterests: res.data || [] }))
             setIsEditingInterests(false)
             toast.success("Interests updated")
         } catch {
@@ -214,7 +214,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-slate-300">
-                                        {data.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                        {data.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                                     </div>
                                 )}
                                 {isUploading && (
@@ -399,7 +399,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                 <div ref={designationRef}>
                                     <InlineEditField
                                         label="Professional Designation"
-                                        value={data.designation}
+                                        value={data.designation || ""}
                                         onSave={(v) => handleSaveField('designation', v)}
                                         placeholder="e.g. Professor"
                                     />
@@ -407,7 +407,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                 <div ref={instituteRef}>
                                     <InlineEditField
                                         label="Academic Institute"
-                                        value={data.institute}
+                                        value={data.institute || ""}
                                         onSave={(v) => handleSaveField('institute', v)}
                                         placeholder="University of Science"
                                     />
@@ -423,7 +423,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                 <div ref={phoneRef}>
                                     <InlineEditField
                                         label="Direct Contact (Phone)"
-                                        value={data.phone}
+                                        value={data.phone || ""}
                                         onSave={(v) => handleSaveField('phone', v)}
                                         placeholder="+91 00000 00000"
                                     />
@@ -431,7 +431,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                 <div ref={nationalityRef}>
                                     <InlineEditField
                                         label="Nationality / Region"
-                                        value={data.nationality}
+                                        value={data.nationality || ""}
                                         onSave={(v) => handleSaveField('nationality', v)}
                                         placeholder="India"
                                     />
@@ -455,7 +455,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                             </div>
                             <InlineEditField
                                 label="Brief Academic Narrative"
-                                value={data.bio}
+                                value={data.bio || ""}
                                 onSave={(v) => handleSaveField('bio', v)}
                                 type="textarea"
                                 placeholder="Describe your academic background, research interests, and notable achievements..."
@@ -536,7 +536,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                         </motion.div>
                                     ) : (
                                         <div className="flex flex-wrap gap-3">
-                                            {data.researchInterests.length > 0 ? data.researchInterests.map(interest => (
+                                            {data.researchInterests.length > 0 ? data.researchInterests.map((interest: string) => (
                                                 <span key={interest} className="px-4 py-2 bg-primary/5 text-primary border border-primary/10 rounded-xl text-xs font-bold tracking-tight">
                                                     {interest}
                                                 </span>
@@ -576,7 +576,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                     <div className="flex items-center gap-3 text-[10px] text-slate-400 font-medium">
                                                         <span className="flex items-center gap-1">
                                                             <Clock className="w-3 h-3" />
-                                                            {(item.createdAt || item.updatedAt) ? new Date((item.createdAt || item.updatedAt)!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Pending Archive'}
+                                                            {(item.submittedAt || item.updatedAt) ? new Date((item.submittedAt || item.updatedAt)!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Pending Archive'}
                                                         </span>
                                                     </div>
                                                 </div>

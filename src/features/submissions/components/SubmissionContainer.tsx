@@ -218,7 +218,7 @@ export default function SubmissionContainer({ submissions, currentStatus: _curre
             sub.paperId.toLowerCase().includes(q) ||
             sub.title.toLowerCase().includes(q) ||
             sub.authorName.toLowerCase().includes(q) ||
-            (sub.coAuthors && sub.coAuthors.some((a: any) => a.name.toLowerCase().includes(q)))
+            (sub.coAuthors && sub.coAuthors.some((a) => a.name.toLowerCase().includes(q)))
         );
     }, [submissions, filterQuery]);
 

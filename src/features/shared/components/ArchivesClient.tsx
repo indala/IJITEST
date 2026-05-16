@@ -1,7 +1,7 @@
 'use client'
 
 import { FileText, ChevronRight, Search, BadgeCheck } from 'lucide-react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import PaperCard from '@/features/archives/components/PaperCard';
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { useLatestIssuePapers, useArchivePapers } from '@/hooks/queries/usePubli
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PublishedPaperUI } from '@/db/types';
+import { type PublishedPaperUI } from '@/db/types';
 
 interface ArchivesClientProps {
     initialPapers: PublishedPaperUI[];
@@ -79,32 +79,24 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
         }));
     }, [filteredPapers]);
 
-    // Auto-select logic
-    useEffect(() => {
-        if (hierarchy.length > 0) {
-            if (searchQuery.trim() !== "") {
-                // When searching, auto-select the first issue that has papers
-                const firstAvailableIssue = hierarchy[0]?.issues[0];
-                if (firstAvailableIssue && selectedIssue !== firstAvailableIssue.key) {
-                    setSelectedIssue(firstAvailableIssue.key);
-                }
-            } else if (!selectedIssue) {
-                // Initial load: select latest
-                const latestIssue = hierarchy[0]?.issues[0];
-                if (latestIssue) {
-                    setSelectedIssue(latestIssue.key);
-                }
-            }
+    // Derive the active issue key. 
+    // If user has explicitly selected an issue that is still in the results, use it.
+    // Otherwise, default to the first available issue in the current hierarchy.
+    const effectiveIssueKey = useMemo(() => {
+        if (selectedIssue) {
+            const exists = hierarchy.some(v => v.issues.some(i => i.key === selectedIssue));
+            if (exists) return selectedIssue;
         }
-    }, [hierarchy, searchQuery, selectedIssue]);
+        return hierarchy[0]?.issues[0]?.key || null;
+    }, [hierarchy, selectedIssue]);
 
     const activeIssue = useMemo(() => {
         for (const vol of hierarchy) {
-            const iss = vol.issues.find(i => i.key === selectedIssue);
+            const iss = vol.issues.find(i => i.key === effectiveIssueKey);
             if (iss) return iss;
         }
         return null;
-    }, [hierarchy, selectedIssue]);
+    }, [hierarchy, effectiveIssueKey]);
 
     return (
         <section className="px-5 mx-auto section-padding">
@@ -145,13 +137,13 @@ export default function ArchivesClient({ initialPapers, mode = 'archive' }: Arch
                                                 <button
                                                     key={iss.key}
                                                     onClick={() => setSelectedIssue(iss.key)}
-                                                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-left text-lg 2xl:text-xl transition-all group ${selectedIssue === iss.key
+                                                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-left text-lg 2xl:text-xl transition-all group ${effectiveIssueKey === iss.key
                                                             ? 'bg-green-600 text-white shadow-md shadow-primary/20 scale-[1.02]'
                                                             : 'hover:bg-primary/5 text-muted-foreground border border-transparent hover:border-primary/10'
                                                         }`}
                                                 >
                                                     <div className="flex items-center gap-2">
-                                                        <ChevronRight className={`w-3.5 h-3.5 2xl:w-5 2xl:h-5 transition-transform ${selectedIssue === iss.key ? 'rotate-90 text-white/50' : 'text-primary/30 group-hover:translate-x-0.5'}`} />
+                                                        <ChevronRight className={`w-3.5 h-3.5 2xl:w-5 2xl:h-5 transition-transform ${effectiveIssueKey === iss.key ? 'rotate-90 text-white/50' : 'text-primary/30 group-hover:translate-x-0.5'}`} />
                                                         <span className="font-medium">
                                                             Issue {iss.issue} — {iss.monthRange} {iss.year}
                                                         </span>

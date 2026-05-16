@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { useState, useEffect } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
 import { sidebarItems, getFullHref } from '@/lib/navigation';
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -19,11 +19,11 @@ export default function PanelLayout({
     const router = useRouter();
     const { data: session } = useSession();
     const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const mounted = useSyncExternalStore(
+        () => () => { },
+        () => true,
+        () => false
+    );
 
     // Don't show sidebar for login page
     if (pathname === '/login') return <>{children}</>;
@@ -33,8 +33,8 @@ export default function PanelLayout({
         return null;
     }
 
-    const user: any = session?.user || null;
-    const role = user?.role || 'reviewer';
+    const user = session?.user ?? null;
+    const role = user?.role ?? 'reviewer';
 
     const filteredItems = sidebarItems.filter(item =>
         item.roles.includes(role)

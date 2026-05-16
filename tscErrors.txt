@@ -1,0 +1,2 @@
+src/actions/reviewer.ts(60,7): error TS1005: 'try' expected.
+src/actions/reviewer.ts(72,1): error TS1128: Declaration or statement expected.

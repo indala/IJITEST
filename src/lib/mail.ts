@@ -1,14 +1,14 @@
 import nodemailer from 'nodemailer';
 
-const allowInsecureTls = process.env.SMTP_ALLOW_INSECURE_TLS === 'true';
+const allowInsecureTls = process.env["SMTP_ALLOW_INSECURE_TLS"] === 'true';
 
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '465'),
+    host: process.env["SMTP_HOST"],
+    port: parseInt(process.env["SMTP_PORT"] || '465'),
     secure: true, // true for 465, false for other ports
     auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: process.env["SMTP_USER"],
+        pass: process.env["SMTP_PASS"],
     },
     tls: {
         // Keep certificate validation enabled by default.
@@ -27,7 +27,7 @@ interface SendEmailProps {
 export async function sendEmail({ to, subject, text, html }: SendEmailProps) {
     try {
         const info = await transporter.sendMail({
-            from: `"${process.env.EMAIL_FROM_NAME || 'IJITEST Editor'}" <${process.env.EMAIL_FROM}>`,
+            from: `"${process.env["EMAIL_FROM_NAME"] || 'IJITEST Editor'}" <${process.env["EMAIL_FROM"]}>`,
             to,
             subject,
             text,
@@ -38,8 +38,8 @@ export async function sendEmail({ to, subject, text, html }: SendEmailProps) {
         return { success: true, messageId: info.messageId };
     } catch (error) {
         console.error("--- SMTP Error Diagnosis ---");
-        console.error("Host:", process.env.SMTP_HOST);
-        console.error("User:", process.env.SMTP_USER);
+        console.error("Host:", process.env["SMTP_HOST"]);
+        console.error("User:", process.env["SMTP_USER"]);
         const err = error as Error & { code?: string, response?: unknown };
         console.error("Error Code:", err?.code);
         console.error("SMTP Response:", err?.response);
@@ -52,7 +52,7 @@ export async function sendEmail({ to, subject, text, html }: SendEmailProps) {
 const JOURNAL = {
     name: 'International Journal of Innovative Trends in Engineering Science and Technology',
     shortName: 'IJITEST',
-    supportEmail: process.env.SUPPORT_EMAIL || process.env.SMTP_USER || 'support@ijitest.org',
+    supportEmail: process.env["SUPPORT_EMAIL"] || process.env["SMTP_USER"] || 'support@ijitest.org',
     address: 'Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India',
     publisher: 'Felix Academic Publications',
     logo: '/logo.png', // Reaches public folder
@@ -66,7 +66,7 @@ const JOURNAL = {
  * Ensures consistent branding, typography, and professional aesthetics.
  */
 const mailLayout = (content: string, cta?: { text: string, url: string }) => {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+    const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
     const logoUrl = `${baseUrl}${JOURNAL.logo}`;
 
     return `
@@ -139,7 +139,7 @@ const mailLayout = (content: string, cta?: { text: string, url: string }) => {
 // Helper templates
 export const emailTemplates = {
     submissionReceived: (authorName: string, paperTitle: string, paperId: string, setupUrl?: string) => {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
             <p>Thank you for choosing <strong>${JOURNAL.shortName}</strong>. We have successfully received your manuscript and it has entered our professional screening queue.</p>
@@ -168,7 +168,7 @@ export const emailTemplates = {
     },
 
     statusUpdate: (authorName: string, paperTitle: string, status: string, paperId: string, isFree: boolean = false) => {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
         const isAccepted = status === 'accepted';
         const statusColor = isAccepted ? '#16a34a' : status === 'rejected' ? '#dc2626' : '#2563eb';
 
@@ -199,9 +199,9 @@ export const emailTemplates = {
     },
 
     reviewAssignment: (reviewerName: string, paperTitle: string, deadline: string, paperId: string, setupUrl?: string) => {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
         const formattedDeadline = new Date(deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
-        
+
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${reviewerName}</strong>,</p>
             <p>Based on your distinguished research record and expertise, the Editorial Board of <strong>${JOURNAL.shortName}</strong> cordially invites you to serve as a Peer Reviewer for a new manuscript submission.</p>
@@ -225,10 +225,10 @@ export const emailTemplates = {
 
             <p style="font-size: 14px; line-height: 1.7; color: #475569;">
                 Your rigorous evaluation is vital to maintaining the academic integrity and high standards of <em>${JOURNAL.name}</em>. 
-                ${setupUrl 
-                    ? 'As this is your first appointment, please activate your professional reviewer account using the secure link below to access the manuscript.' 
-                    : 'The full manuscript and review criteria are now available in your reviewer dashboard.'
-                }
+                ${setupUrl
+                ? 'As this is your first appointment, please activate your professional reviewer account using the secure link below to access the manuscript.'
+                : 'The full manuscript and review criteria are now available in your reviewer dashboard.'
+            }
             </p>
         `;
 
@@ -245,7 +245,7 @@ export const emailTemplates = {
     },
 
     manuscriptAcceptance: (authorName: string, paperTitle: string, paperId: string, isFree: boolean = false) => {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
             <p>I am pleased to inform you that your manuscript has been <strong>ACCEPTED</strong> for publication in the <em>${JOURNAL.name}</em>.</p>
@@ -290,7 +290,7 @@ export const emailTemplates = {
     },
 
     reviewCompleted: (reviewerName: string, paperTitle: string, paperId: string) => {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear Administrator,</p>
             <p>Reviewer <strong>${reviewerName}</strong> has submitted their final evaluation for manuscript <strong>${paperId}</strong>.</p>
@@ -335,7 +335,7 @@ export const emailTemplates = {
     },
 
     manuscriptPublished: (authorName: string, paperTitle: string, paperId: string, volume: number, issue: number, year: number) => {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
             <p>We are delighted to inform you that your manuscript is now officially <strong>PUBLISHED</strong> and indexed in the latest issue of ${JOURNAL.shortName}.</p>
@@ -393,7 +393,7 @@ export const emailTemplates = {
     },
 
     resubmissionRequest: (authorName: string, _paperTitle: string, paperId: string, comments?: string, subId?: number) => {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
         const resubmitLink = subId ? `${baseUrl}/author/submissions/${subId}/resubmit` : `${baseUrl}/author/submissions`;
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
@@ -417,7 +417,7 @@ export const emailTemplates = {
     },
 
     resubmissionReceived: (authorName: string, paperTitle: string, paperId: string, subId: number, role: 'admin' | 'editor' = 'admin') => {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
         const dashboardLink = role === 'admin' ? `${baseUrl}/admin/submissions/${subId}` : `${baseUrl}/editor/submissions/${subId}`;
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Hello,</p>

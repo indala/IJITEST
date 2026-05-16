@@ -8,7 +8,7 @@ import { MessageDetail } from "./MessageDetail"
 import { useMessages } from "@/hooks/queries/useMessages"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
-import { ContactMessageRow } from "@/actions/messages"
+import { ContactMessageRow } from "@/db/types"
 
 export function ManageMessagesContent() {
     const searchParams = useSearchParams()
@@ -31,6 +31,7 @@ export function ManageMessagesContent() {
         // Convert to UI Message type (handling Date to string)
         return {
             ...live,
+            subject: live.subject || "",
             createdAt: live.createdAt ? live.createdAt.toISOString() : new Date().toISOString()
         };
     }, [messages, selectedMessage])

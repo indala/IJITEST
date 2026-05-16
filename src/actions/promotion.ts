@@ -6,7 +6,7 @@ import { users } from "@/db/schema";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { ActionResponse } from "@/db/types";
+import { type ActionResponse } from "@/db/types";
 
 
 export async function markPromotionAsSeen(): Promise<ActionResponse> {

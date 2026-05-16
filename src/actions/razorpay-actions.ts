@@ -71,7 +71,7 @@ export async function createRazorpayOrder(submissionId: number, paperId: string)
                 id: order.id,
                 amount: order.amount as number,
                 currency: order.currency,
-                key: process.env.RAZORPAY_KEY_ID
+                key: process.env['RAZORPAY_KEY_ID']
             }
         };
     } catch (error) {
@@ -92,7 +92,7 @@ export async function verifyRazorpayPayment(data: {
  
         const { razorpayOrderId, razorpayPaymentId, razorpaySignature, submissionId } = data;
  
-        const secret = process.env.RAZORPAY_KEY_SECRET;
+        const secret = process.env['RAZORPAY_KEY_SECRET'];
         if (!secret) {
             console.error("RAZORPAY_KEY_SECRET is not set");
             return { success: false, error: "Payment configuration error. Please contact support." };

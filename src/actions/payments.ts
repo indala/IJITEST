@@ -4,24 +4,11 @@ import { db } from "@/lib/db";
 import { payments, submissions, submissionVersions, userProfiles, users } from "@/db/schema";
 import { eq, desc, and, notInArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { ActionResponse } from "@/db/types";
+import { type ActionResponse, type PaymentRow, type UnpaidPaperRow, type PaymentStatus } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
-export interface PaymentRow {
-    id: number;
-    submissionId: number;
-    amount: string;
-    currency: string;
-    status: 'pending' | 'paid' | 'verified' | 'failed' | 'waived';
-    transactionId: string | null;
-    paidAt: Date | null;
-    createdAt: Date | null;
-    title: string;
-    paperId: string;
-    authorName: string;
-    authorEmail: string;
-}
+
 
 export async function getPayments(): Promise<ActionResponse<PaymentRow[]>> {
     try {
@@ -71,7 +58,7 @@ export async function getPayments(): Promise<ActionResponse<PaymentRow[]>> {
     }
 }
 
-export async function updatePaymentStatus(paymentId: number, status: 'pending' | 'paid' | 'verified' | 'failed' | 'waived', transactionId?: string): Promise<ActionResponse> {
+export async function updatePaymentStatus(paymentId: number, status: PaymentStatus, transactionId?: string): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
@@ -133,12 +120,7 @@ export async function initializePayment(submissionId: number, amount: number, cu
     }
 }
 
-export interface UnpaidPaperRow {
-    id: number;
-    paperId: string;
-    title: string;
-    authorName: string;
-}
+
 
 export async function getAcceptedUnpaidPapers(): Promise<ActionResponse<UnpaidPaperRow[]>> {
     try {

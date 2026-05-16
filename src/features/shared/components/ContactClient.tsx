@@ -11,8 +11,8 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function ContactClient() {
     const settings = useSettingsStore((state) => state.settings);
-    const supportEmail = settings.supportEmail || '';
-    const supportPhone = settings.supportPhone || '';
+    const supportEmail = settings['supportEmail'] || '';
+    const supportPhone = settings['supportPhone'] || '';
 
     const contactMethods = [
         {
@@ -86,7 +86,7 @@ export default function ContactClient() {
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-sm 2xl:text-base text-muted-foreground m-0 leading-relaxed font-medium whitespace-pre-line">
-                                        {(settings.officeAddress || '')}
+                                        {(settings['officeAddress'] || '')}
                                     </p>
                                 </div>
                             </div>

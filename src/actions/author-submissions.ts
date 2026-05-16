@@ -20,9 +20,9 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 import fs from "fs/promises";
 import path from "path";
 import { 
-    ActionResponse, 
-    AuthorDashboardSubmission, 
-    AuthorSubmissionDetail,
+    type ActionResponse, 
+    type AuthorDashboardSubmission, 
+    type AuthorSubmissionDetail,
     actionSuccess,
     actionError
 } from "@/db/types";

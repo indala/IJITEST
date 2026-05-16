@@ -1,0 +1,4 @@
+
+> ijitest@0.1.0 lint D:\lab2\IJITEST
+> eslint --fix
+

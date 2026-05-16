@@ -15,6 +15,11 @@ import {
     type ActionResponse, 
     type SubmissionStatus, 
     type Author,
+    type Submission,
+    type Version,
+    type Issue,
+    type UserProfile,
+    type Publication,
     actionSuccess,
     actionError
 } from "@/db/types";
@@ -24,6 +29,7 @@ import { unstable_cache } from "next/cache";
  * FETCH ALL PUBLISHED PAPERS
  * Used for the global archive list or sitemap
  */
+
 export async function getPublishedPapers(): Promise<ActionResponse<PublishedPaperUI[]>> {
     return unstable_cache(
         async () => {
@@ -272,48 +278,20 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
 /**
  * HELPER: Map relational Drizzle structure to the flat structure the UI expects
  */
-interface SubmissionAuthor {
-    id: number;
-    submissionId: number;
-    name: string;
-    email: string;
-    phone: string | null;
-    designation: string | null;
-    institution: string | null;
-    isCorresponding: boolean;
-    orderIndex: number;
-}
-
-interface PublicationInput {
-    submissionId?: number | null;
-    doi?: string | null;
-    finalPdfUrl?: string | null;
-    startPage?: number | null;
-    endPage?: number | null;
-    publishedAt?: Date | null;
-    views?: number | null;
-    downloads?: number | null;
-    citations?: number | null;
-    submission?: {
-        paperId?: string | null;
-        status?: string | null;
-        updatedAt?: Date | null;
-        authors?: SubmissionAuthor[];
-        versions?: Array<{ title?: string | null; abstract?: string | null; keywords?: string | null } | null>;
-        correspondingAuthor?: {
-            profile?: {
-                fullName?: string | null,
-                institute?: string | null
-            } | null
-        } | null;
-    } | null;
-    issue?: {
-        volumeNumber?: number | null;
-        issueNumber?: number | null;
-        year?: number | null;
-        monthRange?: string | null;
-    } | null;
-}
+type PublicationInput = Partial<Omit<Publication, 'issueId'>> & {
+    submissionId?: Publication['submissionId'] | null;
+    submission?: (
+        Partial<Pick<Submission, 'paperId' | 'status' | 'updatedAt'>> & {
+            authors?: Author[];
+            versions?: Array<Partial<Pick<Version, 'title' | 'abstract' | 'keywords'>> | null>;
+            correspondingAuthor?: {
+                profile?: Partial<Pick<UserProfile, 'fullName' | 'institute'>> | null;
+            } | null;
+        }
+    ) | null;
+    issue?: Partial<Pick<Issue, 'volumeNumber' | 'issueNumber' | 'year' | 'monthRange'>> | null;
+    [key: string]: unknown; // allow Drizzle leftJoin spreads with extra fields
+};
 
 function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
     const latestVersion = pub.submission?.versions?.[0];
@@ -339,7 +317,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed)) return parsed.join(', ');
                 }
-            } catch (e) {}
+            } catch {}
             return raw;
         })(),
         authorName: primaryAuthorName,

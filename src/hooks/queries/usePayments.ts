@@ -4,9 +4,8 @@ import {
     getAcceptedUnpaidPapers,
     updatePaymentStatus,
     initializePayment,
-    PaymentRow,
-    UnpaidPaperRow
 } from '@/actions/payments';
+import { PaymentRow, UnpaidPaperRow } from '@/db/types';
 
 export function usePayments() {
     return useQuery<PaymentRow[]>({

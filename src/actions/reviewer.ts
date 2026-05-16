@@ -7,7 +7,7 @@ import {
     applicationInterests, 
     masterInterests 
 } from "@/db/schema";
-import { ActionResponse, actionSuccess, actionError } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError } from "@/db/types";
 import { insertApplicationSchema } from "@/db/validation";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -83,26 +83,26 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
                 try {
                     const interests = JSON.parse(researchInterestsStr) as string[];
                     if (Array.isArray(interests) && interests.length > 0) {
-                    // Normalized Interests Insertion
-                    for (const name of interests) {
-                        const trimmedName = name.trim();
-                        if (!trimmedName) continue;
+                        // Normalized Interests Insertion
+                        for (const name of interests) {
+                            const trimmedName = name.trim();
+                            if (!trimmedName) continue;
 
-                        let interestId: number;
-                        const existing = await tx.select().from(masterInterests).where(eq(masterInterests.name, trimmedName)).limit(1);
-                        
-                        if (existing[0]) {
-                            interestId = existing[0].id;
-                        } else {
-                            const [inserted] = await tx.insert(masterInterests).values({ name: trimmedName });
-                            interestId = inserted.insertId;
+                            let interestId: number;
+                            const existing = await tx.select().from(masterInterests).where(eq(masterInterests.name, trimmedName)).limit(1);
+                            
+                            if (existing[0]) {
+                                interestId = existing[0].id;
+                            } else {
+                                const [inserted] = await tx.insert(masterInterests).values({ name: trimmedName });
+                                interestId = inserted.insertId;
+                            }
+
+                            await tx.insert(applicationInterests).values({
+                                applicationId: appId,
+                                interestId: interestId
+                            });
                         }
-
-                        await tx.insert(applicationInterests).values({
-                            applicationId: appId,
-                            interestId: interestId
-                        });
-                    }
                     }
                 } catch (pErr) {
                     console.error("Error parsing/saving interests:", pErr);
@@ -112,7 +112,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         });
 
         // Notify Admin via Email
-        const adminUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/reviewer-applications`;
+        const adminUrl = `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/admin/reviewer-applications`;
         const roleName = type === 'editor' ? 'Editor' : 'Reviewer';
 
         const adminTemplate = emailTemplates.adminNotification(
@@ -122,13 +122,13 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         );
 
         sendEmail({
-            to: process.env.EMAIL_FROM || 'admin@ijitest.org',
+            to: process.env['EMAIL_FROM'] || 'admin@ijitest.org',
             subject: adminTemplate.subject,
             html: adminTemplate.html
         });
 
         // Confirmation to Applicant
-        const applicantTemplate = emailTemplates.boardApplicationReceipt(fullName, type as any);
+        const applicantTemplate = emailTemplates.boardApplicationReceipt(fullName, type);
         sendEmail({
             to: email,
             subject: applicantTemplate.subject,

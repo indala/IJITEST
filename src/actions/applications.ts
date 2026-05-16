@@ -9,8 +9,8 @@ import {
     applicationInterests 
 } from "@/db/schema";
 import { 
-    Application, 
-    ActionResponse 
+    type Application, 
+    type ActionResponse 
 } from "@/db/types";
 import { eq, and, desc, SQL, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -150,7 +150,7 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
         const { app, role, invitationToken } = result as { app: Application, role: string, invitationToken: string };
 
         // 5. Send Invitation Email
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000';
         const setupUrl = `${baseUrl}/auth/setup-password?token=${invitationToken}&ctx=setup`;
         
         const template = emailTemplates.boardInvitation(app.fullName, role, setupUrl);

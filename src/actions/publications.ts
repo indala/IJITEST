@@ -8,11 +8,11 @@ import {
     submissionVersions
 } from "@/db/schema";
 import {
-    ActionResponse,
-    Issue,
-    Publication,
+    type ActionResponse,
+    type Issue,
     actionSuccess,
-    actionError
+    actionError,
+    type PaperWithPublication
 } from "@/db/types";
 import { eq, and, sql, desc, count } from "drizzle-orm";
 import { revalidatePath, unstable_cache } from "next/cache";
@@ -193,14 +193,14 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         const cleanInput = latestPdf.fileUrl.replace(/^\/+/, '');
 
         await brandPdf(cleanInput, brandedRelativePath, {
-            journalName: settings.journalName || "IJITEST",
+            journalName: settings['journalName'] || "IJITEST",
             journalShortName: "IJITEST",
             volume: issue.volumeNumber,
             issue: issue.issueNumber,
             year: issue.year,
             monthRange: issue.monthRange || "",
-            issn: settings.issnNumber || "XXXX-XXXX",
-            website: settings.journalWebsite || "https://www.ijitest.org",
+            issn: settings['issnNumber'] || "XXXX-XXXX",
+            website: settings['journalWebsite'] || "https://www.ijitest.org",
             paperId: submission.paperId,
             startPage: confirmedStartPage,
             endPage: confirmedEndPage
@@ -253,13 +253,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
     }
 }
 
-export interface PaperWithPublication {
-    id: number;
-    paperId: string;
-    title: string;
-    status: string;
-    publication: Publication | null;
-}
+
 
 /**
  * Publish an entire issue

@@ -1,4 +1,5 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import type { PDFPage, PDFFont, Color } from 'pdf-lib';
 import fontkit from "@pdf-lib/fontkit";
 import fs from 'fs/promises';
 import path from 'path';
@@ -59,7 +60,7 @@ const TEXT_Y_ADJUST = 0;
    HELPERS
    ========================================================= */
 
-function drawTextWithSpacing(page: any, text: string, x: number, y: number, size: number, font: any, color: any, spacing = 0) {
+function drawTextWithSpacing(page: PDFPage, text: string, x: number, y: number, size: number, font: PDFFont, color: Color, spacing = 0) {
     let currentX = x;
     for (const char of text) {
         page.drawText(char, {
@@ -73,7 +74,7 @@ function drawTextWithSpacing(page: any, text: string, x: number, y: number, size
     }
 }
 
-function widthOfTextWithSpacing(text: string, size: number, font: any, spacing = 0) {
+function widthOfTextWithSpacing(text: string, size: number, font: PDFFont, spacing = 0) {
     const baseWidth = font.widthOfTextAtSize(text, size);
     const totalSpacing = Math.max(0, text.length - 1) * spacing;
     return baseWidth + totalSpacing;

@@ -20,11 +20,11 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { User } from "next-auth";
+import type { Session } from "next-auth";
 
 interface PanelSidebarProps {
     pathname: string;
-    user: User | null;
+    user: Session['user'] | null;
     filteredItems: { name: string; fullHref: string; icon?: React.ReactNode; labelOverrides?: Record<string, string> }[];
     handleLogout: () => Promise<void>;
 }
