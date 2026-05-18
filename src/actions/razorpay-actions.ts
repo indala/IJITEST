@@ -120,17 +120,23 @@ export async function verifyRazorpayPayment(data: {
             return { success: false, error: "Payment record mismatch. Verification failed." };
         }
 
-        // 2. Update Payment Status in DB
-        await db.update(payments)
-            .set({ 
-                status: 'paid', 
-                transactionId: razorpayPaymentId, 
-                paidAt: new Date() 
-            })
-            .where(eq(payments.submissionId, submissionId));
- 
-        // 3. Keep submission at 'accepted' — payment is confirmed, admin will assign to issue
-        // (no status change needed here — 'accepted' is already the correct state post-payment)
+        // 2. Update Payment Status & Submission Status in DB
+        await db.transaction(async (tx) => {
+            await tx.update(payments)
+                .set({ 
+                    status: 'paid', 
+                    transactionId: razorpayPaymentId, 
+                    paidAt: new Date() 
+                })
+                .where(eq(payments.submissionId, submissionId));
+
+            await tx.update(submissions)
+                .set({ 
+                    status: 'accepted',
+                    updatedAt: new Date()
+                })
+                .where(eq(submissions.id, submissionId));
+        });
 
         // 4. Notify Author
         try {

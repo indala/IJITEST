@@ -49,7 +49,6 @@ export type SafeUser = Omit<User, 'passwordHash'>;
 export type SafeUserWithProfile = SafeUser & {
     profile: UserProfile | null;
 };
-
 export type ProfileData = Pick<User, 'id' | 'email'> & 
     Omit<UserProfile, 'userId' | 'createdAt' | 'updatedAt' | 'fullName' | 'id'> & {
     name: UserProfile['fullName'];

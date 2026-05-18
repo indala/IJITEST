@@ -8,7 +8,7 @@ interface FooterDynamicProps {
 }
 
 export function FooterDynamic({ field, className }: FooterDynamicProps) {
-    const settings = useSettingsStore((state) => state.settings) as any;
+    const settings = useSettingsStore((state) => state.settings);
 
     if (field === 'copyright') {
         const year = new Date().getFullYear();

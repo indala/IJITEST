@@ -347,51 +347,34 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                 });
             }
 
-            // 5. Submission Status Update (Optional: specific to project workflow)
-            const statusMap: Record<string, "revisionRequested" | "rejected"> = {
-                minorRevision: 'revisionRequested',
-                majorRevision: 'revisionRequested',
-                reject: 'rejected'
-            };
-            const newStatus = statusMap[decision as string];
-            if (newStatus) {
-                await tx.update(submissions).set({ status: newStatus }).where(eq(submissions.id, info.submissionId));
-            }
-
             return { success: true, info };
         });
 
         // 6. Asynchronous Notifications (Outside Transaction)
         if (result.success && result.info) {
             const { info } = result;
-            if (decision === 'accept') {
-                const admins = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
-                const staffAlert = emailTemplates.staffNotification(
-                    "Editor",
-                    `Review Decision: Accept [${info.paperId}]`,
-                    `A reviewer has submitted a recommendation of <strong>'Accept'</strong> for the manuscript <strong>"${info.title}"</strong>.`,
-                    `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/admin/submissions/${info.submissionId}`
-                );
-                Promise.allSettled(admins.map(a => sendEmail({
-                    to: a.email,
-                    subject: staffAlert.subject,
-                    html: staffAlert.html
-                })));
-            } else {
-                const statusMap: Record<string, "revisionRequested" | "rejected"> = {
-                    minorRevision: 'revisionRequested',
-                    majorRevision: 'revisionRequested',
-                    reject: 'rejected'
-                };
-                const newStatus = statusMap[decision as string];
-                if (newStatus) {
-                    const template = newStatus === 'rejected'
-                        ? emailTemplates.manuscriptRejection(info.authorName || "Author", info.title || "Untitled Manuscript", info.paperId, commentsToAuthor || "")
-                        : emailTemplates.resubmissionRequest(info.authorName || "Author", info.title || "Untitled Manuscript", info.paperId, commentsToAuthor || "");
+            const admins = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
+            
+            const decisionLabels: Record<string, string> = {
+                accept: 'Accept',
+                reject: 'Reject',
+                minorRevision: 'Minor Revision',
+                majorRevision: 'Major Revision'
+            };
+            const label = decisionLabels[decision] || decision;
 
-                    sendEmail({ to: info.authorEmail, subject: template.subject, html: template.html }).catch(err => console.error("Email Error:", err));
-                }
-            }
+            const staffAlert = emailTemplates.staffNotification(
+                "Editor",
+                `Review Submitted: ${label} [${info.paperId}]`,
+                `A reviewer has completed their review for the manuscript <strong>"${info.title}"</strong> with a recommendation of <strong>'${label}'</strong>.`,
+                `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/admin/submissions/${info.submissionId}`
+            );
+
+            Promise.allSettled(admins.map(a => sendEmail({
+                to: a.email,
+                subject: staffAlert.subject,
+                html: staffAlert.html
+            })));
         }
 
         revalidatePath('/admin/reviews');

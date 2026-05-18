@@ -80,6 +80,7 @@ import { NuqsAdapter } from "nuqs/adapters/next";
 import { JsonLd } from "@/components/shared/JsonLd";
 import { getSettingsData } from "@/actions/settings";
 import { SettingsProvider } from "@/components/providers/SettingsProvider";
+import type { JournalSettings } from "@/store/useSettingsStore";
 
 export default async function RootLayout({
   children,
@@ -87,7 +88,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const dynamicSettingsData = await getSettingsData();
-  const dynamicSettings = dynamicSettingsData as any;
+  const dynamicSettings = dynamicSettingsData as JournalSettings;
 
   const organizationSchema = {
     "@context": "https://schema.org",

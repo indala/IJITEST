@@ -2,9 +2,10 @@
 
 import { useEffect } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import type { JournalSettings } from '@/store/useSettingsStore';
 
 interface SettingsInitializerProps {
-    settings: Record<string, string>;
+    settings: JournalSettings;
 }
 
 export default function SettingsInitializer({ settings }: SettingsInitializerProps) {

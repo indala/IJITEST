@@ -3,9 +3,10 @@
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import type { JournalSettings } from '@/store/useSettingsStore';
 
 interface SettingsProviderProps {
-    initialSettings: Record<string, string>;
+    initialSettings: JournalSettings;
     children: ReactNode;
 }
 

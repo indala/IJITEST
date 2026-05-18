@@ -293,10 +293,10 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
         const isFree = parseFloat(apcAmount) === 0;
 
         await db.transaction(async (tx) => {
-            const status = decision === 'accepted' ? 'accepted' : 'rejected';
+            const status = decision === 'accepted' ? (isFree ? 'accepted' : 'paymentPending') : 'rejected';
             await tx.update(submissions).set({ status }).where(eq(submissions.id, id));
 
-            if (decision === 'accepted' && parseFloat(apcAmount) > 0) {
+            if (decision === 'accepted' && !isFree) {
                 await tx.insert(payments).values({
                     submissionId: id,
                     amount: Number(apcAmount).toFixed(2),

@@ -213,11 +213,12 @@ export async function checkResubmissionEligibility(submissionId: number): Promis
             return actionError<{ eligible: boolean; daysRemaining: number }>(`Manuscript status '${sub.status}' does not allow resubmission.`);
         }
 
-        const updatedAt = new Date(sub.updatedAt!);
+        const updatedAt = new Date(sub.updatedAt || new Date());
         const daysSinceUpdate = Math.floor((Date.now() - updatedAt.getTime()) / (1000 * 60 * 60 * 24));
         const daysRemaining = 15 - daysSinceUpdate;
+        const eligible = daysRemaining >= 0;
 
-        return actionSuccess({ eligible: true, daysRemaining });
+        return actionSuccess({ eligible, daysRemaining });
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         return actionError<{ eligible: boolean; daysRemaining: number }>(message);
