@@ -6,7 +6,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AboutClient from '@/features/shared/components/AboutClient';
 import JournalParticulars from '@/features/shared/widgets/JournalParticulars';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 
 import { Section } from '@/components/layout/Section';
@@ -15,13 +15,13 @@ import { SidebarLayout } from '@/components/layout/SidebarLayout';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `About the Journal | ${settings.journalName}`,
-        description: `Learn about ${settings.journalName} (${settings.journalShortName}). We focus on rapid yet rigorous peer review for technically sound research in engineering, science, and technology.`,
+        title: `About the Journal | ${settings['journalName']}`,
+        description: `Learn about ${settings['journalName']} (${settings['journalShortName']}). We focus on rapid yet rigorous peer review for technically sound research in engineering, science, and technology.`,
         alternates: {
             canonical: '/about',
         },
         openGraph: {
-            title: `About ${settings.journalShortName}`,
+            title: `About ${settings['journalShortName']}`,
             description: `Quality academic publishing for the modern era.`,
             type: 'website',
         }

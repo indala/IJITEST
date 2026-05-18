@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NumberTicker } from '@/components/ui/number-ticker';
 
-import { 
+import type { 
     Application 
 } from '@/db/types';
 import { cn } from '@/lib/utils';

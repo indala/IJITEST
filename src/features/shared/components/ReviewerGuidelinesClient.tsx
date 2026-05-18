@@ -10,9 +10,9 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function ReviewerGuidelinesClient() {
     const settings = useSettingsStore((state) => state.settings);
-    const supportEmail = settings.supportEmail || '';
-    const supportPhone = settings.supportPhone || '';
-    const journalShortName = settings.journalShortName || 'IJITEST';
+    const supportEmail = settings['supportEmail'] || '';
+    const supportPhone = settings['supportPhone'] || '';
+    const journalShortName = settings['journalShortName'] || 'IJITEST';
 
     const directives = [
         { title: "Originality", desc: "Evaluate the significant empirical novelty or conceptual innovation presented in the manuscript." },

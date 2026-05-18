@@ -4,21 +4,21 @@ import Link from 'next/link';
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import EditorialBoardClient from '@/features/shared/components/EditorialBoardClient';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 import { getEditorialBoard } from '@/actions/users';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Editorial Board | ${settings.journalName}`,
-        description: `Meet the esteemed editorial board of ${settings.journalShortName}. Our panel of global academic experts is committed to scientific excellence and rigorous peer review in engineering and technology.`,
+        title: `Editorial Board | ${settings['journalName']}`,
+        description: `Meet the esteemed editorial board of ${settings['journalShortName']}. Our panel of global academic experts is committed to scientific excellence and rigorous peer review in engineering and technology.`,
         alternates: {
             canonical: '/editorial-board',
         },
         openGraph: {
-            title: `Editorial Board - ${settings.journalShortName}`,
-            description: `Global academic experts steering the ${settings.journalName}.`,
+            title: `Editorial Board - ${settings['journalShortName']}`,
+            description: `Global academic experts steering the ${settings['journalName']}.`,
             type: 'website',
         }
     };

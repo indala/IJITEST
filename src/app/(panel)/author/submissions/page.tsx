@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { getAuthorDashboard, checkResubmissionEligibility } from "@/actions/author-submissions";
-import { AuthorDashboardSubmission, ActionResponse } from "@/db/types";
+import type { AuthorDashboardSubmission, ActionResponse } from "@/db/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

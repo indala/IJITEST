@@ -31,7 +31,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 export function AppSidebar() {
     const pathname = usePathname();
     const { setOpenMobile, isMobile } = useSidebar();
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsStore((state) => state.settings) as any;
     const journalShortName = settings.journalShortName || '';
 
     return (

@@ -15,7 +15,7 @@ import {
     useUnassignPaper
 } from '@/hooks/queries/usePublications';
 import { toast } from 'sonner';
-import { Issue } from '@/db/types';
+import type { Issue } from '@/db/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

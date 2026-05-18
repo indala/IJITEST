@@ -18,7 +18,7 @@ import { eq, and, desc } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { getMySubmissions } from '@/actions/author-submissions';
-import { DashboardSubmission } from "@/features/dashboard/components/DashboardRegistry";
+import type { DashboardSubmission } from "@/features/dashboard/components/DashboardRegistry";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

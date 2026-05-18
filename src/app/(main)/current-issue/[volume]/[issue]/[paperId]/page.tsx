@@ -7,7 +7,7 @@ import { getSettingsData } from '@/actions/settings';
 import { getLatestIssuePapers } from "@/actions/archives";
 import { JsonLd } from "@/components/shared/JsonLd";
 
-import { PublishedPaperUI, PaperDetailParams } from "@/db/types";
+import type { PublishedPaperUI, PaperDetailParams } from "@/db/types";
 
 export async function generateStaticParams() {
     try {
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
 
     if (!paper) return { title: 'Article Not Found | IJITEST' };
 
-    const baseUrl = settings.journalWebsite || 'https://www.ijitest.org';
+    const baseUrl = settings['journalWebsite'] || 'https://www.ijitest.org';
     const allAuthors = paper.authorsList || [];
 
     const pubYearStr = paper.publicationYear ? String(paper.publicationYear) : '';
@@ -68,8 +68,8 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
             'citation_title': paper.title,
             'citation_author': allAuthors,
             'citation_publication_date': formattedDate.replace(/-/g, '/'),
-            'citation_journal_title': settings.journalName || 'IJITEST',
-            'citation_issn': settings.issnNumber || '',
+            'citation_journal_title': settings['journalName'] || 'IJITEST',
+            'citation_issn': settings['issnNumber'] || '',
             'citation_doi': paper.doi || '',
             'citation_volume': paper.volumeNumber ? String(paper.volumeNumber) : '',
             'citation_issue': paper.issueNumber ? String(paper.issueNumber) : '',
@@ -107,7 +107,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
 
     if (!paper) notFound();
 
-    const baseUrl = settings.journalWebsite || 'https://www.ijitest.org';
+    const baseUrl = settings['journalWebsite'] || 'https://www.ijitest.org';
     const allAuthors = paper.authorsList || [];
 
     return (
@@ -138,7 +138,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                     "datePublished": paper.publishedAt ? new Date(paper.publishedAt).toISOString() : (paper.publicationYear?.toString() || ""),
                     "publisher": {
                         "@type": "Organization",
-                        "name": settings.journalName || "IJITEST",
+                        "name": settings['journalName'] || "IJITEST",
                         "logo": {
                             "@type": "ImageObject",
                             "url": `${baseUrl}/favicon_io/apple-touch-icon.png`
@@ -146,7 +146,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                     },
                     "isPartOf": {
                         "@type": "ScholarlyJournal",
-                        "name": settings.journalName || "IJITEST"
+                        "name": settings['journalName'] || "IJITEST"
                     },
                     "pageStart": paper.startPage?.toString(),
                     "pageEnd": paper.endPage?.toString(),

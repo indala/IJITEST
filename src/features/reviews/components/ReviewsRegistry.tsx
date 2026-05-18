@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
-import { useActiveReviews, useUnassignedPapers, useAssignReviewer, useSubmitReview, ReviewAssignment } from '@/hooks/queries/useReviews';
+import { useActiveReviews, useUnassignedPapers, useAssignReviewer, useSubmitReview } from '@/hooks/queries/useReviews';
+import type { ReviewAssignment } from '@/hooks/queries/useReviews';
 import { useUsers } from '@/hooks/queries/useUsers';
 import { decideSubmission, autoSyncManuscriptToPdf } from '@/actions/submissions';
 import { useQueryClient } from '@tanstack/react-query';

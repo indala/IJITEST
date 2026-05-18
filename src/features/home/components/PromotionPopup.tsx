@@ -17,7 +17,7 @@ export default function PromotionPopup() {
     useEffect(() => {
         const timer = setTimeout(() => {
             const hasSeen = localStorage.getItem('hasSeenPromotion');
-            const isPromotionActive = (settings.isPromotionActive || '') !== 'false';
+            const isPromotionActive = (settings['isPromotionActive'] || '') !== 'false';
 
             if (!hasSeen && isPromotionActive) {
                 setIsVisible(true);

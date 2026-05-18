@@ -8,7 +8,7 @@ import Link from "next/link";
 import dayjs from "@/lib/dayjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getSecureUrl } from "@/lib/utils";
-import { SubmissionFile, SubmissionIdParam } from "@/db/types";
+import type { SubmissionFile, SubmissionIdParam } from "@/db/types";
 
 export default async function AuthorSubmissionDetailsPage({ params }: { params: Promise<SubmissionIdParam> }) {
     const resolvedParams = await params;

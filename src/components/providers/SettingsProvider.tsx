@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, ReactNode } from 'react';
+import { useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface SettingsProviderProps {

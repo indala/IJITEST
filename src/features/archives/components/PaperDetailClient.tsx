@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
-import { PublishedPaperUI } from "@/db/types";
+import type { PublishedPaperUI } from "@/db/types";
 import CitationSection from "./CitationSection";
 import { incrementPaperViews, incrementPaperDownloads } from "@/actions/publications";
 

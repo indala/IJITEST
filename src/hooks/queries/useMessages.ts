@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMessages, updateMessageStatus, bulkUpdateMessageStatus, revertMessageStatus, deleteMessage, replyToMessage } from '@/actions/messages';
-import { ActionResponse, ContactMessageRow } from '@/db/types';
+import type { ActionResponse, ContactMessageRow } from '@/db/types';
 
 export function useMessages(filters?: { status?: 'pending' | 'resolved' | 'archived', search?: string }) {
     return useQuery<ContactMessageRow[]>({

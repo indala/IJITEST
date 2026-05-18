@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { AnimationPlaybackControls, motion, animate } from 'framer-motion';
+import { motion, animate } from 'framer-motion';
+import type { AnimationPlaybackControls } from 'framer-motion';
 import { useRef, useEffect } from 'react';
 
 interface PageHeaderProps {

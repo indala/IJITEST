@@ -8,8 +8,8 @@ import { memo } from 'react';
 function ResourceDeskWidget() {
     const settings = useSettingsStore((state) => state.settings);
     const resources = [
-        { label: "Word Template", type: "DOCX", link: settings?.templateUrl || "/docs/template.docx" },
-        { label: "Copyright Form", type: "DOCX", link: settings?.copyrightUrl || "/docs/copyright-form.docx" }
+        { label: "Word Template", type: "DOCX", link: settings?.['templateUrl'] || "/docs/template.docx" },
+        { label: "Copyright Form", type: "DOCX", link: settings?.['copyrightUrl'] || "/docs/copyright-form.docx" }
     ];
 
     return (

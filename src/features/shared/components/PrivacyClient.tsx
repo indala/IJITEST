@@ -7,8 +7,8 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function PrivacyClient() {
     const settings = useSettingsStore((state) => state.settings);
-    const journalName = settings.journalName || '';
-    const supportEmail = settings.supportEmail || '';
+    const journalName = settings['journalName'] || '';
+    const supportEmail = settings['supportEmail'] || '';
 
     const sections = [
         {

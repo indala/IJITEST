@@ -1,9 +1,9 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 import { getPublishedPapers, getLatestIssuePapers } from '@/actions/archives';
-import { PublishedPaperUI } from '@/db/types';
+import type { PublishedPaperUI } from '@/db/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org';
+  const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org';
 
   // 1. Static Routes
   const staticRoutes = [

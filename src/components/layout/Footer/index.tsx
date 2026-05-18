@@ -5,9 +5,9 @@ import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 import { FooterDynamic } from './FooterDynamic';
 
 const socialLinks = [
-    { icon: FaFacebook, href: process.env.NEXT_PUBLIC_FACEBOOK_URL || '#', label: 'Facebook' },
-    { icon: FaTwitter, href: process.env.NEXT_PUBLIC_TWITTER_URL || '#', label: 'Twitter' },
-    { icon: FaInstagram, href: process.env.NEXT_PUBLIC_INSTAGRAM_URL || '#', label: 'Instagram' },
+    { icon: FaFacebook, href: process.env['NEXT_PUBLIC_FACEBOOK_URL'] || '#', label: 'Facebook' },
+    { icon: FaTwitter, href: process.env['NEXT_PUBLIC_TWITTER_URL'] || '#', label: 'Twitter' },
+    { icon: FaInstagram, href: process.env['NEXT_PUBLIC_INSTAGRAM_URL'] || '#', label: 'Instagram' },
 ];
 
 export default function Footer() {

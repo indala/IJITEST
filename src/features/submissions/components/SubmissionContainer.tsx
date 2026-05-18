@@ -33,7 +33,7 @@ import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import SubmissionSearch from './SubmissionSearch';
 import DeleteSubmissionButton from './DeleteSubmissionButton';
-import { SubmissionUI } from '@/db/types';
+import type { SubmissionUI } from '@/db/types';
 
 const getStatusVariant = (status: string) => {
     switch (status) {

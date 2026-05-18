@@ -34,7 +34,7 @@ const REQUIREMENTS = [
 
 export default function JoinUsClient() {
     const settings = useSettingsStore((state) => state.settings);
-    const journalShortName = settings.journalShortName || '';
+    const journalShortName = settings['journalShortName'] || '';
 
     return (
         <section className="container-responsive py-12 sm:py-24" aria-labelledby="join-us-heading">

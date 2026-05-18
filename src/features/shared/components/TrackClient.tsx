@@ -11,7 +11,7 @@ import { useTrackManuscript } from '@/hooks/queries/usePublic';
 
 import { useSettingsStore } from '@/store/useSettingsStore';
 
-import { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
  
 interface MilestoneProps {
     title: string;
@@ -69,7 +69,7 @@ export default function TrackClient() {
     const errorMessage = data?.success ? null : (data?.error || (error instanceof Error ? error.message : String(error)));
 
     const resultsRef = useRef<HTMLDivElement>(null);
-    const journalShortName = settings.journalShortName || '';
+    const journalShortName = settings['journalShortName'] || '';
 
     useEffect(() => {
         if ((isSuccess || isError) && resultsRef.current) {

@@ -19,7 +19,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 function AimAndScope() {
     const settings = useSettingsStore((state) => state.settings);
-    const shortName = settings.journalShortName || '';
+    const shortName = settings['journalShortName'] || '';
 
     return (
         <div className="space-y-12">

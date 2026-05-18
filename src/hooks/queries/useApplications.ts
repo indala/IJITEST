@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getApplications, approveApplication, rejectApplication, bulkApproveApplications, bulkRejectApplications } from '@/actions/applications';
-import { Application } from '@/db/types';
+import type { Application } from '@/db/types';
 
 export function useApplications(filters?: { role?: string, status?: string, interest?: string }) {
     return useQuery<Application[]>({

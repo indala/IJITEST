@@ -1,12 +1,12 @@
-import { NextAuthOptions, DefaultSession } from "next-auth";
-import { JWT } from "next-auth/jwt";
+import type { NextAuthOptions, DefaultSession } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { users, userProfiles } from "@/db/schema";
 import bcrypt from "bcryptjs";
 
-const authSecret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
+const authSecret = process.env['NEXTAUTH_SECRET'] || process.env['JWT_SECRET'];
 if (!authSecret) {
     throw new Error("Missing NEXTAUTH_SECRET (or JWT_SECRET). Refusing to start with an insecure auth secret.");
 }

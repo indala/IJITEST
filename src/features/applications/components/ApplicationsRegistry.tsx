@@ -35,7 +35,7 @@ import {
     useBulkRejectApplications
 } from "@/hooks/queries/useApplications";
 
-import { Application } from "@/db/types";
+import type { Application } from "@/db/types";
 
 // --- Sub-components ---
 

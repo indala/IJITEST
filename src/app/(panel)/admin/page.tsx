@@ -10,14 +10,14 @@ import {
     submissionVersions,
     reviews
 } from '@/db/schema';
-import { Application } from '@/db/types';
+import type { Application } from '@/db/types';
 import { eq, sql, desc, and, count, sum, or } from 'drizzle-orm';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { getMySubmissions } from '@/actions/author-submissions';
 import { Button } from "@/components/ui/button";
-import { 
-    DashboardRegistry, 
+import { DashboardRegistry } from '@/features/dashboard/components/DashboardRegistry';
+import type { 
     DashboardUser, 
     DashboardSubmission, 
     DashboardStaff 

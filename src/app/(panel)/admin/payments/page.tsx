@@ -44,7 +44,7 @@ const getStatusVariant = (status: string) => {
     }
 };
 
-import { PaymentRow } from '@/db/types';
+import type { PaymentRow } from '@/db/types';
 
 const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow, onUpdateStatus: (id: number, status: 'pending' | 'paid' | 'verified' | 'failed' | 'waived', txId: string) => Promise<void> }) => (
     <Card key={item.id} className="border-primary/5 shadow-vip hover:shadow-2xl hover:scale-[1.005] transition-all group overflow-hidden bg-card relative 2xl:rounded-3xl">

@@ -4,7 +4,7 @@ import { Mail, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useEditorialBoard } from '@/hooks/queries/usePublic';
 import { staticEditorialBoardMembers, type BoardMember } from '../data/editorial-board';
-import { SafeUserWithProfile } from '@/db/types';
+import type { SafeUserWithProfile } from '@/db/types';
 
 import { useSettingsStore } from '@/store/useSettingsStore';
 
@@ -15,7 +15,7 @@ interface EditorialBoardClientProps {
 export default function EditorialBoardClient({ initialMembers }: EditorialBoardClientProps) {
     const { data: dynamicMembers = [], isLoading } = useEditorialBoard(initialMembers);
     const settings = useSettingsStore((state) => state.settings);
-    const supportEmail = settings.supportEmail || '';
+    const supportEmail = settings['supportEmail'] || '';
 
     const groupedBoard = useMemo(() => {
         const board = [

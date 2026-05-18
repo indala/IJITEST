@@ -13,7 +13,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function GuidelinesContent() {
     const settings = useSettingsStore((state) => state.settings);
-    const supportEmail = settings.supportEmail || "support@ijitest.org";
+    const supportEmail = settings['supportEmail'] || "support@ijitest.org";
 
     const sections = [
         {
@@ -61,7 +61,7 @@ export default function GuidelinesContent() {
             content: (
                 <div className="space-y-4">
                     <p>
-                        Publication fee for Indian Authors is <span className="text-secondary">Rs. {settings.apcInr}</span> and <span className="text-secondary">USD {settings.apcUsd}</span> for Foreign Authors for maximum of 5 authors upto 8 pages.
+                        Publication fee for Indian Authors is <span className="text-secondary">Rs. {settings['apcInr']}</span> and <span className="text-secondary">USD {settings['apcUsd']}</span> for Foreign Authors for maximum of 5 authors upto 8 pages.
                     </p>
                 </div>
             )
@@ -148,12 +148,12 @@ export default function GuidelinesContent() {
                             <Link href="/submit">Submit Manuscript</Link>
                         </Button>
                         <Button asChild variant="outline" size="lg" className="btn-outline">
-                            <a href={settings.templateUrl || "/docs/template.docx"} download>
+                            <a href={settings['templateUrl'] || "/docs/template.docx"} download>
                                 <Download className="w-5 h-5 2xl:w-8 2xl:h-8 mr-2" /> Download Template
                             </a>
                         </Button>
                         <Button asChild variant="outline" size="lg" className="btn-outline">
-                            <a href={settings.copyrightUrl || "/docs/copyright-form.docx"} download>
+                            <a href={settings['copyrightUrl'] || "/docs/copyright-form.docx"} download>
                                 <Download className="w-5 h-5 2xl:w-8 2xl:h-8 mr-2" /> Copyright Form
                             </a>
                         </Button>
@@ -167,7 +167,7 @@ export default function GuidelinesContent() {
         <main className="bg-background min-h-screen">
             <PageHeader
                 title="Author Guidelines"
-                description={`Comprehensive protocol for submitting manuscripts to ${settings.journalShortName || 'IJITEST'}.`}
+                description={`Comprehensive protocol for submitting manuscripts to ${settings['journalShortName'] || 'IJITEST'}.`}
                 breadcrumbs={[
                     { name: 'Home', href: '/' },
                     { name: 'Guidelines', href: '/guidelines' },

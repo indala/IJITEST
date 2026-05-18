@@ -511,9 +511,9 @@ export default function SubmissionForm() {
                                     </div>
                                     <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider m-0">Manuscript Upload</FormLabel>
                                 </div>
-                                {settings.templateUrl && (
+                                {settings['templateUrl'] && (
                                     <Button asChild variant="ghost" size="sm" className="h-8 text-[#000066] font-bold text-[9px] uppercase tracking-wider hover:bg-[#000066]/5">
-                                        <a href={settings.templateUrl} download>
+                                        <a href={settings['templateUrl']} download>
                                             <Download className="w-3 h-3 mr-2" />
                                             Template
                                         </a>
@@ -566,9 +566,9 @@ export default function SubmissionForm() {
                                     </div>
                                     <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider m-0">Copyright Agreement (Optional)</FormLabel>
                                 </div>
-                                {settings.copyrightUrl && (
+                                {settings['copyrightUrl'] && (
                                     <Button asChild variant="ghost" size="sm" className="h-8 text-[#000066] font-bold text-[9px] uppercase tracking-wider hover:bg-[#000066]/5">
-                                        <a href={settings.copyrightUrl} download>
+                                        <a href={settings['copyrightUrl']} download>
                                             <Download className="w-3 h-3 mr-2" />
                                             Agreement Form
                                         </a>

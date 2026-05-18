@@ -1,14 +1,14 @@
 import { getSettingsData } from '@/actions/settings';
 import GuidelinesContent from "./GuidelinesContent";
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Author Guidelines | ${settings.journalName}`,
-        description: `Comprehensive protocol for submitting manuscripts to ${settings.journalShortName}. Detailed instructions on formatting, templates, and ethical requirements for global research publication.`,
+        title: `Author Guidelines | ${settings['journalName']}`,
+        description: `Comprehensive protocol for submitting manuscripts to ${settings['journalShortName']}. Detailed instructions on formatting, templates, and ethical requirements for global research publication.`,
         openGraph: {
-            title: `Submission Protocol - ${settings.journalShortName}`,
+            title: `Submission Protocol - ${settings['journalShortName']}`,
             description: `Author resources and manuscript formatting templates.`,
             type: 'website',
         }

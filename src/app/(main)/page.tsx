@@ -1,5 +1,5 @@
 import { getSettingsData } from '@/actions/settings';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import HomeCarousel from '@/features/home/components/HomeCarousel';
 import WelcomeSection from '@/features/home/components/WelcomeSection';
 import HomeStats from '@/features/home/components/HomeStats';
@@ -23,22 +23,22 @@ export const revalidate = 3600; // 1 hour
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettingsData();
   return {
-    title: `${settings.journalName} | Elite Academic Publishing`,
-    description: `Welcome to ${settings.journalName} (${settings.journalShortName}). We provide a global platform for breakthrough research in engineering, science, and technology with rapid, high-quality peer review.`,
+    title: `${settings['journalName']} | Elite Academic Publishing`,
+    description: `Welcome to ${settings['journalName']} (${settings['journalShortName']}). We provide a global platform for breakthrough research in engineering, science, and technology with rapid, high-quality peer review.`,
     alternates: {
       canonical: '/',
     },
     openGraph: {
-      title: settings.journalName,
-      description: `Advancing scientific excellence through innovative trends. Explore peer-reviewed research and elite academic publishing at ${settings.journalShortName}.`,
+      title: settings['journalName'],
+      description: `Advancing scientific excellence through innovative trends. Explore peer-reviewed research and elite academic publishing at ${settings['journalShortName']}.`,
       type: 'website',
-      siteName: settings.journalName,
+      siteName: settings['journalName'],
       images: [
         {
           url: '/open_graph_img.png',
           width: 1200,
           height: 630,
-          alt: `${settings.journalShortName} - Global Research Platform`,
+          alt: `${settings['journalShortName']} - Global Research Platform`,
         },
       ],
     }

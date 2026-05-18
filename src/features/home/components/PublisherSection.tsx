@@ -9,8 +9,8 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 function PublisherSection() {
     const settings = useSettingsStore((state) => state.settings);
-    const publisherName = settings.publisherName || "Felix Academic Publications";
-    const supportEmail = settings.supportEmail || "support@ijitest.org";
+    const publisherName = settings['publisherName'] || "Felix Academic Publications";
+    const supportEmail = settings['supportEmail'] || "support@ijitest.org";
 
     return (
         <section className="section-padding bg-background relative overflow-hidden border-t border-primary/5  my-5">
@@ -30,7 +30,7 @@ function PublisherSection() {
                 >
                     <h2>About the Publisher</h2>
                     <p className="opacity-80 border-l-4 border-secondary/30 pl-8 mb-12">
-                        {settings.journalShortName || 'IJITEST'} is mentored by <span className="opacity-100">{publisherName}</span>, aiming to provide a high-quality bedrock for research sharing and academic excellence.
+                        {settings['journalShortName'] || 'IJITEST'} is mentored by <span className="opacity-100">{publisherName}</span>, aiming to provide a high-quality bedrock for research sharing and academic excellence.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center gap-8">
                         <div className="p-1 rounded-4xl bg-linear-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip group">

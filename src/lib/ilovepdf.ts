@@ -11,8 +11,8 @@ import os from 'os';
  * @returns The PDF buffer.
  */
 export async function convertDocxToPdf(fileBuffer: Buffer, fileName: string): Promise<Buffer> {
-    const publicKey = process.env.ILOVEPDF_PUBLIC_KEY;
-    const secretKey = process.env.ILOVEPDF_SECRET_KEY;
+    const publicKey = process.env['ILOVEPDF_PUBLIC_KEY'];
+    const secretKey = process.env['ILOVEPDF_SECRET_KEY'];
 
     if (!publicKey || !secretKey) {
         throw new Error("iLovePDF API keys are not configured in environment variables.");

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Issue, PaperWithPublication } from '@/db/types';
+import type { Issue, PaperWithPublication } from '@/db/types';
 import {
     getVolumesIssues,
     createVolumeIssue,

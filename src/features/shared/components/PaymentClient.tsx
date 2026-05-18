@@ -14,7 +14,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function PaymentClient({ id }: { id: string }) {
     const settings = useSettingsStore((state) => state.settings);
-    const apcTotal = parseFloat(settings?.apcInr || '2500');
+    const apcTotal = parseFloat(settings['apcInr'] || '2500');
     const apcFee = Math.floor(apcTotal * 0.85);
     const apcIndexing = apcTotal - apcFee;
 
@@ -191,7 +191,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                 <div className="space-y-1">
                                     <h4 className="text-xs sm:text-sm font-bold text-muted-foreground tracking-widest uppercase">Support Desk</h4>
                                     <p className="text-sm text-muted-foreground/60 leading-relaxed font-medium m-0">
-                                        For disputes or bulk requests, contact <span className="text-secondary font-semibold">{settings.supportEmail}</span>.
+                                        For disputes or bulk requests, contact <span className="text-secondary font-semibold">{settings['supportEmail']}</span>.
                                     </p>
                                 </div>
                             </section>

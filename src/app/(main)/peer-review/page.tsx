@@ -1,18 +1,18 @@
 import PageHeader from "@/components/layout/PageHeader";
 import PeerReviewClient from '@/features/shared/components/PeerReviewClient';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Peer Review Process | ${settings.journalName}`,
-        description: `Explore the rigorous double-blind peer review process at ${settings.journalShortName}. We ensure technical accuracy, originality, and scientific impact in all published research.`,
+        title: `Peer Review Process | ${settings['journalName']}`,
+        description: `Explore the rigorous double-blind peer review process at ${settings['journalShortName']}. We ensure technical accuracy, originality, and scientific impact in all published research.`,
         alternates: {
             canonical: '/peer-review',
         },
         openGraph: {
-            title: `Peer Review Excellence - ${settings.journalShortName}`,
+            title: `Peer Review Excellence - ${settings['journalShortName']}`,
             description: `Quality assurance protocol for scientific manuscripts.`,
             type: 'website',
         }

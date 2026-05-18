@@ -1,18 +1,18 @@
 import PageHeader from "@/components/layout/PageHeader";
 import SubmitClient from '@/features/shared/components/SubmitClient';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Submit Manuscript | ${settings.journalName}`,
-        description: `Submit your original research technical papers to ${settings.journalShortName} for high-impact peer review and fast-track publication.`,
+        title: `Submit Manuscript | ${settings['journalName']}`,
+        description: `Submit your original research technical papers to ${settings['journalShortName']} for high-impact peer review and fast-track publication.`,
         alternates: {
             canonical: '/submit',
         },
         openGraph: {
-            title: `Manuscript Submission - ${settings.journalShortName}`,
+            title: `Manuscript Submission - ${settings['journalShortName']}`,
             description: `Global call for papers in Engineering and Technology.`,
             type: 'website',
         }

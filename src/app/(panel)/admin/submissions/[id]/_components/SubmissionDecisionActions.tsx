@@ -8,7 +8,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { RequestResubmissionModal } from "@/components/panels/RequestResubmissionModal";
 
-import { ActionResponse } from "@/db/types";
+import type { ActionResponse } from "@/db/types";
 
 interface SubmissionDecisionActionsProps {
     submissionId: number;

@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.ijitest.org'),
+  metadataBase: new URL(process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org'),
   title: {
     default: "IJITEST | International Journal of Innovative Trends in Engineering Science and Technology",
     template: "%s | IJITEST"
@@ -86,7 +86,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const dynamicSettings = await getSettingsData();
+  const dynamicSettingsData = await getSettingsData();
+  const dynamicSettings = dynamicSettingsData as any;
 
   const organizationSchema = {
     "@context": "https://schema.org",

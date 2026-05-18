@@ -12,7 +12,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsStore((state) => state.settings) as any;
     const shortName = settings.journalShortName;
 
     useEffect(() => {

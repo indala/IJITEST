@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactLenis } from "lenis/react"
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 import { usePathname } from "next/navigation"
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {

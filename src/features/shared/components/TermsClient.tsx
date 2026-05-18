@@ -7,7 +7,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function TermsClient() {
     const settings = useSettingsStore((state) => state.settings);
-    const journalName = settings.journalName || '';
+    const journalName = settings['journalName'] || '';
 
     const framework = [
         {

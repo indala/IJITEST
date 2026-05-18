@@ -9,7 +9,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function PeerReviewClient() {
     const settings = useSettingsStore((state) => state.settings);
-    const journalShortName = settings.journalShortName || '';
+    const journalShortName = settings['journalShortName'] || '';
 
     const stages = [
         {

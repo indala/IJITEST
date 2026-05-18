@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { XCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { SubmissionIdParam } from "@/db/types";
+import type { SubmissionIdParam } from "@/db/types";
 
 export const dynamic = 'force-dynamic';
 

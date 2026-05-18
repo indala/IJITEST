@@ -3,7 +3,7 @@ import { Eye } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PublishedPaperUI } from '@/db/types';
+import type { PublishedPaperUI } from '@/db/types';
 
 interface PaperCardProps {
     paper: PublishedPaperUI;

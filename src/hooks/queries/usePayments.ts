@@ -5,7 +5,7 @@ import {
     updatePaymentStatus,
     initializePayment,
 } from '@/actions/payments';
-import { PaymentRow, UnpaidPaperRow } from '@/db/types';
+import type { PaymentRow, UnpaidPaperRow } from '@/db/types';
 
 export function usePayments() {
     return useQuery<PaymentRow[]>({

@@ -27,7 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { PdfViewer } from "@/components/reviewer/PdfViewer";
 import { getSecureUrl } from "@/lib/utils";
-import { SubmissionIdParam } from "@/db/types";
+import type { SubmissionIdParam } from "@/db/types";
 
 export async function generateMetadata({ params }: { params: Promise<SubmissionIdParam> }): Promise<Metadata> {
     const { id } = await params;

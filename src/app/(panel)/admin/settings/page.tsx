@@ -21,7 +21,7 @@ import { useSettings } from '@/hooks/queries/useSettings';
 import { useState, useActionState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { updateSettings } from '@/actions/settings';
-import { ActionResponse } from '@/db/types';
+import type { ActionResponse } from '@/db/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +29,29 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
-import { motion, Variants } from "framer-motion";
+import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
+
+interface JournalSettings {
+    journalName?: string;
+    publisherName?: string;
+    journalShortName?: string;
+    issnNumber?: string;
+    apcInr?: string;
+    apcUsd?: string;
+    apcDescription?: string;
+    startingYear?: string;
+    publicationFrequency?: string;
+    journalLanguage?: string;
+    udyamRegistration?: string;
+    journalSubject?: string;
+    supportEmail?: string;
+    supportPhone?: string;
+    officeAddress?: string;
+    templateUrl?: string;
+    copyrightUrl?: string;
+    isPromotionActive?: string;
+}
 
 const containerVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
@@ -50,7 +72,8 @@ const itemVariants: Variants = {
 };
 
 export default function SystemSettings() {
-    const { data: settings = {}, isLoading: loading } = useSettings();
+    const { data: settingsData = {}, isLoading: loading } = useSettings();
+    const settings = settingsData as JournalSettings;
     const queryClient = useQueryClient();
     const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
     const [selectedCopyright, setSelectedCopyright] = useState<string | null>(null);

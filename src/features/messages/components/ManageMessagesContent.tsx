@@ -8,7 +8,7 @@ import { MessageDetail } from "./MessageDetail"
 import { useMessages } from "@/hooks/queries/useMessages"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
-import { ContactMessageRow } from "@/db/types"
+import type { ContactMessageRow } from "@/db/types"
 
 export function ManageMessagesContent() {
     const searchParams = useSearchParams()

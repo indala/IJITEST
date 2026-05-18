@@ -10,7 +10,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function IndexingClient() {
     const settings = useSettingsStore((state) => state.settings);
-    const journalShortName = settings.journalShortName || '';
+    const journalShortName = settings['journalShortName'] || '';
 
     const techSpecs = [
         { title: "SJIF Evaluation", desc: "Annual impact factor assessment by SJIF for scientific validation.", icon: BarChart3 },

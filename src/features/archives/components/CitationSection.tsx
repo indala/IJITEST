@@ -3,7 +3,7 @@
 import { Quote, Share2 } from "lucide-react";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { toast } from "sonner";
-import { Author } from "@/db/types";
+import type { Author } from "@/db/types";
 
 interface CitationSectionProps {
     paper: {
@@ -40,7 +40,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
     };
 
     const authors = getFormattedAuthors();
-    const citationText = `${authors} (${paper.publicationYear || new Date().getFullYear()}). "${paper.title}". ${settings.journalName || 'International Journal of Innovative Trends in Engineering Science and Technology'} (${settings.journalShortName || 'IJITEST'}), Vol. ${paper.volumeNumber || 'X'}, Issue ${paper.issueNumber || 'X'}. Paper ID: ${paper.paperId}`;
+    const citationText = `${authors} (${paper.publicationYear || new Date().getFullYear()}). "${paper.title}". ${settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology'} (${settings['journalShortName'] || 'IJITEST'}), Vol. ${paper.volumeNumber || 'X'}, Issue ${paper.issueNumber || 'X'}. Paper ID: ${paper.paperId}`;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(citationText);
@@ -58,7 +58,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                 <p className="text-sm 2xl:text-base text-gray-600 leading-relaxed font-medium ">
                     {authors}   <span className="italic"> {"\""} {paper.title}{"\""}</span>.
                     <br />
-                    <span className="">{settings.journalName || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings.journalShortName || 'IJITEST'})</span>,
+                    <span className="">{settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings['journalShortName'] || 'IJITEST'})</span>,
                     Vol. {paper.volumeNumber || 'X'}, Issue {paper.issueNumber || 'X'} , {paper.publicationYear || new Date().getFullYear()}.
                     <br />
                 </p>
@@ -95,7 +95,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                 <div className="grid grid-cols-1 gap-4">
                     <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 text-center group/meta">
                         <p className="text-[10px] 2xl:text-xs font-black text-gray-400 tracking-[0.2em] uppercase mb-1 group-hover/meta:text-primary transition-colors">ISSN (Online)</p>
-                        <p className="text-sm 2xl:text-base font-black text-gray-900 ">{settings.issnNumber || 'XXXX-XXXX'}</p>
+                        <p className="text-sm 2xl:text-base font-black text-gray-900 ">{settings['issnNumber'] || 'XXXX-XXXX'}</p>
                     </div>
                 </div>
             </div>
