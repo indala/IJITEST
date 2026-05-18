@@ -218,10 +218,10 @@ export function DashboardRegistry({
                                                 <span>{percentages.pub.toFixed(1)}%</span>
                                             </div>
                                             <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                                                <div className={cn(
-                                                    "h-full bg-emerald-500 transition-all duration-500",
-                                                    `w-[${Math.round(percentages.pub)}%]`
-                                                )} />
+                                                <div 
+                                                    className="h-full bg-emerald-500 transition-all duration-500"
+                                                    style={{ width: `${Math.round(percentages.pub)}%` }} 
+                                                />
                                             </div>
                                         </div>
                                         <div>
@@ -230,10 +230,10 @@ export function DashboardRegistry({
                                                 <span>{percentages.rev.toFixed(1)}%</span>
                                             </div>
                                             <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                                                <div className={cn(
-                                                    "h-full bg-[#000066] transition-all duration-500",
-                                                    `w-[${Math.round(percentages.rev)}%]`
-                                                )} />
+                                                <div 
+                                                    className="h-full bg-[#000066] transition-all duration-500"
+                                                    style={{ width: `${Math.round(percentages.rev)}%` }}
+                                                />
                                             </div>
                                         </div>
                                     </div>

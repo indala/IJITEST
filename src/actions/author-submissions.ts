@@ -11,7 +11,9 @@ import {
     volumesIssues, 
     payments, 
     users, 
-    userProfiles 
+    userProfiles,
+    reviews,
+    reviewAssignments
 } from "@/db/schema";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -172,10 +174,27 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
         .where(eq(publications.submissionId, submissionId))
         .limit(1);
 
+        // 4.5. Review Comments
+        const completedReviews = await db.select({
+            commentsToAuthor: reviews.commentsToAuthor,
+            decision: reviews.decision,
+            submittedAt: reviews.submittedAt,
+            reviewRound: reviewAssignments.reviewRound,
+            deadline: reviewAssignments.deadline
+        })
+        .from(reviews)
+        .innerJoin(reviewAssignments, eq(reviews.assignmentId, reviewAssignments.id))
+        .where(and(
+            eq(reviewAssignments.submissionId, submissionId),
+            eq(reviewAssignments.status, 'completed'),
+            sql`${reviews.commentsToAuthor} IS NOT NULL`
+        ));
+
         return actionSuccess({
             ...sub,
             files,
             authors: authorsList,
+            reviewComments: completedReviews,
             payment: paymentData[0] || null,
             publication: publicationData[0] || null
         } as AuthorSubmissionDetail);

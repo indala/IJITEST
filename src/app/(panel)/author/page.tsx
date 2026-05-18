@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { SubmissionProgress } from '@/features/author/components/SubmissionProgress';
 import { cn } from '@/lib/utils';
 import React from 'react';
+import { type AuthorDashboardSubmission } from '@/db/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,23 +32,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
     published: { label: 'Published', color: 'text-emerald-700', bg: 'bg-emerald-500/15' },
 };
 
-interface AuthorDashboardSubmission {
-    id: number;
-    paperId: string;
-    status: string;
-    submittedAt: Date | null;
-    updatedAt: Date | null;
-    title: string | null;
-    paymentStatus: string | null;
-    paymentAmount: string | null;
-    finalPdfUrl: string | null;
-    volumeNumber: number | null;
-    issueNumber: number | null;
-    issueYear: number | null;
-    views: number | null;
-    downloads: number | null;
-    citations: number | null;
-}
+
 
 interface DashboardStat {
     label: string;
@@ -223,7 +208,7 @@ export default async function AuthorDashboard() {
                                                                 <BookOpen className="w-4 h-4" /> PDF
                                                             </Link>
                                                         </Button>
-                                                    ) : (sub.status === 'accepted' || sub.status === 'paymentPending') && sub.paymentStatus !== 'paid' ? (
+                                                    ) : (sub.status === 'accepted' || sub.status === 'paymentPending') && !['paid', 'verified', 'waived'].includes(sub.paymentStatus || '') ? (
                                                         <Button asChild size="sm" className="h-9 px-4 bg-primary hover:bg-primary/90 text-white font-semibold text-xs rounded-lg shadow-sm">
                                                             <Link href={`/author/payments`} className="flex items-center gap-2">
                                                                 <CreditCard className="w-4 h-4" /> Pay Fee

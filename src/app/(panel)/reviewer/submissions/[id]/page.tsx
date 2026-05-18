@@ -139,7 +139,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 </div>
                             )}
 
-                            {submission.coAuthors && submission.coAuthors.length > 0 && (
+                            {user.role !== 'reviewer' && submission.coAuthors && submission.coAuthors.length > 0 && (
                                 <div className="space-y-4 pt-4 border-t border-primary/5">
                                     <h4 className="flex items-center gap-3">
                                         <History className="w-5 h-5" /> Collaborating Authors

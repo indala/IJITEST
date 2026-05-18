@@ -305,7 +305,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
                                         </div>
                                     )}
 
-                                    {submission.status === 'accepted' && (
+                                    {submission.status === 'accepted' && submission.payment && !['paid', 'verified', 'waived'].includes(submission.payment.status) && (
                                         <div className="space-y-4">
                                             <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-xl text-center space-y-3">
                                                 <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center mx-auto">
@@ -358,7 +358,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
                                         </div>
                                     )}
 
-                                    {submission.payment?.status === 'paid' && (
+                                    {submission.status === 'accepted' && (!submission.payment || ['paid', 'verified', 'waived'].includes(submission.payment.status)) && (
                                         <div className="space-y-4">
                                             <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-xl space-y-6">
                                                 <div className="flex items-center gap-3">
@@ -367,7 +367,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
                                                     </div>
                                                     <div className="space-y-0.5">
                                                         <p className="text-[10px] font-semibold text-emerald-600  tracking-widest">Ready for Indexing</p>
-                                                        <p className="text-[10px] font-medium text-muted-foreground ">Payment Verified</p>
+                                                        <p className="text-[10px] font-medium text-muted-foreground ">Payment Verified / Waived</p>
                                                     </div>
                                                 </div>
 
@@ -380,7 +380,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
                                     )}
 
                                     <div className="pt-4 mt-6 border-t border-border/50">
-                                        {submission.payment?.status !== 'paid' && submission.status !== 'published' ? (
+                                        {!['paid', 'verified', 'waived'].includes(submission.payment?.status || '') && submission.status !== 'published' ? (
                                             <div className="space-y-3">
                                                 <h4 className="text-[10px] font-semibold text-muted-foreground tracking-widest opacity-50 px-1">Infrastructure Control</h4>
                                                 <DeleteSubmissionButton submissionId={submission.id} status={submission.status} variant="full" />

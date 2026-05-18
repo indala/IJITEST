@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ResubmissionForm } from "../_components/ResubmissionForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Download, AlertTriangle } from "lucide-react";
+import { Calendar, Download, AlertTriangle, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import dayjs from "@/lib/dayjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -88,8 +88,72 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                         </CardContent>
                     </Card>
 
-                    {/* Review Comments - Placeholder for Author View Logic */}
-                    {/* (Need to ensure review comments are fetched in getAuthorSubmission) */}
+                    {/* Peer Review Intelligence & Feedback */}
+                    {['revisionRequested', 'rejected', 'accepted', 'published'].includes(sub.status) ? (
+                        <Card className="border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
+                            <CardHeader className="bg-primary/1 border-b border-primary/5">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
+                                        <MessageSquare className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-lg font-black text-primary">Peer Review Feedback</CardTitle>
+                                        <CardDescription>Evaluation notes and technical recommendations from the editorial board.</CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="pt-6 space-y-6">
+                                {!sub.reviewComments || sub.reviewComments.length === 0 ? (
+                                    <div className="text-center py-8 bg-muted/10 rounded-2xl border border-dashed border-primary/10">
+                                        <p className="text-xs font-bold text-primary/40 uppercase tracking-widest">No review comments recorded for this decision round.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {sub.reviewComments.map((comment, index) => (
+                                            <div key={index} className="p-5 rounded-2xl border border-primary/5 bg-primary/5 space-y-3">
+                                                <div className="flex items-center justify-between gap-4">
+                                                    <Badge className="bg-primary/5 text-primary border-none text-[9px] font-black uppercase tracking-widest px-3 py-1">
+                                                        Evaluation Comment #{index + 1}
+                                                    </Badge>
+                                                    <span className="text-[10px] font-bold text-primary/30 uppercase tracking-widest">
+                                                        {dayjs(comment.submittedAt).format("MMM DD, YYYY")}
+                                                    </span>
+                                                </div>
+                                                <p className="text-sm font-semibold text-primary/80 leading-relaxed whitespace-pre-wrap">
+                                                    &ldquo;{comment.commentsToAuthor}&rdquo;
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <Card className="border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
+                            <CardHeader className="bg-primary/1 border-b border-primary/5">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
+                                        <MessageSquare className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-lg font-black text-primary">Peer Review Queue</CardTitle>
+                                        <CardDescription>Status of technical and scientific peer assessment.</CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="pt-6 text-center py-10 space-y-3">
+                                <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center mx-auto">
+                                    <MessageSquare className="w-6 h-6 text-primary animate-pulse" />
+                                </div>
+                                <div className="space-y-1 max-w-sm mx-auto">
+                                    <p className="text-xs font-black uppercase tracking-widest text-primary">Undergoing Review</p>
+                                    <p className="text-xs font-bold text-primary/40 leading-relaxed">
+                                        Your manuscript is currently undergoing editorial screening and peer evaluation. Reviewer feedback will be presented here once the final decision has been processed.
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* Resubmission Section */}
                     {eligibility.eligible && (
