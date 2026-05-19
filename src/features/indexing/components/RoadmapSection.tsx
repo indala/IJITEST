@@ -43,51 +43,51 @@ const roadmapPhases = [
 
 function RoadmapSection() {
     return (
-        <section className="space-y-12">
+        <section className="space-y-12 2xl:space-y-16">
             <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-primary flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground font-mono">01.</span>
+                <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-semibold text-primary flex items-center gap-3">
+                    <span className="text-xs xl:text-sm 2xl:text-base text-muted-foreground font-mono">01.</span>
                     Strategic Growth Roadmap
                 </h2>
-                <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+                <p className="text-xs xl:text-sm 2xl:text-lg text-muted-foreground max-w-2xl leading-relaxed">
                     IJITEST follows a rigorous path toward global scientific recognition. Our growth is structured into distinct phases, ensuring every published paper adheres to international scholarly standards.
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 2xl:gap-8 relative">
                 {/* Visual Connector for Desktop (Optional, can be added with CSS) */}
                 
                 {roadmapPhases.map((item, idx) => (
                     <div
                         key={idx}
-                        className={`group p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg ${
+                        className={`group p-8 xl:p-10 2xl:p-12 rounded-2xl border transition-all duration-300 hover:shadow-lg ${
                             item.status === "Completed" ? "bg-white border-green-100" : 
                             item.status === "In Progress" ? "bg-white border-blue-100 shadow-sm ring-1 ring-blue-50" : 
                             "bg-slate-50/50 border-slate-100 opacity-80"
                         }`}
                     >
                         <div className="flex justify-between items-start mb-6">
-                            <div className={`p-3 rounded-xl ${item.bgColor} ${item.color}`}>
-                                <item.icon className="w-6 h-6" />
+                            <div className={`p-3 xl:p-4 rounded-xl ${item.bgColor} ${item.color}`}>
+                                <item.icon className="w-6 h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8" />
                             </div>
                             <div className="text-right">
-                                <span className="text-[10px] font-mono text-muted-foreground block mb-1 uppercase tracking-tighter">{item.phase}</span>
-                                <div className={`flex items-center gap-1.5 justify-end px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                <span className="text-[10px] xl:text-xs 2xl:text-sm font-mono text-muted-foreground block mb-1 uppercase tracking-tighter">{item.phase}</span>
+                                <div className={`flex items-center gap-1.5 justify-end px-2.5 py-1 rounded-full text-[10px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider ${
                                     item.status === "Completed" ? "bg-green-100 text-green-700" :
                                     item.status === "In Progress" ? "bg-blue-100 text-blue-700" :
                                     "bg-slate-200 text-slate-600"
                                 }`}>
-                                    {item.status === "Completed" ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+                                    {item.status === "Completed" ? <CheckCircle2 className="w-3.5 h-3.5 xl:w-4 xl:h-4 2xl:w-4.5 2xl:h-4.5" /> : <Clock className="w-3.5 h-3.5 xl:w-4 xl:h-4 2xl:w-4.5 2xl:h-4.5" />}
                                     {item.status}
                                 </div>
                             </div>
                         </div>
 
-                        <h3 className="text-lg font-bold text-primary mb-4">{item.title}</h3>
+                        <h3 className="text-lg xl:text-xl 2xl:text-2xl font-bold text-primary mb-4">{item.title}</h3>
                         
                         <ul className="space-y-3">
                             {item.items.map((sub, sIdx) => (
-                                <li key={sIdx} className="flex items-center gap-3 text-xs text-muted-foreground group-hover:text-primary/80 transition-colors">
+                                <li key={sIdx} className="flex items-center gap-3 text-xs xl:text-sm 2xl:text-lg text-muted-foreground group-hover:text-primary/80 transition-colors">
                                     <div className={`w-1.5 h-1.5 rounded-full ${
                                         item.status === "Completed" ? "bg-green-400" : 
                                         item.status === "In Progress" ? "bg-blue-400" : 
@@ -101,10 +101,10 @@ function RoadmapSection() {
                 ))}
             </div>
 
-            <div className="p-6 bg-[#000066]/5 rounded-xl border border-[#000066]/10 flex flex-col sm:flex-row items-center gap-6">
+            <div className="p-6 xl:p-8 2xl:p-10 bg-[#000066]/5 rounded-xl border border-[#000066]/10 flex flex-col sm:flex-row items-center gap-6">
                 <div className="w-12 h-12 shrink-0 bg-[#000066] text-white rounded-full flex items-center justify-center font-bold italic shadow-inner">i</div>
-                <p className="text-[11px] text-primary/70 leading-relaxed m-0 text-center sm:text-left">
-                    <strong className="text-primary">Note to Authors:</strong> All articles published during the registration phases (Phase 1 & 2) will receive retroactive metadata updates, including DOI assignments and ISSN cross-linking, once registrations are finalized.
+                <p className="text-[11px] xl:text-sm 2xl:text-lg text-primary/70 leading-relaxed m-0 text-center sm:text-left">
+                    <strong className="text-primary 2xl:text-xl">Note to Authors:</strong> All articles published during the registration phases (Phase 1 & 2) will receive retroactive metadata updates, including DOI assignments and ISSN cross-linking, once registrations are finalized.
                 </p>
             </div>
         </section>

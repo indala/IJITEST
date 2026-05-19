@@ -37,7 +37,11 @@ const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: Pap
                                 <span className="border-b text-base xl:text-lg 2xl:text-xl border-red-600">Authors</span>
                                 <span className="text-red-500 font-bold">:</span>
                                 <div className="space-y-1">
-                                    <p className="text-primary text-base xl:text-lg 2xl:text-xl m-0 tracking-wide">{paper.authorName}</p>
+                                    <p className="text-primary text-base xl:text-lg 2xl:text-xl m-0 tracking-wide">
+                                        {paper.authorsList && paper.authorsList.length > 0 
+                                            ? paper.authorsList.join(', ') 
+                                            : paper.authorName}
+                                    </p>
                                 </div>
                             </div>
                         </div>
