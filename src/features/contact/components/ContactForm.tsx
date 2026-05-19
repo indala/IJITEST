@@ -42,8 +42,8 @@ export default function ContactForm() {
     if (contactMutation.isSuccess) {
         return (
             <div className="flex flex-col items-center justify-center p-6 xl:p-8 2xl:p-10 text-center space-y-4 xl:space-y-6 animate-in fade-in zoom-in duration-500 bg-white rounded-2xl border border-primary/5 shadow-sm">
-                <div className="w-12 h-12 xl:w-16 xl:h-16 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center shadow-inner border border-emerald-100">
-                    <CheckCircle className="w-6 h-6 xl:w-8 h-8" />
+                <div className="size-12 xxl:size-16 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center shadow-inner border border-emerald-100">
+                    <CheckCircle className="size-6 xl:size-8" />
                 </div>
                 <div className="space-y-1">
                     <h3 className="font-bold text-primary text-base sm:text-lg xl:text-xl 2xl:text-2xl lowercase">message <span className="text-emerald-600">transmitted</span></h3>
