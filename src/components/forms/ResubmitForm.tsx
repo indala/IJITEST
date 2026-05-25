@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
+import { useState, useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { resubmitPaper } from "@/actions/author-submissions";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,25 +37,23 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
         setError(null);
 
         try {
-            return await resubmitPaper(submissionId, formData);
-        } catch (err) {
-            console.error("Resubmission error:", err);
-            return { success: false, error: "An unexpected error occurred during submission." };
-        }
-    };
-
-    const [state, formAction, isPending] = useActionState(uploadAction, null);
-
-    useEffect(() => {
-        if (state) {
-            if (!state.success) {
-                setError(state.error || "Failed to resubmit");
+            const res = await resubmitPaper(submissionId, formData);
+            if (!res.success) {
+                setError(res.error || "Failed to resubmit");
             } else {
                 setSuccess(true);
                 setTimeout(() => router.push(`/author/submissions/${submissionId}`), 2500);
             }
+            return res;
+        } catch (err) {
+            console.error("Resubmission error:", err);
+            const errRes = { success: false, error: "An unexpected error occurred during submission." };
+            setError(errRes.error);
+            return errRes;
         }
-    }, [state, router, submissionId]);
+    };
+
+    const [, formAction, isPending] = useActionState(uploadAction, null);
 
     if (success) {
         return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
+import { useState, useActionState } from "react";
 import { UserPlus, Mail, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { createUser } from "@/actions/users";
@@ -23,29 +23,29 @@ export default function InviteEditorModal() {
     const inviteAction = async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
         formData.append('role', 'editor');
         try {
-            return await createUser(formData);
-        } catch (err) {
-            console.error("Invite editor error:", err);
-            return { success: false, error: "Critical failure during invitation protocol." };
-        }
-    };
-
-    const [state, formAction, isPending] = useActionState(inviteAction, null);
-
-    useEffect(() => {
-        if (state) {
-            if (state.success) {
+            const res = await createUser(formData);
+            if (res.success) {
                 toast.success("Invitation Transmitted", {
                     description: "Secure protocol initiated. Setup instructions delivered to candidate."
                 });
                 setOpen(false);
             } else {
                 toast.error("Operation Failed", {
-                    description: state.error || "Failed to secure invitation link."
+                    description: res.error || "Failed to secure invitation link."
                 });
             }
+            return res;
+        } catch (err) {
+            console.error("Invite editor error:", err);
+            const errRes = { success: false, error: "Critical failure during invitation protocol." };
+            toast.error("Operation Failed", {
+                description: errRes.error
+            });
+            return errRes;
         }
-    }, [state]);
+    };
+
+    const [, formAction, isPending] = useActionState(inviteAction, null);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

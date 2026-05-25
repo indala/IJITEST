@@ -58,7 +58,9 @@ export default function TrackClient() {
     const [paperIdInput, setPaperIdInput] = useState<Submission['paperId']>(searchParams.get('id') || '');
     const [emailInput, setEmailInput] = useState<DBUser['email']>('');
 
-    const [state, formAction, isPending] = useActionState(
+    const [localState, setLocalState] = useState<ActionResponse<{ manuscript: TrackedManuscript }> | null>(null);
+
+    const [, formAction, isPending] = useActionState(
         async (
             _prevState: ActionResponse<{ manuscript: TrackedManuscript }> | null,
             formData: FormData
@@ -66,30 +68,22 @@ export default function TrackClient() {
             const paperId = formData.get('paperId') as string;
             const email = formData.get('email') as string;
             if (!paperId || !paperId.trim()) {
-                return { success: false, error: "Manuscript ID is required." };
+                const err: ActionResponse<{ manuscript: TrackedManuscript }> = { success: false, error: "Manuscript ID is required." };
+                setLocalState(err);
+                return err;
             }
             if (!email || !email.trim()) {
-                return { success: false, error: "Email Address is required." };
+                const err: ActionResponse<{ manuscript: TrackedManuscript }> = { success: false, error: "Email Address is required." };
+                setLocalState(err);
+                return err;
             }
+            setLocalState(null);
             const result = await trackManuscript(paperId.trim(), email.trim());
+            setLocalState(result);
             return result;
         },
         null
     );
-
-    const [localState, setLocalState] = useState<ActionResponse<{ manuscript: TrackedManuscript }> | null>(null);
-
-    useEffect(() => {
-        if (state) {
-            setLocalState(state);
-        }
-    }, [state]);
-
-    useEffect(() => {
-        if (isPending) {
-            setLocalState(null);
-        }
-    }, [isPending]);
 
     const manuscript = localState?.success ? localState.data?.manuscript : null;
     const errorMessage = localState?.success ? null : localState?.error;

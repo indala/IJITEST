@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, Suspense } from 'react';
+import React, { useState, useCallback, useMemo, Suspense, useTransition } from 'react';
 import NextImage from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -27,13 +27,14 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import { 
-    useApplications, 
-    useApproveApplication, 
-    useRejectApplication,
-    useBulkApproveApplications,
-    useBulkRejectApplications
-} from "@/hooks/queries/useApplications";
+import { useApplications } from "@/hooks/queries/useApplications";
+import { useQueryClient } from '@tanstack/react-query';
+import {
+    approveApplication,
+    rejectApplication,
+    bulkApproveApplications,
+    bulkRejectApplications
+} from '@/actions/applications';
 
 import type { Application } from "@/db/types";
 
@@ -130,10 +131,8 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
 
     const { data: applications = [], isLoading: loading } = useApplications(queryParams);
 
-    const approveMutation = useApproveApplication();
-    const rejectMutation = useRejectApplication();
-    const bulkApproveMutation = useBulkApproveApplications();
-    const bulkRejectMutation = useBulkRejectApplications();
+    const queryClient = useQueryClient();
+    const [isPendingAction, startActionTransition] = useTransition();
 
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [inspectApp, setInspectApp] = useState<Application | null>(null);
@@ -166,14 +165,21 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
 
     const handleApprove = async (id: number) => {
         const toastId = toast.loading("Processing approval...");
-        const res = await approveMutation.mutateAsync(id);
-        if (res.success) {
-            toast.success("Personnel candidacy authorized", { id: toastId });
-            setInspectApp(null);
-            setApproveConfirm(false);
-        } else {
-            toast.error(res.error || "Authorization failed", { id: toastId });
-        }
+        startActionTransition(async () => {
+            try {
+                const res = await approveApplication(id);
+                if (res.success) {
+                    toast.success("Personnel candidacy authorized", { id: toastId });
+                    setInspectApp(null);
+                    setApproveConfirm(false);
+                    queryClient.invalidateQueries({ queryKey: ['applications'] });
+                } else {
+                    toast.error(res.error || "Authorization failed", { id: toastId });
+                }
+            } catch {
+                toast.error("Internal system error", { id: toastId });
+            }
+        });
     };
 
     const handleReject = async (id: number, reason: string) => {
@@ -182,27 +188,41 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
             return;
         }
         const toastId = toast.loading("Processing rejection...");
-        const res = await rejectMutation.mutateAsync({ id, reason });
-        if (res.success) {
-            toast.success("Proposal declined", { id: toastId });
-            setInspectApp(null);
-            setRejectionMode(false);
-            setRejectionReason("");
-        } else {
-            toast.error(res.error || "Rejection failed", { id: toastId });
-        }
+        startActionTransition(async () => {
+            try {
+                const res = await rejectApplication(id, reason);
+                if (res.success) {
+                    toast.success("Proposal declined", { id: toastId });
+                    setInspectApp(null);
+                    setRejectionMode(false);
+                    setRejectionReason("");
+                    queryClient.invalidateQueries({ queryKey: ['applications'] });
+                } else {
+                    toast.error(res.error || "Rejection failed", { id: toastId });
+                }
+            } catch {
+                toast.error("Internal system error", { id: toastId });
+            }
+        });
     };
 
     const handleBulkApprove = async () => {
         if (selectedIds.length === 0) return;
         const toastId = toast.loading(`Authorizing ${selectedIds.length} candidates...`);
-        const res = await bulkApproveMutation.mutateAsync(selectedIds);
-        if (res.success) {
-            toast.success("Collective authorization complete", { id: toastId });
-            setSelectedIds([]);
-        } else {
-            toast.error(res.error || "Bulk processing failed", { id: toastId });
-        }
+        startActionTransition(async () => {
+            try {
+                const res = await bulkApproveApplications(selectedIds);
+                if (res.success) {
+                    toast.success("Collective authorization complete", { id: toastId });
+                    setSelectedIds([]);
+                    queryClient.invalidateQueries({ queryKey: ['applications'] });
+                } else {
+                    toast.error(res.error || "Bulk processing failed", { id: toastId });
+                }
+            } catch {
+                toast.error("Internal system error", { id: toastId });
+            }
+        });
     };
 
     const handleBulkReject = async (reason: string) => {
@@ -212,15 +232,22 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
             return;
         }
         const toastId = toast.loading(`Declining ${selectedIds.length} proposals...`);
-        const res = await bulkRejectMutation.mutateAsync({ ids: selectedIds, reason });
-        if (res.success) {
-            toast.success("Collective rejection processed", { id: toastId });
-            setSelectedIds([]);
-            setBulkRejectionMode(false);
-            setBulkRejectionReason("");
-        } else {
-            toast.error(res.error || "Bulk processing failed", { id: toastId });
-        }
+        startActionTransition(async () => {
+            try {
+                const res = await bulkRejectApplications(selectedIds, reason);
+                if (res.success) {
+                    toast.success("Collective rejection processed", { id: toastId });
+                    setSelectedIds([]);
+                    setBulkRejectionMode(false);
+                    setBulkRejectionReason("");
+                    queryClient.invalidateQueries({ queryKey: ['applications'] });
+                } else {
+                    toast.error(res.error || "Bulk processing failed", { id: toastId });
+                }
+            } catch {
+                toast.error("Internal system error", { id: toastId });
+            }
+        });
     };
 
     if (loading) {
@@ -289,8 +316,9 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                                 size="sm" 
                                 className="h-8 px-4 rounded-lg text-[9px] font-black uppercase tracking-widest border-emerald-500/20 text-emerald-600 hover:bg-emerald-500 hover:text-white"
                                 onClick={handleBulkApprove}
+                                disabled={isPendingAction}
                             >
-                                Bulk Approve
+                                {isPendingAction ? "Processing..." : "Bulk Approve"}
                             </Button>
                             <Button 
                                 variant="outline" 
@@ -328,7 +356,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                         <div className="flex gap-3 justify-end">
                             <Button variant="ghost" size="sm" onClick={() => setBulkRejectionMode(false)} className="h-9 px-6 rounded-xl font-black uppercase text-[9px] tracking-widest">Abort</Button>
                             <Button 
-                                disabled={bulkRejectionReason.length < 20}
+                                disabled={bulkRejectionReason.length < 20 || isPendingAction}
                                 onClick={() => handleBulkReject(bulkRejectionReason)}
                                 className="h-9 px-6 rounded-xl bg-rose-600 text-white font-black uppercase text-[9px] tracking-widest"
                             >
@@ -470,7 +498,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                                                             <div className="flex gap-4">
                                                                 <Button variant="ghost" onClick={() => setRejectionMode(false)} className="flex-1 h-14 rounded-2xl font-black uppercase">Abort</Button>
                                                                 <Button 
-                                                                    disabled={rejectionReason.length < 20}
+                                                                    disabled={rejectionReason.length < 20 || isPendingAction}
                                                                     onClick={() => handleReject(inspectApp.id, rejectionReason)}
                                                                     className="flex-2 h-14 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black uppercase tracking-widest"
                                                                 >
@@ -485,6 +513,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                                                                 <Button variant="ghost" onClick={() => setApproveConfirm(false)} className="flex-1 h-14 rounded-2xl font-black uppercase">Abort</Button>
                                                                 <Button 
                                                                     onClick={() => handleApprove(inspectApp.id)}
+                                                                    disabled={isPendingAction}
                                                                     className="flex-2 h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest shadow-xl shadow-emerald-500/20"
                                                                 >
                                                                     Authorize & Invite
@@ -496,12 +525,14 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                                                             <Button 
                                                                 variant="outline" 
                                                                 onClick={() => setRejectionMode(true)}
+                                                                disabled={isPendingAction}
                                                                 className="flex-1 h-16 rounded-2xl border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black uppercase"
                                                             >
                                                                 Decline Proposal
                                                             </Button>
                                                             <Button 
                                                                 onClick={() => setApproveConfirm(true)}
+                                                                disabled={isPendingAction}
                                                                 className="flex-2 h-16 rounded-2xl bg-primary text-white font-black uppercase tracking-widest shadow-2xl shadow-primary/20 hover:scale-[1.01] transition-all"
                                                             >
                                                                 Authorize Request

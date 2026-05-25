@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
+import { useState, useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,28 +24,26 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
 
     const uploadAction = async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
         try {
-            return await resubmitPaper(submissionId, formData);
-        } catch (err) {
-            console.error("Resubmission error:", err);
-            return { success: false, error: "An unexpected error occurred during submission." };
-        }
-    };
-
-    const [state, formAction, isPending] = useActionState(uploadAction, null);
-
-    useEffect(() => {
-        if (state) {
-            if (state.success) {
+            const res = await resubmitPaper(submissionId, formData);
+            if (res.success) {
                 setSuccess(true);
                 toast.success("Manuscript resubmitted successfully!");
                 setTimeout(() => {
                     router.refresh();
                 }, 2000);
             } else {
-                toast.error(state.error || "Failed to resubmit");
+                toast.error(res.error || "Failed to resubmit");
             }
+            return res;
+        } catch (err) {
+            console.error("Resubmission error:", err);
+            const errRes = { success: false, error: "An unexpected error occurred during submission." };
+            toast.error(errRes.error);
+            return errRes;
         }
-    }, [state, router]);
+    };
+
+    const [, formAction, isPending] = useActionState(uploadAction, null);
 
     if (success) {
         return (

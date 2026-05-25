@@ -355,7 +355,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                 if (paper) {
                     const staff = await db.select({ email: users.email, role: users.role }).from(users).where(inArray(users.role, ['admin', 'editor']));
                     
-                    await Promise.allSettled(staff.map(s => {
+                    await Promise.allSettled(staff.map((s) => {
                         const template = emailTemplates.resubmissionReceived(
                             paper.authorName || 'Author',
                             paper.title || 'Untitled',
@@ -454,7 +454,7 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
         // 1. Database modifications
         await db.transaction(async (tx) => {
             if (oldFiles.length > 0) {
-                const oldFileIds = oldFiles.map(f => f.fileId);
+                const oldFileIds = oldFiles.map((f) => f.fileId);
                 await tx.delete(submissionFiles).where(inArray(submissionFiles.id, oldFileIds));
             }
 
@@ -502,7 +502,7 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
                         submissionId
                     );
 
-                    await Promise.allSettled(staff.map(s => sendEmail({
+                    await Promise.allSettled(staff.map((s) => sendEmail({
                         to: s.email,
                         subject: template.subject,
                         html: template.html,
@@ -562,7 +562,7 @@ export async function getMySubmissions() {
         const rows = await query.where(eq(submissions.correspondingAuthorId, userId))
             .orderBy(desc(submissions.submittedAt));
 
-        return rows.map(r => ({
+        return rows.map((r) => ({
             id: r.id,
             paperId: r.paperId,
             status: r.status,
@@ -603,7 +603,7 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
             return actionSuccess({ deletedCount: 0 }, "No inactive submissions found.");
         }
 
-        const authorIds = [...new Set(targetSubmissions.map(s => s.authorId))];
+        const authorIds = [...new Set(targetSubmissions.map((s) => s.authorId))];
         let deletedCount = 0;
         
         for (const aId of authorIds) {
@@ -633,7 +633,7 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
                 await db.transaction(async (tx) => {
                     // Get all submission IDs for this author to clean files
                     const authorSubs = await tx.select({ id: submissions.id }).from(submissions).where(eq(submissions.correspondingAuthorId, aId));
-                    const subIds = authorSubs.map(s => s.id);
+                    const subIds = authorSubs.map((s) => s.id);
 
                     if (subIds.length > 0) {
                         // Clean files from disk

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense, startTransition } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense, startTransition, useTransition } from 'react';
 import {
     ShieldAlert, User, FileUp, CheckCircle, Clock, Search,
     Plus, X, Download, FileText, Eye, RefreshCw, Loader2
@@ -26,11 +26,12 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
-import { useActiveReviews, useUnassignedPapers, useAssignReviewer, useSubmitReview } from '@/hooks/queries/useReviews';
+import { useActiveReviews, useUnassignedPapers } from '@/hooks/queries/useReviews';
 import type { ReviewAssignment } from '@/hooks/queries/useReviews';
 import { useUsers } from '@/hooks/queries/useUsers';
 import { decideSubmission, autoSyncManuscriptToPdf, requestResubmissionWithComments } from '@/actions/submissions';
 import { useQueryClient } from '@tanstack/react-query';
+import { assignReviewer, submitReview } from '@/actions/reviews';
 
 // --- Sub-components ---
 
@@ -50,12 +51,12 @@ const ReviewItemCard = React.memo(({
     onFeedbackSubmit: (item: ReviewAssignment, formData: FormData) => Promise<void>
 }) => {
     const [feedbackFile, setFeedbackFile] = useState<File | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isPending, startFeedbackTransition] = useTransition();
 
-    const handleFormSubmit = async (formData: FormData) => {
-        setIsSubmitting(true);
-        await onFeedbackSubmit(item, formData);
-        setIsSubmitting(false);
+    const handleFormSubmit = (formData: FormData) => {
+        startFeedbackTransition(async () => {
+            await onFeedbackSubmit(item, formData);
+        });
     };
 
     const isReviewer = user?.role === 'reviewer';
@@ -236,8 +237,8 @@ const ReviewItemCard = React.memo(({
                                         </div>
 
                                         <DialogFooter className="pt-2 border-t border-border/50">
-                                            <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-primary text-white dark:text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer">
-                                                {isSubmitting ? 'Submitting...' : 'Submit'}
+                                            <Button type="submit" disabled={isPending} className="w-full h-12 bg-primary text-white dark:text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer">
+                                                {isPending ? 'Submitting...' : 'Submit'}
                                             </Button>
                                         </DialogFooter>
                                     </form>
@@ -543,10 +544,10 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
     const { data: reviews = [], isLoading: loadingReviews, refetch: refetchReviews } = useActiveReviews(reviewerId);
     const { data: unassigned = [], isLoading: loadingUnassigned } = useUnassignedPapers();
     const { data: staff = [], isLoading: loadingStaff } = useUsers('reviewer');
-    const assignMutation = useAssignReviewer();
-    const uploadMutation = useSubmitReview();
     const router = useRouter();
     const queryClient = useQueryClient();
+
+    const [isAssigning, startAssign] = useTransition();
 
     const loading = loadingReviews || loadingUnassigned || loadingStaff;
 
@@ -628,17 +629,17 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
     const handleFeedbackSubmit = useCallback(async (item: ReviewAssignment, formData: FormData) => {
         const toastId = toast.loading('Submitting...');
         try {
-            const result = await uploadMutation.mutateAsync({ assignmentId: item.id, formData });
+            const result = await submitReview(item.id, formData);
             if (result.success) {
                 toast.success('Feedback committed', { id: toastId });
-                refetchReviews();
+                await refetchReviews();
             } else {
                 toast.error(result.error, { id: toastId });
             }
         } catch {
             toast.error('Failed to submit findings', { id: toastId });
         }
-    }, [uploadMutation, refetchReviews]);
+    }, [refetchReviews]);
 
     const handleAcceptGroup = useCallback((submissionId: number) => {
         toast('Authorize acceptance for this manuscript?', {
@@ -766,12 +767,16 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                                 </DialogDescription>
                             </DialogHeader>
                             <form action={async (formData) => {
-                                const res = await assignMutation.mutateAsync(formData);
-                                if (res.success) {
-                                    toast.success('Reviewer assigned');
-                                    setShowAssignModal(false);
-                                    setAssignFile(null);
-                                } else toast.error(res.error);
+                                startAssign(async () => {
+                                    const res = await assignReviewer(formData);
+                                    if (res.success) {
+                                        toast.success('Reviewer assigned');
+                                        setShowAssignModal(false);
+                                        setAssignFile(null);
+                                        queryClient.invalidateQueries({ queryKey: ['reviews'] });
+                                        queryClient.invalidateQueries({ queryKey: ['unassignedPapers'] });
+                                    } else toast.error(res.error);
+                                });
                             }} className="space-y-5 pt-5">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase px-1">Manuscript</label>
@@ -861,8 +866,8 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                                     </div>
                                 </div>
                                 <DialogFooter className="pt-4">
-                                    <Button type="submit" disabled={assignMutation.isPending || isConverting} className="w-full h-16 bg-primary text-white font-semibold text-[10px] tracking-[0.3em] rounded-xl shadow-2xl shadow-primary/20 hover:scale-[1.01] transition-all cursor-pointer dark:text-black">
-                                        {assignMutation.isPending ? 'SYNCHRONIZING...' : 'COMMIT ASSIGNMENT'}
+                                    <Button type="submit" disabled={isAssigning || isConverting} className="w-full h-16 bg-primary text-white font-semibold text-[10px] tracking-[0.3em] rounded-xl shadow-2xl shadow-primary/20 hover:scale-[1.01] transition-all cursor-pointer dark:text-black">
+                                        {isAssigning ? 'SYNCHRONIZING...' : 'COMMIT ASSIGNMENT'}
                                     </Button>
                                 </DialogFooter>
                             </form>

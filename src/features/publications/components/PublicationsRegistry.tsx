@@ -1,21 +1,24 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useTransition, useActionState } from 'react';
 import { 
     Plus, BookOpen, Clock, CheckCircle2, Layers, 
-    CheckCircle, Save, ChevronDown as ChevronDownIcon, ChevronUp, FileText, Eye, Unlink 
+    CheckCircle, Save, ChevronDown as ChevronDownIcon, ChevronUp, FileText, Eye, Unlink, Loader2 
 } from 'lucide-react';
 import {
     useVolumesIssues,
-    usePapersByIssue,
-    useCreateVolumeIssue,
-    useUpdateVolumeIssue,
-    useDeleteVolumeIssue,
-    usePublishIssue,
-    useUnassignPaper
+    usePapersByIssue
 } from '@/hooks/queries/usePublications';
+import {
+    createVolumeIssue,
+    updateVolumeIssue,
+    deleteVolumeIssue,
+    publishIssue,
+    unassignPaperFromIssue
+} from '@/actions/publications';
 import { toast } from 'sonner';
-import type { Issue } from '@/db/types';
+import { useQueryClient } from '@tanstack/react-query';
+import type { Issue, ActionResponse } from '@/db/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,49 +40,60 @@ interface PublicationsRegistryProps {
 }
 
 export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
+    const queryClient = useQueryClient();
     const { data: volumes = [], isLoading: loading } = useVolumesIssues();
-    const createMutation = useCreateVolumeIssue();
-    const updateMutation = useUpdateVolumeIssue();
-    const deleteMutation = useDeleteVolumeIssue();
-    const publishMutation = usePublishIssue();
-    const unassignMutation = useUnassignPaper();
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState<(Issue & { paperCount: number }) | null>(null);
     const [expandedIssue, setExpandedIssue] = useState<number | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [isPublishing, startPublish] = useTransition();
+    const [isDeleting, startDelete] = useTransition();
+    const [isUnassigning, startUnassign] = useTransition();
 
     const { data: issuePapers = [], isLoading: loadingPapers } = usePapersByIssue(expandedIssue);
 
-    async function handleCreate(formData: FormData) {
-        setIsSubmitting(true);
-        toast.promise(
-            createMutation.mutateAsync(formData).then((res) => {
-                if (!res.success) throw new Error(res.error || "Failed to initialize cycle");
-                return res;
-            }),
-            {
-                loading: 'Deploying publication cycle...',
-                success: () => { setShowCreateModal(false); return 'Publication cycle initialized'; },
-                error: (err) => err.message,
-            }
-        );
-        setIsSubmitting(false);
-    }
+    const [, createAction, isCreating] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
+        const res = await createVolumeIssue(formData);
+        if (res.success) {
+            setShowCreateModal(false);
+            toast.success("Publication cycle initialized");
+            queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+        } else {
+            toast.error(res.error || "Failed to initialize cycle");
+        }
+        return res;
+    }, null);
+
+    const [, editAction, isEditing] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
+        if (!showEditModal) return { success: false, error: "No issue selected for edit" };
+        const res = await updateVolumeIssue(showEditModal.id, formData);
+        if (res.success) {
+            setShowEditModal(null);
+            toast.success("Metadata updated successfully");
+            queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+        } else {
+            toast.error(res.error || "Failed to update metadata");
+        }
+        return res;
+    }, null);
 
     async function handlePublish(id: number) {
         if (!confirm('Are you sure you want to PUBLISH this issue? This will also update the status of all assigned papers.')) return;
-        toast.promise(
-            publishMutation.mutateAsync(id).then((res) => {
-                if (!res.success) throw new Error(res.error || "Failed to publish issue");
-                return res;
-            }),
-            {
-                loading: 'Publishing issue & updating all manuscripts...',
-                success: 'Issue published successfully',
-                error: (err) => err.message,
+        startPublish(async () => {
+            try {
+                const res = await publishIssue(id);
+                if (res.success) {
+                    toast.success("Issue published successfully");
+                    queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+                    queryClient.invalidateQueries({ queryKey: ['submissions'] });
+                } else {
+                    toast.error(res.error || "Failed to publish issue");
+                }
+            } catch {
+                toast.error("Failed to publish issue");
             }
-        );
+        });
     }
 
     function toggleExpand(id: number) {
@@ -89,49 +103,37 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
 
     async function handleUnassign(paperId: number) {
         if (!confirm('Unlink this paper from this issue? Its status will revert to "Paid".')) return;
-        toast.promise(
-            unassignMutation.mutateAsync(paperId).then((res) => {
-                if (!res.success) throw new Error(res.error || "Failed to unassign paper");
-                return res;
-            }),
-            {
-                loading: 'Unlinking paper from issue...',
-                success: 'Paper unassigned successfully',
-                error: (err) => err.message,
+        startUnassign(async () => {
+            try {
+                const res = await unassignPaperFromIssue(paperId);
+                if (res.success) {
+                    toast.success("Paper unassigned successfully");
+                    queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+                    queryClient.invalidateQueries({ queryKey: ['issue-papers', expandedIssue] });
+                } else {
+                    toast.error(res.error || "Failed to unassign paper");
+                }
+            } catch {
+                toast.error("Failed to unassign paper");
             }
-        );
-    }
-
-    async function handleEdit(formData: FormData) {
-        if (!showEditModal) return;
-        setIsSubmitting(true);
-        toast.promise(
-            updateMutation.mutateAsync({ id: showEditModal.id, formData }).then((res) => {
-                if (!res.success) throw new Error(res.error || "Failed to update metadata");
-                return res;
-            }),
-            {
-                loading: 'Committing parameter updates...',
-                success: () => { setShowEditModal(null); return 'Metadata updated successfully'; },
-                error: (err) => err.message,
-            }
-        );
-        setIsSubmitting(false);
+        });
     }
 
     async function handleDelete(id: number) {
         if (!confirm('Delete this issue? All assigned papers will be unlinked and reverted to "Paid" status.')) return;
-        toast.promise(
-            deleteMutation.mutateAsync(id).then((res) => {
-                if (!res.success) throw new Error(res.error || "Failed to delete issue");
-                return res;
-            }),
-            {
-                loading: 'Removing publication cycle...',
-                success: 'Issue deleted successfully',
-                error: (err) => err.message,
+        startDelete(async () => {
+            try {
+                const res = await deleteVolumeIssue(id);
+                if (res.success) {
+                    toast.success("Issue deleted successfully");
+                    queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+                } else {
+                    toast.error(res.error || "Failed to delete issue");
+                }
+            } catch {
+                toast.error("Failed to delete issue");
             }
-        );
+        });
     }
 
     const stats = {
@@ -186,7 +188,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                 </DialogDescription>
                             </div>
                         </DialogHeader>
-                        <form action={handleCreate} className="space-y-5 pt-4">
+                        <form action={createAction} className="space-y-5 pt-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-xs font-semibold text-primary/70">Volume Number</Label>
@@ -230,8 +232,8 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                 />
                             </div>
                             <DialogFooter className="pt-4">
-                                <Button disabled={isSubmitting} type="submit" className="w-full h-11 bg-primary text-white rounded-lg cursor-pointer">
-                                    {isSubmitting ? 'Creating...' : 'Create Issue'}
+                                <Button disabled={isCreating} type="submit" className="w-full h-11 bg-primary text-white rounded-lg cursor-pointer">
+                                    {isCreating ? 'Creating...' : 'Create Issue'}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -338,8 +340,8 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                                                     <Eye className="w-4 h-4" />
                                                                                 </a>
                                                                             </Button>
-                                                                            <Button title='Unlink' onClick={() => handleUnassign(paper.id)} variant="ghost" size="icon" className="w-8 h-8 text-rose-500/60 hover:text-rose-500 rounded-md">
-                                                                                <Unlink className="w-4 h-4" />
+                                                                            <Button disabled={isUnassigning} title='Unlink' onClick={() => handleUnassign(paper.id)} variant="ghost" size="icon" className="w-8 h-8 text-rose-500/60 hover:text-rose-500 rounded-md">
+                                                                                {isUnassigning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Unlink className="w-4 h-4" />}
                                                                             </Button>
                                                                         </div>
                                                                     </div>
@@ -356,9 +358,11 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                         {v.status === 'open' ? (
                                             <Button
                                                 onClick={() => handlePublish(v.id)}
+                                                disabled={isPublishing}
                                                 className="w-full h-11 bg-emerald-600 text-white font-bold text-[10px] uppercase rounded-lg shadow-sm hover:bg-emerald-700 transition-all active:scale-[0.98]"
                                             >
-                                                <CheckCircle className="w-4 h-4 mr-2" /> Publish
+                                                {isPublishing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+                                                Publish
                                             </Button>
                                         ) : (
                                             <div className="w-full h-11 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold uppercase flex items-center justify-center gap-2 border border-emerald-100">
@@ -369,7 +373,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                         <div className="flex items-center justify-center gap-4 pt-4 border-t border-border/50">
                                             <button onClick={() => setShowEditModal(v)} className="text-[10px] font-bold text-[#000066] uppercase hover:underline">Edit</button>
                                             <span className="w-1 h-1 rounded-full bg-border" />
-                                            <button onClick={() => handleDelete(v.id)} className="text-[10px] font-bold text-rose-500 uppercase hover:underline">Delete</button>
+                                            <button disabled={isDeleting} onClick={() => handleDelete(v.id)} className="text-[10px] font-bold text-rose-500 uppercase hover:underline disabled:opacity-50">Delete</button>
                                         </div>
                                     </div>
                                 </div>
@@ -405,7 +409,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                         </div>
                     </DialogHeader>
                     {showEditModal && (
-                        <form action={handleEdit} className="space-y-5 pt-4">
+                        <form action={editAction} className="space-y-5 pt-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-xs font-semibold text-primary/70">Volume</Label>
@@ -452,8 +456,8 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                             </div>
 
                             <DialogFooter className="pt-4">
-                                <Button disabled={isSubmitting} type="submit" className="w-full h-11 bg-primary text-white rounded-lg">
-                                    {isSubmitting ? 'Updating...' : 'Save Changes'}
+                                <Button disabled={isEditing} type="submit" className="w-full h-11 bg-primary text-white rounded-lg">
+                                    {isEditing ? 'Updating...' : 'Save Changes'}
                                 </Button>
                             </DialogFooter>
                         </form>

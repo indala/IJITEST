@@ -2,7 +2,7 @@
 
 import { requestPasswordReset } from '@/actions/users';
 import { Mail, ArrowRight, ShieldCheck, MailCheck } from 'lucide-react';
-import { useState, useActionState, useEffect } from 'react';
+import { useState, useActionState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { type ActionResponse } from '@/db/types';
@@ -14,25 +14,24 @@ export default function ForgotPassword() {
     const resetAction = async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
         setError('');
         try {
-            return await requestPasswordReset(formData);
+            const res = await requestPasswordReset(formData);
+            if (res.success) {
+                setStatus('success');
+            } else {
+                setError(res.error || "Something went wrong");
+                setStatus('error');
+            }
+            return res;
         } catch (err) {
             console.error("Password reset error:", err);
-            return { success: false, error: "Something went wrong" };
+            const errRes = { success: false, error: "Something went wrong" };
+            setError(errRes.error);
+            setStatus('error');
+            return errRes;
         }
     };
 
-    const [state, formAction, isPending] = useActionState(resetAction, null);
-
-    useEffect(() => {
-        if (state) {
-            if (state.success) {
-                setStatus('success');
-            } else {
-                setError(state.error || "Something went wrong");
-                setStatus('error');
-            }
-        }
-    }, [state]);
+    const [, formAction, isPending] = useActionState(resetAction, null);
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">

@@ -403,7 +403,7 @@ export default function ReviewerApplicationForm() {
 
                                         <div className="space-y-2">
                                             <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Nationality <span className="text-destructive">*</span></Label>
-                                            <Select value={formData.nationality} onValueChange={(val) => setFormData(prev => ({ ...prev, nationality: val }))}>
+                                            <Select value={formData.nationality} onValueChange={(val: string) => setFormData(prev => ({ ...prev, nationality: val }))}>
                                                 <SelectTrigger className="h-11 bg-muted/20 border-border/50 rounded-lg text-foreground px-4 text-xs xl:text-sm">
                                                     <SelectValue />
                                                 </SelectTrigger>

@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "20mb"
-    },
+    }
   },
   logging: process.env.NODE_ENV !== "production"
     ? {
@@ -34,6 +34,7 @@ const nextConfig: NextConfig = {
     : false,
 
   images: {
+    formats: ['image/avif', 'image/webp'],
     qualities: [75, 90, 100],
     remotePatterns: [
       {

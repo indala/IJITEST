@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition, useActionState } from 'react'
 import { Plus, Globe, Loader2, Layers } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,10 +16,14 @@ import {
     DialogFooter
 } from "@/components/ui/dialog"
 import {
-    useVolumesIssues,
-    useCreateVolumeIssue,
-    useAssignPaperToIssue
+    useVolumesIssues
 } from '@/hooks/queries/usePublications'
+import {
+    createVolumeIssue,
+    assignPaperToIssue
+} from '@/actions/publications'
+import { useQueryClient } from '@tanstack/react-query'
+import { type ActionResponse } from '@/db/types'
 
 interface PublicationAssignmentProps {
     submissionId: number;
@@ -27,37 +31,26 @@ interface PublicationAssignmentProps {
 }
 
 export default function PublicationAssignment({ submissionId, currentIssueId }: PublicationAssignmentProps) {
+    const queryClient = useQueryClient();
     const { data: volumes = [], isLoading: loading } = useVolumesIssues();
-    const createMutation = useCreateVolumeIssue();
-    const assignMutation = useAssignPaperToIssue();
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedIssueId, setSelectedIssueId] = useState<string>(currentIssueId?.toString() || "");
     const [startPage, setStartPage] = useState<string>("");
     const [endPage, setEndPage] = useState<string>("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isAssigning, startAssign] = useTransition();
 
-    async function handleQuickCreate(formData: FormData) {
-        setIsSubmitting(true);
-        try {
-            toast.promise(
-                createMutation.mutateAsync(formData).then((res) => {
-                    if (!res.success) throw new Error(res.error || "Failed to initialize cycle");
-                    return res;
-                }),
-                {
-                    loading: 'Initializing publication cycle...',
-                    success: () => {
-                        setShowCreateModal(false);
-                        return 'Publication cycle initialized';
-                    },
-                    error: (err) => err.message
-                }
-            );
-        } finally {
-            setIsSubmitting(false);
+    const [, createAction, isCreating] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
+        const res = await createVolumeIssue(formData);
+        if (res.success) {
+            setShowCreateModal(false);
+            toast.success("Publication cycle initialized");
+            queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+        } else {
+            toast.error(res.error || "Failed to initialize cycle");
         }
-    }
+        return res;
+    }, null);
 
     async function handleAssign() {
         if (!selectedIssueId) {
@@ -65,22 +58,25 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
             return;
         }
 
-        toast.promise(
-            assignMutation.mutateAsync({
-                submissionId,
-                issueId: parseInt(selectedIssueId),
-                ...(startPage ? { startPage: parseInt(startPage) } : {}),
-                ...(endPage ? { endPage: parseInt(endPage) } : {})
-            }).then((res) => {
-                if (!res.success) throw new Error(res.error || "Failed to assign paper to issue");
-                return res;
-            }),
-            {
-                loading: 'Committing manuscript to archive...',
-                success: 'Manuscript committed to archive',
-                error: (err) => err.message
+        startAssign(async () => {
+            try {
+                const res = await assignPaperToIssue(
+                    submissionId,
+                    parseInt(selectedIssueId),
+                    startPage ? parseInt(startPage) : undefined,
+                    endPage ? parseInt(endPage) : undefined
+                );
+                if (res.success) {
+                    toast.success("Manuscript committed to archive");
+                    queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+                    queryClient.invalidateQueries({ queryKey: ['submissions'] });
+                } else {
+                    toast.error(res.error || "Failed to assign paper to issue");
+                }
+            } catch {
+                toast.error("Failed to assign paper to issue");
             }
-        );
+        });
     }
 
     if (loading) return (
@@ -109,7 +105,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
                                         Instantly define a new publication node for immediate manuscript archival.
                                     </DialogDescription>
                                 </DialogHeader>
-                                <form action={handleQuickCreate} className="space-y-5 mt-4">
+                                <form action={createAction} className="space-y-5 mt-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="opacity-40">Volume</Label>
@@ -153,9 +149,9 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
                                         />
                                     </div>
                                     <DialogFooter className="pt-2">
-                                        <Button disabled={isSubmitting} type="submit" className="w-full h-12 bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-600/10 cursor-pointer">
-                                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create'}
-                                        </Button>
+                                         <Button disabled={isCreating} type="submit" className="w-full h-12 bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-600/10 cursor-pointer">
+                                             {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create'}
+                                         </Button>
                                     </DialogFooter>
                                 </form>
                             </DialogContent>
@@ -207,15 +203,15 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
 
             <Button
                 onClick={handleAssign}
-                disabled={assignMutation.isPending || !selectedIssueId}
+                disabled={isAssigning || !selectedIssueId}
                 className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xl shadow-emerald-600/20 cursor-pointer transition-all active:scale-[0.98]"
             >
-                {assignMutation.isPending ? (
+                {isAssigning ? (
                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 ) : (
                     <Globe className="w-4 h-4 mr-2" />
                 )}
-                {assignMutation.isPending ? 'INDEXING...' : 'Commit to Archive'}
+                {isAssigning ? 'INDEXING...' : 'Commit to Archive'}
             </Button>
         </div>
     );

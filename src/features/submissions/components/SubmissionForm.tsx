@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useActionState, useEffect } from "react";
+import { useCallback, useActionState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -57,37 +57,6 @@ export default function SubmissionForm() {
     const [manuscriptFile, setManuscriptFile] = useState<File | null>(null);
     const { data: settings = {} } = useSettings();
 
-    const [state, formAction, isPending] = useActionState(
-        async (_prevState: ActionResponse<{ paperId: string }> | null, data: FormData): Promise<ActionResponse<{ paperId: string }> | null> => {
-            const result = await submitPaper(data);
-            return result;
-        },
-        null
-    );
-
-    const [localState, setLocalState] = useState<ActionResponse<{ paperId: string }> | null>(null);
-
-    useEffect(() => {
-        if (state) {
-            setLocalState(state);
-            if (state.success) {
-                toast.success("Form submitted check you mail", {
-                    className: "bg-linear-to-r from-emerald-500 to-emerald-600 border-none text-white px-6 py-4 rounded-2xl shadow-xl shadow-emerald-500/20",
-                });
-                form.reset();
-                setManuscriptFile(null);
-            } else if (state.error) {
-                toast.error(state.error);
-            }
-        }
-    }, [state]);
-
-    useEffect(() => {
-        if (isPending) {
-            setLocalState(null);
-        }
-    }, [isPending]);
-
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -103,6 +72,27 @@ export default function SubmissionForm() {
             termsAccepted: false,
         },
     });
+
+    const [localState, setLocalState] = useState<ActionResponse<{ paperId: string }> | null>(null);
+
+    const [, formAction, isPending] = useActionState(
+        async (_prevState: ActionResponse<{ paperId: string }> | null, data: FormData): Promise<ActionResponse<{ paperId: string }> | null> => {
+            setLocalState(null);
+            const result = await submitPaper(data);
+            if (result.success) {
+                toast.success("Form submitted check you mail", {
+                    className: "bg-linear-to-r from-emerald-500 to-emerald-600 border-none text-white px-6 py-4 rounded-2xl shadow-xl shadow-emerald-500/20",
+                });
+                form.reset();
+                setManuscriptFile(null);
+            } else if (result.error) {
+                toast.error(result.error);
+            }
+            setLocalState(result);
+            return result;
+        },
+        null
+    );
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,

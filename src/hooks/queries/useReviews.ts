@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getActiveReviews, getUnassignedAcceptedPapers, assignReviewer, submitReview } from '@/actions/reviews';
+import { useQuery } from '@tanstack/react-query';
+import { getActiveReviews, getUnassignedAcceptedPapers } from '@/actions/reviews';
 
 export interface ReviewAssignment {
     id: number;
@@ -46,29 +46,3 @@ export function useUnassignedPapers() {
     });
 }
 
-export function useAssignReviewer() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (formData: FormData) => assignReviewer(formData),
-        onSuccess: (res) => {
-            if (res.success) {
-                queryClient.invalidateQueries({ queryKey: ['reviews'] });
-                queryClient.invalidateQueries({ queryKey: ['unassignedPapers'] });
-            }
-        }
-    });
-}
-
-export function useSubmitReview() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ assignmentId, formData }: { assignmentId: number, formData: FormData }) => submitReview(assignmentId, formData),
-        onSuccess: (res) => {
-            if (res.success) {
-                queryClient.invalidateQueries({ queryKey: ['reviews'] });
-            }
-        }
-    });
-}

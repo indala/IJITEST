@@ -3,7 +3,7 @@
 import { Send, CheckCircle, Loader2 } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useActionState, useState, useEffect } from 'react';
+import { useCallback, useActionState, useState } from 'react';
 import { contactSchema, type ContactFormData } from "@/lib/validations/contact";
 import { submitContactMessage } from '@/actions/messages';
 import { type ActionResponse } from '@/db/types';
@@ -20,23 +20,18 @@ import {
 } from "@/components/ui/form";
 
 export default function ContactForm() {
+    const [success, setSuccess] = useState(false);
+
     const [state, formAction, isPending] = useActionState(
         async (_prevState: ActionResponse | null, data: FormData): Promise<ActionResponse | null> => {
             const result = await submitContactMessage(data);
+            if (result.success) {
+                setSuccess(true);
+            }
             return result;
         },
         null
     );
-
-    const [success, setSuccess] = useState(false);
-
-    useEffect(() => {
-        if (state) {
-            if (state.success) {
-                setSuccess(true);
-            }
-        }
-    }, [state]);
 
     const form = useForm<ContactFormData>({
         resolver: zodResolver(contactSchema),
