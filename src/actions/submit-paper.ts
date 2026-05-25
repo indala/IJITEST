@@ -269,7 +269,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             validated.data.authorName,
             validated.data.title,
             result.paperId,
-            invitationToken ? `${baseUrl}/auth/setup?token=${invitationToken}` : loginUrl
+            invitationToken ? `${baseUrl}/auth/setup-password?token=${invitationToken}` : loginUrl
         );
 
         await sendEmail({

@@ -142,7 +142,6 @@ const mailLayout = (content: string, cta?: { text: string, url: string }) => {
 };
 
 // Helper templates
-// Helper templates
 export const emailTemplates = {
     submissionReceived: (authorName: string, paperTitle: string, paperId: string, setupUrl?: string) => {
         const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
@@ -371,29 +370,6 @@ export const emailTemplates = {
             html: mailLayout(content, {
                 text: 'View Official Publication',
                 url: `${baseUrl}/archives`
-            })
-        };
-    },
-
-    authorInvitation: (authorName: string, paperTitle: string, paperId: string, setupUrl: string) => {
-        const content = `
-            <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
-            <p>Your manuscript has been successfully screened and is now being assigned to our expert reviewer panel.</p>
-            <p>To enable live tracking of your manuscript's progress and manage your publication lifecycle, please secure your official <strong>Author Portal</strong> account:</p>
-            
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 30px; border-radius: 16px; margin: 30px 0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-                <p style="margin: 0; color: #475569; font-size: 14px;">Manuscript: <strong>${paperId}</strong></p>
-                <p style="margin: 10px 0 0 0; color: ${JOURNAL.secondaryColor}; font-size: 15px; font-weight: bold; font-style: italic;">"${paperTitle}"</p>
-            </div>
-
-            <p style="font-size: 12px; color: #94a3b8; font-style: italic;">Note: This invitation link will expire in 7 days for security purposes.</p>
-        `;
-
-        return {
-            subject: `[${JOURNAL.shortName}] Portal Activation for Manuscript ${paperId}`,
-            html: mailLayout(content, {
-                text: 'Secure My Author Portal',
-                url: setupUrl
             })
         };
     },
