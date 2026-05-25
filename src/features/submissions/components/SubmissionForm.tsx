@@ -1,5 +1,5 @@
 'use client'
-import { useCallback } from "react";
+import { useCallback, useActionState, useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -7,7 +7,7 @@ import { useState } from "react";
 import {
     Loader2, Upload, CheckCircle2, FileText, User, Mail,
     ChevronRight, BookOpen, Tag, Plus, Trash2, Phone, Briefcase,
-    School, Users, Shield, Check, Download
+    School, Users, Check, Download
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CardContent } from "@/components/ui/card";
-import { useSubmissionMutation } from "@/hooks/queries/usePublicMutations";
+import { submitPaper } from "@/actions/submit-paper";
+import { type ActionResponse } from "@/db/types";
 import { useSettings } from "@/hooks/queries/useSettings";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
@@ -54,9 +55,38 @@ const formSchema = z.object({
 
 export default function SubmissionForm() {
     const [manuscriptFile, setManuscriptFile] = useState<File | null>(null);
-    const [copyrightFile, setCopyrightFile] = useState<File | null>(null);
-    const submissionMutation = useSubmissionMutation();
     const { data: settings = {} } = useSettings();
+
+    const [state, formAction, isPending] = useActionState(
+        async (_prevState: ActionResponse<{ paperId: string }> | null, data: FormData): Promise<ActionResponse<{ paperId: string }> | null> => {
+            const result = await submitPaper(data);
+            return result;
+        },
+        null
+    );
+
+    const [localState, setLocalState] = useState<ActionResponse<{ paperId: string }> | null>(null);
+
+    useEffect(() => {
+        if (state) {
+            setLocalState(state);
+            if (state.success) {
+                toast.success("Form submitted check you mail", {
+                    className: "bg-linear-to-r from-emerald-500 to-emerald-600 border-none text-white px-6 py-4 rounded-2xl shadow-xl shadow-emerald-500/20",
+                });
+                form.reset();
+                setManuscriptFile(null);
+            } else if (state.error) {
+                toast.error(state.error);
+            }
+        }
+    }, [state]);
+
+    useEffect(() => {
+        if (isPending) {
+            setLocalState(null);
+        }
+    }, [isPending]);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -99,21 +129,9 @@ export default function SubmissionForm() {
         });
         
         formData.append("manuscript", manuscriptFile);
-        if (copyrightFile) {
-            formData.append("copyrightForm", copyrightFile);
-        }
 
-        submissionMutation.mutate(formData, {
-            onSuccess: () => {
-                toast.success("Form submitted check you mail", {
-                    className: "bg-linear-to-r from-emerald-500 to-emerald-600 border-none text-white px-6 py-4 rounded-2xl shadow-xl shadow-emerald-500/20",
-                });
-                form.reset();
-                setManuscriptFile(null);
-                setCopyrightFile(null);
-            }
-        });
-    }, [manuscriptFile, copyrightFile, submissionMutation, form]);
+        formAction(formData);
+    }, [manuscriptFile, formAction]);
 
     const onInvalid = useCallback(() => {
         toast.error("Please fill missing forms", {
@@ -134,20 +152,9 @@ export default function SubmissionForm() {
         setManuscriptFile(file);
     }, []);
 
-    const handleCopyrightChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null;
-        if (file && !file.name.toLowerCase().endsWith('.docx')) {
-            toast.error("Invalid File Type", {
-                description: "The signed copyright agreement must be in .docx format."
-            });
-            e.target.value = '';
-            setCopyrightFile(null);
-            return;
-        }
-        setCopyrightFile(file);
-    }, []);
 
-    if (submissionMutation.isSuccess) {
+
+    if (localState?.success) {
         return (
             <div className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden p-8 text-center space-y-6">
                 <div className="w-16 h-16 bg-[#000066]/5 text-[#000066] rounded-xl flex items-center justify-center border border-[#000066]/10 mx-auto">
@@ -159,10 +166,10 @@ export default function SubmissionForm() {
                         Your paper has been successfully submitted. We have sent a confirmation email to the primary author.
                     </p>
                     <p className="text-xs font-bold text-[#000066] mt-4">
-                        Submission ID: {(submissionMutation.data as { data?: { paperId: string } })?.data?.paperId}
+                        Submission ID: {localState.data?.paperId}
                     </p>
                 </div>
-                <Button onClick={() => submissionMutation.reset()} variant="outline" className="h-10 px-6 rounded-lg border-border/50 text-[#000066] hover:bg-[#000066]/5 font-semibold text-xs transition-all">
+                <Button onClick={() => setLocalState(null)} variant="outline" className="h-10 px-6 rounded-lg border-border/50 text-[#000066] hover:bg-[#000066]/5 font-semibold text-xs transition-all">
                     Submit Another Paper
                 </Button>
             </div>
@@ -499,9 +506,9 @@ export default function SubmissionForm() {
                     )}
                 </div>
 
-                {/* Upload Infrastructure - Dual Uploads */}
+                {/* Upload Infrastructure - Manuscript Upload */}
                 <div className="pt-10 border-t border-border/50">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
                         {/* Manuscript Upload */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between gap-4 ml-1">
@@ -556,61 +563,6 @@ export default function SubmissionForm() {
                                 </label>
                             </div>
                         </div>
-
-                        {/* Copyright Upload */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-4 ml-1">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-[#000066]/5 text-[#000066] flex items-center justify-center border border-[#000066]/10">
-                                        <Shield className="w-5 h-5" />
-                                    </div>
-                                    <FormLabel className="text-[#000066] text-[11px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider m-0">Copyright Agreement (Optional)</FormLabel>
-                                </div>
-                                {settings['copyrightUrl'] && (
-                                    <Button asChild variant="ghost" size="sm" className="h-8 text-[#000066] font-bold text-[9px] uppercase tracking-wider hover:bg-[#000066]/5">
-                                        <a href={settings['copyrightUrl']} download>
-                                            <Download className="w-3 h-3 mr-2" />
-                                            Agreement Form
-                                        </a>
-                                    </Button>
-                                )}
-                            </div>
-                            
-                            <div className="relative">
-                                <input
-                                    type="file"
-                                    onChange={handleCopyrightChange}
-                                    className="hidden"
-                                    id="copyright-upload"
-                                    accept=".docx"
-                                />
-                                <label
-                                    htmlFor="copyright-upload"
-                                    className={`flex flex-col items-center justify-center w-full min-h-[160px] border-2 border-dashed rounded-xl transition-all cursor-pointer shadow-sm relative overflow-hidden ${copyrightFile
-                                        ? 'border-[#000066]/50 bg-[#000066]/5'
-                                        : 'border-border/50 bg-card hover:border-[#000066]/30 hover:bg-[#000066]/5'
-                                        }`}
-                                >
-                                    {copyrightFile ? (
-                                        <div className="text-center px-4">
-                                            <div className="w-12 h-12 bg-[#000066] text-white rounded-lg flex items-center justify-center mx-auto mb-3 shadow-md">
-                                                <Check className="w-6 h-6" />
-                                            </div>
-                                            <p className="text-xs font-semibold text-gray-900 truncate max-w-[200px]">{copyrightFile.name}</p>
-                                            <p className="text-[10px] font-bold text-[#000066]/60 uppercase mt-1">Ready to upload</p>
-                                        </div>
-                                    ) : (
-                                        <div className="text-center">
-                                            <div className="w-12 h-12 bg-muted/20 border border-border/50 rounded-lg flex items-center justify-center mx-auto mb-3">
-                                                <Upload className="w-5 h-5 text-[#000066]/40" />
-                                            </div>
-                                            <p className="text-xs font-semibold text-gray-900">Upload Signed Form</p>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">Optional at submission</p>
-                                        </div>
-                                    )}
-                                </label>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -644,10 +596,10 @@ export default function SubmissionForm() {
 
                     <Button
                         type="submit"
-                        disabled={submissionMutation.isPending}
+                        disabled={isPending}
                         className="w-full h-12 bg-[#000066] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all hover:bg-[#000088] active:scale-[0.99]"
                     >
-                        {submissionMutation.isPending ? (
+                        {isPending ? (
                             <div className="flex items-center gap-3">
                                 <Loader2 className="w-4 h-4 animate-spin" />
                                 Processing Submission...

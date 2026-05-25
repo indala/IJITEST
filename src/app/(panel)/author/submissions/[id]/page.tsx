@@ -1,9 +1,12 @@
 import { getAuthorSubmission, checkResubmissionEligibility } from "@/actions/author-submissions";
 import { notFound } from "next/navigation";
 import { ResubmissionForm } from "../_components/ResubmissionForm";
+import { CopyrightUpload } from "@/features/author/components/CopyrightUpload";
+import { getSettingsData } from "@/actions/settings";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Download, AlertTriangle, MessageSquare } from "lucide-react";
+import { Calendar, Download, AlertTriangle, MessageSquare, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import dayjs from "@/lib/dayjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -13,7 +16,10 @@ import type { SubmissionFile, SubmissionIdParam } from "@/db/types";
 export default async function AuthorSubmissionDetailsPage({ params }: { params: Promise<SubmissionIdParam> }) {
     const resolvedParams = await params;
     const submissionId = parseInt(resolvedParams.id);
-    const subResponse = await getAuthorSubmission(submissionId);
+    const [subResponse, settings] = await Promise.all([
+        getAuthorSubmission(submissionId),
+        getSettingsData()
+    ]);
     if (!subResponse.success || !subResponse.data) return notFound();
     const sub = subResponse.data;
 
@@ -25,6 +31,9 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
     } else {
         eligError = eligResponse.error;
     }
+
+    const copyrightFile = sub.files.find((file: SubmissionFile) => file.fileType === 'copyrightForm');
+    const isAcceptedOrPublished = ['accepted', 'paymentPending', 'published'].includes(sub.status);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -155,13 +164,40 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                         </Card>
                     )}
 
-                    {/* Resubmission Section */}
-                    {eligibility.eligible && (
+                    {/* Resubmission Section / Copyright Upload Section */}
+                    {eligibility.eligible ? (
                         <ResubmissionForm 
                             submissionId={submissionId} 
                             daysRemaining={eligibility.daysRemaining || 15} 
                         />
-                    )}
+                    ) : isAcceptedOrPublished ? (
+                        copyrightFile ? (
+                            <Card className="border-emerald-200 dark:border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-500/5 animate-in fade-in duration-500 rounded-2xl">
+                                <CardContent className="p-6 flex items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                                            <CheckCircle className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-black text-emerald-800">Copyright Agreement Verified</h4>
+                                            <p className="text-xs text-emerald-600/70 font-bold">The signed consent form has been uploaded and validated.</p>
+                                        </div>
+                                    </div>
+                                    <Button asChild size="sm" variant="outline" className="h-9 gap-2 border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/10 rounded-xl font-bold uppercase text-[10px]">
+                                        <a href={getSecureUrl(copyrightFile.fileUrl)} target="_blank" rel="noopener noreferrer">
+                                            <Download className="w-3.5 h-3.5" />
+                                            View Form
+                                        </a>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <CopyrightUpload 
+                                submissionId={submissionId} 
+                                copyrightUrl={settings['copyrightUrl']} 
+                            />
+                        )
+                    ) : null}
 
                     {!eligibility.eligible && sub.status === 'revisionRequested' && (
                         <Alert className="bg-red-50 border-red-100 rounded-2xl">

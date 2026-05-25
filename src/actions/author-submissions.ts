@@ -263,17 +263,14 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         }
 
         const manuscriptFile = formData.get("manuscript") as File;
-        const copyrightFile = formData.get("copyright_form") as File;
         const changelog = formData.get("changelog") as string;
 
         if (!manuscriptFile || manuscriptFile.size === 0) return { success: false, error: "Revised manuscript is required." };
-        if (!copyrightFile || copyrightFile.size === 0) return { success: false, error: "New copyright form is required." };
 
         // Enforce .docx only policy (same as original submission)
         const docxMime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
         const isDocx = (f: File) => f.name.toLowerCase().endsWith(".docx") || f.type === docxMime;
         if (!isDocx(manuscriptFile)) return { success: false, error: "Strict Policy: Only .docx files are accepted for the revised manuscript." };
-        if (!isDocx(copyrightFile)) return { success: false, error: "Strict Policy: The Copyright Form must be a .docx file." };
 
         // 1. DATABASE TRANSACTION (RECORD COMMIT)
         const result = await db.transaction(async (tx) => {
@@ -303,13 +300,10 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             // C. Predictable URLs (DB First)
             const timestamp = Date.now();
             const mName = `revised_manuscript_${submissionId}_v${nextVersion}_${timestamp}.${manuscriptFile.name.split('.').pop()}`;
-            const cName = `revised_copyright_${submissionId}_v${nextVersion}_${timestamp}.${copyrightFile.name.split('.').pop()}`;
             const mUrl = `/api/files/submissions/${mName}`;
-            const cUrl = `/api/files/submissions/${cName}`;
 
             await tx.insert(submissionFiles).values([
-                { versionId: verId, fileType: "mainManuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size },
-                { versionId: verId, fileType: "copyrightForm", fileUrl: cUrl, originalName: copyrightFile.name, fileSize: copyrightFile.size }
+                { versionId: verId, fileType: "mainManuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size }
             ]);
 
             // D. Set status back to 'submitted'
@@ -317,7 +311,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                 .set({ status: 'submitted', updatedAt: new Date() })
                 .where(eq(submissions.id, submissionId));
 
-            return { mName, cName, nextVersion, verId };
+            return { mName, nextVersion, verId };
         });
 
         // 2. FILE SYSTEM OPERATIONS (POST-COMMIT)
@@ -325,9 +319,6 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         try {
             await fs.writeFile(path.join(uploadDir, result.mName), Buffer.from(await manuscriptFile.arrayBuffer()));
             fileCleanup.push(path.join(uploadDir, result.mName));
-
-            await fs.writeFile(path.join(uploadDir, result.cName), Buffer.from(await copyrightFile.arrayBuffer()));
-            fileCleanup.push(path.join(uploadDir, result.cName));
         } catch {
             // IO failed — cleanup disk and rollback DB
             for (const filePath of fileCleanup) {
@@ -355,7 +346,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             })
             .from(submissions)
             .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
-        .innerJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
+            .innerJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
             .where(and(eq(submissions.id, submissionId), eq(submissionVersions.versionNumber, result.nextVersion)))
             .limit(1);
 
@@ -392,9 +383,151 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
 }
 
 /**
- * Simple fetch for a user's own submissions as author.
- * Used by different dashboards (Admin, Editor, Reviewer) to show "My Papers" tab.
+ * Upload the signed copyright form after acceptance.
+ * Enforces .docx format only.
+ * Deletes all previous copyright files uploaded for this submission regardless of version.
  */
+export async function uploadCopyrightFormAfterAcceptance(submissionId: number, formData: FormData): Promise<ActionResponse> {
+    try {
+        const author = await getAuthorSession();
+        if (!author) return actionError("Unauthorized");
+
+        const subQuery = await db.select({
+            id: submissions.id,
+            paperId: submissions.paperId,
+            status: submissions.status,
+            correspondingAuthorId: submissions.correspondingAuthorId
+        })
+        .from(submissions)
+        .where(eq(submissions.id, submissionId))
+        .limit(1);
+
+        if (!subQuery.length) return actionError("Submission not found");
+        const sub = subQuery[0];
+        if (!sub) return actionError("Submission not found");
+        if (sub.correspondingAuthorId !== author.id) return actionError("Unauthorized access to submission");
+
+        const allowedStatuses: string[] = ['accepted', 'paymentPending', 'published'];
+        if (!allowedStatuses.includes(sub.status)) {
+            return actionError(`Manuscript status '${sub.status}' does not allow copyright upload.`);
+        }
+
+        const copyrightFile = formData.get("copyrightForm") as File;
+        if (!copyrightFile || copyrightFile.size === 0) {
+            return actionError("Copyright form file is required.");
+        }
+
+        // Strict Policy: Only .docx format is accepted
+        const docxMime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        const isDocx = copyrightFile.name.toLowerCase().endsWith(".docx") || copyrightFile.type === docxMime;
+        if (!isDocx) {
+            return actionError("Strict Policy: The Copyright Form must be a .docx file.");
+        }
+
+        // Find all previous copyright files associated with this submission across all versions
+        const oldFiles = await db.select({
+            fileId: submissionFiles.id,
+            fileUrl: submissionFiles.fileUrl
+        })
+        .from(submissionFiles)
+        .innerJoin(submissionVersions, eq(submissionFiles.versionId, submissionVersions.id))
+        .where(and(
+            eq(submissionVersions.submissionId, submissionId),
+            eq(submissionFiles.fileType, "copyrightForm")
+        ));
+
+        // Get the latest version to bind the file
+        const versionsArr = await db.select()
+            .from(submissionVersions)
+            .where(eq(submissionVersions.submissionId, submissionId))
+            .orderBy(desc(submissionVersions.versionNumber))
+            .limit(1);
+        
+        if (!versionsArr.length) return actionError("Submission version records not found.");
+        const latestVersion = versionsArr[0];
+        if (!latestVersion) return actionError("Submission version records not found.");
+
+        const timestamp = Date.now();
+        const cName = `copyright_${submissionId}_${timestamp}.docx`;
+        const cUrl = `/api/files/submissions/${cName}`;
+
+        // 1. Database modifications
+        await db.transaction(async (tx) => {
+            if (oldFiles.length > 0) {
+                const oldFileIds = oldFiles.map(f => f.fileId);
+                await tx.delete(submissionFiles).where(inArray(submissionFiles.id, oldFileIds));
+            }
+
+            await tx.insert(submissionFiles).values({
+                versionId: latestVersion.id,
+                fileType: "copyrightForm",
+                fileUrl: cUrl,
+                originalName: copyrightFile.name,
+                fileSize: copyrightFile.size
+            });
+        });
+
+        // 2. File System modifications
+        const uploadDir = path.join(process.cwd(), "storage/submissions");
+        await fs.mkdir(uploadDir, { recursive: true });
+        await fs.writeFile(path.join(uploadDir, cName), Buffer.from(await copyrightFile.arrayBuffer()));
+
+        // Cleanup old files from disk
+        for (const oldFile of oldFiles) {
+            await safeDeleteFile(oldFile.fileUrl);
+        }
+
+        // 3. Asynchronously email the staff (non-blocking)
+        try {
+            const paperInfo = await db.select({
+                paperId: submissions.paperId,
+                title: submissionVersions.title,
+                authorName: userProfiles.fullName
+            })
+            .from(submissions)
+            .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+            .innerJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
+            .where(and(eq(submissions.id, submissionId), eq(submissionVersions.versionNumber, latestVersion.versionNumber)))
+            .limit(1);
+
+            if (paperInfo.length > 0) {
+                const paper = paperInfo[0];
+                if (paper) {
+                    const staff = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
+                    const absolutePath = path.join(uploadDir, cName);
+                    const template = emailTemplates.copyrightSubmitted(
+                        paper.authorName || 'Author',
+                        paper.title || 'Untitled',
+                        paper.paperId,
+                        submissionId
+                    );
+
+                    await Promise.allSettled(staff.map(s => sendEmail({
+                        to: s.email,
+                        subject: template.subject,
+                        html: template.html,
+                        attachments: [{
+                            filename: copyrightFile.name,
+                            path: absolutePath
+                        }]
+                    })));
+                }
+            }
+        } catch (mailErr) {
+            console.error("Copyright upload email dispatch error:", mailErr);
+        }
+
+        revalidatePath('/author');
+        revalidatePath(`/author/submissions/${submissionId}`);
+
+        return actionSuccess(undefined);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("Copyright upload failure:", error);
+        return actionError("Failed to upload copyright transfer form: " + message);
+    }
+}
+
 export async function getMySubmissions() {
     try {
         const session = await getServerSession(authOptions);

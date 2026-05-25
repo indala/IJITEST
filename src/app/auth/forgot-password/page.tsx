@@ -2,29 +2,37 @@
 
 import { requestPasswordReset } from '@/actions/users';
 import { Mail, ArrowRight, ShieldCheck, MailCheck } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useActionState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { type ActionResponse } from '@/db/types';
 
 export default function ForgotPassword() {
-    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [error, setError] = useState('');
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setStatus('loading');
+    const resetAction = async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
         setError('');
-
-        const formData = new FormData(e.currentTarget);
-        const result = await requestPasswordReset(formData);
-
-        if (result.success) {
-            setStatus('success');
-        } else {
-            setError(result.error || "Something went wrong");
-            setStatus('error');
+        try {
+            return await requestPasswordReset(formData);
+        } catch (err) {
+            console.error("Password reset error:", err);
+            return { success: false, error: "Something went wrong" };
         }
-    }
+    };
+
+    const [state, formAction, isPending] = useActionState(resetAction, null);
+
+    useEffect(() => {
+        if (state) {
+            if (state.success) {
+                setStatus('success');
+            } else {
+                setError(state.error || "Something went wrong");
+                setStatus('error');
+            }
+        }
+    }, [state]);
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -70,13 +78,13 @@ export default function ForgotPassword() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                            >
+                             >
                                 {error && (
                                     <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-bold">
                                         {error}
                                     </div>
                                 )}
-                                <form onSubmit={handleSubmit} className="space-y-6">
+                                <form action={formAction} className="space-y-6">
                                     <div>
                                         <label className="block text-[10px] font-black text-slate-700  tracking-widest mb-3 pl-1">Registred Email</label>
                                         <div className="relative">
@@ -85,6 +93,7 @@ export default function ForgotPassword() {
                                                 name="email"
                                                 type="email"
                                                 required
+                                                disabled={isPending}
                                                 className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border border-transparent focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all outline-none text-slate-900 font-bold"
                                                 placeholder="e.g. editor@ijitest.org"
                                             />
@@ -93,10 +102,10 @@ export default function ForgotPassword() {
 
                                     <button
                                         type="submit"
-                                        disabled={status === 'loading'}
-                                        className="w-full bg-primary text-white py-5 rounded-3xl font-black text-xs  tracking-[0.2em] shadow-xl shadow-primary/20 hover:shadow-2xl hover:bg-primary/95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                                        disabled={isPending}
+                                        className="w-full bg-primary text-white py-5 rounded-3xl font-black text-xs  tracking-[0.2em] shadow-xl shadow-primary/20 hover:shadow-2xl hover:bg-primary/95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer"
                                     >
-                                        {status === 'loading' ? 'Processing...' : 'Send Recovery Link'}
+                                        {isPending ? 'Processing...' : 'Send Recovery Link'}
                                         <ArrowRight className="w-5 h-5" />
                                     </button>
 

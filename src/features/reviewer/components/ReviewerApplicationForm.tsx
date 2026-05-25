@@ -1,7 +1,7 @@
 "use client";
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useActionState } from 'react';
 import { X, CheckCircle2, AlertCircle, FileText, ImageIcon, Loader2, ChevronRight, ChevronLeft, Building2, Plus } from 'lucide-react';
 import { checkUserEmail } from '@/actions/users';
 import Link from 'next/link';
@@ -18,7 +18,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toast } from 'sonner';
-import { useReviewerApplicationMutation } from '@/hooks/queries/usePublicMutations';
+import { submitReviewerApplication } from '@/actions/reviewer';
+import { type ActionResponse, type Application } from "@/db/types";
 
 const PREDEFINED_INTERESTS = [
     "AI/ML", "VLSI", "Renewable Energy", "Biomedical Engineering",
@@ -98,22 +99,48 @@ function FileInput({
 }
 
 export default function ReviewerApplicationForm() {
-    const reviewerMutation = useReviewerApplicationMutation();
     const [step, setStep] = useState(1);
     const [direction, setDirection] = useState(0); // 1 for forward, -1 for back
 
 
     // Form State
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        fullName: Application['fullName'];
+        designation: Application['designation'];
+        email: Application['email'];
+        institute: Application['institute'];
+        nationality: Exclude<Application['nationality'], null>;
+        researchInterests: string[];
+        cv: File | null;
+        photo: File | null;
+    }>({
         fullName: '',
         designation: '',
         email: '',
         institute: '',
         nationality: 'India',
-        researchInterests: [] as string[],
-        cv: null as File | null,
-        photo: null as File | null
+        researchInterests: [],
+        cv: null,
+        photo: null
     });
+
+    const [state, formAction, isPending] = useActionState(
+        async (_prevState: ActionResponse | null, data: FormData): Promise<ActionResponse | null> => {
+            const result = await submitReviewerApplication(data);
+            return result;
+        },
+        null
+    );
+
+    useEffect(() => {
+        if (state) {
+            if (state.success) {
+                toast.success("Application submitted successfully!");
+            } else if (state.error) {
+                toast.error(state.error);
+            }
+        }
+    }, [state]);
 
     const [customInterest, setCustomInterest] = useState('');
     const [emailStatus, setEmailStatus] = useState<{ loading: boolean; exists: boolean | null }>({ loading: false, exists: null });
@@ -204,8 +231,8 @@ export default function ReviewerApplicationForm() {
         submissionData.append('photo', formData.photo);
         submissionData.append('researchInterests', JSON.stringify(formData.researchInterests));
 
-        reviewerMutation.mutate(submissionData);
-    }, [formData, reviewerMutation]);
+        formAction(submissionData);
+    }, [formData, formAction]);
 
     const variants = {
         enter: (dir: number) => ({
@@ -224,7 +251,7 @@ export default function ReviewerApplicationForm() {
         })
     };
 
-    if (reviewerMutation.isSuccess) {
+    if (state?.success) {
         return (
             <div className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden p-8 text-center space-y-6">
                 <div className="w-16 h-16 bg-[#000066]/5 text-[#000066] rounded-xl flex items-center justify-center border border-[#000066]/10 mx-auto">
@@ -523,10 +550,10 @@ export default function ReviewerApplicationForm() {
                     ) : (
                         <Button
                             onClick={handleSubmit}
-                            disabled={reviewerMutation.isPending}
+                            disabled={isPending}
                             className="h-10 px-8 bg-[#000066] text-white rounded-lg shadow-md hover:bg-[#000088] font-bold text-[10px] uppercase tracking-wider transition-all"
                         >
-                            {reviewerMutation.isPending ? (
+                            {isPending ? (
                                 <>
                                     <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> Processing...
                                 </>

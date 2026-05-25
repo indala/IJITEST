@@ -22,9 +22,14 @@ interface SendEmailProps {
     subject: string;
     text?: string;
     html?: string;
+    attachments?: Array<{
+        filename: string;
+        path: string;
+        contentType?: string;
+    }>;
 }
 
-export async function sendEmail({ to, subject, text, html }: SendEmailProps) {
+export async function sendEmail({ to, subject, text, html, attachments }: SendEmailProps) {
     try {
         const info = await transporter.sendMail({
             from: `"${process.env["EMAIL_FROM_NAME"] || 'IJITEST Editor'}" <${process.env["EMAIL_FROM"]}>`,
@@ -32,6 +37,7 @@ export async function sendEmail({ to, subject, text, html }: SendEmailProps) {
             subject,
             text,
             html,
+            attachments,
         });
 
         console.log("Message sent: %s", info.messageId);
@@ -638,6 +644,28 @@ export const emailTemplates = {
         return {
             subject: `Application Received | IJITEST ${role.charAt(0).toUpperCase() + role.slice(1)} Board`,
             html: mailLayout(content)
+        };
+    },
+
+    copyrightSubmitted: (authorName: string, paperTitle: string, paperId: string, subId: number) => {
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const content = `
+            <p style="font-size: 16px; margin-bottom: 20px;">Hello Editor,</p>
+            <p>The corresponding author <strong>${authorName}</strong> has submitted the signed copyright transfer agreement for manuscript <strong>${paperId}</strong>.</p>
+            <p>The signed document has been attached to this email and is also available in the administration panel.</p>
+            
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 16px; margin: 30px 0;">
+                <p style="margin: 0; font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold;">Manuscript Details</p>
+                <p style="margin: 10px 0 0 0; font-weight: 800; font-size: 18px; color: ${JOURNAL.primaryColor};">${paperId}</p>
+                <p style="margin: 10px 0 0 0; font-style: italic; color: #475569; font-size: 14px;">"${paperTitle}"</p>
+            </div>
+        `;
+        return {
+            subject: `[${JOURNAL.shortName}] Copyright Transfer Agreement Submitted: ${paperId}`,
+            html: mailLayout(content, {
+                text: 'Review Submission Details',
+                url: `${baseUrl}/admin/submissions/${subId}`
+            })
         };
     }
 };

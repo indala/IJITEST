@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,38 +8,44 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { FileText, Upload, CheckCircle2, AlertCircle, Loader2, Info } from "lucide-react";
+import { Upload, CheckCircle2, AlertCircle, Loader2, Info } from "lucide-react";
 import { resubmitPaper } from "@/actions/author-submissions";
 import { toast } from "sonner";
+import { type ActionResponse, type Submission } from "@/db/types";
 
 interface ResubmissionFormProps {
-    submissionId: number;
+    submissionId: Submission['id'];
     daysRemaining: number;
 }
 
 export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFormProps) {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setLoading(true);
-
-        const formData = new FormData(e.currentTarget);
-        const res = await resubmitPaper(submissionId, formData);
-
-        setLoading(false);
-        if (res.success) {
-            setSuccess(true);
-            toast.success("Manuscript resubmitted successfully!");
-            setTimeout(() => {
-                router.refresh();
-            }, 2000);
-        } else {
-            toast.error(res.error || "Failed to resubmit");
+    const uploadAction = async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
+        try {
+            return await resubmitPaper(submissionId, formData);
+        } catch (err) {
+            console.error("Resubmission error:", err);
+            return { success: false, error: "An unexpected error occurred during submission." };
         }
-    }
+    };
+
+    const [state, formAction, isPending] = useActionState(uploadAction, null);
+
+    useEffect(() => {
+        if (state) {
+            if (state.success) {
+                setSuccess(true);
+                toast.success("Manuscript resubmitted successfully!");
+                setTimeout(() => {
+                    router.refresh();
+                }, 2000);
+            } else {
+                toast.error(state.error || "Failed to resubmit");
+            }
+        }
+    }, [state, router]);
 
     if (success) {
         return (
@@ -72,7 +78,7 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
                 </div>
             </CardHeader>
             <CardContent className="pt-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form action={formAction} className="space-y-6">
                     <div className="space-y-2">
                         <Label htmlFor="changelog" className="text-sm font-bold text-primary/60">Response to Reviewers / Changelog</Label>
                         <Textarea 
@@ -81,31 +87,19 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
                             placeholder="Briefly describe the changes made in this revision..."
                             className="min-h-[120px] rounded-xl border-primary/10 focus:border-secondary transition-all"
                             required
+                            disabled={isPending}
                         />
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <Label htmlFor="manuscript" className="text-sm font-bold text-primary/60">Revised Manuscript (Main File)</Label>
-                            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary/10 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <Upload className="w-8 h-8 text-primary/20 mb-2" />
-                                    <p className="text-xs text-primary/40 font-bold">DOCX, PDF (Max 20MB)</p>
-                                </div>
-                                <Input id="manuscript" name="manuscript" type="file" className="hidden" required />
-                            </label>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="copyright_form" className="text-sm font-bold text-primary/60">Updated Copyright Form</Label>
-                            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary/10 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <FileText className="w-8 h-8 text-primary/20 mb-2" />
-                                    <p className="text-xs text-primary/40 font-bold">PDF Only (Max 5MB)</p>
-                                </div>
-                                <Input id="copyright_form" name="copyright_form" type="file" className="hidden" required />
-                            </label>
-                        </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="manuscript" className="text-sm font-bold text-primary/60">Revised Manuscript (Main File)</Label>
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary/10 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <Upload className="w-8 h-8 text-primary/20 mb-2" />
+                                <p className="text-xs text-primary/40 font-bold">DOCX, PDF (Max 20MB)</p>
+                            </div>
+                            <Input id="manuscript" name="manuscript" type="file" className="hidden" required disabled={isPending} />
+                        </label>
                     </div>
 
                     <Alert className="bg-primary/5 border-primary/10 rounded-2xl">
@@ -118,10 +112,10 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
 
                     <Button 
                         type="submit" 
-                        disabled={loading}
-                        className="w-full h-14 rounded-2xl bg-primary hover:bg-secondary transition-all text-white font-black tracking-widest shadow-xl shadow-primary/20"
+                        disabled={isPending}
+                        className="w-full h-14 rounded-2xl bg-primary hover:bg-secondary transition-all text-white font-black tracking-widest shadow-xl shadow-primary/20 cursor-pointer"
                     >
-                        {loading ? (
+                        {isPending ? (
                             <>
                                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                                 Processing Resubmission...

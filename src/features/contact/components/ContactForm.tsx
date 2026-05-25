@@ -3,9 +3,10 @@
 import { Send, CheckCircle, Loader2 } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback } from 'react';
+import { useCallback, useActionState, useState, useEffect } from 'react';
 import { contactSchema, type ContactFormData } from "@/lib/validations/contact";
-import { useContactMutation } from '@/hooks/queries/usePublicMutations';
+import { submitContactMessage } from '@/actions/messages';
+import { type ActionResponse } from '@/db/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +20,23 @@ import {
 } from "@/components/ui/form";
 
 export default function ContactForm() {
-    const contactMutation = useContactMutation();
+    const [state, formAction, isPending] = useActionState(
+        async (_prevState: ActionResponse | null, data: FormData): Promise<ActionResponse | null> => {
+            const result = await submitContactMessage(data);
+            return result;
+        },
+        null
+    );
+
+    const [success, setSuccess] = useState(false);
+
+    useEffect(() => {
+        if (state) {
+            if (state.success) {
+                setSuccess(true);
+            }
+        }
+    }, [state]);
 
     const form = useForm<ContactFormData>({
         resolver: zodResolver(contactSchema),
@@ -36,10 +53,10 @@ export default function ContactForm() {
         Object.entries(values).forEach(([key, value]) => {
             formData.append(key, value);
         });
-        contactMutation.mutate(formData);
-    }, [contactMutation]);
+        formAction(formData);
+    }, [formAction]);
 
-    if (contactMutation.isSuccess) {
+    if (success) {
         return (
             <div className="flex flex-col items-center justify-center p-6 xl:p-8 2xl:p-10 text-center space-y-4 xl:space-y-6 animate-in fade-in zoom-in duration-500 bg-white rounded-2xl border border-primary/5 shadow-sm">
                 <div className="size-12 xxl:size-16 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center shadow-inner border border-emerald-100">
@@ -52,7 +69,7 @@ export default function ContactForm() {
                 <button 
                   type="button" 
                   onClick={() => {
-                    contactMutation.reset();
+                    setSuccess(false);
                     form.reset();
                   }} 
                   className="rounded-lg border border-primary/10 text-primary hover:bg-primary/5 font-bold lowercase text-[10px] xl:text-xs 2xl:text-sm mt-2 px-4 py-2 xl:px-6 xl:py-3 transition-all"
@@ -129,10 +146,10 @@ export default function ContactForm() {
 
                     <Button
                         type="submit"
-                        disabled={contactMutation.isPending}
+                        disabled={isPending}
                         className="w-full h-11 xl:h-14 2xl:h-16 bg-primary text-white rounded-lg font-bold text-sm xl:text-base 2xl:text-lg shadow-sm hover:bg-primary/95 transition-all lowercase"
                     >
-                        {contactMutation.isPending ? (
+                        {isPending ? (
                             <div className="flex items-center justify-center gap-2">
                                 transmitting <Loader2 className="w-3.5 h-3.5 xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 animate-spin" />
                             </div>
@@ -143,8 +160,10 @@ export default function ContactForm() {
                         )}
                     </Button>
 
-                    {contactMutation.isError && (
-                        <p className="text-rose-500 text-center font-bold text-[10px] xl:text-xs 2xl:text-sm lowercase">failed to transmit. please try again.</p>
+                    {state && !state.success && (
+                        <p className="text-rose-500 text-center font-bold text-[10px] xl:text-xs 2xl:text-sm lowercase">
+                            {state.error || "failed to transmit. please try again."}
+                        </p>
                     )}
                 </form>
             </Form>

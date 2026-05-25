@@ -1,11 +1,11 @@
 "use client";
 
 import { Users, UserPlus, Shield, Mail, Trash2, ShieldCheck, UserCog, CheckCircle, AlertCircle, ShieldAlert } from 'lucide-react';
-import { useUsers, useDeleteUser, useUpdateUserRole } from '@/hooks/queries/useUsers';
+import { useUsers } from '@/hooks/queries/useUsers';
 import { useSession } from 'next-auth/react';
 import React, { useState, useTransition, useCallback, useMemo, useActionState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { createUser } from '@/actions/users';
+import { createUser, updateUserRole, deleteUser } from '@/actions/users';
 import { useQueryClient } from '@tanstack/react-query';
 import { type SafeUserWithProfile, type ActionResponse } from '@/db/types';
 import { runCleanupInactiveAuthors as cleanupAuthors } from '@/actions/author-submissions';
@@ -70,7 +70,7 @@ const PERMISSIONS_TABLE_DATA = [
     { role: 'Reviewer', focus: 'Accuracy', publish: false, staff: false },
 ] as const;
 
-const UserItemCard = React.memo(({ user, currentUserId, onDelete, onUpdateRole }: { user: SafeUserWithProfile, currentUserId: string | null, onDelete: (user: SafeUserWithProfile) => void, onUpdateRole: (userId: string, newRole: "admin" | "editor" | "reviewer" | "author") => void }) => {
+const UserItemCard = React.memo(({ user, currentUserId, isUpdatingRole, onDelete, onUpdateRole }: { user: SafeUserWithProfile, currentUserId: string | null, isUpdatingRole: boolean, onDelete: (user: SafeUserWithProfile) => void, onUpdateRole: (userId: string, newRole: "admin" | "editor" | "reviewer" | "author") => void }) => {
     const isEditingSelf = currentUserId === String(user.id);
 
     return (
@@ -131,8 +131,9 @@ const UserItemCard = React.memo(({ user, currentUserId, onDelete, onUpdateRole }
                                             <select
                                                 title="Select Role"
                                                 defaultValue={user.role}
+                                                disabled={isUpdatingRole}
                                                 onChange={(e) => onUpdateRole(user.id, e.target.value as "admin" | "editor" | "reviewer" | "author")}
-                                                className="w-full h-11 bg-muted/50 border-border/50 rounded-xl px-4 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/10"
+                                                className="w-full h-11 bg-muted/50 border-border/50 rounded-xl px-4 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/10 disabled:opacity-50"
                                             >
                                                 <option value="reviewer">Reviewer</option>
                                                 <option value="editor">Editor</option>
@@ -162,13 +163,12 @@ export default function UserManagement() {
     const { data: session } = useSession();
     const { data: users = [], isLoading: loading } = useUsers();
     const queryClient = useQueryClient();
-    const deleteUserMutation = useDeleteUser();
-    const updateRoleMutation = useUpdateUserRole();
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState<SafeUserWithProfile | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
     const [isCleaning, startCleanup] = useTransition();
+    const [isUpdatingRole, startUpdateRole] = useTransition();
+    const [isDeletingUser, startDeleteUser] = useTransition();
 
     // React 19: useActionState for invitation form
     const [createState, createAction, isCreatingStaff] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
@@ -214,21 +214,22 @@ export default function UserManagement() {
         });
     }, []);
 
-
-
     const handleUpdateRole = useCallback(async (userId: string, role: "admin" | "editor" | "reviewer" | "author") => {
         const toastId = toast.loading('Synchronizing role update...');
-        try {
-            const result = await updateRoleMutation.mutateAsync({ userId, role });
-            if (result.success) {
-                toast.success("Designation updated successfully", { id: toastId });
-            } else {
-                toast.error(result.error || "Execution fault", { id: toastId });
+        startUpdateRole(async () => {
+            try {
+                const result = await updateUserRole(userId, role);
+                if (result.success) {
+                    toast.success("Designation updated successfully", { id: toastId });
+                    queryClient.invalidateQueries({ queryKey: ['users'] });
+                } else {
+                    toast.error(result.error || "Execution fault", { id: toastId });
+                }
+            } catch {
+                toast.error("Internal system error", { id: toastId });
             }
-        } catch {
-            toast.error("Internal system error", { id: toastId });
-        }
-    }, [updateRoleMutation]);
+        });
+    }, [queryClient]);
 
     const handleSetUserToDelete = useCallback((user: SafeUserWithProfile) => {
         setUserToDelete(user);
@@ -236,21 +237,21 @@ export default function UserManagement() {
 
     const handleDeleteConfirm = useCallback(async () => {
         if (!userToDelete) return;
-        setIsDeleting(true);
-        try {
-            const result = await deleteUserMutation.mutateAsync(userToDelete.id);
-            if (result.success) {
-                toast.success("Staff member removed successfully");
-                setUserToDelete(null);
-            } else {
-                toast.error(result.error);
+        startDeleteUser(async () => {
+            try {
+                const result = await deleteUser(userToDelete.id);
+                if (result.success) {
+                    toast.success("Staff member removed successfully");
+                    setUserToDelete(null);
+                    queryClient.invalidateQueries({ queryKey: ['users'] });
+                } else {
+                    toast.error(result.error);
+                }
+            } catch {
+                toast.error("Failed to revoke access");
             }
-        } catch {
-            toast.error("Failed to revoke access");
-        } finally {
-            setIsDeleting(false);
-        }
-    }, [deleteUserMutation, userToDelete]);
+        });
+    }, [userToDelete, queryClient]);
 
     if (loading) return <div className="p-20 text-center font-semibold text-muted-foreground  tracking-widest text-xs animate-pulse ">Scanning Directory...</div>;
 
@@ -330,6 +331,7 @@ export default function UserManagement() {
                         key={user.id}
                         user={user}
                         currentUserId={currentUserId}
+                        isUpdatingRole={isUpdatingRole}
                         onDelete={handleSetUserToDelete}
                         onUpdateRole={handleUpdateRole}
                     />
@@ -361,7 +363,7 @@ export default function UserManagement() {
                         <Button
                             variant="outline"
                             onClick={() => setUserToDelete(null)}
-                            disabled={isDeleting}
+                            disabled={isDeletingUser}
                             className="flex-1 h-10 text-sm font-medium rounded-xl"
                         >
                             Cancel
@@ -369,10 +371,10 @@ export default function UserManagement() {
                         <Button
                             variant="destructive"
                             onClick={handleDeleteConfirm}
-                            disabled={isDeleting}
+                            disabled={isDeletingUser}
                             className="flex-1 h-10 text-sm font-medium rounded-xl"
                         >
-                            {isDeleting ? "Removing..." : "Remove"}
+                            {isDeletingUser ? "Removing..." : "Remove"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

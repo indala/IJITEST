@@ -1,15 +1,16 @@
 'use client'
 
 import { Search, Loader2, CheckCircle2, ShieldAlert, FileText, Calendar, CreditCard, ArrowRight, User } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useActionState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useTrackManuscript } from '@/hooks/queries/usePublic';
 
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { trackManuscript } from '@/actions/track';
+import { type ActionResponse, type TrackedManuscript, type Submission, type User as DBUser } from "@/db/types";
 
 import type { LucideIcon } from 'lucide-react';
  
@@ -54,19 +55,46 @@ function Milestone({ title, date, description, icon: Icon, active, last }: Miles
 export default function TrackClient() {
     const settings = useSettingsStore((state) => state.settings);
     const searchParams = useSearchParams();
-    const [paperIdInput, setPaperIdInput] = useState(searchParams.get('id') || '');
-    const [emailInput, setEmailInput] = useState('');
-    const [searchTriggered, setSearchTriggered] = useState(false);
+    const [paperIdInput, setPaperIdInput] = useState<Submission['paperId']>(searchParams.get('id') || '');
+    const [emailInput, setEmailInput] = useState<DBUser['email']>('');
 
-    // Use the hook with manual activation
-    const { data, isLoading, isError, error, isSuccess } = useTrackManuscript(
-        paperIdInput,
-        emailInput,
-        searchTriggered
+    const [state, formAction, isPending] = useActionState(
+        async (
+            _prevState: ActionResponse<{ manuscript: TrackedManuscript }> | null,
+            formData: FormData
+        ): Promise<ActionResponse<{ manuscript: TrackedManuscript }> | null> => {
+            const paperId = formData.get('paperId') as string;
+            const email = formData.get('email') as string;
+            if (!paperId || !paperId.trim()) {
+                return { success: false, error: "Manuscript ID is required." };
+            }
+            if (!email || !email.trim()) {
+                return { success: false, error: "Email Address is required." };
+            }
+            const result = await trackManuscript(paperId.trim(), email.trim());
+            return result;
+        },
+        null
     );
 
-    const manuscript = data?.success ? data.data?.manuscript : null;
-    const errorMessage = data?.success ? null : (data?.error || (error instanceof Error ? error.message : String(error)));
+    const [localState, setLocalState] = useState<ActionResponse<{ manuscript: TrackedManuscript }> | null>(null);
+
+    useEffect(() => {
+        if (state) {
+            setLocalState(state);
+        }
+    }, [state]);
+
+    useEffect(() => {
+        if (isPending) {
+            setLocalState(null);
+        }
+    }, [isPending]);
+
+    const manuscript = localState?.success ? localState.data?.manuscript : null;
+    const errorMessage = localState?.success ? null : localState?.error;
+    const isSuccess = !!localState?.success;
+    const isError = localState !== null && !localState.success;
 
     const resultsRef = useRef<HTMLDivElement>(null);
     const journalShortName = settings['journalShortName'] || '';
@@ -83,11 +111,6 @@ export default function TrackClient() {
             });
         }
     }, [isSuccess, isError]);
-
-    async function handleTrack(e: React.FormEvent) {
-        e.preventDefault();
-        setSearchTriggered(true);
-    }
 
     const isStepActive = (step: 'submitted' | 'review' | 'decision') => {
         if (!manuscript) return false;
@@ -117,15 +140,16 @@ export default function TrackClient() {
                 </div>
 
                 <div className="p-8 sm:p-12">
-                    <form onSubmit={handleTrack} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <form action={formAction} className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider ml-1">Manuscript ID</label>
                             <div className="relative">
                                 <Input
+                                    name="paperId"
                                     value={paperIdInput}
                                     onChange={(e) => {
                                         setPaperIdInput(e.target.value);
-                                        setSearchTriggered(false);
+                                        setLocalState(null);
                                     }}
                                     required
                                     className="h-12 rounded-xl bg-muted/20 border-border/50 focus-visible:ring-1 focus-visible:ring-primary/20 text-primary px-5 transition-all text-sm"
@@ -141,10 +165,11 @@ export default function TrackClient() {
                             <div className="relative">
                                 <Input
                                     type="email"
+                                    name="email"
                                     value={emailInput}
                                     onChange={(e) => {
                                         setEmailInput(e.target.value);
-                                        setSearchTriggered(false);
+                                        setLocalState(null);
                                     }}
                                     required
                                     className="h-12 rounded-xl bg-muted/20 border-border/50 focus-visible:ring-1 focus-visible:ring-primary/20 text-primary px-5 text-sm transition-all"
@@ -158,10 +183,10 @@ export default function TrackClient() {
                         <div className="md:col-span-2 pt-4">
                             <Button
                                 type="submit"
-                                disabled={isLoading}
+                                disabled={isPending}
                                 className="w-full h-12 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all active:scale-[0.99] cursor-pointer font-bold text-sm tracking-wider uppercase"
                             >
-                                {isLoading ? (
+                                {isPending ? (
                                     <div className="flex items-center gap-3">
                                         Searching <Loader2 className="w-4 h-4 animate-spin" />
                                     </div>
@@ -321,7 +346,7 @@ export default function TrackClient() {
                     </div>
                 )}
 
-                {(isError || (data && 'error' in data)) && (
+                {isError && (
                     <div className="p-12 sm:p-20 bg-card border border-border/50 rounded-xl text-center space-y-8 max-w-2xl mx-auto shadow-sm">
                         <div className="w-16 h-16 bg-destructive/5 rounded-xl flex items-center justify-center mx-auto text-destructive border border-destructive/10">
                             <ShieldAlert className="w-8 h-8" />
@@ -334,7 +359,7 @@ export default function TrackClient() {
                             <p className="text-destructive/60 text-sm italic">&quot;{errorMessage}&quot;</p>
                         </div>
                         <Button
-                            onClick={() => setSearchTriggered(false)}
+                            onClick={() => setLocalState(null)}
                             className="h-12 px-10 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all cursor-pointer active:scale-95 font-bold text-sm tracking-wider uppercase"
                         >
                             Try Again

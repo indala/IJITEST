@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { resubmitPaper } from "@/actions/author-submissions";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,47 +9,53 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Upload, AlertCircle, CheckCircle, FileText, Loader2 } from "lucide-react";
+import { type ActionResponse, type Submission, type Version } from "@/db/types";
 
 interface ResubmitFormProps {
-    submissionId: number;
-    paperId: string;
-    title: string;
+    submissionId: Submission['id'];
+    paperId: Submission['paperId'];
+    title: Version['title'];
     daysRemaining: number;
-    currentStatus: string;
+    currentStatus: Submission['status'];
 }
 
 export function ResubmitForm({ submissionId, paperId, title, daysRemaining, currentStatus }: ResubmitFormProps) {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [manuscript, setManuscript] = useState<File | null>(null);
-    const [copyright, setCopyright] = useState<File | null>(null);
 
     const isUrgent = daysRemaining <= 5;
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
+    const uploadAction = async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
+        if (!manuscript) {
+            setError("Please upload the revised manuscript.");
+            return null;
+        }
+
+        formData.set("manuscript", manuscript);
         setError(null);
 
-        if (!manuscript) return setError("Please upload the revised manuscript.");
-        if (!copyright) return setError("Please upload the copyright form.");
-
-        setLoading(true);
-        const formData = new FormData(e.currentTarget);
-        formData.set("manuscript", manuscript);
-        formData.set("copyright_form", copyright);
-
-        const result = await resubmitPaper(submissionId, formData);
-        setLoading(false);
-
-        if (!result.success) {
-            setError(result.error);
-        } else {
-            setSuccess(true);
-            setTimeout(() => router.push(`/author/submissions/${submissionId}`), 2500);
+        try {
+            return await resubmitPaper(submissionId, formData);
+        } catch (err) {
+            console.error("Resubmission error:", err);
+            return { success: false, error: "An unexpected error occurred during submission." };
         }
-    }
+    };
+
+    const [state, formAction, isPending] = useActionState(uploadAction, null);
+
+    useEffect(() => {
+        if (state) {
+            if (!state.success) {
+                setError(state.error || "Failed to resubmit");
+            } else {
+                setSuccess(true);
+                setTimeout(() => router.push(`/author/submissions/${submissionId}`), 2500);
+            }
+        }
+    }, [state, router, submissionId]);
 
     if (success) {
         return (
@@ -66,7 +72,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form action={formAction} className="space-y-6">
             {/* Urgency Banner */}
             <div className={`flex items-start gap-3 px-4 py-3 rounded-xl text-sm font-medium border ${isUrgent
                 ? 'bg-orange-50 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20 text-orange-700 dark:text-orange-400'
@@ -99,7 +105,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
                 </Label>
                 <div
                     className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${manuscript ? 'border-emerald-400 bg-emerald-50/30 dark:bg-emerald-500/5' : 'border-border hover:border-primary/40 bg-muted/10'}`}
-                    onClick={() => document.getElementById('manuscript-upload')?.click()}
+                    onClick={() => !isPending && document.getElementById('manuscript-upload')?.click()}
                 >
                     <input
                         id="manuscript-upload"
@@ -108,6 +114,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
                         accept=".doc,.docx,.pdf"
                         className="hidden"
                         onChange={(e) => setManuscript(e.target.files?.[0] || null)}
+                        disabled={isPending}
                     />
                     {manuscript ? (
                         <>
@@ -125,39 +132,6 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
                 </div>
             </div>
 
-            {/* Copyright Upload */}
-            <div className="space-y-2">
-                <Label htmlFor="copyright-upload" className="text-xs font-bold uppercase tracking-widest text-foreground/80">
-                    Copyright Form <span className="text-rose-500">*</span>
-                </Label>
-                <div
-                    className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${copyright ? 'border-emerald-400 bg-emerald-50/30 dark:bg-emerald-500/5' : 'border-border hover:border-primary/40 bg-muted/10'}`}
-                    onClick={() => document.getElementById('copyright-upload')?.click()}
-                >
-                    <input
-                        id="copyright-upload"
-                        type="file"
-                        title="Upload signed copyright form"
-                        accept=".pdf"
-                        className="hidden"
-                        onChange={(e) => setCopyright(e.target.files?.[0] || null)}
-                    />
-                    {copyright ? (
-                        <>
-                            <FileText className="w-8 h-8 text-emerald-500 mb-2" />
-                            <p className="text-sm font-bold text-foreground">{copyright.name}</p>
-                            <p className="text-[10px] text-muted-foreground">{(copyright.size / 1024).toFixed(0)} KB</p>
-                        </>
-                    ) : (
-                        <>
-                            <Upload className="w-8 h-8 text-muted-foreground/50 mb-2" />
-                            <p className="text-sm font-bold text-muted-foreground">Click to upload signed copyright form</p>
-                            <p className="text-[10px] text-muted-foreground/70">PDF only</p>
-                        </>
-                    )}
-                </div>
-            </div>
-
             {/* Changelog / Cover Letter */}
             <div className="space-y-2">
                 <Label htmlFor="changelog" className="text-xs font-bold uppercase tracking-widest text-foreground/80">
@@ -168,6 +142,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
                     name="changelog"
                     placeholder="Summarize the changes made in response to reviewer comments..."
                     className="min-h-[140px] text-sm resize-none border-border/60 focus:border-primary/40 rounded-xl"
+                    disabled={isPending}
                 />
             </div>
 
@@ -181,10 +156,10 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
 
             <Button
                 type="submit"
-                disabled={loading}
-                className="w-full h-12 bg-primary text-white dark:text-black hover:bg-primary/90 font-black uppercase tracking-widest text-sm rounded-xl shadow"
+                disabled={isPending}
+                className="w-full h-12 bg-primary text-white dark:text-black hover:bg-primary/90 font-black uppercase tracking-widest text-sm rounded-xl shadow cursor-pointer"
             >
-                {loading ? (
+                {isPending ? (
                     <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Submitting…</span>
                 ) : (
                     <span className="flex items-center gap-2"><Upload className="w-4 h-4" /> Submit Revision</span>
