@@ -10,16 +10,22 @@ import { markPromotionAsSeen } from '@/actions/promotion';
 
 import { useSettingsStore } from '@/store/useSettingsStore';
 
+const PROMOTION_SEEN_KEY = 'hasSeenPromotion';
+const PROMOTION_SNOOZED_KEY = 'promotionSnoozedUntil';
+const SNOOZE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
 export default function PromotionPopup() {
     const settings = useSettingsStore((state) => state.settings);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            const hasSeen = localStorage.getItem('hasSeenPromotion');
+            const hasSeen = localStorage.getItem(PROMOTION_SEEN_KEY);
+            const snoozeUntil = localStorage.getItem(PROMOTION_SNOOZED_KEY);
+            const isSnoozed = snoozeUntil ? Date.now() < Number(snoozeUntil) : false;
             const isPromotionActive = (settings['isPromotionActive'] || '') !== 'false';
 
-            if (!hasSeen && isPromotionActive) {
+            if (!hasSeen && !isSnoozed && isPromotionActive) {
                 setIsVisible(true);
             }
         }, 5000); // 5 seconds delay
@@ -27,11 +33,17 @@ export default function PromotionPopup() {
         return () => clearTimeout(timer);
     }, [settings]);
 
-    const closePopup = async () => {
+    const handlePermanentClose = async () => {
         setIsVisible(false);
-        localStorage.setItem('hasSeenPromotion', 'true');
+        localStorage.setItem(PROMOTION_SEEN_KEY, 'true');
         // Effortlessly sync with DB if session exists (handled by action)
         await markPromotionAsSeen();
+    };
+
+    const handleSnooze = () => {
+        setIsVisible(false);
+        const snoozeUntil = Date.now() + SNOOZE_DURATION_MS;
+        localStorage.setItem(PROMOTION_SNOOZED_KEY, snoozeUntil.toString());
     };
 
     return (
@@ -52,7 +64,7 @@ export default function PromotionPopup() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={closePopup}
+                            onClick={handleSnooze}
                             className="absolute top-6 right-6 p-2 text-primary/40 hover:text-secondary hover:bg-secondary/10 transition-all z-20 rounded-2xl shadow-inner border border-primary/5"
                             aria-label="Close protocol"
                         >
@@ -88,7 +100,7 @@ export default function PromotionPopup() {
                             <div className="flex flex-col  gap-2 sm:gap-3 mt-auto shrink-0">
                                 <Link href="/submit">
                                     <Button
-                                        onClick={closePopup}
+                                        onClick={handlePermanentClose}
                                         className="w-full h-12 sm:h-14 bg-linear-to-r from-primary via-purple/80 from-32% hover:from-60% to-secondary text-white rounded-xl sm:rounded-2xl cursor-pointer shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all group/btn"
                                     >
                                         <span className="flex items-center justify-center gap-2">
@@ -98,7 +110,7 @@ export default function PromotionPopup() {
                                 </Link>
                                 <Button
                                     variant="link"
-                                    onClick={closePopup}
+                                    onClick={handleSnooze}
                                     className="opacity-100 text-black transition-all h-10 hover:text-primary cursor-pointer"
                                 >
                                     Ask me later

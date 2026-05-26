@@ -16,12 +16,12 @@ function LoadingButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full h-11 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full h-11 2xl:h-13 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm 2xl:text-base rounded-lg 2xl:rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
             {pending ? (
-                <>Logging in <Loader2 className="w-4 h-4 animate-spin" /></>
+                <>Logging in <Loader2 className="w-4 h-4 2xl:w-5 2xl:h-5 animate-spin" /></>
             ) : (
-                <>Login <ShieldCheck className="w-4 h-4" /></>
+                <>Login <ShieldCheck className="w-4 h-4 2xl:w-5 2xl:h-5" /></>
             )}
         </Button>
     );
@@ -65,74 +65,74 @@ export default function LoginClient() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <div className="max-w-md w-full">
-                <section className="text-center mb-8">
-                    <div className="bg-[#000066]/5 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 border border-[#000066]/10">
-                        <Lock className="w-8 h-8 text-[#000066]" />
+        <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 2xl:p-8">
+            <div className="max-w-md w-full 2xl:max-w-lg">
+                <section className="text-center mb-8 2xl:mb-12">
+                    <div className="bg-[#000066]/5 w-16 h-16 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl flex items-center justify-center mx-auto mb-4 2xl:mb-6 border border-[#000066]/10">
+                        <Lock className="w-8 h-8 2xl:w-10 2xl:h-10 text-[#000066]" />
                     </div>
-                    <h1 className="text-xl font-semibold text-gray-900 mb-1">Portal Access</h1>
-                    <p className="text-sm text-[#000066] font-medium leading-relaxed">
+                    <h1 className="text-xl font-semibold text-gray-900 mb-1 2xl:text-2xl 2xl:mb-2">Portal Access</h1>
+                    <p className="text-sm text-[#000066] font-medium leading-relaxed 2xl:text-base">
                         International Journal of Innovative Trends in Science, Engineering and Technology
                     </p>
                 </section>
 
-                <div className="bg-card p-8 rounded-xl border border-border/50 shadow-sm overflow-hidden">
+                <div className="bg-card p-8 2xl:p-10 rounded-xl 2xl:rounded-2xl border border-border/50 shadow-sm overflow-hidden">
                     {error && (
                         <div className="mb-6 p-4 bg-destructive/5 border border-destructive/10 text-destructive rounded-lg text-xs font-semibold flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4" />
+                            <ShieldCheck className="w-4 h-4 text-destructive" />
                             {error}
                         </div>
                     )}
-                    <form action={handleSubmit} className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Email Address</label>
-                            <InputGroup className="h-11 rounded-lg border-border/50 bg-muted/20">
-                                <InputGroupAddon align="inline-start" className="pl-3">
-                                    <Mail className="w-4 h-4 text-muted-foreground/60" />
+                    <form action={handleSubmit} className="space-y-6 2xl:space-y-8">
+                        <div className="space-y-2 2xl:space-y-3">
+                            <label className="text-[10px] 2xl:text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">Email Address</label>
+                            <InputGroup className="h-11 2xl:h-13 rounded-lg 2xl:rounded-xl border-border/50 bg-muted/20">
+                                <InputGroupAddon align="inline-start" className="pl-3 2xl:pl-4">
+                                    <Mail className="w-4 h-4 2xl:w-5 2xl:h-5 text-muted-foreground/60" />
                                 </InputGroupAddon>
                                 <InputGroupInput
                                     name="email"
                                     type="email"
                                     required
                                     placeholder="editor@ijitest.org"
-                                    className="text-xs font-medium"
+                                    className="text-xs 2xl:text-sm font-medium"
                                 />
                             </InputGroup>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Password</label>
-                            <InputGroup className="h-11 rounded-lg border-border/50 bg-muted/20">
-                                <InputGroupAddon align="inline-start" className="pl-3">
-                                    <Lock className="w-4 h-4 text-muted-foreground/60" />
+                        <div className="space-y-2 2xl:space-y-3">
+                            <label className="text-[10px] 2xl:text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">Password</label>
+                            <InputGroup className="h-11 2xl:h-13 rounded-lg 2xl:rounded-xl border-border/50 bg-muted/20">
+                                <InputGroupAddon align="inline-start" className="pl-3 2xl:pl-4">
+                                    <Lock className="w-4 h-4 2xl:w-5 2xl:h-5 text-muted-foreground/60" />
                                 </InputGroupAddon>
                                 <InputGroupInput
                                     name="password"
                                     type={showPassword ? "text" : "password"}
                                     required
                                     placeholder="••••••••"
-                                    className="text-xs font-medium"
+                                    className="text-xs 2xl:text-sm font-medium"
                                 />
-                                <InputGroupAddon align="inline-end" className="pr-1">
+                                <InputGroupAddon align="inline-end" className="pr-1 2xl:pr-2">
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         size="icon"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="h-8 w-8 text-muted-foreground/60 hover:text-[#000066] transition-colors hover:bg-transparent"
+                                        className="h-8 w-8 2xl:h-10 2xl:w-10 text-muted-foreground/60 hover:text-[#000066] transition-colors hover:bg-transparent"
                                     >
-                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        {showPassword ? <EyeOff className="w-4 h-4 2xl:w-5 2xl:h-5" /> : <Eye className="w-4 h-4 2xl:w-5 2xl:h-5" />}
                                     </Button>
                                 </InputGroupAddon>
                             </InputGroup>
                         </div>
 
-                        <div className="flex items-center justify-between pt-2">
+                        <div className="flex items-center justify-between pt-2 2xl:pt-3">
                             <label className="flex items-center gap-2 cursor-pointer group">
-                                <span className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">Remember session</span>
+                                <span className="text-[10px] 2xl:text-xs font-bold text-muted-foreground tracking-widest uppercase">Remember session</span>
                             </label>
-                            <Link href="/auth/forgot-password" title="Forgot Password" className="text-[10px] font-bold text-[#000066] hover:text-[#000088] tracking-widest uppercase transition-colors">
+                            <Link href="/auth/forgot-password" title="Forgot Password" className="text-[10px] 2xl:text-xs font-bold text-[#000066] hover:text-[#000088] tracking-widest uppercase transition-colors">
                                 Forgot Password?
                             </Link>
                         </div>
@@ -141,7 +141,7 @@ export default function LoginClient() {
                     </form>
                 </div>
 
-                <span className="text-center mt-8 text-[10px] text-muted-foreground font-semibold tracking-widest uppercase opacity-40 block">
+                <span className="text-center mt-8 2xl:mt-12 text-[10px] 2xl:text-xs text-muted-foreground font-semibold tracking-widest uppercase opacity-40 block">
                     Authorized Access Only
                 </span>
             </div>
