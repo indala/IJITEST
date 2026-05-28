@@ -24,7 +24,8 @@ interface SendEmailProps {
     html?: string;
     attachments?: Array<{
         filename: string;
-        path: string;
+        path?: string;
+        content?: string | Buffer;
         contentType?: string;
     }>;
 }

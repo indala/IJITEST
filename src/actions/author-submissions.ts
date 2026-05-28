@@ -19,8 +19,6 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import fs from "fs/promises";
-import path from "path";
 import { 
     type ActionResponse, 
     type AuthorDashboardSubmission, 
@@ -28,7 +26,7 @@ import {
     actionSuccess,
     actionError
 } from "@/db/types";
-import { safeDeleteFile } from "@/lib/fs-utils";
+import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 
 /**
  * Utility to get the current authenticated author.
@@ -315,14 +313,16 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         });
 
         // 2. FILE SYSTEM OPERATIONS (POST-COMMIT)
-        const uploadDir = path.join(process.cwd(), "storage/submissions");
+        const relativeManuscriptPath = `submissions/${result.mName}`;
         try {
-            await fs.writeFile(path.join(uploadDir, result.mName), Buffer.from(await manuscriptFile.arrayBuffer()));
-            fileCleanup.push(path.join(uploadDir, result.mName));
-        } catch {
-            // IO failed — cleanup disk and rollback DB
+            const manuscriptBuffer = Buffer.from(await manuscriptFile.arrayBuffer());
+            await uploadFileToStorage(relativeManuscriptPath, manuscriptBuffer, manuscriptFile.name);
+            fileCleanup.push(relativeManuscriptPath);
+        } catch (uploadError) {
+            console.error("Upload revised paper failed:", uploadError);
+            // IO failed — cleanup disk on storage service and rollback DB
             for (const filePath of fileCleanup) {
-                try { await fs.unlink(filePath); } catch { /* ignore */ }
+                try { await safeDeleteFile(filePath); } catch { /* ignore */ }
             }
 
             await db.transaction(async (tx) => {
@@ -467,12 +467,11 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
             });
         });
 
-        // 2. File System modifications
-        const uploadDir = path.join(process.cwd(), "storage/submissions");
-        await fs.mkdir(uploadDir, { recursive: true });
-        await fs.writeFile(path.join(uploadDir, cName), Buffer.from(await copyrightFile.arrayBuffer()));
+        // 2. File System modifications (Proxy to storage service)
+        const relativeCopyrightPath = `submissions/${cName}`;
+        await uploadFileToStorage(relativeCopyrightPath, Buffer.from(await copyrightFile.arrayBuffer()), copyrightFile.name);
 
-        // Cleanup old files from disk
+        // Cleanup old files from disk on storage service
         for (const oldFile of oldFiles) {
             await safeDeleteFile(oldFile.fileUrl);
         }
@@ -494,7 +493,6 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
                 const paper = paperInfo[0];
                 if (paper) {
                     const staff = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
-                    const absolutePath = path.join(uploadDir, cName);
                     const template = emailTemplates.copyrightSubmitted(
                         paper.authorName || 'Author',
                         paper.title || 'Untitled',
@@ -502,13 +500,15 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
                         submissionId
                     );
 
+                    const copyrightBuffer = Buffer.from(await copyrightFile.arrayBuffer());
+
                     await Promise.allSettled(staff.map((s) => sendEmail({
                         to: s.email,
                         subject: template.subject,
                         html: template.html,
                         attachments: [{
                             filename: copyrightFile.name,
-                            path: absolutePath
+                            content: copyrightBuffer
                         }]
                     })));
                 }

@@ -9,10 +9,8 @@ import {
 } from "@/db/schema";
 import { type ActionResponse, actionSuccess, actionError } from "@/db/types";
 import { insertApplicationSchema } from "@/db/validation";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { emailTemplates, sendEmail } from "@/lib/mail";
-import { safeDeleteFile } from "@/lib/fs-utils";
+import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import { eq } from "drizzle-orm";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -54,16 +52,15 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
     let photoUrl: string | null = null;
 
     try {
-        // Save files to private storage
-        const uploadsDir = path.join(process.cwd(), "storage", "reviewer-apps");
-        await mkdir(uploadsDir, { recursive: true });
-
         const timestamp = Date.now();
         const cvName = `${timestamp}-cv-${cv.name.replace(/\s/g, '-')}`;
         const photoName = `${timestamp}-photo-${photo.name.replace(/\s/g, '-')}`;
 
-        await writeFile(path.join(uploadsDir, cvName), Buffer.from(await cv.arrayBuffer()));
-        await writeFile(path.join(uploadsDir, photoName), Buffer.from(await photo.arrayBuffer()));
+        const relativeCvPath = `reviewer-apps/${cvName}`;
+        const relativePhotoPath = `reviewer-apps/${photoName}`;
+
+        await uploadFileToStorage(relativeCvPath, Buffer.from(await cv.arrayBuffer()), cv.name);
+        await uploadFileToStorage(relativePhotoPath, Buffer.from(await photo.arrayBuffer()), photo.name);
 
         cvUrl = `/api/files/reviewer-apps/${cvName}`;
         photoUrl = `/api/files/reviewer-apps/${photoName}`;

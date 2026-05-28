@@ -10,8 +10,10 @@ import {
 } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import fs from 'fs/promises';
-import { getStoragePath, getPublicUploadsPath } from '@/lib/fs-utils';
+import { getPublicUploadsPath, downloadFileFromStorage } from '@/lib/fs-utils';
 import path from 'path';
+
+
 
 /**
  * Secure file serving route.
@@ -26,8 +28,8 @@ export async function GET(
     const filename = pathSegments.slice(1).join('/');
     const relativePath = `${category}/${filename}`;
 
-    // 0. Published files are public to all
-    if (category === 'published') {
+    // 0. Published, docs, and profile files are public to all
+    if (category && ['published', 'docs', 'profiles'].includes(category)) {
         return serveFile(relativePath);
     }
 
@@ -69,11 +71,9 @@ export async function GET(
 
 async function serveFile(relativePath: string) {
     try {
-        const absolutePath = getStoragePath(relativePath);
-        await fs.access(absolutePath);
-        const fileBuffer = await fs.readFile(absolutePath);
+        const fileBuffer = await downloadFileFromStorage(relativePath);
         
-        const ext = path.extname(absolutePath).toLowerCase();
+        const ext = path.extname(relativePath).toLowerCase();
         const mimeTypes: Record<string, string> = {
             '.pdf': 'application/pdf',
             '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -82,10 +82,10 @@ async function serveFile(relativePath: string) {
             '.jpeg': 'image/jpeg',
         };
 
-        return new NextResponse(fileBuffer, {
+        return new NextResponse(new Uint8Array(fileBuffer), {
             headers: {
                 'Content-Type': mimeTypes[ext] || 'application/octet-stream',
-                'Content-Disposition': `inline; filename="${path.basename(absolutePath)}"`,
+                'Content-Disposition': `inline; filename="${path.basename(relativePath)}"`,
             },
         });
     } catch { // Fallback to legacy public path for migration period

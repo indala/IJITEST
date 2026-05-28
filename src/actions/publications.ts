@@ -18,8 +18,7 @@ import { eq, and, sql, desc, count } from "drizzle-orm";
 import { revalidatePath, unstable_cache } from "next/cache";
 import { getSettingsData } from "./settings";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import fs from "fs/promises";
-import { resolveAbsolutePath } from "@/lib/fs-utils";
+import { downloadFileFromStorage } from "@/lib/fs-utils";
 import { brandPdf } from "@/lib/pdf-branding";
 import { getSubmissionById } from "./submissions";
 import { getServerSession } from "next-auth/next";
@@ -172,9 +171,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
             const startNum = finalStartPage as number;
             if (finalEndPage === undefined) {
                 try {
-                    const cleanPath = latestPdf.fileUrl.replace(/^\/+/, '');
-                    const pdfPath = resolveAbsolutePath(cleanPath);
-                    const pdfBytes = await fs.readFile(pdfPath);
+                    const pdfBytes = await downloadFileFromStorage(latestPdf.fileUrl);
                     const { PDFDocument } = await import('pdf-lib');
                     const pdfDoc = await PDFDocument.load(pdfBytes);
                     finalEndPage = startNum + pdfDoc.getPageCount() - 1;
@@ -189,8 +186,8 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
 
         // 5. Generate Branded PDF OUTSIDE transaction (IO operation)
         const brandedFileName = `${submission.paperId}-published.pdf`;
-        const brandedRelativePath = `/uploads/published/${brandedFileName}`;
-        const cleanInput = latestPdf.fileUrl.replace(/^\/+/, '');
+        const brandedRelativePath = `/api/files/published/${brandedFileName}`;
+        const cleanInput = latestPdf.fileUrl;
 
         await brandPdf(cleanInput, brandedRelativePath, {
             journalName: settings['journalName'] || "IJITEST",

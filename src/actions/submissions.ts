@@ -25,12 +25,14 @@ import {
 } from "@/db/types";
 import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import fs from 'fs/promises';
-import path from 'path';
 import { eq, desc, and, isNull, inArray, or, like, sql, SQL } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { resolveAbsolutePath, safeDeleteFile } from "@/lib/fs-utils";
+import { 
+    safeDeleteFile, 
+    uploadFileToStorage, 
+    triggerDocxToPdfConversion 
+} from "@/lib/fs-utils";
 
 /**
  * Fetch a unified submission object with all related data joined.
@@ -490,9 +492,18 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
         const timestamp = Date.now();
         const fileName = `final_manuscript_${submissionId}_v${latestVersion.versionNumber}_${timestamp}.pdf`;
         const fileUrl = `/api/files/submissions/${fileName}`;
-        const uploadDir = path.join(process.cwd(), "storage/submissions");
 
-        // 3. Database Update (Insert File Record)
+        // 3. File System Operation (Proxy to storage service)
+        const relativePdfPath = `submissions/${fileName}`;
+        try {
+            const pdfBuffer = Buffer.from(await pdfFile.arrayBuffer());
+            await uploadFileToStorage(relativePdfPath, pdfBuffer, pdfFile.name);
+        } catch (uploadError) {
+            console.error("Upload PDF to storage service failed:", uploadError);
+            return { success: false, error: "Failed to save file on the storage server." };
+        }
+
+        // 4. Database Update (Insert File Record)
         await db.transaction(async (tx) => {
             // Check if a PDF version already exists for this version
             const existing = await tx.select().from(submissionFiles).where(and(
@@ -518,10 +529,6 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
             await tx.update(submissions).set({ updatedAt: new Date() }).where(eq(submissions.id, submissionId));
         });
 
-        // 4. File System Operation
-        await fs.mkdir(uploadDir, { recursive: true });
-        await fs.writeFile(path.join(uploadDir, fileName), Buffer.from(await pdfFile.arrayBuffer()));
-
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');
 
@@ -535,8 +542,6 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
 /**
  * Automated DOCX to PDF Conversion using iLovePDF
  */
-import { convertDocxToPdf } from "@/lib/ilovepdf";
-
 export async function autoSyncManuscriptToPdf(submissionId: number): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
@@ -566,23 +571,14 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
         const docxFile = fileRows[0];
         if (!docxFile) return { success: false, error: "No DOCX manuscript found for conversion." };
 
-        // 2. Read DOCX from disk
-        const docxPath = resolveAbsolutePath(docxFile.fileUrl);
-        const docxBuffer = await fs.readFile(docxPath);
-
-        // 3. Convert to PDF
-        const pdfBuffer = await convertDocxToPdf(docxBuffer, docxFile.originalName || "manuscript.docx");
-
-        // 4. Save PDF to disk
         const timestamp = Date.now();
         const fileName = `auto_final_v${latestVersion.versionNumber}_${timestamp}.pdf`;
         const fileUrl = `/api/files/submissions/${fileName}`;
-        const uploadDir = path.join(process.cwd(), "storage/submissions");
 
-        await fs.mkdir(uploadDir, { recursive: true });
-        await fs.writeFile(path.join(uploadDir, fileName), pdfBuffer);
+        // 2. Trigger conversion on storage service
+        const fileSize = await triggerDocxToPdfConversion(docxFile.fileUrl, fileUrl);
 
-        // 5. Update Database
+        // 3. Update Database
         await db.transaction(async (tx) => {
             // Remove existing PDF version if it exists
             await tx.delete(submissionFiles).where(and(
@@ -595,7 +591,7 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
                 fileType: 'pdfVersion',
                 fileUrl: fileUrl,
                 originalName: fileName,
-                fileSize: pdfBuffer.length
+                fileSize: fileSize
             });
 
             await tx.update(submissions).set({ updatedAt: new Date() }).where(eq(submissions.id, submissionId));

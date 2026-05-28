@@ -3,7 +3,7 @@ import type { PDFPage, PDFFont, Color } from 'pdf-lib';
 import fontkit from "@pdf-lib/fontkit";
 import fs from 'fs/promises';
 import path from 'path';
-import { resolveAbsolutePath } from './fs-utils';
+import { downloadFileFromStorage, uploadFileToStorage } from './fs-utils';
 
 interface BrandingMetadata {
     journalName: string;
@@ -83,11 +83,8 @@ function widthOfTextWithSpacing(text: string, size: number, font: PDFFont, spaci
 
 export async function brandPdf(inputPath: string, outputPath: string, metadata: BrandingMetadata) {
     try {
-        const cleanOut = outputPath.replace(/^\/+/, '');
-
-        // 1. Read the existing PDF
-        const fullInputPath = resolveAbsolutePath(inputPath);
-        const pdfBytes = await fs.readFile(fullInputPath);
+        // 1. Read the existing PDF from storage service
+        const pdfBytes = await downloadFileFromStorage(inputPath);
         const pdfDoc = await PDFDocument.load(pdfBytes);
         pdfDoc.registerFontkit(fontkit);
         const pages = pdfDoc.getPages();
@@ -95,7 +92,7 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
         // 2. Embed fonts
         const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-        // 3. Load and embed Logo & Footer
+        // 3. Load and embed Logo & Footer (from local static public directory)
         const logoPath = path.join(process.cwd(), 'public/logo.png');
         const logoBytes = await fs.readFile(logoPath);
         const logoImage = await pdfDoc.embedPng(logoBytes);
@@ -224,11 +221,10 @@ export async function brandPdf(inputPath: string, outputPath: string, metadata: 
             });
         }
 
-        // 5. Save the branded PDF
+        // 5. Save the branded PDF and upload to storage service
         const brandedBytes = await pdfDoc.save();
-        const fullOutputPath = path.join(process.cwd(), 'public', cleanOut);
-        await fs.mkdir(path.dirname(fullOutputPath), { recursive: true });
-        await fs.writeFile(fullOutputPath, brandedBytes);
+        const brandedBuffer = Buffer.from(brandedBytes);
+        await uploadFileToStorage(outputPath, brandedBuffer, path.basename(outputPath));
 
         return { success: true, path: outputPath };
     } catch (error) {

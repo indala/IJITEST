@@ -14,9 +14,7 @@ import {
 } from "@/db/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { writeFile, mkdir } from "fs/promises";
-import { safeDeleteFile } from "@/lib/fs-utils";
-import path from "path";
+import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { type ActionResponse, actionSuccess, actionError, type ProfileData } from "@/db/types";
@@ -280,13 +278,10 @@ export async function updateProfilePhoto(userId: string, formData: FormData): Pr
     }
 
     try {
-        const uploadsDir = path.join(process.cwd(), "public", "uploads", "profiles");
-        await mkdir(uploadsDir, { recursive: true });
-
         const ext = file.name.split('.').pop();
         const fileName = `${userId}-${Date.now()}.${ext}`;
-        const filePath = path.join(uploadsDir, fileName);
-        const photoUrl = `/uploads/profiles/${fileName}`;
+        const relativePhotoPath = `profiles/${fileName}`;
+        const photoUrl = `/api/files/profiles/${fileName}`;
 
         // Get old photo to delete later
         const rows = await db.select({ photoUrl: userProfiles.photoUrl })
@@ -296,7 +291,8 @@ export async function updateProfilePhoto(userId: string, formData: FormData): Pr
 
         const oldPhoto = rows[0]?.photoUrl;
 
-        await writeFile(filePath, Buffer.from(await file.arrayBuffer()));
+        const photoBuffer = Buffer.from(await file.arrayBuffer());
+        await uploadFileToStorage(relativePhotoPath, photoBuffer, file.name);
 
         await db.update(userProfiles)
             .set({ photoUrl: photoUrl })

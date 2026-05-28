@@ -3,10 +3,8 @@
 import { db } from "@/lib/db";
 import { sql, eq, and, desc, inArray, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import fs from "fs/promises";
-import path from "path";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import {
+import { 
     reviewAssignments,
     reviews,
     submissions,
@@ -19,9 +17,12 @@ import {
 } from "@/db/schema";
 
 import crypto from "crypto";
-import { convertDocxToPdf } from "@/lib/ilovepdf";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { 
+    uploadFileToStorage, 
+    triggerDocxToPdfConversion 
+} from "@/lib/fs-utils";
 
 import { type ActionResponse, type ActiveReview, type UnassignedPaper } from "@/db/types";
 
@@ -107,15 +108,16 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
             if (pdfFile && pdfFile.size > 0) {
                 const bytes = await pdfFile.arrayBuffer();
                 const fileName = `reviewer_copy_${submissionId}_${Date.now()}.pdf`;
-                const uploadPath = path.join(process.cwd(), "storage/submissions", fileName);
-                await fs.writeFile(uploadPath, Buffer.from(bytes));
-                pdfUrl = `/api/files/submissions/${fileName}`;
+                const relativePdfPath = `submissions/${fileName}`;
+                await uploadFileToStorage(relativePdfPath, Buffer.from(bytes), pdfFile.name);
+                pdfUrl = `/api/files/${relativePdfPath}`;
 
                 await tx.insert(submissionFiles).values({
                     versionId: version.id,
                     fileType: 'pdfVersion',
                     fileUrl: pdfUrl,
-                    originalName: 'reviewer_manuscript.pdf'
+                    originalName: 'reviewer_manuscript.pdf',
+                    fileSize: pdfFile.size
                 });
             } else if (existingPdfs.length > 0) {
                 const existingPdf = existingPdfs[0];
@@ -139,24 +141,21 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 if (manuscript.fileUrl.toLowerCase().endsWith('.pdf')) {
                     pdfUrl = manuscript.fileUrl;
                 } else {
-                    // Convert DOCX to PDF using iLovePDF
+                    // Convert DOCX to PDF using iLovePDF via storage service
                     try {
-                        const mPath = path.join(process.cwd(), "public", manuscript.fileUrl);
-                        const mBuffer = await fs.readFile(mPath);
-                        const pdfBuffer = await convertDocxToPdf(mBuffer, manuscript.originalName || "paper.docx");
-
                         const fileName = `converted_${submissionId}_${Date.now()}.pdf`;
-                        const uploadPath = path.join(process.cwd(), "storage/submissions", fileName);
-                        await fs.writeFile(uploadPath, pdfBuffer);
                         pdfUrl = `/api/files/submissions/${fileName}`;
+                        const fileSize = await triggerDocxToPdfConversion(manuscript.fileUrl, pdfUrl);
 
                         await tx.insert(submissionFiles).values({
                             versionId: version.id,
                             fileType: 'pdfVersion',
                             fileUrl: pdfUrl,
-                            originalName: 'system_converted_pdf.pdf'
+                            originalName: 'system_converted_pdf.pdf',
+                            fileSize: fileSize
                         });
-                    } catch {
+                    } catch (err: unknown) {
+                        console.error("docx to pdf conversion error:", err);
                         return { success: false, error: "PDF Conversion failed. Please upload a PDF manually." };
                     }
                 }
@@ -270,11 +269,9 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
             const bytes = await feedbackFile.arrayBuffer();
             const buffer = Buffer.from(bytes);
             const fileName = `feedback_${Date.now()}_${feedbackFile.name.replaceAll(' ', '_')}`;
-            const uploadDir = path.join(process.cwd(), "storage", "submissions");
-            await fs.mkdir(uploadDir, { recursive: true });
-            const filePath = path.join(uploadDir, fileName);
-            await fs.writeFile(filePath, buffer);
-            fileUrl = `/api/files/submissions/${fileName}`;
+            const relativeFeedbackPath = `submissions/${fileName}`;
+            await uploadFileToStorage(relativeFeedbackPath, buffer, feedbackFile.name);
+            fileUrl = `/api/files/${relativeFeedbackPath}`;
         }
 
         const result = await db.transaction(async (tx) => {

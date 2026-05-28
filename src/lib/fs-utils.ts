@@ -16,26 +16,14 @@ function resolvePathWithinBase(baseDir: string, inputPath: string): string {
     return resolvedTarget;
 }
 
-/**
- * Gets the absolute path for a file in the private storage directory.
- * @param relativePath The path relative to the storage folder (e.g., "submissions/file.pdf")
- */
-export function getStoragePath(relativePath: string) {
+export function getStoragePath(relativePath: string): string {
     return resolvePathWithinBase(path.join(process.cwd(), "storage"), relativePath);
 }
 
-/**
- * Gets the absolute path for a file in the legacy public uploads directory.
- * @param relativePath The path relative to the uploads folder (e.g., "published/file.pdf")
- */
-export function getPublicUploadsPath(relativePath: string) {
+export function getPublicUploadsPath(relativePath: string): string {
     return resolvePathWithinBase(path.join(process.cwd(), "public", "uploads"), relativePath);
 }
 
-/**
- * Resolves a file URL or relative path to its absolute location on disk.
- * Handles /api/files/, /uploads/, and raw paths.
- */
 export function resolveAbsolutePath(filePath: string): string {
     const cleanPath = filePath.replace(/^\/+/, '');
     
@@ -49,33 +37,151 @@ export function resolveAbsolutePath(filePath: string): string {
         return getPublicUploadsPath(pathWithoutPrefix);
     }
 
-    // Default to storage for other raw paths, but check public as fallback if needed
     return getStoragePath(cleanPath);
 }
 
 /**
- * Safely deletes a file from the storage or public directory.
- * @param relativePath The path relative to the root (starts with /uploads/ or /submissions/)
+ * Extracts a clean relative storage path from a file URL or path.
  */
-export async function safeDeleteFile(relativePath: string | null | undefined) {
-    if (!relativePath) return;
+export function getRelativePath(filePath: string): string {
+    const cleanPath = filePath.replace(/^\/+/, '');
+    if (cleanPath.startsWith('api/files/')) {
+        return cleanPath.replace('api/files/', '');
+    }
+    if (cleanPath.startsWith('uploads/')) {
+        return cleanPath.replace('uploads/', '');
+    }
+    return cleanPath;
+}
+
+/**
+ * Proxies file deletion to the NestJS helper storage service.
+ */
+export async function safeDeleteFile(fileUrl: string | null | undefined): Promise<void> {
+    if (!fileUrl) return;
 
     try {
-        const absolutePath = resolveAbsolutePath(relativePath);
+        const serviceUrl = process.env['STORAGE_SERVICE_URL'];
+        const secret = process.env['STORAGE_SERVICE_SECRET'];
+        if (!serviceUrl || !secret) {
+            console.warn("Storage service not configured. Falling back to local filesystem deletion.");
+            const absolutePath = resolveAbsolutePath(fileUrl);
+            try {
+                await fs.access(absolutePath);
+                await fs.unlink(absolutePath);
+            } catch { /* ignore */ }
+            return;
+        }
 
-        // Check if file exists before trying to delete
-        try {
-            await fs.access(absolutePath);
-            await fs.unlink(absolutePath);
-            console.log(`Successfully deleted file: ${absolutePath}`);
-        } catch (accessError) {
-            if (accessError instanceof Error && 'code' in accessError && accessError.code === 'ENOENT') {
-                // File already doesn't exist, which is fine
-                return;
+        const relativePath = getRelativePath(fileUrl);
+        const response = await fetch(`${serviceUrl}/storage/delete?path=${encodeURIComponent(relativePath)}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${secret}`
             }
-            throw accessError;
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            console.error(`Failed to delete file from storage service: ${errText}`);
         }
     } catch (error) {
-        console.error(`Error deleting file ${relativePath}:`, error);
+        console.error(`Error deleting file ${fileUrl}:`, error);
     }
 }
+
+/**
+ * Uploads a file stream/buffer to the NestJS storage service.
+ */
+export async function uploadFileToStorage(relativePath: string, file: File | Buffer, originalName?: string): Promise<void> {
+    const cleanRelativePath = getRelativePath(relativePath);
+    const serviceUrl = process.env['STORAGE_SERVICE_URL'];
+    const secret = process.env['STORAGE_SERVICE_SECRET'];
+    if (!serviceUrl || !secret) {
+        throw new Error("Storage service is not configured.");
+    }
+
+    const formData = new FormData();
+    if (file instanceof Buffer) {
+        const uint8Array = new Uint8Array(
+            file.buffer as ArrayBuffer,
+            file.byteOffset,
+            file.byteLength
+        );
+        const blob = new Blob([uint8Array]);
+        formData.append('file', blob, originalName || path.basename(relativePath));
+    } else {
+        formData.append('file', file as Blob);
+    }
+
+    const response = await fetch(`${serviceUrl}/storage/upload?path=${encodeURIComponent(cleanRelativePath)}`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${secret}`
+        },
+        body: formData
+    });
+
+    if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Storage service upload failed: ${errText}`);
+    }
+}
+
+/**
+ * Downloads a file buffer from the NestJS storage service.
+ */
+export async function downloadFileFromStorage(fileUrl: string): Promise<Buffer> {
+    const serviceUrl = process.env['STORAGE_SERVICE_URL'];
+    const secret = process.env['STORAGE_SERVICE_SECRET'];
+    if (!serviceUrl || !secret) {
+        throw new Error("Storage service is not configured.");
+    }
+
+    const relPath = getRelativePath(fileUrl);
+    const response = await fetch(`${serviceUrl}/storage/download?path=${encodeURIComponent(relPath)}`, {
+        headers: {
+            'Authorization': `Bearer ${secret}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to download file from storage service: ${response.statusText}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
+}
+
+/**
+ * Triggers a docx-to-pdf conversion on the NestJS helper service.
+ */
+export async function triggerDocxToPdfConversion(inputUrl: string, outputUrl: string): Promise<number> {
+    const serviceUrl = process.env['STORAGE_SERVICE_URL'];
+    const secret = process.env['STORAGE_SERVICE_SECRET'];
+    if (!serviceUrl || !secret) {
+        throw new Error("Storage service is not configured.");
+    }
+
+    const inputPath = getRelativePath(inputUrl);
+    const outputPath = getRelativePath(outputUrl);
+
+    const response = await fetch(
+        `${serviceUrl}/process/docx-to-pdf?inputPath=${encodeURIComponent(inputPath)}&outputPath=${encodeURIComponent(outputPath)}`,
+        {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${secret}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Failed to convert document: ${errText}`);
+    }
+
+    const data = await response.json() as { success: boolean; pdfPath: string; fileSize: number };
+    return data.fileSize;
+}
+

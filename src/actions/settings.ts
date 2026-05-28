@@ -6,8 +6,7 @@ import { type ActionResponse, actionSuccess, actionError } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
-import fs from "fs/promises";
-import path from "path";
+import { uploadFileToStorage } from "@/lib/fs-utils";
 import _ from "lodash";
 
 const ALLOWED_SETTING_KEYS = new Set([
@@ -99,10 +98,9 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
                 const bytes = await value.arrayBuffer();
                 const fileExt = value.name.split('.').pop();
                 const fileName = `${_.kebabCase(key)}.${fileExt}`;
-                const uploadDir = path.join(process.cwd(), "public/docs");
-                await fs.mkdir(uploadDir, { recursive: true });
-                await fs.writeFile(path.join(uploadDir, fileName), Buffer.from(bytes));
-                resolvedEntries.push([key, `/docs/${fileName}`]);
+                const relativeDocsPath = `docs/${fileName}`;
+                await uploadFileToStorage(relativeDocsPath, Buffer.from(bytes), value.name);
+                resolvedEntries.push([key, `/api/files/docs/${fileName}`]);
             } else if (value instanceof File && value.size === 0) {
                 continue; // skip empty file — preserve existing
             } else {

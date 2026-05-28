@@ -1,8 +1,7 @@
 import { db } from "./db";
 import { users, submissions, submissionVersions, submissionFiles } from "@/db/schema";
 import { eq, and, lte, inArray, notInArray } from "drizzle-orm";
-import fs from "fs/promises";
-import path from "path";
+import { safeDeleteFile } from "./fs-utils";
 
 /**
  * Automatically clean up author accounts that haven't taken action within 15 days 
@@ -58,12 +57,7 @@ export async function cleanupInactiveAuthors() {
                     .where(eq(submissionFiles.versionId, v.id));
                 
                 for (const f of files) {
-                    try {
-                        const absolutePath = path.join(process.cwd(), "public", f.url);
-                        await fs.unlink(absolutePath);
-                    } catch {
-                        // Ignore if file already deleted or doesn't exist
-                    }
+                    await safeDeleteFile(f.url);
                 }
             }
 

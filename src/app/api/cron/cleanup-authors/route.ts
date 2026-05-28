@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { eq, inArray, lt, and, sql } from "drizzle-orm";
 import { users, submissions, submissionVersions, submissionFiles } from "@/db/schema";
-import fs from "fs/promises";
-import path from "path";
+import { safeDeleteFile } from "@/lib/fs-utils";
 
 export const dynamic = 'force-dynamic';
 
@@ -44,16 +43,9 @@ export async function GET(req: Request) {
             .innerJoin(submissionVersions, eq(submissionFiles.versionId, submissionVersions.id))
             .where(inArray(submissionVersions.submissionId, submissionIds));
 
-        // 3. Delete files from disk
+        // 3. Delete files from storage service
         for (const file of filesToCleanup) {
-            try {
-                // Normalise path: prevent double-slashes if url has leading "/"
-                const normalizedUrl = file.url.replace(/^\/+/, "");
-                const filePath = path.join(process.cwd(), "public", normalizedUrl);
-                await fs.unlink(filePath);
-            } catch (err) {
-                console.error(`Failed to delete file ${file.url}:`, err);
-            }
+            await safeDeleteFile(file.url);
         }
 
         // 4. HARD DELETE (Cascades handles versions, files, assignments in schema)

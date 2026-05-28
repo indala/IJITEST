@@ -17,13 +17,11 @@ import {
 import { eq, and, sql, inArray, isNotNull, not } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
-import { safeDeleteFile } from "@/lib/fs-utils";
+import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import crypto from 'crypto';
 import { emailTemplates, sendEmail } from '@/lib/mail';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 
 export async function getEditorialBoard(): Promise<ActionResponse<SafeUserWithProfile[]>> {
     try {
@@ -431,16 +429,15 @@ export async function updateUserProfile(formData: FormData): Promise<ActionRespo
         let oldPhotoUrl: string | null = null;
 
         if (photo && photo.size > 0) {
-            const uploadsDir = path.join(process.cwd(), "public", "uploads", "profiles");
-            await mkdir(uploadsDir, { recursive: true });
-
             const fileName = `${session.user.id}-${Date.now()}-${photo.name.replace(/\s/g, '-')}`;
-            await writeFile(path.join(uploadsDir, fileName), Buffer.from(await photo.arrayBuffer()));
+            const relativePhotoPath = `profiles/${fileName}`;
+            const photoBuffer = Buffer.from(await photo.arrayBuffer());
+            await uploadFileToStorage(relativePhotoPath, photoBuffer, photo.name);
 
             if (photoUrl) {
                 oldPhotoUrl = photoUrl;
             }
-            photoUrl = `/uploads/profiles/${fileName}`;
+            photoUrl = `/api/files/profiles/${fileName}`;
         }
 
         await db.update(userProfiles)

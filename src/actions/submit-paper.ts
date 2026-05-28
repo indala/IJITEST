@@ -12,14 +12,13 @@ import {
     userInvitations
 } from "@/db/schema";
 import { z } from "zod";
-import fs from "fs/promises";
-import path from "path";
 import { revalidatePath } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { eq, inArray } from "drizzle-orm";
 import crypto from 'crypto';
 import { type ActionResponse } from "@/db/types";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
 
 const submissionSchema = z.object({
     authorName: z.string().min(2, "Author name is required").max(255, "Author name cannot exceed 255 characters"),
@@ -231,18 +230,16 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         });
 
         // 3. File Uploads (Happens post-transaction to strictly follow "DB First" rule)
-        const uploadDir = path.join(process.cwd(), "storage/submissions");
-        await fs.mkdir(uploadDir, { recursive: true });
-
+        const relativeManuscriptPath = `submissions/${result.mName}`;
         try {
-            await fs.writeFile(path.join(uploadDir, result.mName), Buffer.from(await manuscriptFile.arrayBuffer()));
-            fileCleanupList.push(path.join(uploadDir, result.mName));
-
-
-        } catch {
-            // File-system cleanup for orphaned files
+            const manuscriptBuffer = Buffer.from(await manuscriptFile.arrayBuffer());
+            await uploadFileToStorage(relativeManuscriptPath, manuscriptBuffer, manuscriptFile.name);
+            fileCleanupList.push(relativeManuscriptPath);
+        } catch (uploadError) {
+            console.error("Upload error:", uploadError);
+            // File-system cleanup for orphaned files on storage service
             for (const filePath of fileCleanupList) {
-                try { await fs.unlink(filePath); } catch { }
+                try { await safeDeleteFile(filePath); } catch { }
             }
 
             // DB-cleanup for zombie submission
