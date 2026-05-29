@@ -15,7 +15,8 @@ import {
     contactMessages,
     notifications,
     activityLogs,
-    settings
+    settings,
+    chatMessages
 } from "./schema";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
@@ -278,4 +279,21 @@ export function actionSuccess<T>(data?: T, message?: string): ActionResponse<T> 
 export function actionError<T = void>(error: string): ActionResponse<T> {
     return { success: false, error } as ActionResponse<T>;
 }
+
+// 💬 Live Chat Types
+export type ChatMessage = InferSelectModel<typeof chatMessages>;
+export type NewChatMessage = InferInsertModel<typeof chatMessages>;
+
+export type ChatMessageRow = ChatMessage & {
+    senderName?: UserProfile['fullName'] | null;
+    receiverName?: UserProfile['fullName'] | null;
+};
+
+export type ChatUser = {
+    id: User['id'];
+    email: User['email'];
+    fullName: UserProfile['fullName'];
+    role: User['role'];
+};
+
 

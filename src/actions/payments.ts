@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { payments, submissions, submissionVersions, userProfiles, users } from "@/db/schema";
-import { eq, desc, and, notInArray, sql } from "drizzle-orm";
+import { eq, desc, and, isNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { type ActionResponse, type PaymentRow, type UnpaidPaperRow, type PaymentStatus } from "@/db/types";
 import { getServerSession } from "next-auth/next";
@@ -130,9 +130,6 @@ export async function getAcceptedUnpaidPapers(): Promise<ActionResponse<UnpaidPa
         }
 
         // Find submissions that are 'accepted' but have no entry in 'payments'
-        // Subquery for payments
-        const paidSubmissions = db.select({ id: payments.submissionId }).from(payments);
-
         const results = await db.select({
             id: submissions.id,
             paperId: submissions.paperId,
@@ -143,9 +140,10 @@ export async function getAcceptedUnpaidPapers(): Promise<ActionResponse<UnpaidPa
         .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
         .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
         .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+        .leftJoin(payments, eq(submissions.id, payments.submissionId))
         .where(and(
             eq(submissions.status, 'accepted'),
-            notInArray(submissions.id, paidSubmissions)
+            isNull(payments.id)
         ));
 
         return { success: true, data: results };

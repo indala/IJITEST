@@ -1,17 +1,17 @@
 import { Suspense } from "react";
-import { MessagesTabContainer } from "@/features/messages/components/MessagesTabContainer";
+import { LiveChatContent } from "@/features/chat/components/LiveChatContent";
 import { Loader2 } from "lucide-react";
 
 export const metadata = {
-    title: "Editorial Inbox | IJITEST Portal",
-    description: "Central command for editorial inquiries and peer review synchronization."
+    title: "Reviewer Messages | IJITEST Portal",
+    description: "Direct peer-review synchronization chat channels with editors and administrators."
 };
 
-export default function MessagesPage() {
+export default function ReviewerMessagesPage() {
     return (
         <section className="h-[calc(100vh-140px)] flex flex-col gap-4 p-0">
             <header className="flex flex-col px-8 py-1 shrink-0 border-l-2 border-primary/20">
-                <h1 className="text-xl font-bold tracking-tight capitalize">inbox hub</h1>
+                <h1 className="text-xl font-bold tracking-tight capitalize">messages</h1>
             </header>
 
             <Suspense fallback={
@@ -21,7 +21,7 @@ export default function MessagesPage() {
                 </div>
             }>
                 <div className="flex-1 min-h-0 px-8 pb-8 overflow-hidden">
-                    <MessagesTabContainer />
+                    <LiveChatContent />
                 </div>
             </Suspense>
         </section>

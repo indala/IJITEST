@@ -459,3 +459,32 @@ export const rateLimits = mysqlTable("rate_limits", {
 }, (table) => [
     index("rate_limits_reset_at_idx").on(table.resetAt),
 ]);
+
+export const chatMessages = mysqlTable("chat_messages", {
+    id: int("id").primaryKey().autoincrement().notNull(),
+    senderId: varchar("sender_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
+    receiverId: varchar("receiver_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
+    submissionId: int("submission_id").references(() => submissions.id, { onDelete: "cascade" }),
+    messageText: text("message_text").notNull(),
+    isRead: boolean("is_read").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+    index("sender_idx").on(table.senderId),
+    index("receiver_idx").on(table.receiverId),
+    index("submission_chat_idx").on(table.submissionId),
+]);
+
+export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
+    sender: one(users, {
+        fields: [chatMessages.senderId],
+        references: [users.id],
+    }),
+    receiver: one(users, {
+        fields: [chatMessages.receiverId],
+        references: [users.id],
+    }),
+    submission: one(submissions, {
+        fields: [chatMessages.submissionId],
+        references: [submissions.id],
+    }),
+}));

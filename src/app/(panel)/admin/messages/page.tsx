@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ManageMessagesContent } from "@/features/messages/components/ManageMessagesContent";
+import { MessagesTabContainer } from "@/features/messages/components/MessagesTabContainer";
 import { Loader2 } from "lucide-react";
 
 export const metadata = {
@@ -17,7 +17,7 @@ export default function MessagesPage() {
                 </div>
             }>
                 <div className="flex-1 min-h-0 px-6 pb-6 flex flex-col overflow-hidden">
-                    <ManageMessagesContent />
+                    <MessagesTabContainer />
                 </div>
             </Suspense>
         </section>

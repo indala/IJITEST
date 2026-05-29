@@ -8,7 +8,7 @@ import {
     submissions, 
     reviewAssignments
 } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, or } from 'drizzle-orm';
 import fs from 'fs/promises';
 import { getPublicUploadsPath, downloadFileFromStorage } from '@/lib/fs-utils';
 import path from 'path';
@@ -106,10 +106,10 @@ async function serveFile(relativePath: string) {
 }
 
 async function checkSubmissionAccess(userId: string, role: string, fileUrl: string) {
-    // We need to find which submission this file belongs to
-    // fileUrl in DB is stored as "/uploads/submissions/..." or we might have updated it
-    const searchUrl = fileUrl.startsWith('/') ? fileUrl : `/${fileUrl}`;
-    const legacyUrl = fileUrl.startsWith('/uploads/') ? fileUrl : `/uploads/${fileUrl}`;
+    const cleanPath = fileUrl.replace(/^\/+/, '');
+    const apiFileUrl = `/api/files/${cleanPath}`;
+    const legacyUrl = `/uploads/${cleanPath}`;
+    const directUrl = `/${cleanPath}`;
 
     const files = await db.select({
         submissionId: submissionVersions.submissionId,
@@ -118,27 +118,13 @@ async function checkSubmissionAccess(userId: string, role: string, fileUrl: stri
     .from(submissionFiles)
     .innerJoin(submissionVersions, eq(submissionFiles.versionId, submissionVersions.id))
     .innerJoin(submissions, eq(submissionVersions.submissionId, submissions.id))
-    .where(and(
-        // Check both new and old URL formats
-        eq(submissionFiles.fileUrl, searchUrl)
+    .where(or(
+        eq(submissionFiles.fileUrl, apiFileUrl),
+        eq(submissionFiles.fileUrl, legacyUrl),
+        eq(submissionFiles.fileUrl, directUrl),
+        eq(submissionFiles.fileUrl, cleanPath)
     ))
     .limit(1);
-
-    if (files.length === 0) {
-        // Try fallback with /uploads prefix if not found
-        const fallbackFiles = await db.select({
-            submissionId: submissionVersions.submissionId,
-            authorId: submissions.correspondingAuthorId,
-        })
-        .from(submissionFiles)
-        .innerJoin(submissionVersions, eq(submissionFiles.versionId, submissionVersions.id))
-        .innerJoin(submissions, eq(submissionVersions.submissionId, submissions.id))
-        .where(eq(submissionFiles.fileUrl, legacyUrl))
-        .limit(1);
-        
-        if (fallbackFiles.length === 0) return false;
-        files.push(...fallbackFiles);
-    }
 
     const fileData = files[0];
     if (!fileData) return false;
