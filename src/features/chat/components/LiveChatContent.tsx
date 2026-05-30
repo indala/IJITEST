@@ -35,6 +35,7 @@ export function LiveChatContent() {
   const [newMessage, setNewMessage] = useState("");
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+  const [lastMessageTime, setLastMessageTime] = useState<Record<string, Date | null>>({});
   const [isConnected, setIsConnected] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
@@ -159,6 +160,12 @@ export function LiveChatContent() {
           [msg.senderId]: (prev[msg.senderId] || 0) + 1,
         }));
       }
+
+      // Update last message time for the sender
+      setLastMessageTime((prev) => ({
+        ...prev,
+        [msg.senderId]: msg.createdAt ? new Date(msg.createdAt) : new Date(),
+      }));
     };
 
     socket.on("receiveMessage", handleReceiveMessage);
@@ -184,12 +191,21 @@ export function LiveChatContent() {
       if (response.success && response.data) {
         setMessages(response.data);
         setTimeout(() => scrollToBottom("auto"), 50);
-        
+
         // Clear unread indicator
         setUnreadCounts((prev) => ({
           ...prev,
           [selectedUser!.id]: 0,
         }));
+
+        // Update last message time from history
+        const lastMsg = response.data[response.data.length - 1];
+        if (lastMsg?.createdAt) {
+          setLastMessageTime((prev) => ({
+            ...prev,
+            [selectedUser!.id]: new Date(lastMsg.createdAt),
+          }));
+        }
       }
     }
 
@@ -219,7 +235,13 @@ export function LiveChatContent() {
       setMessages((prev) => [...prev, fullMsg]);
       setTimeout(() => scrollToBottom("smooth"), 100);
 
-      // 3. Emit via socket to relay instantly
+      // 3. Update last message time for sorting
+      setLastMessageTime((prev) => ({
+        ...prev,
+        [selectedUser.id]: fullMsg.createdAt ? new Date(fullMsg.createdAt) : new Date(),
+      }));
+
+      // 4. Emit via socket to relay instantly
       if (socket && isConnected) {
         console.log("Emitting sendMessage via socket:", fullMsg);
         socket.emit("sendMessage", fullMsg);
@@ -286,7 +308,11 @@ export function LiveChatContent() {
               No chat partners found.
             </div>
           ) : (
-            contacts.map((user) => {
+            [...contacts].sort((a, b) => {
+              const aTime = lastMessageTime[a.id]?.getTime() ?? 0;
+              const bTime = lastMessageTime[b.id]?.getTime() ?? 0;
+              return bTime - aTime;
+            }).map((user) => {
               const isSelected = selectedUser?.id === user.id;
               const isOnline = onlineUsers.includes(user.id);
               const unread = unreadCounts[user.id] || 0;
