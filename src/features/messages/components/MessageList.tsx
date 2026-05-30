@@ -111,7 +111,7 @@ export function MessageList({
     }
 
     return (
-        <ScrollArea className="h-full">
+        <ScrollArea data-lenis-prevent className="h-full">
             <div className="flex flex-col divide-y divide-white/2">
                 {messages.map((message) => (
                     <MessageItem 

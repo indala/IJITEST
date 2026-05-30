@@ -180,7 +180,7 @@ export function MessageDetail({
                 </div>
             </header>
 
-            <ScrollArea className="flex-1">
+            <ScrollArea data-lenis-prevent className="flex-1">
                 <div className="px-4 max-w-3xl mx-auto w-full space-y-4 pb-20">
                     <div className="space-y-2.5">
                         <div className="flex items-center gap-2 text-[9px] text-muted-foreground/40 lowercase tracking-tight pl-2 border-l-2 border-primary/20">

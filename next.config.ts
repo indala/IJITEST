@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
+const storageUrl = process.env['STORAGE_SERVICE_URL'] || "http://localhost:4000";
+const wsStorageUrl = storageUrl.replace(/^http/, "ws");
+
 const csp = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -11,7 +14,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline' https:",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://api.razorpay.com",
   "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
-  "connect-src 'self' https: wss:",
+  `connect-src 'self' https: wss: ${storageUrl} ${wsStorageUrl}`,
   "form-action 'self'",
   "upgrade-insecure-requests",
 ].join("; ");

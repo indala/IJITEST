@@ -208,23 +208,39 @@ export async function updateResearchInterests(userId: string, interests: string[
     try {
         await db.transaction(async (tx) => {
             // Get User Email and Profile
-            const userRows = await tx.select({ email: users.email })
+            const userRows = await tx.select({ email: users.email, role: users.role })
                 .from(users)
                 .where(eq(users.id, userId))
                 .limit(1);
 
-            const email = userRows[0]?.email;
-            if (!email) throw new Error("User not found");
+            const user = userRows[0];
+            if (!user) throw new Error("User not found");
 
             const appRows = await tx.select({ id: applications.id })
                 .from(applications)
-                .where(eq(applications.email, email))
+                .where(eq(applications.email, user.email))
                 .limit(1);
 
-            const applicationId = appRows[0]?.id;
+            let applicationId = appRows[0]?.id;
 
             if (!applicationId) {
-                throw new Error("No application record found for this user. Cannot update research interests.");
+                const profileRows = await tx.select()
+                    .from(userProfiles)
+                    .where(eq(userProfiles.userId, userId))
+                    .limit(1);
+                const profile = profileRows[0];
+
+                const appType = user.role === 'editor' ? 'editor' : 'reviewer';
+                const [insertResult] = await tx.insert(applications).values({
+                    type: appType,
+                    fullName: profile?.fullName || user.email.split('@')[0],
+                    email: user.email,
+                    designation: profile?.designation || 'Staff',
+                    institute: profile?.institute || 'IJITEST',
+                    status: 'approved',
+                    nationality: profile?.nationality || 'India',
+                });
+                applicationId = insertResult.insertId;
             }
 
             // Update the many-to-many interests join table

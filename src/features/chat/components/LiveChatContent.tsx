@@ -60,7 +60,9 @@ export function LiveChatContent() {
 
   useEffect(() => {
     if (currentUserId) {
-      fetchContacts("");
+      queueMicrotask(() => {
+        void fetchContacts("");
+      });
     }
   }, [currentUserId, fetchContacts]);
 
@@ -96,13 +98,15 @@ export function LiveChatContent() {
       });
 
       activeSocket.on("connect", () => {
+        console.log("Socket connected successfully with ID:", activeSocket?.id);
         setIsConnected(true);
         setAuthError(null);
         // Fetch current online users list
         activeSocket?.emit("getOnlineUsers");
       });
 
-      activeSocket.on("disconnect", () => {
+      activeSocket.on("disconnect", (reason) => {
+        console.log("Socket disconnected. Reason:", reason);
         setIsConnected(false);
       });
 
@@ -110,11 +114,13 @@ export function LiveChatContent() {
         setOnlineUsers(userIds);
       });
 
-      activeSocket.on("authenticated", () => {
+      activeSocket.on("authenticated", (data) => {
+        console.log("Socket authenticated successfully:", data);
         setAuthError(null);
       });
 
       activeSocket.on("connect_error", (err) => {
+        console.error("Socket connection error:", err);
         setAuthError(`Connection error: ${err.message}`);
       });
 
@@ -135,6 +141,7 @@ export function LiveChatContent() {
     if (!socket) return;
 
     const handleReceiveMessage = (msg: ChatMessageRow) => {
+      console.log("Received message via socket:", msg);
       const isFromOrToSelected = selectedUser && 
         (msg.senderId === selectedUser.id || msg.receiverId === selectedUser.id);
 
@@ -164,7 +171,9 @@ export function LiveChatContent() {
   // Fetch history when active user changes
   useEffect(() => {
     if (!selectedUser) {
-      setMessages([]);
+      queueMicrotask(() => {
+        setMessages([]);
+      });
       return;
     }
 
@@ -212,7 +221,10 @@ export function LiveChatContent() {
 
       // 3. Emit via socket to relay instantly
       if (socket && isConnected) {
+        console.log("Emitting sendMessage via socket:", fullMsg);
         socket.emit("sendMessage", fullMsg);
+      } else {
+        console.warn("Socket emission skipped. socket:", !!socket, "isConnected:", isConnected);
       }
     }
   };
@@ -263,7 +275,7 @@ export function LiveChatContent() {
         </div>
 
         {/* Users List */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto p-2 space-y-1">
           {isSearching ? (
             <div className="flex flex-col items-center justify-center py-8 gap-2 text-muted-foreground/50">
               <Loader2 className="w-5 h-5 animate-spin text-primary" />
@@ -331,7 +343,7 @@ export function LiveChatContent() {
         </div>
 
         {authError && (
-          <div className="p-3 bg-rose-500/10 border-t border-rose-500/20 text-[10px] font-mono text-rose-400 text-center break-words">
+          <div className="p-3 bg-rose-500/10 border-t border-rose-500/20 text-[10px] font-mono text-rose-400 text-center wrap-break-word">
             {authError}
           </div>
         )}
@@ -380,6 +392,7 @@ export function LiveChatContent() {
             {/* Chat Messages Feed */}
             <div 
               ref={messagesContainerRef}
+              data-lenis-prevent
               className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0 bg-slate-950/5"
             >
               {isLoadingHistory ? (
@@ -426,7 +439,7 @@ export function LiveChatContent() {
                             : "bg-muted/40 text-foreground border-white/5 rounded-tl-none"
                         )}
                       >
-                        <p className="whitespace-pre-wrap break-words">{msg.messageText}</p>
+                        <p className="whitespace-pre-wrap wrap-break-word">{msg.messageText}</p>
                       </div>
 
                       {/* Timestamp */}
