@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { users, userProfiles } from "@/db/schema";
-import bcrypt from "bcryptjs";
+import {compare} from "bcryptjs";
 import { type UserRole, type User as DbUser, type UserProfile } from "@/db/types";
 
 const authSecret = process.env['NEXTAUTH_SECRET'] || process.env['JWT_SECRET'];
@@ -48,6 +48,7 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Missing email or password");
                 }
 
+                let user;
                 try {
                     const result = await db.select({
                         id: users.id,
@@ -62,32 +63,32 @@ export const authOptions: NextAuthOptions = {
                     .where(eq(users.email, credentials.email))
                     .limit(1);
 
-                    const user = result[0];
-
-                    if (!user || !user.isActive) {
-                        throw new Error("Invalid email or password or account deactivated");
-                    }
-
-                    if (!user.passwordHash) {
-                        throw new Error("Please set up your account password first.");
-                    }
-
-                    const isPasswordValid = await bcrypt.compare(credentials.password, user.passwordHash);
-
-                    if (!isPasswordValid) {
-                        throw new Error("Invalid email or password");
-                    }
-
-                    return {
-                        id: user.id,
-                        email: user.email,
-                        name: user.fullName || "User",
-                        role: user.role,
-                    };
-                } catch (error) {
-                    console.error("Auth error:", error);
-                    return null;
+                    user = result[0];
+                } catch (dbError) {
+                    console.error("Auth database error:", dbError);
+                    throw new Error("Authentication service currently unavailable");
                 }
+
+                if (!user || !user.isActive) {
+                    throw new Error("Invalid email or password or account deactivated");
+                }
+
+                if (!user.passwordHash) {
+                    throw new Error("Please set up your account password first.");
+                }
+
+                const isPasswordValid = await compare(credentials.password, user.passwordHash);
+
+                if (!isPasswordValid) {
+                    throw new Error("Invalid email or password");
+                }
+
+                return {
+                    id: user.id,
+                    email: user.email,
+                    name: user.fullName || "User",
+                    role: user.role,
+                };
             }
         })
     ],

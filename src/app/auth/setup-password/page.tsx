@@ -1,5 +1,10 @@
 "use client";
 
+export const metadata = {
+    title: "Setup Password | IJITEST",
+    description: "Set up or reset your account password.",
+};
+
 import { getPasswordSetupInfo, setupPassword } from '@/actions/users';
 import { ShieldCheck, Lock, Mail, CheckCircle2, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 import type { ActionResponse } from '@/db/types';
@@ -158,6 +163,7 @@ function SetupContent() {
                                         type="button"
                                         variant="ghost"
                                         size="icon"
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="h-8 w-8 text-muted-foreground/60 hover:text-[#000066] transition-colors hover:bg-transparent"
                                     >

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 31, 2026 at 04:22 AM
+-- Generation Time: Jun 01, 2026 at 08:16 AM
 -- Server version: 12.3.1-MariaDB-log
 -- PHP Version: 7.2.34
 
@@ -668,7 +668,11 @@ INSERT INTO `user_profiles` (`id`, `user_id`, `full_name`, `designation`, `insti
 (51, '86c035ab-45f7-11f1-ad3e-c05465fbbdc2', 'Mahamed Mastan Jani', 'Final-year B.Tech Student', 'Department of CSE, Vignan’s Institute of Information Technology (A), Visakhapatnam', NULL, NULL, 'India', NULL, NULL, '2026-05-02 07:21:24', '2026-05-02 07:21:24'),
 (52, '86c2652d-45f7-11f1-ad3e-c05465fbbdc2', 'Bharath Karthik Mycherla', 'Final-year B.Tech Student', 'Department of CSE, Vignan’s Institute of Information Technology (A), Visakhapatnam', NULL, NULL, 'India', NULL, NULL, '2026-05-02 07:21:24', '2026-05-02 07:21:24'),
 (53, '86c50c19-45f7-11f1-ad3e-c05465fbbdc2', 'Surya Teja Medisetty', 'Final-year B.Tech Student', 'Department of CSE, Vignan’s Institute of Information Technology (A), Visakhapatnam', NULL, NULL, 'India', NULL, NULL, '2026-05-02 07:21:24', '2026-05-02 07:21:24'),
-(54, '86c79e83-45f7-11f1-ad3e-c05465fbbdc2', 'Kalpana Pulipati', 'Final-year B.Tech Student', 'Department of CSE, Vignan’s Institute of Information Technology (A), Visakhapatnam', NULL, NULL, 'India', NULL, NULL, '2026-05-02 07:21:24', '2026-05-02 07:21:24');
+(54, '86c79e83-45f7-11f1-ad3e-c05465fbbdc2', 'Kalpana Pulipati', 'Final-year B.Tech Student', 'Department of CSE, Vignan’s Institute of Information Technology (A), Visakhapatnam', NULL, NULL, 'India', NULL, NULL, '2026-05-02 07:21:24', '2026-05-02 07:21:24'),
+(55, '79dbcba4-31c1-11f1-ad3e-c05465fbbdc2', 'indalamohankumar21', NULL, NULL, NULL, NULL, 'India', NULL, NULL, '2026-06-01 05:56:40', '2026-06-01 05:56:40'),
+(56, '79dcbb44-31c1-11f1-ad3e-c05465fbbdc2', 'manohar', NULL, NULL, NULL, NULL, 'India', NULL, NULL, '2026-06-01 05:56:40', '2026-06-01 05:56:40'),
+(57, '79dfcee0-31c1-11f1-ad3e-c05465fbbdc2', 'mr.challa33', NULL, NULL, NULL, NULL, 'India', NULL, NULL, '2026-06-01 05:56:40', '2026-06-01 05:56:40'),
+(58, '79dc1011-31c1-11f1-ad3e-c05465fbbdc2', 'razh1976', NULL, NULL, NULL, NULL, 'India', NULL, NULL, '2026-06-01 05:56:40', '2026-06-01 05:56:40');
 
 -- --------------------------------------------------------
 
@@ -832,8 +836,8 @@ ALTER TABLE `reviews`
 ALTER TABLE `review_assignments`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_assignment` (`submission_id`,`reviewer_id`,`version_id`,`review_round`),
-  ADD KEY `review_assignments_reviewer_id_users_id_fk` (`reviewer_id`),
   ADD KEY `review_assignments_version_id_submission_versions_id_fk` (`version_id`),
+  ADD KEY `review_assignments_reviewer_id_users_id_fk` (`reviewer_id`),
   ADD KEY `review_assignments_assigned_by_users_id_fk` (`assigned_by`);
 
 --
@@ -849,10 +853,10 @@ ALTER TABLE `submissions`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `submissions_paper_id_unique` (`paper_id`),
   ADD UNIQUE KEY `submissions_slug_unique` (`slug`),
-  ADD KEY `submissions_decision_by_users_id_fk` (`decision_by`),
   ADD KEY `submissions_issue_id_volumes_issues_id_fk` (`issue_id`),
   ADD KEY `status_idx` (`status`),
-  ADD KEY `author_idx` (`corresponding_author_id`);
+  ADD KEY `author_idx` (`corresponding_author_id`),
+  ADD KEY `submissions_decision_by_users_id_fk` (`decision_by`);
 
 --
 -- Indexes for table `submission_authors`
@@ -1029,7 +1033,7 @@ ALTER TABLE `user_invitations`
 -- AUTO_INCREMENT for table `user_profiles`
 --
 ALTER TABLE `user_profiles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `volumes_issues`
@@ -1103,8 +1107,8 @@ ALTER TABLE `reviews`
 -- Constraints for table `review_assignments`
 --
 ALTER TABLE `review_assignments`
-  ADD CONSTRAINT `review_assignments_assigned_by_users_id_fk` FOREIGN KEY (`assigned_by`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `review_assignments_reviewer_id_users_id_fk` FOREIGN KEY (`reviewer_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `review_assignments_assigned_by_users_id_fk` FOREIGN KEY (`assigned_by`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `review_assignments_reviewer_id_users_id_fk` FOREIGN KEY (`reviewer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   ADD CONSTRAINT `review_assignments_submission_id_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   ADD CONSTRAINT `review_assignments_version_id_submission_versions_id_fk` FOREIGN KEY (`version_id`) REFERENCES `submission_versions` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
@@ -1112,8 +1116,8 @@ ALTER TABLE `review_assignments`
 -- Constraints for table `submissions`
 --
 ALTER TABLE `submissions`
-  ADD CONSTRAINT `submissions_corresponding_author_id_users_id_fk` FOREIGN KEY (`corresponding_author_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `submissions_decision_by_users_id_fk` FOREIGN KEY (`decision_by`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `submissions_corresponding_author_id_users_id_fk` FOREIGN KEY (`corresponding_author_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `submissions_decision_by_users_id_fk` FOREIGN KEY (`decision_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
   ADD CONSTRAINT `submissions_issue_id_volumes_issues_id_fk` FOREIGN KEY (`issue_id`) REFERENCES `volumes_issues` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --

@@ -410,7 +410,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                                         <div className="space-y-6 text-center lg:text-left">
                                             <div className="w-40 h-40 rounded-3xl bg-muted border border-primary/5 mx-auto lg:mx-0 overflow-hidden shadow-2xl">
                                                 {inspectApp.photoUrl ? (
-                                                    <NextImage src={inspectApp.photoUrl} alt="" width={300} height={300} className="w-full h-full object-cover" />
+                                                    <NextImage src={inspectApp.photoUrl} alt={inspectApp.fullName || "Applicant photo"} width={300} height={300} className="w-full h-full object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center opacity-20 scale-150"><User /></div>
                                                 )}
@@ -455,15 +455,22 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                                                 <FileText className="text-primary w-5 h-5" />
                                                 <span className="font-bold text-xs uppercase tracking-[0.2em]">Candidacy Dossier</span>
                                             </div>
-                                            <Button variant="outline" size="sm" asChild className="h-9 px-5 rounded-xl border-primary/10 text-[10px] font-black uppercase tracking-widest shadow-sm">
-                                                <a href={inspectApp.cvUrl || undefined} download>
-                                                    <Download className="w-4 h-4 mr-2" /> Download Document
-                                                </a>
-                                            </Button>
+                                            {inspectApp.cvUrl && (
+                                                <Button variant="outline" size="sm" asChild className="h-9 px-5 rounded-xl border-primary/10 text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                                    <a href={inspectApp.cvUrl || undefined} download>
+                                                        <Download className="w-4 h-4 mr-2" /> Download Document
+                                                    </a>
+                                                </Button>
+                                            )}
                                         </div>
  
                                         <div className="flex-1 min-h-[500px] bg-muted/10 relative">
-                                            {inspectApp.cvUrl?.toLowerCase().endsWith('.pdf') ? (
+                                            {!inspectApp.cvUrl ? (
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center space-y-6">
+                                                    <AlertCircle className="w-16 h-16 opacity-20" />
+                                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">No CV document uploaded.</p>
+                                                </div>
+                                            ) : inspectApp.cvUrl?.toLowerCase().endsWith('.pdf') ? (
                                                 <iframe src={inspectApp.cvUrl || undefined} title="Preview" className="w-full h-full border-none dark:invert dark:hue-rotate-180" />
                                             ) : (
                                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center space-y-6">

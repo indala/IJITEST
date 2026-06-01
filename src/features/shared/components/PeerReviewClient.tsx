@@ -62,7 +62,7 @@ export default function PeerReviewClient() {
                                         <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary border border-primary/10 transition-colors">
                                             <stage.icon className="w-5 h-5" />
                                         </div>
-                                        {idx !== stages.length - 1 && <div className="w-pxfull bg-border/50 my-2" />}
+                                        {idx !== stages.length - 1 && <div className="w-px flex-1 bg-border/50 my-2" />}
                                     </div>
                                     <div className="pb-6">
                                         <h3 className="text-base font-semibold text-primary mb-1">

@@ -1,4 +1,6 @@
-import { useState, useRef, useCallback, useActionState, useEffect } from 'react';
+"use client";
+
+import { useState, useRef, useCallback, useActionState } from 'react';
 import { updateUserProfile } from '@/actions/users';
 import { type User, type UserProfile } from "@/db/types";
 
@@ -40,18 +42,8 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         }
     }, null);
 
-    const [showSuccess, setShowSuccess] = useState(false);
-
-    useEffect(() => {
-        let timer: NodeJS.Timeout | undefined;
-        if (state?.success) {
-            setShowSuccess(true);
-            timer = setTimeout(() => setShowSuccess(false), 5000);
-        }
-        return () => {
-            if (timer) clearTimeout(timer);
-        };
-    }, [state]);
+    // Derive showSuccess directly from state — no useEffect needed
+    const showSuccess = state?.success === true;
 
     const handlePhotoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

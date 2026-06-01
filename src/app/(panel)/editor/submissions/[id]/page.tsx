@@ -21,6 +21,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from 'next';
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +46,13 @@ export async function generateMetadata({ params }: { params: Promise<SubmissionI
 }
 
 export default async function SubmissionDetails({ params }: { params: Promise<SubmissionIdParam> }) {
+    const session = await getServerSession(authOptions);
+    const user = session?.user;
+
+    if (!user || (user.role !== 'admin' && user.role !== 'editor')) {
+        redirect('/login');
+    }
+
     const { id: idStr } = await params;
     const id = parseInt(idStr);
 

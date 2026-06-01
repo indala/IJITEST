@@ -190,9 +190,15 @@ export function LiveChatContent() {
       return;
     }
 
+    let isCurrent = true;
+
     async function fetchHistory() {
       setIsLoadingHistory(true);
-      const response = await getChatHistory(selectedUser!.id);
+      const targetUserId = selectedUser!.id;
+      const response = await getChatHistory(targetUserId);
+      
+      if (!isCurrent) return;
+
       setIsLoadingHistory(false);
       if (response.success && response.data) {
         setMessages(response.data);
@@ -201,7 +207,7 @@ export function LiveChatContent() {
         // Clear unread indicator
         setUnreadCounts((prev) => ({
           ...prev,
-          [selectedUser!.id]: 0,
+          [targetUserId]: 0,
         }));
 
         // Update last message time from history
@@ -210,13 +216,17 @@ export function LiveChatContent() {
         if (createdAt) {
           setLastMessageTime((prev) => ({
             ...prev,
-            [selectedUser!.id]: new Date(createdAt),
+            [targetUserId]: new Date(createdAt),
           }));
         }
       }
     }
 
     fetchHistory();
+
+    return () => {
+      isCurrent = false;
+    };
   }, [selectedUser, scrollToBottom]);
 
   // Send Message implementation
@@ -497,7 +507,9 @@ export function LiveChatContent() {
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    handleSendMessage(e);
+                    if (newMessage.trim() && isConnected) {
+                      handleSendMessage(e);
+                    }
                   }
                 }}
                 placeholder="Type your message here... (Enter to send)"
@@ -509,6 +521,7 @@ export function LiveChatContent() {
                 disabled={!newMessage.trim() || !isConnected}
                 size="icon"
                 className="w-10 h-10 rounded-xl bg-primary text-primary-foreground hover:scale-105 transition-transform shrink-0 shadow-lg shadow-primary/10 disabled:opacity-50 disabled:hover:scale-100"
+                aria-label="Send message"
               >
                 <Send className="w-4.5 h-4.5" />
               </Button>

@@ -71,7 +71,7 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, rol
             </div>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-primary rounded-xl">
+                    <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-primary rounded-xl" aria-label="More options">
                         <MoreVertical className="w-5 h-5" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -163,7 +163,7 @@ const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, rol
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 text-primary/30 hover:text-primary rounded-xl transition-all hover:bg-primary/5 cursor-pointer">
+                        <Button variant="ghost" size="icon" className="h-12 w-12 text-primary/30 hover:text-primary rounded-xl transition-all hover:bg-primary/5 cursor-pointer" aria-label="More options">
                             <MoreVertical className="size-6 text-primary" />
                         </Button>
                     </DropdownMenuTrigger>
@@ -204,11 +204,10 @@ SubmissionDesktopRow.displayName = 'SubmissionDesktopRow';
 
 interface SubmissionContainerProps {
     submissions: SubmissionUI[];
-    currentStatus: string;
     role: 'admin' | 'editor';
 }
 
-export default function SubmissionContainer({ submissions, currentStatus: _currentStatus, role }: SubmissionContainerProps) {
+export default function SubmissionContainer({ submissions, role }: SubmissionContainerProps) {
     const [filterQuery, setFilterQuery] = useState('');
 
     const filteredSubmissions = useMemo(() => {

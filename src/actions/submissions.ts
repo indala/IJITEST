@@ -325,42 +325,6 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
 }
 
 /**
- * Update submission status and notify author
- */
-export async function updateSubmissionStatus(id: number, status: typeof submissions.$inferSelect.status): Promise<ActionResponse> {
-    try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
-            return { success: false, error: "Unauthorized" };
-        }
-
-        await db.update(submissions).set({ status }).where(eq(submissions.id, id));
-
-        const subRes = await getSubmissionById(id);
-        if (subRes.success && subRes.data) {
-            const submission = subRes.data;
-            const apcRows = await db.select().from(settings).where(eq(settings.settingKey, 'apcInr')).limit(1);
-            const isFree = (apcRows[0]?.settingValue || '0') === '0';
-
-            const template = emailTemplates.statusUpdate(
-                submission.authorName,
-                submission.title,
-                status,
-                submission.paperId,
-                isFree
-            );
-            await sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html });
-        }
-
-        revalidatePath('/admin/submissions');
-        revalidatePath(`/admin/submissions/${id}`);
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: "Failed to update status: " + (error instanceof Error ? error.message : String(error)) };
-    }
-}
-
-/**
  * Request resubmission WITH comments
  */
 export async function requestResubmissionWithComments(

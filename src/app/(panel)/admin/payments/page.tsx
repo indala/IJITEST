@@ -1,5 +1,9 @@
 "use client";
 
+export const metadata = {
+    title: "Payments | IJITEST",
+};
+
 import { CreditCard, DollarSign, CheckCircle, Clock, Search, Plus, User, ShieldCheck, Mail, ArrowRight, AlertTriangle, History, Eye, Globe } from 'lucide-react';
 import {
     usePayments,
@@ -83,13 +87,13 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                 </div>
                 <div className="shrink-0 flex flex-wrap items-center gap-4 2xl:gap-8 border-t xl:border-t-0 pt-6 xl:pt-0 border-primary/5">
                     <div className="flex items-center gap-3 2xl:gap-5">
-                        <Button asChild variant="ghost" size="icon" className="w-12 h-12 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl bg-primary/5 text-primary/60 dark:text-primary/80 hover:text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer">
-                            <Link href={`/admin/submissions/${item.submissionId}`} title="View Manuscript Detail">
+                        <Button asChild variant="ghost" size="icon" aria-label="View manuscript detail" className="w-12 h-12 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl bg-primary/5 text-primary/60 dark:text-primary/80 hover:text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer">
+                            <Link href={`/admin/submissions/${item.submissionId}`}>
                                 <Eye className="w-5 h-5 2xl:w-9 2xl:h-9" />
                             </Link>
                         </Button>
-                        <Button asChild variant="ghost" size="icon" className="w-12 h-12 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl bg-primary/5 text-primary/60 dark:text-primary/80 hover:text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer">
-                            <a href={`mailto:${item.authorEmail}`} title={`Contact ${item.authorName}`}>
+                        <Button asChild variant="ghost" size="icon" aria-label={`Contact ${item.authorName}`} className="w-12 h-12 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl bg-primary/5 text-primary/60 dark:text-primary/80 hover:text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer">
+                            <a href={`mailto:${item.authorEmail}`}>
                                 <Mail className="w-5 h-5 2xl:w-9 2xl:h-9" />
                             </a>
                         </Button>
@@ -331,7 +335,7 @@ export default function PaymentManagement() {
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-primary/5 bg-card">
                             <SelectItem value="all">Global Status</SelectItem>
-                            <SelectItem value="unpaid">Pending</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
                             <SelectItem value="paid">Remitted</SelectItem>
                             <SelectItem value="verified">Verified</SelectItem>
                             <SelectItem value="waived">Waived</SelectItem>

@@ -26,7 +26,12 @@ import InviteEditorModal from './components/InviteEditorModal';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
+import { redirect } from 'next/navigation';
 
+
+export const metadata = {
+    title: "Admin Dashboard | IJITEST",
+};
 
 export const dynamic = 'force-dynamic';
 
@@ -62,7 +67,10 @@ async function getHealthMetrics() {
 
 export default async function AdminDashboard() {
     const session = await getServerSession(authOptions);
-    const user = session?.user;
+    if (!session?.user || session.user.role !== 'admin') {
+        redirect("/login");
+    }
+    const user = session.user;
 
     let subCountRes, userCountRes, paidRevenueRes, pendingRevenueRes, publishedCountRes, reviewStatsRes, completedReviewsRes, recentSubmissions, mySubmissions, pendingApps, allStaff, dbLatency, storageMB, uptimeHours;
 

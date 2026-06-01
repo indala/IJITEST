@@ -9,6 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { FileText, Upload, ExternalLink, Clock, Timer } from "lucide-react";
 
+export const metadata = {
+    title: "My Submissions | IJITEST",
+};
+
 export const dynamic = 'force-dynamic';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {

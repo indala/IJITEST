@@ -11,9 +11,12 @@ interface PaperCardProps {
 }
 
 const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: PaperCardProps) {
+    const hasVolumeAndIssue = !!(paper.volumeNumber && paper.issueNumber);
     const volumeSegment = `volume${paper.volumeNumber || 0}`;
     const issueSegment = `issue${paper.issueNumber || 0}`;
-    const paperUrl = `${basePath}/${volumeSegment}/${issueSegment}/${paper.paperId}`;
+    const paperUrl = hasVolumeAndIssue 
+        ? `${basePath}/${volumeSegment}/${issueSegment}/${paper.paperId}`
+        : '#';
 
     return (
         <Card className="font-serif border-primary/10 shadow-sm hover:shadow-md transition-shadow group relative rounded-lg border-t-2 border-t-transparent hover:border-t-secondary/40">

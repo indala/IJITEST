@@ -1,9 +1,8 @@
 'use client'
-import { useCallback, useActionState } from "react";
+import { useCallback, useActionState, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
 import {
     Loader2, Upload, CheckCircle2, FileText, User, Mail,
     ChevronRight, BookOpen, Tag, Plus, Trash2, Phone, Briefcase,
@@ -327,7 +326,7 @@ export default function SubmissionForm() {
                                 </FormControl>
                                 <div className="flex justify-between items-center px-1">
                                     <FormDescription className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Requirement: 100 - 500 Words</FormDescription>
-                                    <span className="text-[10px] font-bold text-[#000066] uppercase">{field.value.length} Characters</span>
+                                    <span className="text-[10px] font-bold text-[#000066] uppercase">{(field.value || "").length} Characters</span>
                                 </div>
                                 <FormMessage className="text-xs font-medium text-destructive px-1" />
                             </FormItem>
@@ -396,6 +395,7 @@ export default function SubmissionForm() {
                                             size="icon"
                                             onClick={() => remove(index)}
                                             className="absolute top-4 right-4 text-destructive hover:bg-destructive/5 rounded-lg transition-all z-20"
+                                            aria-label="Remove co-author"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </Button>
@@ -418,7 +418,7 @@ export default function SubmissionForm() {
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormControl>
-                                                                 <Input placeholder="Full Name" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" />
+                                                                 <Input placeholder="Full Name" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" aria-label={`Co-author ${index + 1} name`} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -430,7 +430,7 @@ export default function SubmissionForm() {
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormControl>
-                                                                 <Input type="email" placeholder="Email Address" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" />
+                                                                 <Input type="email" placeholder="Email Address" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" aria-label={`Co-author ${index + 1} email`} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -443,7 +443,7 @@ export default function SubmissionForm() {
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormControl>
-                                                                    <Input type="tel" placeholder="Phone (Optional)" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" />
+                                                                    <Input type="tel" placeholder="Phone (Optional)" {...field} value={field.value ?? ""} className="h-10 bg-muted/20 border-border/50 rounded-lg font-medium shadow-none px-4 text-xs 2xl:text-lg" aria-label={`Co-author ${index + 1} phone`} />
                                                                 </FormControl>
                                                                 <FormMessage />
                                                             </FormItem>

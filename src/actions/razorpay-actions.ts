@@ -26,7 +26,11 @@ export async function createRazorpayOrder(submissionId: number, paperId: string)
             .limit(1);
         
         const amountInINR = settingsRows[0]?.settingValue || '2500';
-        const amount = parseInt(amountInINR) * 100; // Razorpay expects amount in paise
+        let parsedAmount = parseInt(amountInINR);
+        if (isNaN(parsedAmount)) {
+            parsedAmount = 2500;
+        }
+        const amount = parsedAmount * 100; // Razorpay expects amount in paise
 
         // 2. Create Razorpay order
         const options = {
@@ -34,7 +38,7 @@ export async function createRazorpayOrder(submissionId: number, paperId: string)
             currency: "INR",
             receipt: `receipt_${paperId}_${Date.now()}`,
             notes: {
-                submission_id: submissionId,
+                submission_id: String(submissionId),
                 paper_id: paperId
             }
         };
@@ -130,12 +134,19 @@ export async function verifyRazorpayPayment(data: {
                 })
                 .where(eq(payments.submissionId, submissionId));
 
-            await tx.update(submissions)
-                .set({ 
-                    status: 'accepted',
-                    updatedAt: new Date()
-                })
-                .where(eq(submissions.id, submissionId));
+            const [submission] = await tx.select({ status: submissions.status })
+                .from(submissions)
+                .where(eq(submissions.id, submissionId))
+                .limit(1);
+
+            if (submission && submission.status !== 'published' && submission.status !== 'retracted' && submission.status !== 'rejected') {
+                await tx.update(submissions)
+                    .set({ 
+                        status: 'accepted',
+                        updatedAt: new Date()
+                    })
+                    .where(eq(submissions.id, submissionId));
+            }
         });
 
         // 4. Notify Author

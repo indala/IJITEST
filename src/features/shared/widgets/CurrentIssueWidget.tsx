@@ -23,8 +23,6 @@ function CurrentIssueWidget() {
         return null;
     }, [dbIssue]);
 
-    if (!currentStatus) return null;
-
     if (isLoading) return (
         <Card className="border border-primary/10 shadow-xl shadow-primary/5 overflow-hidden bg-primary/5 group rounded-[2.5rem]">
             <CardContent className="p-12 flex items-center justify-center">
@@ -32,6 +30,8 @@ function CurrentIssueWidget() {
             </CardContent>
         </Card>
     );
+
+    if (!currentStatus) return null;
 
     return (
         <motion.div

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { cleanupInactiveAuthors } from "@/lib/cleanup";
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Cron endpoint: DELETE stalled submissions + inactive author accounts.
  * Trigger via Vercel Cron Jobs (vercel.json) or any external scheduler.
@@ -12,7 +14,7 @@ export async function GET(request: Request) {
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env['CRON_SECRET'];
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

@@ -1,8 +1,8 @@
 'use client';
 
-import { Mail, Loader2 } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { useMemo } from 'react';
-import { useEditorialBoard } from '@/hooks/queries/usePublic';
+// import { useEditorialBoard } from '@/hooks/queries/usePublic'; // TODO: enable when dynamic board members are ready
 import { staticEditorialBoardMembers, type BoardMember } from '../data/editorial-board';
 import type { SafeUserWithProfile } from '@/db/types';
 
@@ -12,8 +12,8 @@ interface EditorialBoardClientProps {
     initialMembers: SafeUserWithProfile[];
 }
 
-export default function EditorialBoardClient({ initialMembers }: EditorialBoardClientProps) {
-    const { data: dynamicMembers = [], isLoading } = useEditorialBoard(initialMembers);
+export default function EditorialBoardClient({ initialMembers: _initialMembers }: EditorialBoardClientProps) {
+    // const { data: dynamicMembers = [], isLoading } = useEditorialBoard(initialMembers); // TODO: enable when dynamic board members are ready
     const settings = useSettingsStore((state) => state.settings);
     const supportEmail = settings['supportEmail'] || '';
 
@@ -42,14 +42,6 @@ export default function EditorialBoardClient({ initialMembers }: EditorialBoardC
         ];
         return board;
     }, []);
-
-    if (isLoading && dynamicMembers.length === 0) {
-        return (
-            <div className="p-24 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-primary/10" />
-            </div>
-        );
-    }
 
     return (
         <section className="space-y-12 max-w-full lg:max-w-6xl 2xl:max-w-7xl mx-auto pb-12">

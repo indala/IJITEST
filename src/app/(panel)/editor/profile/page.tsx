@@ -31,7 +31,7 @@ export default async function EditorProfilePage() {
                     <p className="text-[10px] font-semibold capitalize tracking-widest animate-pulse">Decrypting board credentials...</p>
                 </div>
             }>
-                <ProfileDossier role="reviewer" userId={session.user.id} />
+                <ProfileDossier role="editor" userId={session.user.id} />
             </Suspense>
         </section>
     );

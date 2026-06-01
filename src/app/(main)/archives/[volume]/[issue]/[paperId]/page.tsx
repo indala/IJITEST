@@ -122,8 +122,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                 paper={{
                     ...paper,
                     coAuthors: paper.coAuthors ?? null
-                }} 
-                id={paperId} 
+                }}
             />
 
             <JsonLd

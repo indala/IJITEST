@@ -20,7 +20,7 @@ export default function PaymentClient({ id }: { id: string }) {
 
     const { data: queryData, isLoading: loading, error: queryError } = useTrackManuscript(id, "", true);
     const manuscript = queryData?.success && queryData.data?.manuscript ? queryData.data.manuscript : null;
-    const [paid] = useState(false);
+    const [paid, setPaid] = useState(false);
 
     const error = queryError ? "Failed to fetch manuscript details." : (queryData && !queryData.success ? queryData.error : (!manuscript && !loading ? "Manuscript not found or invalid link." : ""));
 
@@ -172,6 +172,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <RazorpayPayment
                                         submissionId={manuscript.id}
                                         paperId={manuscript.paperId}
+                                        onSuccess={() => setPaid(true)}
                                     />
                                 ) : (
                                     <p className="text-sm font-semibold text-muted-foreground">No payment required.</p>

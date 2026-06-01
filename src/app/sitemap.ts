@@ -41,20 +41,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const latestPapers = latestRes.success ? latestRes.data ?? [] : [];
     const latestPaperIds = new Set(latestPapers.map(p => p.id));
 
-    const dynamicRoutes = papers.map((paper: PublishedPaperUI) => {
-      const isCurrent = latestPaperIds.has(paper.id);
-      const basePath = isCurrent ? 'current-issue' : 'archives';
-      const volume = `volume${paper.volumeNumber || 0}`;
-      const issue = `issue${paper.issueNumber || 0}`;
-      const paperId = paper.paperId;
+    const dynamicRoutes = papers
+      .filter((paper: PublishedPaperUI) => paper.volumeNumber && paper.issueNumber)
+      .map((paper: PublishedPaperUI) => {
+        const isCurrent = latestPaperIds.has(paper.id);
+        const basePath = isCurrent ? 'current-issue' : 'archives';
+        const volume = `volume${paper.volumeNumber}`;
+        const issue = `issue${paper.issueNumber}`;
+        const paperId = paper.paperId;
 
-      return {
-        url: `${baseUrl}/${basePath}/${volume}/${issue}/${paperId}`,
-        lastModified: new Date(paper.updatedAt || new Date()),
-        changeFrequency: 'weekly' as const,
-        priority: 0.6,
-      };
-    });
+        return {
+          url: `${baseUrl}/${basePath}/${volume}/${issue}/${paperId}`,
+          lastModified: new Date(paper.updatedAt || new Date()),
+          changeFrequency: 'weekly' as const,
+          priority: 0.6,
+        };
+      });
 
     return [...staticRoutes, ...dynamicRoutes];
   } catch (error) {

@@ -19,6 +19,10 @@ import { cn } from '@/lib/utils';
 import React from 'react';
 import { type AuthorDashboardSubmission } from '@/db/types';
 
+export const metadata = {
+    title: "Author Dashboard | IJITEST",
+};
+
 export const dynamic = 'force-dynamic';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {

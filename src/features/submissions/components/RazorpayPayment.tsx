@@ -10,6 +10,7 @@ import { toast } from "sonner";
 interface RazorpayPaymentProps {
     submissionId: number;
     paperId: string;
+    onSuccess?: () => void;
 }
 
 interface RazorpayResponse {
@@ -62,7 +63,7 @@ declare global {
     }
 }
 
-export default function RazorpayPayment({ submissionId, paperId }: RazorpayPaymentProps) {
+export default function RazorpayPayment({ submissionId, paperId, onSuccess }: RazorpayPaymentProps) {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -103,6 +104,9 @@ export default function RazorpayPayment({ submissionId, paperId }: RazorpayPayme
                         toast.success("Payment Verified", {
                             description: "Your paper status has been updated successfully."
                         });
+                        if (onSuccess) {
+                            onSuccess();
+                        }
                         router.refresh();
                     } else {
                         toast.error("Verification Refused", {

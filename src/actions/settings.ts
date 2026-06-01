@@ -7,7 +7,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { uploadFileToStorage } from "@/lib/fs-utils";
-import _ from "lodash";
+import camelCase from "lodash/camelCase";
+import kebabCase from "lodash/kebabCase";
 
 const ALLOWED_SETTING_KEYS = new Set([
     'journalName', 'journalShortName', 'issnNumber', 'apcInr', 'apcUsd',
@@ -50,7 +51,7 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
 
                 rows.forEach((row) => {
                     if (row.settingValue) {
-                        const key = _.camelCase(row.settingKey);
+                        const key = camelCase(row.settingKey);
                         if (ALLOWED_SETTING_KEYS.has(key)) {
                             result[key] = row.settingValue;
                         }
@@ -97,7 +98,7 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
             if (value instanceof File && value.size > 0) {
                 const bytes = await value.arrayBuffer();
                 const fileExt = value.name.split('.').pop();
-                const fileName = `${_.kebabCase(key)}.${fileExt}`;
+                const fileName = `${kebabCase(key)}.${fileExt}`;
                 const relativeDocsPath = `docs/${fileName}`;
                 await uploadFileToStorage(relativeDocsPath, Buffer.from(bytes), value.name);
                 resolvedEntries.push([key, `/api/files/docs/${fileName}`]);

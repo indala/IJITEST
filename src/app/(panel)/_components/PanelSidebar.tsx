@@ -47,6 +47,7 @@ export function PanelSidebar({
                         <Button
                             variant="ghost"
                             size="icon"
+                            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                             className={cn("absolute -right-4 top-1/2 -translate-y-1/2 z-50 rounded-full border border-border bg-background shadow-lg hover:bg-accent transition-all hidden lg:flex items-center justify-center cursor-pointer", isCollapsed ? "bg-primary text-white" : "bg-primary text-white")}
                             onClick={toggleSidebar}
                         >
@@ -81,6 +82,7 @@ export function PanelSidebar({
                     <Button
                         variant="ghost"
                         size="icon"
+                        aria-label="Close sidebar"
                         className="size-10 text-muted-foreground hover:text-foreground cursor-pointer"
                         onClick={() => setOpenMobile(false)}
                     >

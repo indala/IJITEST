@@ -1,4 +1,20 @@
-
-> ijitest@0.1.0 lint D:\lab2\IJITEST
-> eslint --fix
-
+src/actions/publications.ts(69,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(70,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(254,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(255,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(256,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(257,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(286,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(287,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(288,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(289,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(367,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(368,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(369,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(370,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(406,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(407,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(441,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(442,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(443,9): error TS2554: Expected 2 arguments, but got 1.
+src/actions/publications.ts(444,9): error TS2554: Expected 2 arguments, but got 1.

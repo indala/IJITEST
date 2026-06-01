@@ -15,7 +15,7 @@ import {
     type PaperWithPublication
 } from "@/db/types";
 import { eq, and, sql, desc, count } from "drizzle-orm";
-import { revalidatePath, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { getSettingsData } from "./settings";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { downloadFileFromStorage } from "@/lib/fs-utils";
@@ -23,6 +23,8 @@ import { brandPdf } from "@/lib/pdf-branding";
 import { getSubmissionById } from "./submissions";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { headers } from "next/headers";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 
 /**
@@ -38,6 +40,10 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
     const issue = parseInt(formData.get('issue') as string);
     const year = parseInt(formData.get('year') as string);
     const monthRange = formData.get('monthRange') as string;
+
+    if (isNaN(volume) || isNaN(issue) || isNaN(year)) {
+        return actionError("Volume, Issue, and Year must be valid numbers");
+    }
 
     try {
         // 1. Check for duplicates
@@ -60,6 +66,8 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
         });
         revalidatePath('/admin/publications');
         revalidatePath('/', 'layout');
+        revalidateTag('publications', {});
+        revalidateTag('public-data', {});
         return actionSuccess();
     } catch (error) {
         console.error("Create Publication Error:", error);
@@ -243,6 +251,10 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         revalidatePath('/admin/publications');
         revalidatePath('/archives');
         revalidatePath('/', 'layout');
+        revalidateTag('publications', {});
+        revalidateTag('archives', {});
+        revalidateTag('public-data', {});
+        revalidateTag('latest-issue', {});
         return actionSuccess();
     } catch (error) {
         console.error("Assign Paper Error:", error);
@@ -271,6 +283,10 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');
+        revalidateTag('publications', {});
+        revalidateTag('archives', {});
+        revalidateTag('public-data', {});
+        revalidateTag('latest-issue', {});
         return actionSuccess();
     } catch (error) {
         console.error("Publish Issue Error:", error);
@@ -348,6 +364,10 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');
+        revalidateTag('publications', {});
+        revalidateTag('archives', {});
+        revalidateTag('public-data', {});
+        revalidateTag('latest-issue', {});
         return actionSuccess();
     } catch (error) {
         return actionError("Failed to unassign paper: " + (error instanceof Error ? error.message : String(error)));
@@ -369,6 +389,10 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
         const year = parseInt(formData.get('year') as string);
         const monthRange = formData.get('monthRange') as string;
 
+        if (isNaN(volume) || isNaN(issue) || isNaN(year)) {
+            return actionError("Volume, Issue, and Year must be valid numbers");
+        }
+
         await db.update(volumesIssues)
             .set({
                 volumeNumber: volume,
@@ -379,6 +403,8 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
             .where(eq(volumesIssues.id, id));
 
         revalidatePath('/admin/publications');
+        revalidateTag('publications', {});
+        revalidateTag('public-data', {});
         return actionSuccess();
     } catch (error) {
         console.error("Update Publication Error:", error);
@@ -412,6 +438,10 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
         return actionError("Failed to delete: " + (error instanceof Error ? error.message : String(error)));
     } finally {
         revalidatePath('/admin/publications');
+        revalidateTag('publications', {});
+        revalidateTag('archives', {});
+        revalidateTag('public-data', {});
+        revalidateTag('latest-issue', {});
     }
 }
 
@@ -420,6 +450,17 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
  */
 export async function incrementPaperViews(submissionId: number): Promise<ActionResponse> {
     try {
+        const headerList = await headers();
+        const ip = headerList.get("x-forwarded-for") || "127.0.0.1";
+        const limit = await checkRateLimit({
+            key: `pub:views:${ip}:${submissionId}`,
+            max: 5,
+            windowMs: 60 * 1000
+        });
+        if (!limit.allowed) {
+            return actionError("Too many view requests");
+        }
+
         await db.update(publications)
             .set({ views: sql`views + 1` })
             .where(eq(publications.submissionId, submissionId));
@@ -435,6 +476,17 @@ export async function incrementPaperViews(submissionId: number): Promise<ActionR
  */
 export async function incrementPaperDownloads(submissionId: number): Promise<ActionResponse> {
     try {
+        const headerList = await headers();
+        const ip = headerList.get("x-forwarded-for") || "127.0.0.1";
+        const limit = await checkRateLimit({
+            key: `pub:downloads:${ip}:${submissionId}`,
+            max: 5,
+            windowMs: 60 * 1000
+        });
+        if (!limit.allowed) {
+            return actionError("Too many download requests");
+        }
+
         await db.update(publications)
             .set({ downloads: sql`downloads + 1` })
             .where(eq(publications.submissionId, submissionId));

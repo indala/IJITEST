@@ -101,6 +101,7 @@ export default function LoginClient() {
                                         type="button"
                                         variant="ghost"
                                         size="icon"
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
                                         disabled={isPending}
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="h-8 w-8 2xl:h-10 2xl:w-10 text-muted-foreground/60 hover:text-[#000066] transition-colors hover:bg-transparent"

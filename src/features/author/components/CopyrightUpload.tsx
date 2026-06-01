@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useActionState, useEffect } from "react";
+import React, { useState, useCallback, useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -20,6 +20,7 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
 
     const uploadAction = async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
         if (!file) {
+            toast.error("Please select a signed .docx copyright form first.");
             return { success: false, error: "Please select a signed .docx copyright form first." };
         }
 
@@ -28,27 +29,21 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
         try {
             const res = await uploadCopyrightFormAfterAcceptance(submissionId, formData);
             if (res.success) {
+                toast.success("Copyright transfer form uploaded successfully!");
                 setFile(null);
+                router.refresh();
+            } else {
+                toast.error(res.error || "Failed to upload copyright form.");
             }
             return res;
         } catch (err) {
             console.error("Copyright upload error:", err);
+            toast.error("An unexpected error occurred during file upload.");
             return { success: false, error: "An unexpected error occurred during file upload." };
         }
     };
 
-    const [state, formAction, isPending] = useActionState(uploadAction, null);
-
-    useEffect(() => {
-        if (state) {
-            if (state.success) {
-                toast.success("Copyright transfer form uploaded successfully!");
-                router.refresh();
-            } else {
-                toast.error(state.error || "Failed to upload copyright form.");
-            }
-        }
-    }, [state, router]);
+    const [, formAction, isPending] = useActionState(uploadAction, null);
 
     const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0] || null;

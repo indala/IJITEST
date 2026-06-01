@@ -1,21 +1,21 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { 
-    users, 
-    userProfiles, 
+import {
+    users,
+    userProfiles,
     userInvitations,
     reviewAssignments,
     submissionEditors,
     reviews,
 } from "@/db/schema";
-import { 
-    type UserWithProfile, 
+import {
+    type UserWithProfile,
     type SafeUserWithProfile,
     type ActionResponse,
 } from "@/db/types";
 import { eq, and, sql, inArray, isNotNull, not } from "drizzle-orm";
-import bcrypt from "bcryptjs";
+import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import crypto from 'crypto';
@@ -41,16 +41,16 @@ export async function getEditorialBoard(): Promise<ActionResponse<SafeUserWithPr
             },
             profile: userProfiles,
         })
-        .from(users)
-        .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .where(
-            and(
-                inArray(users.role, ["admin", "editor", "reviewer"]),
-                isNotNull(users.passwordHash),
-                eq(users.isActive, true)
+            .from(users)
+            .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .where(
+                and(
+                    inArray(users.role, ["admin", "editor", "reviewer"]),
+                    isNotNull(users.passwordHash),
+                    eq(users.isActive, true)
+                )
             )
-        )
-        .orderBy(users.role, userProfiles.fullName);
+            .orderBy(users.role, userProfiles.fullName);
 
         const data: SafeUserWithProfile[] = rows.map(r => ({
             ...r.user,
@@ -71,7 +71,9 @@ export async function getUsers(role?: "admin" | "editor" | "reviewer" | "author"
             return { success: false, error: "Unauthorized" };
         }
 
-        const query = db.select({
+        const whereClause = role ? eq(users.role, role) : not(eq(users.role, 'author'));
+
+        const rows = await db.select({
             user: {
                 id: users.id,
                 email: users.email,
@@ -87,16 +89,9 @@ export async function getUsers(role?: "admin" | "editor" | "reviewer" | "author"
             },
             profile: userProfiles,
         })
-        .from(users)
-        .leftJoin(userProfiles, eq(users.id, userProfiles.userId));
-
-        if (role) {
-            query.where(eq(users.role, role));
-        } else {
-            query.where(not(eq(users.role, 'author')));
-        }
-
-        const rows = await query;
+            .from(users)
+            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .where(whereClause);
         const data: SafeUserWithProfile[] = rows.map(r => ({
             ...r.user,
             profile: r.profile
@@ -178,16 +173,16 @@ export async function getPasswordSetupInfo(token: string): Promise<ActionRespons
             role: userInvitations.role,
             fullName: userProfiles.fullName,
         })
-        .from(userInvitations)
-        .innerJoin(users, eq(userInvitations.email, users.email))
-        .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .where(
-            and(
-                eq(userInvitations.token, token),
-                sql`${userInvitations.expiresAt} > ${new Date()}`
+            .from(userInvitations)
+            .innerJoin(users, eq(userInvitations.email, users.email))
+            .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .where(
+                and(
+                    eq(userInvitations.token, token),
+                    sql`${userInvitations.expiresAt} > ${new Date()}`
+                )
             )
-        )
-        .limit(1);
+            .limit(1);
 
         if (!invitation[0]) return { success: false, error: "Link expired or invalid" };
         return { success: true, data: invitation[0] };
@@ -203,7 +198,7 @@ export async function setupPassword(formData: FormData): Promise<ActionResponse>
     const password = formData.get('password') as string;
 
     try {
-        const passwordHash = await bcrypt.hash(password, 10);
+        const passwordHash = await hash(password, 10);
 
         return await db.transaction(async (tx) => {
             const invitation = await tx.select()
@@ -247,10 +242,10 @@ export async function requestPasswordReset(formData: FormData): Promise<ActionRe
             role: users.role,
             fullName: userProfiles.fullName,
         })
-        .from(users)
-        .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .where(eq(users.email, email))
-        .limit(1);
+            .from(users)
+            .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .where(eq(users.email, email))
+            .limit(1);
 
         const user = userResult[0];
         if (!user) {
@@ -292,6 +287,8 @@ export async function requestPasswordReset(formData: FormData): Promise<ActionRe
             to: email,
             subject: template.subject,
             html: template.html
+        }).catch((err) => {
+            console.error("Password reset email delivery failed:", err);
         });
 
         return { success: true };
@@ -339,6 +336,20 @@ export async function deleteUser(id: string): Promise<ActionResponse> {
 
         if (!['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Only admins and editors can remove staff." };
+        }
+
+        const targetUserRows = await db.select({ role: users.role })
+            .from(users)
+            .where(eq(users.id, id))
+            .limit(1);
+        const targetUser = targetUserRows[0];
+
+        if (!targetUser) {
+            return { success: false, error: "User not found." };
+        }
+
+        if (targetUser.role === 'admin' && session.user.role !== 'admin') {
+            return { success: false, error: "Unauthorized: Editors cannot delete Admin accounts." };
         }
 
         return await db.transaction(async (tx) => {
@@ -393,10 +404,10 @@ export async function getUserProfile(): Promise<ActionResponse<UserWithProfile>>
             user: users,
             profile: userProfiles,
         })
-        .from(users)
-        .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .where(eq(users.id, session.user.id))
-        .limit(1);
+            .from(users)
+            .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .where(eq(users.id, session.user.id))
+            .limit(1);
 
         if (!result[0]) return { success: false, error: "User not found" };
 

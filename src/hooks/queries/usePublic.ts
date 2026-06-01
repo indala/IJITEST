@@ -21,7 +21,7 @@ export function useEditorialBoard(_initialData?: SafeUserWithProfile[]) {
     return useQuery({
         queryKey: publicKeys.editorialBoard(),
         queryFn: () => getEditorialBoard(),
-        select: (res) => res.success ? res.data : [],
+        select: (res) => res.success ? (res.data ?? []) : [],
         staleTime: 1000 * 60 * 30, // 30 minutes
         gcTime: 1000 * 60 * 60, // Keep in memory for 1 hour
     });
@@ -31,7 +31,7 @@ export function usePublicArchives(_initialData?: PublishedPaperUI[]) {
     return useQuery({
         queryKey: publicKeys.archives(),
         queryFn: () => getPublishedPapers(),
-        select: (res) => res.success ? res.data : [],
+        select: (res) => res.success ? (res.data ?? []) : [],
         staleTime: 1000 * 60 * 10, // 10 minutes for public archives
         gcTime: 1000 * 60 * 30, // Keep in memory for 30 mins
     });
@@ -41,7 +41,7 @@ export function useLatestIssuePapers(_initialData?: PublishedPaperUI[]) {
     return useQuery({
         queryKey: publicKeys.currentIssue(),
         queryFn: () => getLatestIssuePapers(),
-        select: (res) => res.success ? res.data : [],
+        select: (res) => res.success ? (res.data ?? []) : [],
         staleTime: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 30,
     });
@@ -51,7 +51,7 @@ export function useArchivePapers(_initialData?: PublishedPaperUI[]) {
     return useQuery({
         queryKey: publicKeys.archivePapers(),
         queryFn: () => getArchivePapers(),
-        select: (res) => res.success ? res.data : [],
+        select: (res) => res.success ? (res.data ?? []) : [],
         staleTime: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 30,
     });

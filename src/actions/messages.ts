@@ -187,17 +187,18 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
 
     const { name, email, subject, message } = validated.data;
     const emailKey = String(email || "").toLowerCase().trim();
-    const rate = await checkRateLimit({
-        key: `contact:${emailKey}`,
-        max: 5,
-        windowMs: 60_000,
-    });
-
-    if (!rate.allowed) {
-        return actionError(`Too many contact requests. Please wait ${rate.retryAfterSeconds} seconds and try again.`);
-    }
 
     try {
+        const rate = await checkRateLimit({
+            key: `contact:${emailKey}`,
+            max: 5,
+            windowMs: 60_000,
+        });
+
+        if (!rate.allowed) {
+            return actionError(`Too many contact requests. Please wait ${rate.retryAfterSeconds} seconds and try again.`);
+        }
+
         await db.insert(contactMessages).values({
             name,
             email,

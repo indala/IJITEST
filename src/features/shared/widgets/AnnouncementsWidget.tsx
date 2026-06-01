@@ -23,6 +23,24 @@ function AnnouncementsWidget() {
         return null;
     }, [dbIssue]);
 
+    if (isLoading) {
+        return (
+            <Card className="border-border/50 shadow-md overflow-hidden">
+                <CardHeader className="p-5 pb-0 2xl:p-10 2xl:pb-0">
+                    <div className="flex items-center gap-2">
+                        <Newspaper className="w-6 h-6 2xl:w-8 2xl:h-8 text-secondary" />
+                        <CardTitle className="m-0 2xl:text-xl">Announcements</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="p-8 flex items-center justify-center">
+                        <Loader2 className="w-6 h-6 animate-spin text-primary/20" />
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
     if (!currentStatus) return null;
 
     return (
@@ -40,30 +58,24 @@ function AnnouncementsWidget() {
                     </div>
                 </CardHeader>
                 <CardContent className="  ">
-                    {isLoading ? (
-                        <div className="p-8 flex items-center justify-center">
-                            <Loader2 className="w-6 h-6 animate-spin text-primary/20" />
+                    <div className="p-3 2xl:p-6 bg-slate-50 rounded-xl 2xl:rounded-2xl border border-slate-100 group hover:border-primary/20 transition-colors">
+                        <Badge variant="outline" className="h-auto py-1 text-primary border-primary/20 bg-primary/5 mb-4 flex items-center gap-1.5 w-fit">
+                            <span className="relative flex h-1.5 w-1.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
+                            </span>
+                            Current Issue
+                        </Badge>
+                        <div className="space-y-2">
+                            <p className="text-slate-700 m-0">
+                                Volume {currentStatus.volume}, Issue {currentStatus.issue} ({currentStatus.date}) is now open for submissions.
+                            </p>
+                            <Link href="/submit" className="text-secondary flex items-center gap-1 hover:text-primary transition-colors group/link no-underline">
+                                Submit Manuscript
+                                <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                            </Link>
                         </div>
-                    ) : (
-                        <div className="p-3 2xl:p-6 bg-slate-50 rounded-xl 2xl:rounded-2xl border border-slate-100 group hover:border-primary/20 transition-colors">
-                            <Badge variant="outline" className="h-auto py-1 text-primary border-primary/20 bg-primary/5 mb-4 flex items-center gap-1.5 w-fit">
-                                <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
-                                </span>
-                                Current Issue
-                            </Badge>
-                            <div className="space-y-2">
-                                <p className="text-slate-700 m-0">
-                                    Volume {currentStatus.volume}, Issue {currentStatus.issue} ({currentStatus.date}) is now open for submissions.
-                                </p>
-                                <Link href="/submit" className="text-secondary flex items-center gap-1 hover:text-primary transition-colors group/link no-underline">
-                                    Submit Manuscript
-                                    <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-                                </Link>
-                            </div>
-                        </div>
-                    )}
+                    </div>
                 </CardContent>
             </Card>
         </motion.div>

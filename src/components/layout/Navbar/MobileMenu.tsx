@@ -59,13 +59,16 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: -20 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="mobile-menu-title"
                         className="fixed top-12 left-4 right-4 mx-auto w-[calc(100%-2rem)] max-w-[480px] bg-white/95 backdrop-blur-3xl rounded-4xl shadow-[0_40px_80px_-16px_rgba(0,0,0,0.3)] border border-white/40 flex flex-col overflow-hidden max-h-[85vh] z-9999 lg:hidden"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 h-16 border-b border-primary/5 shrink-0">
                             <div className="flex flex-col">
                                 <span className="text-[9px] font-black text-secondary  tracking-[0.3em]">Menu</span>
-                                <span className="text-xs font-black text-primary  tracking-widest">Navigation</span>
+                                <span id="mobile-menu-title" className="text-xs font-black text-primary  tracking-widest">Navigation</span>
                             </div>
                             <button
                                 title="Close Menu"

@@ -1,52 +1,49 @@
 'use client'
 
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { FileUp, FileCheck, Loader2, Download, RefreshCw, X } from "lucide-react";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { uploadManuscriptPdf, autoSyncManuscriptToPdf } from "@/actions/submissions";
+import { type ActionResponse } from "@/db/types";
 
 export default function AdminPdfUpload({ submissionId, currentUrl }: { submissionId: number, currentUrl?: string | null }) {
+    const router = useRouter();
     const [showUpload, setShowUpload] = useState(!currentUrl);
-    const [isUploading, setIsUploading] = useState(false);
-    const [isConverting, setIsConverting] = useState(false);
 
-    async function handleUpload(formData: FormData) {
-        setIsUploading(true);
-        try {
+    const [, uploadAction, isUploading] = useActionState<ActionResponse, FormData>(
+        async (_prev, formData) => {
+            const toastId = toast.loading('Synchronizing manuscript...');
             const result = await uploadManuscriptPdf(submissionId, formData);
             if (result.success) {
-                toast.success('Manuscript synchronized successfully');
+                toast.success('Manuscript synchronized successfully', { id: toastId });
                 setShowUpload(false);
-                window.location.reload();
+                router.refresh();
             } else {
-                toast.error(result.error);
+                toast.error(result.error, { id: toastId });
             }
-        } catch {
-            toast.error('Failed to synchronize manuscript');
-        } finally {
-            setIsUploading(false);
-        }
-    }
+            return result;
+        },
+        { success: false, error: "" }
+    );
 
-    async function handleAutoConvert() {
-        setIsConverting(true);
-        try {
+    const [, convertAction, isConverting] = useActionState<ActionResponse, FormData>(
+        async (_prev, _formData) => {
+            const toastId = toast.loading('Generating PDF...');
             const result = await autoSyncManuscriptToPdf(submissionId);
             if (result.success) {
-                toast.success('PDF generated and synced successfully');
+                toast.success('PDF generated and synced successfully', { id: toastId });
                 setShowUpload(false);
-                window.location.reload();
+                router.refresh();
             } else {
-                toast.error(result.error);
+                toast.error(result.error, { id: toastId });
             }
-        } catch {
-            toast.error('Critical error during PDF conversion');
-        } finally {
-            setIsConverting(false);
-        }
-    }
+            return result;
+        },
+        { success: false, error: "" }
+    );
 
     if (!showUpload && currentUrl) {
         return (
@@ -63,15 +60,17 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
                         </a>
                     </Button>
 
-                    <Button
-                        onClick={handleAutoConvert}
-                        disabled={isConverting || isUploading}
-                        variant="ghost"
-                        className="w-full h-11 gap-3 text-primary hover:text-primary font-black text-[10px] tracking-widest rounded-xl hover:bg-primary/5 transition-all cursor-pointer border border-primary/10"
-                    >
-                        {isConverting ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                        <span>Update using PDF Converter</span>
-                    </Button>
+                    <form action={convertAction}>
+                        <Button
+                            type="submit"
+                            disabled={isConverting || isUploading}
+                            variant="ghost"
+                            className="w-full h-11 gap-3 text-primary hover:text-primary font-black text-[10px] tracking-widest rounded-xl hover:bg-primary/5 transition-all cursor-pointer border border-primary/10"
+                        >
+                            {isConverting ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                            <span>Update using PDF Converter</span>
+                        </Button>
+                    </form>
 
                     <Button
                         onClick={() => setShowUpload(true)}
@@ -87,7 +86,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
     }
 
     return (
-        <form action={handleUpload} className="space-y-4">
+        <form action={uploadAction} className="space-y-4">
             <div className="space-y-3">
                 <div className="flex items-center justify-between px-1">
                     <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">Manuscript Source</label>
@@ -104,7 +103,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
 
                 <Button
                     type="button"
-                    onClick={handleAutoConvert}
+                    onClick={() => convertAction(new FormData())}
                     disabled={isConverting || isUploading}
                     variant="outline"
                     className="w-full h-16 gap-4 border-primary/20 bg-primary/5 text-primary font-black text-[11px] tracking-widest rounded-2xl hover:bg-primary hover:text-white dark:hover:text-black transition-all shadow-xl shadow-primary/5 cursor-pointer relative overflow-hidden group"

@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CurrentIssue() {
     const res = await getLatestIssuePapers();
-    const papers = res.data || [];
+    const papers = res.success ? (res.data ?? []) : [];
 
     return (
         <div className="bg-background min-h-screen">

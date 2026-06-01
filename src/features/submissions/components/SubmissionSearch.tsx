@@ -58,6 +58,7 @@ export default function SubmissionSearch({
                     onKeyDown={handleKeyDown}
                     className="h-14 pl-16 pr-6 bg-card border-border/50 rounded-xl text-base font-medium focus:ring-4 focus:ring-primary/10 transition-all w-full"
                     placeholder={placeholder}
+                    aria-label="Search submissions"
                 />
             </div>
             <Button

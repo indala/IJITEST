@@ -1,9 +1,13 @@
 "use client";
 
-import { Users, UserPlus, Shield, Mail, Trash2, ShieldCheck, UserCog, CheckCircle, AlertCircle, ShieldAlert } from 'lucide-react';
+export const metadata = {
+    title: "User Management | IJITEST",
+};
+
+import { Users, UserPlus, Shield, Mail, Trash2, ShieldCheck, UserCog, CheckCircle, AlertCircle, ShieldAlert, Search } from 'lucide-react';
 import { useUsers } from '@/hooks/queries/useUsers';
 import { useSession } from 'next-auth/react';
-import React, { useState, useTransition, useCallback, useMemo, useActionState, useEffect, useRef } from 'react';
+import React, { useState, useTransition, useCallback, useMemo, useActionState } from 'react';
 import { toast } from 'sonner';
 import { createUser, updateUserRole, deleteUser } from '@/actions/users';
 import { useQueryClient } from '@tanstack/react-query';
@@ -166,38 +170,35 @@ export default function UserManagement() {
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState<SafeUserWithProfile | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
     const [isCleaning, startCleanup] = useTransition();
     const [isUpdatingRole, startUpdateRole] = useTransition();
     const [isDeletingUser, startDeleteUser] = useTransition();
 
     // React 19: useActionState for invitation form
-    const [createState, createAction, isCreatingStaff] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
-        return await createUser(formData);
+    const [, createAction, isCreatingStaff] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
+        const result = await createUser(formData);
+        if (result.success) {
+            toast.success("Staff member invited successfully");
+            setShowAddModal(false);
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+        } else {
+            toast.error(result.error);
+        }
+        return result;
     }, { success: false, error: "" } as ActionResponse);
 
-    const prevSuccessRef = useRef(false);
-
-    // Sync ActionState with UI (close modal, show toast, refresh list)
-    useEffect(() => {
-        if (createState.success && !prevSuccessRef.current) {
-            if (!isCreatingStaff) {
-                prevSuccessRef.current = true;
-                setTimeout(() => {
-                    setShowAddModal(false);
-                    toast.success("Staff member invited successfully");
-                    queryClient.invalidateQueries({ queryKey: ['users'] });
-                }, 0);
-            }
-        } else if (!createState.success && prevSuccessRef.current) {
-            prevSuccessRef.current = false;
-        }
-
-        if (!createState.success && createState.error) {
-            toast.error(createState.error);
-        }
-    }, [createState, isCreatingStaff, queryClient]);
-
     const currentUserId = useMemo(() => session?.user?.id ? String(session.user.id) : null, [session]);
+
+    const filteredUsers = useMemo(() => {
+        if (!searchQuery.trim()) return users;
+        const query = searchQuery.toLowerCase();
+        return users.filter((user) => {
+            const name = user.profile?.fullName?.toLowerCase() || "";
+            const email = user.email?.toLowerCase() || "";
+            return name.includes(query) || email.includes(query);
+        });
+    }, [users, searchQuery]);
 
     const handleCleanup = useCallback(() => {
         startCleanup(async () => {
@@ -273,6 +274,16 @@ export default function UserManagement() {
                         <ShieldAlert className="w-4 h-4" />
                         {isCleaning ? "Cleaning..." : "Cleanup inactive authors"}
                     </Button>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search by name or email..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="h-10 w-64 pl-9 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 text-sm rounded-xl"
+                            aria-label="Search users by name or email"
+                        />
+                    </div>
                     <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
                         <DialogTrigger asChild>
                             <Button className="h-10 px-5 gap-2 bg-primary text-white font-medium text-xs rounded-xl hover:bg-primary/90 transition-all cursor-pointer">
@@ -320,13 +331,13 @@ export default function UserManagement() {
 
             {/* Users Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 2xl:gap-8 transition-all duration-500">
-                {users.length === 0 ? (
+                {filteredUsers.length === 0 ? (
                     <div className="col-span-full py-20 bg-muted/20 border-2 border-dashed border-border/50 rounded-xl flex flex-col items-center justify-center text-center">
                         <Users className="w-10 h-10 text-muted-foreground/20 mb-4" />
-                        <h3>No Staff Found</h3>
-                        <p>Start by adding your first team member.</p>
+                        <h3>{searchQuery ? "No matching users found" : "No Staff Found"}</h3>
+                        <p>{searchQuery ? "Try a different search term." : "Start by adding your first team member."}</p>
                     </div>
-                ) : users.map((user) => (
+                ) : filteredUsers.map((user) => (
                     <UserItemCard
                         key={user.id}
                         user={user}

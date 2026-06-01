@@ -18,7 +18,7 @@ export default function PanelLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
 
     // Track user active status
@@ -57,6 +57,15 @@ export default function PanelLayout({
     // Prevent hydration mismatch by returning null until mounted
     if (!mounted) {
         return null;
+    }
+
+    if (status === 'loading') {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-muted/30 dark:bg-slate-950/50">
+                <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground animate-pulse">Initializing vault clearance...</p>
+            </div>
+        );
     }
 
     const user = session?.user ?? null;

@@ -122,7 +122,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                     { name: paper.paperId, href: `/current-issue/${volume}/${issue}/${paperId}` },
                 ]}
             />
-            <PaperDetailClient paper={paper} id={paperId} mode="current" />
+            <PaperDetailClient paper={paper} mode="current" />
 
             <JsonLd 
                 id="scholarly-article"

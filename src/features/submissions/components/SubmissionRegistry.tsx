@@ -72,7 +72,6 @@ export default function SubmissionRegistry({
 
                     <SubmissionContainer
                         submissions={submissions}
-                        currentStatus={currentStatus}
                         role={role}
                     />
 

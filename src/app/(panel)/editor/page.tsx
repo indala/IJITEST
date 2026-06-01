@@ -1,5 +1,6 @@
 import { TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import * as schema from "@/db/schema";
 import { eq, desc, sql, count, and } from "drizzle-orm";
@@ -12,20 +13,31 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { performance } from 'perf_hooks';
-import * as ss from 'simple-statistics';
+function mean(values: number[]): number {
+    return values.reduce((a, b) => a + b, 0) / values.length;
+}
+
+export const metadata = {
+    title: "Editor Dashboard | IJITEST",
+};
 
 export const dynamic = 'force-dynamic';
 
 export default async function EditorDashboard() {
     const session = await getServerSession(authOptions);
-        const user = session?.user;
-        const mySubmissions = await getMySubmissions();
+    if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        redirect('/login');
+    }
+    const user = session.user;
+    const mySubmissions = await getMySubmissions();
 
-        // 1. Data Fetching
-        const [totalSubmissions] = await db.select({ value: count() }).from(schema.submissions);
+    // 1. Data Fetching
+    const [totalSubmissions] = await db.select({ value: count() }).from(schema.submissions);
         const [underReview] = await db.select({ value: count() }).from(schema.submissions).where(eq(schema.submissions.status, 'underReview'));
         const [pendingPayments] = await db.select({ value: count() }).from(schema.payments).where(eq(schema.payments.status, 'pending'));
         const [publishedCount] = await db.select({ value: count() }).from(schema.submissions).where(eq(schema.submissions.status, 'published'));
+        const [totalReviews] = await db.select({ value: count() }).from(schema.reviewAssignments);
+        const [completedReviews] = await db.select({ value: count() }).from(schema.reviewAssignments).where(eq(schema.reviewAssignments.status, 'completed'));
         
         const latestIssue = await db.query.volumesIssues.findFirst({
             where: eq(schema.volumesIssues.status, 'published'),
@@ -71,7 +83,7 @@ export default async function EditorDashboard() {
         const storageMB = (totalStorageBytes / (1024 * 1024)).toFixed(1);
         const memUsed = ((os.totalmem() - os.freemem()) / os.totalmem()) * 100;
         const uptimeHours = (os.uptime() / 3600).toFixed(1);
-        const healthScore = ss.mean([100 - memUsed, 100 - (Number(dbLatency) / 2), 100 - (Number(storageMB) / 5)]).toFixed(1);
+        const healthScore = mean([100 - memUsed, 100 - (Number(dbLatency) / 2), 100 - (Number(storageMB) / 5)]).toFixed(1);
 
         const healthMetrics = [
             { label: 'Database', value: `${dbLatency}ms`, icon: 'Activity', status: Number(dbLatency) < 100 ? 'Optimal' : 'Checking' },
@@ -84,8 +96,10 @@ export default async function EditorDashboard() {
     const totalSubCount = Number(totalSubmissions?.value ?? 0);
     const pubCount = Number(publishedCount?.value ?? 0);
     const pubPercent = totalSubCount > 0 ? (pubCount / totalSubCount) * 100 : 0;
-    // Simplified review rate for editor
-    const revPercent = 85.0; 
+    
+    const totalRevCount = Number(totalReviews?.value ?? 0);
+    const compRevCount = Number(completedReviews?.value ?? 0);
+    const revPercent = totalRevCount > 0 ? (compRevCount / totalRevCount) * 100 : 0; 
 
     return (
         <DashboardRegistry 

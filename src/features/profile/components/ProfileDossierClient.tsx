@@ -76,6 +76,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
         'nationality': nationalityRef,
         'bio': bioRef,
         'orcidId': orcidRef,
+        'orcidid': orcidRef,
         'photo': photoRef,
         'affiliation': affiliationRef,
         'interests': interestsRef,
@@ -119,7 +120,6 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
         if (!photoToAdjust || !imageRef.current) return
 
         setIsUploading(true)
-        setPhotoToAdjust(null)
 
         try {
             // Create a canvas to crop the image
@@ -165,6 +165,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
 
             setData((prev: ProfileData) => ({ ...prev, photoUrl: response.data || null }))
             toast.success("Profile photo adjusted & updated")
+            setPhotoToAdjust(null)
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Failed to upload photo")
         } finally {
@@ -256,11 +257,12 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                 <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Adjust Frame</h3>
                                                 <p className="text-xs font-medium text-slate-500 uppercase tracking-widest">Scale & Position Asset</p>
                                             </div>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
                                                 onClick={() => setPhotoToAdjust(null)}
                                                 className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+                                                aria-label="Close"
                                             >
                                                 <X className="w-5 h-5" />
                                             </Button>
@@ -297,11 +299,12 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                     <span className="text-[10px] font-black text-primary uppercase tracking-widest">{Math.round(zoom * 100)}%</span>
                                                 </div>
                                                 <div className="flex items-center gap-4">
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
                                                         className="h-8 w-8 rounded-full border border-slate-100 dark:border-slate-800"
                                                         onClick={() => setZoom(z => Math.max(0.5, z - 0.1))}
+                                                        aria-label="Zoom out"
                                                     >
                                                         <Minus className="w-4 h-4" />
                                                     </Button>
@@ -316,11 +319,12 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                         onChange={(e) => setZoom(parseFloat(e.target.value))}
                                                         className="flex-1 accent-primary h-1 bg-slate-100 dark:bg-slate-800 rounded-full appearance-none cursor-pointer"
                                                     />
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
                                                         className="h-8 w-8 rounded-full border border-slate-100 dark:border-slate-800"
                                                         onClick={() => setZoom(z => Math.min(3, z + 0.1))}
+                                                        aria-label="Zoom in"
                                                     >
                                                         <Plus className="w-4 h-4" />
                                                     </Button>
@@ -525,7 +529,9 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                 {tempInterests.filter(i => !CATEGORIES.includes(i)).map(interest => (
                                                     <Badge key={interest} variant="secondary" className="gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border-none">
                                                         {interest}
-                                                        <X className="w-3.5 h-3.5 cursor-pointer hover:text-rose-500 transition-colors" onClick={() => toggleInterest(interest)} />
+                                                        <button type="button" aria-label={`Remove ${interest}`} className="inline-flex appearance-none border-none bg-transparent cursor-pointer p-0" onClick={() => toggleInterest(interest)}>
+                                                            <X className="w-3.5 h-3.5 cursor-pointer hover:text-rose-500 transition-colors" />
+                                                        </button>
                                                     </Badge>
                                                 ))}
                                             </div>

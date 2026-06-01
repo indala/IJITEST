@@ -226,14 +226,18 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
             return { success: true, staff, paper, setupUrl };
         });
 
+        if (!txResult.success) {
+            return { success: false, error: txResult.error || "Failed to assign reviewer." };
+        }
+
         // 9. Send email AFTER transaction commits (fire-and-forget)
-        if (txResult.success && txResult.staff?.email && txResult.paper) {
+        if (txResult.staff?.email && txResult.paper) {
             const template = emailTemplates.reviewAssignment(
                 txResult.staff.name || "Reviewer",
                 txResult.paper.title,
                 deadline,
                 txResult.paper.paperId,
-                txResult.setupUrl as string
+                txResult.setupUrl
             );
             sendEmail({ to: txResult.staff.email, subject: template.subject, html: template.html })
                 .catch(e => console.error("Reviewer assignment email failed:", e));
@@ -367,7 +371,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                 `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/admin/submissions/${info.submissionId}`
             );
 
-            Promise.allSettled(admins.map(a => sendEmail({
+            await Promise.allSettled(admins.map(a => sendEmail({
                 to: a.email,
                 subject: staffAlert.subject,
                 html: staffAlert.html

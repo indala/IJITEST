@@ -135,6 +135,7 @@ export function MessageDetail({
                                 disabled={isActionLoading}
                                 onClick={() => handleUpdateStatus('pending')}
                                 className="h-7 w-7 rounded-lg hover:bg-amber-500/10 hover:text-amber-600 transition-colors"
+                                aria-label="Revert to pending"
                             >
                                 <RotateCcw className="w-3.5 h-3.5" />
                             </Button>
@@ -147,6 +148,7 @@ export function MessageDetail({
                                 disabled={isActionLoading}
                                 onClick={() => handleUpdateStatus('resolved')}
                                 className="h-7 w-7 rounded-lg hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors"
+                                aria-label="Mark as resolved"
                             >
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                             </Button>
@@ -159,6 +161,7 @@ export function MessageDetail({
                                 disabled={isActionLoading}
                                 onClick={() => handleUpdateStatus('archived')}
                                 className="h-7 w-7 rounded-lg hover:bg-slate-500/10 hover:text-slate-600 transition-colors"
+                                aria-label="Archive message"
                             >
                                 <Archive className="w-3.5 h-3.5" />
                             </Button>

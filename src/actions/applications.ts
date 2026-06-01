@@ -235,9 +235,14 @@ export async function bulkApproveApplications(ids: number[]): Promise<ActionResp
     for (const id of ids) {
         try {
             const res = await approveApplication(id);
-            if (res.success) results.successCount++;
-            else results.errors.push(`ID ${id}: ${res.error}`);
+            if (res.success) {
+                results.successCount++;
+            } else {
+                results.failCount++;
+                results.errors.push(`ID ${id}: ${res.error}`);
+            }
         } catch (e) {
+            results.failCount++;
             const message = e instanceof Error ? e.message : String(e);
             results.errors.push(`ID ${id}: ${message}`);
         }
@@ -266,9 +271,14 @@ export async function bulkRejectApplications(ids: number[], reason: string): Pro
     for (const id of ids) {
         try {
             const res = await rejectApplication(id, reason);
-            if (res.success) results.successCount++;
-            else results.errors.push(`ID ${id}: ${res.error}`);
+            if (res.success) {
+                results.successCount++;
+            } else {
+                results.failCount++;
+                results.errors.push(`ID ${id}: ${res.error}`);
+            }
         } catch (e) {
+            results.failCount++;
             const message = e instanceof Error ? e.message : String(e);
             results.errors.push(`ID ${id}: ${message}`);
         }

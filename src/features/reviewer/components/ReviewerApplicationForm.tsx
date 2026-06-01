@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback, useActionState } from 'react';
+import { useRouter } from 'next/navigation';
 import { X, CheckCircle2, AlertCircle, FileText, ImageIcon, Loader2, ChevronRight, ChevronLeft, Building2, Plus } from 'lucide-react';
 import { checkUserEmail } from '@/actions/users';
 import Link from 'next/link';
@@ -99,6 +100,7 @@ function FileInput({
 }
 
 export default function ReviewerApplicationForm() {
+    const router = useRouter();
     const [step, setStep] = useState(1);
     const [direction, setDirection] = useState(0); // 1 for forward, -1 for back
 
@@ -127,20 +129,15 @@ export default function ReviewerApplicationForm() {
     const [state, formAction, isPending] = useActionState(
         async (_prevState: ActionResponse | null, data: FormData): Promise<ActionResponse | null> => {
             const result = await submitReviewerApplication(data);
+            if (result.success) {
+                toast.success("Application submitted successfully!");
+            } else if (result.error) {
+                toast.error(result.error);
+            }
             return result;
         },
         null
     );
-
-    useEffect(() => {
-        if (state) {
-            if (state.success) {
-                toast.success("Application submitted successfully!");
-            } else if (state.error) {
-                toast.error(state.error);
-            }
-        }
-    }, [state]);
 
     const [customInterest, setCustomInterest] = useState('');
     const [emailStatus, setEmailStatus] = useState<{ loading: boolean; exists: boolean | null }>({ loading: false, exists: null });
@@ -275,7 +272,7 @@ export default function ReviewerApplicationForm() {
                     </div>
                 </div>
 
-                <Button onClick={() => window.location.reload()} variant="outline" className="h-10 px-6 rounded-lg border-border/50 text-[#000066] hover:bg-[#000066]/5 font-semibold text-xs transition-all">
+                <Button onClick={() => router.refresh()} variant="outline" className="h-10 px-6 rounded-lg border-border/50 text-[#000066] hover:bg-[#000066]/5 font-semibold text-xs transition-all">
                     Return
                 </Button>
             </div>

@@ -1,6 +1,10 @@
 import SubmissionRegistry from '@/features/submissions/components/SubmissionRegistry';
 import { getAllSubmissions } from '@/actions/submissions';
 
+export const metadata = {
+    title: "Submissions | IJITEST",
+};
+
 export const dynamic = 'force-dynamic';
 
 export default async function EditorSubmissions({

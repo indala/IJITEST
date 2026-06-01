@@ -17,7 +17,6 @@ import { incrementPaperViews, incrementPaperDownloads } from "@/actions/publicat
 
 interface PaperDetailClientProps {
     paper: PublishedPaperUI;
-    id?: string;
     mode?: 'current' | 'archive';
 }
 
@@ -130,7 +129,9 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                                     <span className="-black  tracking-widest  shrink-0">Authors <span className="text-red-600 font-bold">:</span></span>
                                     <div className="flex flex-wrap items-center gap-x-2">
-                                        <span className="font-normal leading-tight">{paper.authorsList.join(', ')}</span>
+                                        <span className="font-normal leading-tight">
+                                            {Array.isArray(paper.authorsList) ? paper.authorsList.join(', ') : ''}
+                                        </span>
                                     </div>
                                 </div>
 

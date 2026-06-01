@@ -105,35 +105,53 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
 
         // 4. Role-specific History
         let history: ProfileData['history'] = [];
-        if (role === 'author') {
-            const subRows = await db.select({
-                title: submissionVersions.title,
-                status: submissions.status,
-                submittedAt: submissions.submittedAt
+        if (role === 'author' || role === 'reviewer') {
+            const latestVersions = db.select({
+                submissionId: submissionVersions.submissionId,
+                maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
             })
-                .from(submissions)
-                .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
-                .where(eq(submissions.correspondingAuthorId, userId))
-                .orderBy(desc(submissions.submittedAt))
-                .limit(10);
-            history = subRows;
-        } else if (role === 'reviewer') {
-            const revRows = await db.select({
-                title: submissionVersions.title,
-                decision: reviews.decision,
-                updatedAt: reviews.submittedAt
-            })
-                .from(reviews)
-                .innerJoin(reviewAssignments, eq(reviews.assignmentId, reviewAssignments.id))
-                .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
-                .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
-                .where(and(
-                    eq(reviewAssignments.reviewerId, userId),
-                    eq(reviewAssignments.status, 'completed')
-                ))
-                .orderBy(desc(reviews.submittedAt))
-                .limit(10);
-            history = revRows;
+            .from(submissionVersions)
+            .groupBy(submissionVersions.submissionId)
+            .as('lv');
+
+            if (role === 'author') {
+                const subRows = await db.select({
+                    title: submissionVersions.title,
+                    status: submissions.status,
+                    submittedAt: submissions.submittedAt
+                })
+                    .from(submissions)
+                    .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+                    .innerJoin(submissionVersions, and(
+                        eq(submissionVersions.submissionId, submissions.id),
+                        eq(submissionVersions.versionNumber, latestVersions.maxVersion)
+                    ))
+                    .where(eq(submissions.correspondingAuthorId, userId))
+                    .orderBy(desc(submissions.submittedAt))
+                    .limit(10);
+                history = subRows;
+            } else {
+                const revRows = await db.select({
+                    title: submissionVersions.title,
+                    decision: reviews.decision,
+                    updatedAt: reviews.submittedAt
+                })
+                    .from(reviews)
+                    .innerJoin(reviewAssignments, eq(reviews.assignmentId, reviewAssignments.id))
+                    .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
+                    .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+                    .innerJoin(submissionVersions, and(
+                        eq(submissionVersions.submissionId, submissions.id),
+                        eq(submissionVersions.versionNumber, latestVersions.maxVersion)
+                    ))
+                    .where(and(
+                        eq(reviewAssignments.reviewerId, userId),
+                        eq(reviewAssignments.status, 'completed')
+                    ))
+                    .orderBy(desc(reviews.submittedAt))
+                    .limit(10);
+                history = revRows;
+            }
         }
         profileData.history = history;
 
@@ -325,7 +343,7 @@ export async function updateProfilePhoto(userId: string, formData: FormData): Pr
     }
 }
 
-export async function getProfileCompleteness(profileData: Partial<ProfileData>, role: string) {
+async function getProfileCompleteness(profileData: Partial<ProfileData>, role: string) {
     let score = 0;
     let total = 0;
     const missing: string[] = [];

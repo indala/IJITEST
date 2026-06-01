@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { cn } from '@/lib/utils';
 
 const TOP_TITLE = "International Journal of";
 const BOTTOM_TITLE = 'Innovative Trends in Engineering Science and Technology'
@@ -119,7 +120,3 @@ export default function HomeCarousel() {
     );
 }
 
-// Helper imported locally if not available
-function cn(...inputs: (string | false | null | undefined)[]) {
-    return inputs.filter(Boolean).join(' ');
-}

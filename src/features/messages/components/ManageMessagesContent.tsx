@@ -97,10 +97,11 @@ export function ManageMessagesContent() {
             {liveSelectedMessage && (
                 <div className="lg:hidden fixed inset-0 z-50 bg-background animate-in slide-in-from-bottom duration-500 flex flex-col">
                     <div className="absolute top-4 left-4 z-50">
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
+                        <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => setSelectedMessage(null)}
+                            aria-label="Back to message list"
                             className="w-10 h-10 bg-muted/50 rounded-xl"
                         >
                             <X className="w-5 h-5" />

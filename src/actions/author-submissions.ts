@@ -13,7 +13,8 @@ import {
     users, 
     userProfiles,
     reviews,
-    reviewAssignments
+    reviewAssignments,
+    submissionEditors
 } from "@/db/schema";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -451,29 +452,43 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
         const cName = `copyright_${submissionId}_${timestamp}.docx`;
         const cUrl = `/api/files/submissions/${cName}`;
 
-        // 1. Database modifications
-        await db.transaction(async (tx) => {
-            if (oldFiles.length > 0) {
-                const oldFileIds = oldFiles.map((f) => f.fileId);
-                await tx.delete(submissionFiles).where(inArray(submissionFiles.id, oldFileIds));
-            }
-
-            await tx.insert(submissionFiles).values({
-                versionId: latestVersion.id,
-                fileType: "copyrightForm",
-                fileUrl: cUrl,
-                originalName: copyrightFile.name,
-                fileSize: copyrightFile.size
-            });
-        });
-
-        // 2. File System modifications (Proxy to storage service)
+        // 1. File System modifications (Proxy to storage service)
         const relativeCopyrightPath = `submissions/${cName}`;
         await uploadFileToStorage(relativeCopyrightPath, Buffer.from(await copyrightFile.arrayBuffer()), copyrightFile.name);
 
-        // Cleanup old files from disk on storage service
+        try {
+            // 2. Database modifications
+            await db.transaction(async (tx) => {
+                if (oldFiles.length > 0) {
+                    const oldFileIds = oldFiles.map((f) => f.fileId);
+                    await tx.delete(submissionFiles).where(inArray(submissionFiles.id, oldFileIds));
+                }
+
+                await tx.insert(submissionFiles).values({
+                    versionId: latestVersion.id,
+                    fileType: "copyrightForm",
+                    fileUrl: cUrl,
+                    originalName: copyrightFile.name,
+                    fileSize: copyrightFile.size
+                });
+            });
+        } catch (dbError) {
+            // DB transaction failed - roll back file system upload
+            try {
+                await safeDeleteFile(cUrl);
+            } catch (cleanupErr) {
+                console.error("Failed to delete newly uploaded copyright file after DB transaction failure:", cleanupErr);
+            }
+            throw dbError;
+        }
+
+        // 3. Cleanup old files from disk on storage service
         for (const oldFile of oldFiles) {
-            await safeDeleteFile(oldFile.fileUrl);
+            try {
+                await safeDeleteFile(oldFile.fileUrl);
+            } catch (cleanupErr) {
+                console.error("Failed to delete old copyright file:", cleanupErr);
+            }
         }
 
         // 3. Asynchronously email the staff (non-blocking)
@@ -636,19 +651,44 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
                     const subIds = authorSubs.map((s) => s.id);
 
                     if (subIds.length > 0) {
-                        // Clean files from disk
-                        const files = await tx.select().from(submissionFiles).where(inArray(submissionFiles.versionId, 
-                            tx.select({ id: submissionVersions.id }).from(submissionVersions).where(inArray(submissionVersions.submissionId, subIds))
-                        ));
-                        
-                        for (const file of files) {
-                            await safeDeleteFile(file.fileUrl);
+                        // 1. Fetch version IDs and assignment IDs
+                        const versions = await tx.select({ id: submissionVersions.id })
+                            .from(submissionVersions)
+                            .where(inArray(submissionVersions.submissionId, subIds));
+                        const versionIds = versions.map(v => v.id);
+
+                        const assignments = await tx.select({ id: reviewAssignments.id })
+                            .from(reviewAssignments)
+                            .where(inArray(reviewAssignments.submissionId, subIds));
+                        const assignmentIds = assignments.map(a => a.id);
+
+                        // 2. Clean files from disk
+                        if (versionIds.length > 0) {
+                            const files = await tx.select()
+                                .from(submissionFiles)
+                                .where(inArray(submissionFiles.versionId, versionIds));
+                            
+                            for (const file of files) {
+                                await safeDeleteFile(file.fileUrl);
+                            }
                         }
 
-                        // Waterfall delete (Drizzle should handle cascade if configured, but we'll be explicit)
-                        // In MySQL without cascade, this is necessary.
+                        // 3. Waterfall database deletions in reverse dependency order
+                        await tx.delete(publications).where(inArray(publications.submissionId, subIds));
+
+                        if (assignmentIds.length > 0) {
+                            await tx.delete(reviews).where(inArray(reviews.assignmentId, assignmentIds));
+                            await tx.delete(reviewAssignments).where(inArray(reviewAssignments.id, assignmentIds));
+                        }
+
+                        if (versionIds.length > 0) {
+                            await tx.delete(submissionFiles).where(inArray(submissionFiles.versionId, versionIds));
+                            await tx.delete(submissionVersions).where(inArray(submissionVersions.id, versionIds));
+                        }
+
                         await tx.delete(submissionAuthors).where(inArray(submissionAuthors.submissionId, subIds));
                         await tx.delete(payments).where(inArray(payments.submissionId, subIds));
+                        await tx.delete(submissionEditors).where(inArray(submissionEditors.submissionId, subIds));
                         await tx.delete(submissions).where(inArray(submissions.id, subIds));
                     }
 

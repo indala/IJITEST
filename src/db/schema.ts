@@ -92,9 +92,9 @@ export const submissions = mysqlTable("submissions", {
     
     finalDecision: mysqlEnum("final_decision", ['accept', 'reject', 'withdrawn']),
     decisionAt: timestamp("decision_at"),
-    decisionBy: varchar("decision_by", { length: 36 }).references(() => users.id),
+    decisionBy: varchar("decision_by", { length: 36 }).references(() => users.id, { onDelete: "set null" }),
 
-    correspondingAuthorId: varchar("corresponding_author_id", { length: 36 }).notNull().references(() => users.id),
+    correspondingAuthorId: varchar("corresponding_author_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
     issueId: int("issue_id").references(() => volumesIssues.id),
     submittedAt: timestamp("submitted_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
@@ -225,9 +225,9 @@ export const submissionEditorsRelations = relations(submissionEditors, ({ one })
 export const reviewAssignments = mysqlTable("review_assignments", {
     id: int("id").primaryKey().autoincrement().notNull(),
     submissionId: int("submission_id").notNull().references(() => submissions.id, { onDelete: "cascade" }),
-    reviewerId: varchar("reviewer_id", { length: 36 }).notNull().references(() => users.id),
+    reviewerId: varchar("reviewer_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
     versionId: int("version_id").notNull().references(() => submissionVersions.id, { onDelete: "cascade" }),
-    assignedBy: varchar("assigned_by", { length: 36 }).notNull().references(() => users.id),
+    assignedBy: varchar("assigned_by", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
     reviewRound: int("review_round").default(1).notNull(),
     status: mysqlEnum("status", ['assigned', 'accepted', 'declined', 'completed']).default('assigned').notNull(),
     deadline: date("deadline"),

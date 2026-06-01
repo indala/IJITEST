@@ -40,11 +40,17 @@ export default function CitationSection({ paper }: CitationSectionProps) {
     };
 
     const authors = getFormattedAuthors();
-    const citationText = `${authors} (${paper.publicationYear || new Date().getFullYear()}). "${paper.title}". ${settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology'} (${settings['journalShortName'] || 'IJITEST'}), Vol. ${paper.volumeNumber || 'X'}, Issue ${paper.issueNumber || 'X'}. Paper ID: ${paper.paperId}`;
+    const citationText = `${authors} "${paper.title}". ${settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology'} (${settings['journalShortName'] || 'IJITEST'}), Vol. ${paper.volumeNumber || 'X'}, Issue ${paper.issueNumber || 'X'}, ${paper.publicationYear || new Date().getFullYear()}.`;
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(citationText);
-        toast.success("Citation copied to clipboard!");
+        navigator.clipboard.writeText(citationText)
+            .then(() => {
+                toast.success("Citation copied to clipboard!");
+            })
+            .catch((err) => {
+                console.error("Failed to copy citation:", err);
+                toast.error("Failed to copy citation");
+            });
     };
 
     return (
@@ -56,10 +62,10 @@ export default function CitationSection({ paper }: CitationSectionProps) {
 
             <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4 relative group">
                 <p className="text-sm 2xl:text-base text-gray-600 leading-relaxed font-medium ">
-                    {authors}   <span className="italic"> {"\""} {paper.title}{"\""}</span>.
+                    {authors} <span className="italic">&quot;{paper.title}&quot;</span>.
                     <br />
                     <span className="">{settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings['journalShortName'] || 'IJITEST'})</span>,
-                    Vol. {paper.volumeNumber || 'X'}, Issue {paper.issueNumber || 'X'} , {paper.publicationYear || new Date().getFullYear()}.
+                    Vol. {paper.volumeNumber || 'X'}, Issue {paper.issueNumber || 'X'}, {paper.publicationYear || new Date().getFullYear()}.
                     <br />
                 </p>
                 <button
@@ -78,10 +84,16 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                                 title: paper.title,
                                 text: `Check out this research paper: ${paper.title}`,
                                 url: window.location.href
-                            });
+                            }).catch((err) => console.error("Share failed:", err));
                         } else {
-                            navigator.clipboard.writeText(window.location.href);
-                            toast.success("Link copied to clipboard!");
+                            navigator.clipboard.writeText(window.location.href)
+                                .then(() => {
+                                    toast.success("Link copied to clipboard!");
+                                })
+                                .catch((err) => {
+                                    console.error("Failed to copy link:", err);
+                                    toast.error("Failed to copy link");
+                                });
                         }
                     }}
                     className="w-full flex items-center justify-center gap-3 bg-gray-50 text-gray-500 py-4 rounded-2xl font-black text-xs 2xl:text-sm tracking-[0.2em] border border-gray-100 hover:bg-gray-100 transition-all font-sans"

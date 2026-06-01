@@ -24,6 +24,12 @@ export async function GET(
     { params }: { params: Promise<{ path: string[] }> }
 ) {
     const { path: pathSegments } = await params;
+
+    // Path traversal check
+    if (pathSegments.some(segment => segment === '..' || segment === '.' || segment === '')) {
+        return new NextResponse("Forbidden", { status: 403 });
+    }
+
     const category = pathSegments[0]; // e.g., "submissions", "reviewer-apps"
     const filename = pathSegments.slice(1).join('/');
     const relativePath = `${category}/${filename}`;
@@ -62,7 +68,8 @@ export async function GET(
             if (isAuthorized) return serveFile(relativePath);
         }
 
-    } catch { /* ignore */
+    } catch (error) {
+        console.error("File proxy error:", error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 
@@ -82,13 +89,15 @@ async function serveFile(relativePath: string) {
             '.jpeg': 'image/jpeg',
         };
 
+        const safeFilename = path.basename(relativePath).replace(/["\r\n]/g, '');
         return new NextResponse(new Uint8Array(fileBuffer), {
             headers: {
                 'Content-Type': mimeTypes[ext] || 'application/octet-stream',
-                'Content-Disposition': `inline; filename="${path.basename(relativePath)}"`,
+                'Content-Disposition': `inline; filename="${safeFilename}"`,
             },
         });
-    } catch { // Fallback to legacy public path for migration period
+    } catch (err) { // Fallback to legacy public path for migration period
+        console.error("Storage download failed, trying legacy local filesystem fallback:", err);
         try {
             const legacyPath = getPublicUploadsPath(relativePath);
             await fs.access(legacyPath);
@@ -99,7 +108,8 @@ async function serveFile(relativePath: string) {
                     'Content-Disposition': `inline; filename="${path.basename(legacyPath)}"`,
                 },
             });
-        } catch {
+        } catch (legacyErr) {
+            console.error("Legacy local filesystem fallback failed:", legacyErr);
             return new NextResponse("File Not Found", { status: 404 });
         }
     }

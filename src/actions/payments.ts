@@ -70,18 +70,22 @@ export async function updatePaymentStatus(paymentId: number, status: PaymentStat
                 .set({ 
                     status, 
                     transactionId: transactionId || null, 
-                    paidAt: status === 'paid' || status === 'verified' ? new Date() : null
+                    paidAt: status === 'paid' || status === 'verified' || status === 'waived' ? new Date() : null
                 })
                 .where(eq(payments.id, paymentId));
 
             // Move submission forward when payment is confirmed
             if (status === 'verified' || status === 'waived') {
-                const [payment] = await tx.select({ submissionId: payments.submissionId })
+                const [payment] = await tx.select({ 
+                    submissionId: payments.submissionId,
+                    currentStatus: submissions.status
+                })
                     .from(payments)
+                    .innerJoin(submissions, eq(payments.submissionId, submissions.id))
                     .where(eq(payments.id, paymentId))
                     .limit(1);
                 
-                if (payment) {
+                if (payment && payment.currentStatus !== 'published' && payment.currentStatus !== 'retracted' && payment.currentStatus !== 'rejected') {
                     await tx.update(submissions)
                         .set({ status: 'accepted' })
                         .where(eq(submissions.id, payment.submissionId));
@@ -129,6 +133,14 @@ export async function getAcceptedUnpaidPapers(): Promise<ActionResponse<UnpaidPa
             return { success: false, error: "Unauthorized" };
         }
 
+        const latestVersions = db.select({
+            submissionId: submissionVersions.submissionId,
+            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
+        })
+        .from(submissionVersions)
+        .groupBy(submissionVersions.submissionId)
+        .as('lv');
+
         // Find submissions that are 'accepted' but have no entry in 'payments'
         const results = await db.select({
             id: submissions.id,
@@ -139,7 +151,11 @@ export async function getAcceptedUnpaidPapers(): Promise<ActionResponse<UnpaidPa
         .from(submissions)
         .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
         .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+        .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+        .innerJoin(submissionVersions, and(
+            eq(submissionVersions.submissionId, submissions.id),
+            eq(submissionVersions.versionNumber, latestVersions.maxVersion)
+        ))
         .leftJoin(payments, eq(submissions.id, payments.submissionId))
         .where(and(
             eq(submissions.status, 'accepted'),

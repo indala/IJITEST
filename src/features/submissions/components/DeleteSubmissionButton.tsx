@@ -2,7 +2,7 @@
 
 import { Trash2, Loader2, AlertTriangle, XCircle } from "lucide-react";
 import { deleteSubmission } from "@/actions/submissions";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { type ActionResponse } from "@/db/types";
 
 interface DeleteSubmissionButtonProps {
     submissionId: number;
@@ -24,7 +25,6 @@ interface DeleteSubmissionButtonProps {
 }
 
 export default function DeleteSubmissionButton({ submissionId, status, variant = "icon" }: DeleteSubmissionButtonProps) {
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [errorOpen, setErrorOpen] = useState(false);
@@ -32,15 +32,14 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
 
     const isRestricted = status === 'paid' || status === 'published';
 
-    async function handleDelete() {
-        if (isRestricted) {
-            setErrorMessage("This submission is marked as paid or published and cannot be deleted from the active registry.");
-            setErrorOpen(true);
-            return;
-        }
+    const [, deleteAction, isDeleting] = useActionState<ActionResponse, FormData>(
+        async (_prev, _formData) => {
+            if (isRestricted) {
+                setErrorMessage("This submission is marked as paid or published and cannot be deleted from the active registry.");
+                setErrorOpen(true);
+                return { success: false, error: "Restricted" };
+            }
 
-        setLoading(true);
-        try {
             const res = await deleteSubmission(submissionId);
             if (res.success) {
                 if (variant === "full") {
@@ -48,18 +47,17 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
                 } else {
                     router.refresh();
                 }
+                setOpen(false);
             } else {
                 setErrorMessage(res.error || "Failed to terminate the submission node.");
                 setErrorOpen(true);
             }
-        } catch {
-            setErrorMessage("An architectural error occurred during node termination.");
-            setErrorOpen(true);
-        } finally {
-            setLoading(false);
-            setOpen(false);
-        }
-    }
+            return res;
+        },
+        { success: false, error: "" }
+    );
+
+    const loading = isDeleting;
 
     const trigger = variant === "full" ? (
         <Button
@@ -81,6 +79,7 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
             disabled={loading || isRestricted}
             className="w-12 h-12 bg-red-500/5 text-red-400 rounded-xl hover:bg-red-500/10 hover:text-red-600 transition-all disabled:opacity-50 shadow-inner cursor-pointer"
             title={isRestricted ? "Termination Restricted" : "Terminate Node"}
+            aria-label={isRestricted ? "Termination Restricted" : "Terminate Node"}
         >
             {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -92,7 +91,7 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
 
     return (
         <>
-            <AlertDialog open={open} onOpenChange={setOpen}>
+            <AlertDialog open={open} onOpenChange={(v) => setOpen(v)}>
                 <AlertDialogTrigger asChild>
                     {trigger}
                 </AlertDialogTrigger>
@@ -110,17 +109,19 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
                         <AlertDialogCancel className="h-14 px-8 rounded-2xl font-black text-[10px]  tracking-widest border-primary/10 text-primary/40 hover:bg-primary/5 cursor-pointer">
                             Abort Protocol
                         </AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDelete}
-                            className="h-14 px-8 rounded-2xl bg-red-600 text-white font-black text-[10px]  tracking-widest hover:bg-red-700 shadow-xl shadow-red-600/20 cursor-pointer"
-                        >
-                            Authorize Termination
-                        </AlertDialogAction>
+                        <form action={deleteAction}>
+                            <AlertDialogAction
+                                type="submit"
+                                className="h-14 px-8 rounded-2xl bg-red-600 text-white font-black text-[10px]  tracking-widest hover:bg-red-700 shadow-xl shadow-red-600/20 cursor-pointer"
+                            >
+                                Authorize Termination
+                            </AlertDialogAction>
+                        </form>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
-            <AlertDialog open={errorOpen} onOpenChange={setErrorOpen}>
+            <AlertDialog open={errorOpen} onOpenChange={(v) => setErrorOpen(v)}>
                 <AlertDialogContent className="rounded-[2.5rem] p-8 bg-white border-primary/5 shadow-2xl">
                     <AlertDialogHeader className="space-y-4">
                         <div className="w-16 h-16 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex items-center justify-center text-amber-500 shadow-inner mb-2">

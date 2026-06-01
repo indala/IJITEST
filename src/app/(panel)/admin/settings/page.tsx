@@ -1,9 +1,11 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+export const metadata = {
+    title: "Settings | IJITEST",
+};
 
-import { 
-    Save, 
+import {
+    Save,
     Globe, 
     FileText, 
     Upload, 

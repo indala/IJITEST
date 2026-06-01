@@ -25,6 +25,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 
+export const metadata = {
+    title: "Reviewer Dashboard | IJITEST",
+};
+
 export const dynamic = 'force-dynamic';
 
 export default async function ReviewerDashboard() {

@@ -1,6 +1,10 @@
 import SubmissionRegistry from '@/features/submissions/components/SubmissionRegistry';
 import { getAllSubmissions } from '@/actions/submissions';
 
+export const metadata = {
+    title: "Submissions | IJITEST",
+};
+
 export const dynamic = 'force-dynamic';
 
 export default async function AdminSubmissions({
@@ -10,30 +14,30 @@ export default async function AdminSubmissions({
 }) {
     const { status, q } = await searchParams;
     const currentStatus = status || 'all';
-    const res = await getAllSubmissions({ 
-        status: currentStatus, 
-        ...(q ? { q } : {}) 
-    });
+    const res = await getAllSubmissions(q ? { q } : {});
 
     if (!res.success) {
         return <div className="p-10 text-center font-black uppercase tracking-widest text-rose-500">Error: {res.error}</div>;
     }
 
-    const submissions = res.data || [];
+    const allSubmissions = res.data || [];
     
     const statsResult = {
-        total: submissions?.length || 0,
-        submitted: submissions?.filter(s => s.status === 'submitted').length || 0,
-        underReview: submissions?.filter(s => s.status === 'underReview').length || 0,
-        published: submissions?.filter(s => s.status === 'published').length || 0,
-        rejected: submissions?.filter(s => s.status === 'rejected').length || 0
+        total: allSubmissions.length,
+        submitted: allSubmissions.filter(s => s.status === 'submitted').length,
+        underReview: allSubmissions.filter(s => s.status === 'underReview').length,
+        published: allSubmissions.filter(s => s.status === 'published').length,
+        rejected: allSubmissions.filter(s => s.status === 'rejected').length
     };
 
+    const filteredSubmissions = currentStatus === 'all'
+        ? allSubmissions
+        : allSubmissions.filter(s => s.status === currentStatus);
 
     return (
         <SubmissionRegistry 
             role="admin" 
-            submissions={submissions} 
+            submissions={filteredSubmissions} 
             stats={statsResult} 
             currentStatus={currentStatus} 
         />

@@ -125,6 +125,7 @@ export function InlineEditField({
                                 onClick={handleSave}
                                 disabled={isLoading}
                                 className="h-10 w-10 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10 rounded-xl"
+                                aria-label="Save"
                             >
                                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
                             </Button>
@@ -134,6 +135,7 @@ export function InlineEditField({
                                 onClick={handleCancel}
                                 disabled={isLoading}
                                 className="h-10 w-10 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl"
+                                aria-label="Cancel"
                             >
                                 <X className="w-5 h-5" />
                             </Button>

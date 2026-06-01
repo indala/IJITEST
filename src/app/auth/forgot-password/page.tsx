@@ -1,5 +1,10 @@
 "use client";
 
+export const metadata = {
+    title: "Forgot Password | IJITEST",
+    description: "Recover your account password securely.",
+};
+
 import { requestPasswordReset } from '@/actions/users';
 import { Mail, ArrowRight, ShieldCheck, MailCheck } from 'lucide-react';
 import { useState, useActionState } from 'react';
@@ -85,7 +90,7 @@ export default function ForgotPassword() {
                                 )}
                                 <form action={formAction} className="space-y-6">
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-700  tracking-widest mb-3 pl-1">Registred Email</label>
+                                        <label className="block text-[10px] font-black text-slate-700  tracking-widest mb-3 pl-1">Registered Email</label>
                                         <div className="relative">
                                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                                             <input
