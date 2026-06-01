@@ -296,4 +296,17 @@ export type ChatUser = {
     role: User['role'];
 };
 
+// 🔌 WebSocket Event Types (Strongly coupled with NestJS chat.gateway.ts)
+export interface ServerToClientEvents {
+    authenticated: (data: { userId: User['id']; role: User['role'] }) => void;
+    onlineUsers: (userIds: User['id'][]) => void;
+    receiveMessage: (message: ChatMessageRow) => void;
+}
+
+export interface ClientToServerEvents {
+    sendMessage: (message: ChatMessageRow) => void;
+    getOnlineUsers: () => void;
+}
+
+
 

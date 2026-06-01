@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { users, userProfiles } from "@/db/schema";
 import bcrypt from "bcryptjs";
+import { type UserRole, type User as DbUser, type UserProfile } from "@/db/types";
 
 const authSecret = process.env['NEXTAUTH_SECRET'] || process.env['JWT_SECRET'];
 if (!authSecret) {
@@ -14,23 +15,23 @@ if (!authSecret) {
 declare module "next-auth" {
     interface Session extends DefaultSession {
         user: {
-            id: string;
-            role: string;
+            id: DbUser['id'];
+            role: UserRole;
         } & DefaultSession["user"];
     }
 
     interface User {
-        id: string;
-        role: string;
-        email: string;
-        name: string;
+        id: DbUser['id'];
+        role: UserRole;
+        email: DbUser['email'];
+        name: UserProfile['fullName'];
     }
 }
 
 declare module "next-auth/jwt" {
     interface JWT {
-        id: string;
-        role: string;
+        id: DbUser['id'];
+        role: UserRole;
     }
 }
 

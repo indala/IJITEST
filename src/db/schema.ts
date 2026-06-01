@@ -18,6 +18,7 @@ export const users = mysqlTable("users", {
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
     deletedAt: timestamp("deleted_at"),
+    lastActiveAt: timestamp("last_active_at"),
 }, (table) => [
     index("role_idx").on(table.role),
 ]);

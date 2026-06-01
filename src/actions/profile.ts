@@ -233,7 +233,7 @@ export async function updateResearchInterests(userId: string, interests: string[
                 const appType = user.role === 'editor' ? 'editor' : 'reviewer';
                 const [insertResult] = await tx.insert(applications).values({
                     type: appType,
-                    fullName: profile?.fullName || user.email.split('@')[0],
+                    fullName: profile?.fullName || (user.email.split('@')[0] ?? ''),
                     email: user.email,
                     designation: profile?.designation || 'Staff',
                     institute: profile?.institute || 'IJITEST',

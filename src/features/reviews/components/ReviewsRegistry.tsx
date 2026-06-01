@@ -373,8 +373,18 @@ const GroupedReviewCard = React.memo(({
                         {/* Progress Bar */}
                         <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden mt-1 border border-border/20">
                             <div 
-                                className="h-full bg-linear-to-r from-primary to-primary/80 transition-all duration-500" 
-                                style={{ width: `${totalReviews > 0 ? (completedReviews / totalReviews) * 100 : 0}%` }}
+                                className={`h-full bg-linear-to-r from-primary to-primary/80 transition-all duration-500 ${
+                                    totalReviews <= 0 || completedReviews <= 0 ? 'w-0' :
+                                    completedReviews >= totalReviews ? 'w-full' :
+                                    (completedReviews / totalReviews) <= 0.2 ? 'w-1/5' :
+                                    (completedReviews / totalReviews) <= 0.25 ? 'w-1/4' :
+                                    (completedReviews / totalReviews) <= 0.35 ? 'w-1/3' :
+                                    (completedReviews / totalReviews) <= 0.45 ? 'w-2/5' :
+                                    (completedReviews / totalReviews) <= 0.55 ? 'w-1/2' :
+                                    (completedReviews / totalReviews) <= 0.62 ? 'w-3/5' :
+                                    (completedReviews / totalReviews) <= 0.7 ? 'w-2/3' :
+                                    (completedReviews / totalReviews) <= 0.78 ? 'w-3/4' : 'w-4/5'
+                                }`} 
                             />
                         </div>
                     </div>
@@ -535,6 +545,21 @@ const GroupedReviewCard = React.memo(({
 });
 GroupedReviewCard.displayName = "GroupedReviewCard";
 
+const formatLastActive = (dateStr: Date | string | null | undefined) => {
+    if (!dateStr) return "never active";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return "active now";
+    if (diffMins < 60) return `active ${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `active ${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) return "active yesterday";
+    return `active ${diffDays}d ago`;
+};
+
 export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer' }) {
     const { data: session } = useSession();
     const searchParams = useSearchParams();
@@ -544,6 +569,13 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
     const { data: reviews = [], isLoading: loadingReviews, refetch: refetchReviews } = useActiveReviews(reviewerId);
     const { data: unassigned = [], isLoading: loadingUnassigned } = useUnassignedPapers();
     const { data: staff = [], isLoading: loadingStaff } = useUsers('reviewer');
+    const sortedStaff = useMemo(() => {
+        return [...staff].sort((a, b) => {
+            const aTime = a.lastActiveAt ? new Date(a.lastActiveAt).getTime() : 0;
+            const bTime = b.lastActiveAt ? new Date(b.lastActiveAt).getTime() : 0;
+            return bTime - aTime;
+        });
+    }, [staff]);
     const router = useRouter();
     const queryClient = useQueryClient();
 
@@ -798,8 +830,8 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                                             <SelectValue placeholder="Identify staff..." />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-xl border-primary/5 bg-card">
-                                            {staff.map(r => (
-                                                <SelectItem key={r.id} value={r.id.toString()}>{r.profile?.fullName || r.email}</SelectItem>
+                                            {sortedStaff.map(r => (
+                                                <SelectItem key={r.id} value={r.id.toString()}>{r.profile?.fullName || r.email} ({formatLastActive(r.lastActiveAt)})</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>

@@ -2,8 +2,9 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import React, { useState, useSyncExternalStore } from 'react';
+import React, { useState, useSyncExternalStore, useEffect } from 'react';
 import { sidebarItems, getFullHref } from '@/lib/navigation';
+import { updateUserLastActive } from '@/actions/users';
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import PreferencesDialog from '@/features/shared/components/PreferencesDialog';
@@ -19,6 +20,31 @@ export default function PanelLayout({
     const router = useRouter();
     const { data: session } = useSession();
     const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+
+    // Track user active status
+    useEffect(() => {
+        if (!session?.user?.id) return;
+
+        const updateActivity = () => {
+            if (document.visibilityState === 'visible') {
+                void updateUserLastActive();
+            }
+        };
+
+        // Immediately update once on load
+        updateActivity();
+
+        // Listen for visibility changes
+        document.addEventListener('visibilitychange', updateActivity);
+
+        // Update every 5 minutes
+        const interval = setInterval(updateActivity, 5 * 60 * 1000);
+
+        return () => {
+            document.removeEventListener('visibilitychange', updateActivity);
+            clearInterval(interval);
+        };
+    }, [session?.user?.id]);
     const mounted = useSyncExternalStore(
         () => () => { },
         () => true,

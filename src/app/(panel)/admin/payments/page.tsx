@@ -8,7 +8,7 @@ import {
     useUpdatePaymentStatus
 } from '@/hooks/queries/usePayments';
 import Link from 'next/link';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useActionState, useDeferredValue } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ const getStatusVariant = (status: string) => {
     }
 };
 
-import type { PaymentRow } from '@/db/types';
+import type { PaymentRow, ActionResponse } from '@/db/types';
 
 const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow, onUpdateStatus: (id: number, status: 'pending' | 'paid' | 'verified' | 'failed' | 'waived', txId: string) => Promise<void> }) => (
     <Card key={item.id} className="border-primary/5 shadow-vip hover:shadow-2xl hover:scale-[1.005] transition-all group overflow-hidden bg-card relative 2xl:rounded-3xl">
@@ -144,29 +144,34 @@ export default function PaymentManagement() {
     const updateMutation = useUpdatePaymentStatus();
 
     const [showInitModal, setShowInitModal] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
 
-    const handleInitPayment = useCallback(async (formData: FormData) => {
-        setIsSubmitting(true);
-        const submissionId = parseInt(formData.get('submissionId') as string);
-        const amount = parseFloat(formData.get('amount') as string);
-        const currency = formData.get('currency') as string;
+    // Defer the search query to improve typing responsiveness
+    const deferredSearchQuery = useDeferredValue(searchQuery);
 
-        try {
-            const res = await initMutation.mutateAsync({ submissionId, amount, currency });
-            if (res.success) {
-                setShowInitModal(false);
-                toast.success("Transaction initialized");
-            } else {
-                toast.error(res.error);
+    const [, initPaymentAction, isInitPaymentPending] = useActionState(
+        async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
+            const submissionId = parseInt(formData.get('submissionId') as string);
+            const amount = parseFloat(formData.get('amount') as string);
+            const currency = formData.get('currency') as string;
+
+            try {
+                const res = await initMutation.mutateAsync({ submissionId, amount, currency });
+                if (res.success) {
+                    setShowInitModal(false);
+                    toast.success("Transaction initialized");
+                } else {
+                    toast.error(res.error);
+                }
+                return res;
+            } catch {
+                toast.error("Failed to initialize transaction");
+                return { success: false, error: "Failed to initialize transaction" };
             }
-        } catch {
-            toast.error("Failed to initialize transaction");
-        }
-        setIsSubmitting(false);
-    }, [initMutation]);
+        },
+        null
+    );
 
     const handleStatusUpdate = useCallback(async (id: number, status: 'pending' | 'paid' | 'verified' | 'failed' | 'waived', transactionId: string) => {
         try {
@@ -184,16 +189,16 @@ export default function PaymentManagement() {
     const filteredPayments = useMemo(() => {
         return payments.filter(p => {
             const matchesSearch =
-                p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                p.authorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                p.paperId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (p.transactionId && p.transactionId.toLowerCase().includes(searchQuery.toLowerCase()));
+                p.title.toLowerCase().includes(deferredSearchQuery.toLowerCase()) ||
+                p.authorName.toLowerCase().includes(deferredSearchQuery.toLowerCase()) ||
+                p.paperId.toLowerCase().includes(deferredSearchQuery.toLowerCase()) ||
+                (p.transactionId && p.transactionId.toLowerCase().includes(deferredSearchQuery.toLowerCase()));
 
             const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
 
             return matchesSearch && matchesStatus;
         });
-    }, [payments, searchQuery, statusFilter]);
+    }, [payments, deferredSearchQuery, statusFilter]);
 
     const revenueStats = useMemo(() => {
         return {
@@ -239,7 +244,7 @@ export default function PaymentManagement() {
                                     Initialize a payment node for an accepted manuscript without automated triggers.
                                 </DialogDescription>
                             </DialogHeader>
-                            <form action={handleInitPayment} className="space-y-6 pt-6">
+                            <form action={initPaymentAction} className="space-y-6 pt-6">
                                 <div className="space-y-3">
                                     <Label className="text-muted-foreground px-1">Accepted Paper</Label>
                                     <Select name="submissionId" required>
@@ -274,8 +279,8 @@ export default function PaymentManagement() {
                                     </div>
                                 </div>
                                 <DialogFooter className="pt-4">
-                                    <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-white dark:text-slate-900 shadow-vip hover:scale-[1.02] transition-transform rounded-xl cursor-pointer">
-                                        {isSubmitting ? "CREATING NODE..." : "CREATE PAYMENT NODE"}
+                                    <Button type="submit" disabled={isInitPaymentPending} className="w-full h-14 bg-primary text-white dark:text-slate-900 shadow-vip hover:scale-[1.02] transition-transform rounded-xl cursor-pointer">
+                                        {isInitPaymentPending ? "CREATING NODE..." : "CREATE PAYMENT NODE"}
                                     </Button>
                                 </DialogFooter>
                             </form>

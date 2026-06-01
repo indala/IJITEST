@@ -1,5 +1,6 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useActionState, useEffect } from 'react';
 import { updateUserProfile } from '@/actions/users';
+import { type User, type UserProfile } from "@/db/types";
 
 // Import sub-components
 import { ProfileHeader } from './profile/ProfileHeader';
@@ -9,43 +10,48 @@ import { ProfileFormActions } from './profile/ProfileFormActions';
 
 interface ProfileFormProps {
     user: {
-        id: number;
-        email: string;
-        full_name: string;
-        designation?: string;
-        institute?: string;
-        phone?: string;
-        bio?: string;
-        photo_url?: string;
-        role: string;
-        nationality?: string;
+        id: User['id'];
+        email: User['email'];
+        full_name: UserProfile['fullName'];
+        designation?: UserProfile['designation'];
+        institute?: UserProfile['institute'];
+        phone?: UserProfile['phone'];
+        bio?: UserProfile['bio'];
+        photo_url?: UserProfile['photoUrl'];
+        role: User['role'];
+        nationality?: UserProfile['nationality'];
     };
 }
 
 export default function ProfileForm({ user }: ProfileFormProps) {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [status, setStatus] = useState<{ success?: boolean; error?: string } | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleAction = useCallback(async (formData: FormData) => {
-        setIsSubmitting(true);
-        setStatus(null);
-
+    const [state, formAction, isPending] = useActionState(async (_prevState: { success?: boolean; error?: string } | null, formData: FormData) => {
         try {
             const result = await updateUserProfile(formData);
             if (result.success) {
-                setStatus({ success: true });
-                setTimeout(() => setStatus(null), 5000);
+                return { success: true };
             } else {
-                setStatus({ error: result.error || "Update failed" });
+                return { error: result.error || "Update failed" };
             }
         } catch {
-            setStatus({ error: "An unexpected error occurred." });
-        } finally {
-            setIsSubmitting(false);
+            return { error: "An unexpected error occurred." };
         }
-    }, []);
+    }, null);
+
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout | undefined;
+        if (state?.success) {
+            setShowSuccess(true);
+            timer = setTimeout(() => setShowSuccess(false), 5000);
+        }
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [state]);
 
     const handlePhotoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -62,9 +68,11 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         fileInputRef.current?.click();
     }, []);
 
+    const statusForActions = showSuccess ? { success: true } : (state?.error ? { error: state.error } : null);
+
     return (
         <div className="max-w-4xl mx-auto pb-20">
-            <form action={handleAction} className="space-y-12">
+            <form action={formAction} className="space-y-12">
                 {/* 1. Header & Photo Area */}
                 <ProfileHeader
                     fullName={user.full_name}
@@ -103,8 +111,8 @@ export default function ProfileForm({ user }: ProfileFormProps) {
 
                 {/* 4. Feedback & Actions */}
                 <ProfileFormActions
-                    isSubmitting={isSubmitting}
-                    status={status}
+                    isSubmitting={isPending}
+                    status={statusForActions}
                 />
             </form>
         </div>

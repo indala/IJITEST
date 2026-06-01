@@ -37,6 +37,7 @@ export async function getEditorialBoard(): Promise<ActionResponse<SafeUserWithPr
                 createdAt: users.createdAt,
                 updatedAt: users.updatedAt,
                 deletedAt: users.deletedAt,
+                lastActiveAt: users.lastActiveAt,
             },
             profile: userProfiles,
         })
@@ -82,6 +83,7 @@ export async function getUsers(role?: "admin" | "editor" | "reviewer" | "author"
                 createdAt: users.createdAt,
                 updatedAt: users.updatedAt,
                 deletedAt: users.deletedAt,
+                lastActiveAt: users.lastActiveAt,
             },
             profile: userProfiles,
         })
@@ -476,5 +478,23 @@ export async function checkUserEmail(email: string): Promise<{ exists: boolean; 
     } catch (error) {
         console.error("Check User Email Error:", error);
         return { error: "Check failed", exists: false };
+    }
+}
+
+export async function updateUserLastActive(): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        await db.update(users)
+            .set({ lastActiveAt: new Date() })
+            .where(eq(users.id, session.user.id));
+
+        return { success: true };
+    } catch (error) {
+        console.error("Update User Last Active Error:", error);
+        return { success: false, error: "Failed to update last active timestamp" };
     }
 }

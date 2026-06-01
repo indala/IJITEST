@@ -1,31 +1,12 @@
 "use client";
 
-import { useState } from 'react';
-import { Lock, Mail, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { useState, useActionState } from 'react';
+import { Lock, Mail, Eye, EyeOff, ShieldCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, getSession } from 'next-auth/react';
-import { useFormStatus } from 'react-dom';
-import { Loader2 } from 'lucide-react';
-import { InputGroup,InputGroupAddon,InputGroupInput } from '@/components/ui/input-group';
-
-function LoadingButton() {
-    const { pending } = useFormStatus();
-    return (
-        <Button
-            type="submit"
-            disabled={pending}
-            className="w-full h-11 2xl:h-13 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm 2xl:text-base rounded-lg 2xl:rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-        >
-            {pending ? (
-                <>Logging in <Loader2 className="w-4 h-4 2xl:w-5 2xl:h-5 animate-spin" /></>
-            ) : (
-                <>Login <ShieldCheck className="w-4 h-4 2xl:w-5 2xl:h-5" /></>
-            )}
-        </Button>
-    );
-}
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 
 export default function LoginClient() {
     const router = useRouter();
@@ -33,10 +14,8 @@ export default function LoginClient() {
     const callbackUrl = searchParams.get('callbackUrl');
     
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
-    async function handleSubmit(formData: FormData) {
-        setError(null);
+    const [error, formAction, isPending] = useActionState(async (_prevState: string | null, formData: FormData) => {
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
 
@@ -47,22 +26,23 @@ export default function LoginClient() {
         });
 
         if (result?.error) {
-            setError("Invalid email or password");
-        } else {
-            const session = await getSession();
-            const role = (session?.user as { role?: string })?.role;
-
-            if (callbackUrl && callbackUrl.startsWith('/')) {
-                router.push(callbackUrl);
-                router.refresh();
-            } else if (role) {
-                router.push(`/${role}`);
-                router.refresh();
-            } else {
-                router.push('/login');
-            }
+            return "Invalid email or password";
         }
-    }
+
+        const session = await getSession();
+        const role = (session?.user as { role?: string })?.role;
+
+        if (callbackUrl && callbackUrl.startsWith('/')) {
+            router.push(callbackUrl);
+            router.refresh();
+        } else if (role) {
+            router.push(`/${role}`);
+            router.refresh();
+        } else {
+            router.push('/login');
+        }
+        return null;
+    }, null);
 
     return (
         <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 2xl:p-8">
@@ -84,7 +64,7 @@ export default function LoginClient() {
                             {error}
                         </div>
                     )}
-                    <form action={handleSubmit} className="space-y-6 2xl:space-y-8">
+                    <form action={formAction} className="space-y-6 2xl:space-y-8">
                         <div className="space-y-2 2xl:space-y-3">
                             <label className="text-[10px] 2xl:text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">Email Address</label>
                             <InputGroup className="h-11 2xl:h-13 rounded-lg 2xl:rounded-xl border-border/50 bg-muted/20">
@@ -95,6 +75,7 @@ export default function LoginClient() {
                                     name="email"
                                     type="email"
                                     required
+                                    disabled={isPending}
                                     placeholder="editor@ijitest.org"
                                     className="text-xs 2xl:text-sm font-medium"
                                 />
@@ -111,6 +92,7 @@ export default function LoginClient() {
                                     name="password"
                                     type={showPassword ? "text" : "password"}
                                     required
+                                    disabled={isPending}
                                     placeholder="••••••••"
                                     className="text-xs 2xl:text-sm font-medium"
                                 />
@@ -119,6 +101,7 @@ export default function LoginClient() {
                                         type="button"
                                         variant="ghost"
                                         size="icon"
+                                        disabled={isPending}
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="h-8 w-8 2xl:h-10 2xl:w-10 text-muted-foreground/60 hover:text-[#000066] transition-colors hover:bg-transparent"
                                     >
@@ -137,7 +120,17 @@ export default function LoginClient() {
                             </Link>
                         </div>
 
-                        <LoadingButton />
+                        <Button
+                            type="submit"
+                            disabled={isPending}
+                            className="w-full h-11 2xl:h-13 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm 2xl:text-base rounded-lg 2xl:rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                            {isPending ? (
+                                <>Logging in <Loader2 className="w-4 h-4 2xl:w-5 2xl:h-5 animate-spin" /></>
+                            ) : (
+                                <>Login <ShieldCheck className="w-4 h-4 2xl:w-5 2xl:h-5" /></>
+                            )}
+                        </Button>
                     </form>
                 </div>
 

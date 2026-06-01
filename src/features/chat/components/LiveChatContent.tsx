@@ -9,7 +9,13 @@ import {
   getChatHistory, 
   searchChatUsers
 } from "@/actions/chat";
-import { type ChatMessageRow, type ChatUser } from "@/db/types";
+import { 
+  type ChatMessageRow, 
+  type ChatUser, 
+  type UserRole,
+  type ServerToClientEvents,
+  type ClientToServerEvents
+} from "@/db/types";
 import { 
   Send, 
   Search, 
@@ -25,8 +31,8 @@ export function LiveChatContent() {
   const { data: session } = useSession();
   const currentUserId = session?.user?.id;
 
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [socket, setSocket] = useState<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<ChatUser['id'][]>([]);
   const [contacts, setContacts] = useState<ChatUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -34,8 +40,8 @@ export function LiveChatContent() {
   const [messages, setMessages] = useState<ChatMessageRow[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
-  const [lastMessageTime, setLastMessageTime] = useState<Record<string, Date | null>>({});
+  const [unreadCounts, setUnreadCounts] = useState<Record<ChatUser['id'], number>>({});
+  const [lastMessageTime, setLastMessageTime] = useState<Record<ChatUser['id'], Date | null>>({});
   const [isConnected, setIsConnected] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
@@ -81,7 +87,7 @@ export function LiveChatContent() {
   useEffect(() => {
     if (!currentUserId) return;
 
-    let activeSocket: Socket | null = null;
+    let activeSocket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
     async function initSocket() {
       const response = await getSocketToken();
@@ -96,7 +102,7 @@ export function LiveChatContent() {
       activeSocket = io(socketUrl, {
         auth: { token },
         transports: ["websocket"],
-      });
+      }) as Socket<ServerToClientEvents, ClientToServerEvents>;
 
       activeSocket.on("connect", () => {
         console.log("Socket connected successfully with ID:", activeSocket?.id);
@@ -200,10 +206,11 @@ export function LiveChatContent() {
 
         // Update last message time from history
         const lastMsg = response.data[response.data.length - 1];
-        if (lastMsg?.createdAt) {
+        const createdAt = lastMsg?.createdAt;
+        if (createdAt) {
           setLastMessageTime((prev) => ({
             ...prev,
-            [selectedUser!.id]: new Date(lastMsg.createdAt),
+            [selectedUser!.id]: new Date(createdAt),
           }));
         }
       }
@@ -251,7 +258,7 @@ export function LiveChatContent() {
     }
   };
 
-  const getRoleBadgeClass = (role: string) => {
+  const getRoleBadgeClass = (role: UserRole) => {
     switch (role) {
       case "admin":
         return "bg-red-500/10 text-red-400 border-red-500/20";

@@ -2,7 +2,8 @@
 
 import { getPasswordSetupInfo, setupPassword } from '@/actions/users';
 import { ShieldCheck, Lock, Mail, CheckCircle2, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useState, useEffect, Suspense, useCallback } from 'react';
+import type { ActionResponse } from '@/db/types';
+import { useState, useEffect, Suspense, useActionState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -16,8 +17,6 @@ function SetupContent() {
 
     const [info, setInfo] = useState<{ email: string; role: string; fullName?: string } | null>(null);
     const [loading, setLoading] = useState(true);
-    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-    const [errorMessage, setErrorMessage] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
@@ -45,34 +44,26 @@ function SetupContent() {
         return () => { isMounted = false; };
     }, [token]);
 
-    const handleSubmit = useCallback(async (formData: FormData) => {
-        setStatus('loading');
-
+    const [state, formAction, isPending] = useActionState(async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
         const password = formData.get('password') as string;
         const confirm = formData.get('confirmPassword') as string;
 
         if (password !== confirm) {
-            setErrorMessage("Passwords do not match");
-            setStatus('error');
-            return;
+            return { success: false, error: "Passwords do not match" };
         }
 
         try {
             const result = await setupPassword(formData);
             if (result.success) {
-                setStatus('success');
                 setTimeout(() => {
                     router.push('/login');
                 }, 3000);
-            } else {
-                setErrorMessage(result.error || "Failed to setup password");
-                setStatus('error');
             }
+            return result;
         } catch { // network error
-            setErrorMessage("A network error occurred. Please try again.");
-            setStatus('error');
+            return { success: false, error: "A network error occurred. Please try again." };
         }
-    }, [router]);
+    }, null);
 
     if (loading) return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
@@ -98,7 +89,7 @@ function SetupContent() {
         </div>
     );
 
-    if (status === 'success') return (
+    if (state?.success) return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-center">
             <div className="max-w-md w-full bg-card rounded-xl p-8 sm:p-12 shadow-sm border border-border/50">
                 <div className="w-16 h-16 bg-emerald-500/5 rounded-xl flex items-center justify-center mx-auto mb-6 border border-emerald-500/10">
@@ -146,7 +137,7 @@ function SetupContent() {
                         </div>
                     </div>
 
-                    <form action={handleSubmit} className="space-y-6">
+                    <form action={formAction} className="space-y-6">
                         <input type="hidden" name="token" value={token!} />
                         
                         <div className="space-y-2">
@@ -192,18 +183,18 @@ function SetupContent() {
                             </InputGroup>
                         </div>
 
-                        {status === 'error' && (
+                        {state && !state.success && (
                             <div className="p-4 bg-destructive/5 border border-destructive/10 text-destructive rounded-lg text-xs font-semibold flex items-center gap-3">
                                 <ShieldCheck className="w-4 h-4" />
-                                {errorMessage}
+                                {state.error || "Failed to setup password"}
                             </div>
                         )}
 
                         <Button
-                            disabled={status === 'loading'}
+                            disabled={isPending}
                             className="w-full h-11 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-2"
                         >
-                            {status === 'loading' ? (
+                            {isPending ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin" />
                                     {ctx === 'reset' ? 'Updating...' : 'Securing...'}
