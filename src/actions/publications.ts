@@ -26,6 +26,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { headers } from "next/headers";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { submitToIndexNow } from "@/lib/indexnow";
 
 
 /**
@@ -244,6 +245,12 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })
             .catch(e => console.error("Publication email failed:", e));
 
+        // 8. IndexNow notification AFTER transaction (fire-and-forget)
+        const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '');
+        const paperUrl = `${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${submission.paperId}`;
+        submitToIndexNow([paperUrl])
+            .catch((e: unknown) => console.error("IndexNow submission failed:", e));
+
         revalidatePath('/admin/submissions');
         revalidatePath('/admin/publications');
         revalidatePath('/archives');
@@ -271,9 +278,59 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
             return actionError("Unauthorized");
         }
 
+        // 1. Fetch the previous latest published issue before publishing the new one
+        const prevLatestIssueRows = await db.select()
+            .from(volumesIssues)
+            .where(eq(volumesIssues.status, 'published'))
+            .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber))
+            .limit(1);
+        const prevLatestIssue = prevLatestIssueRows[0];
+
+        // 2. Publish the new issue
         await db.update(volumesIssues)
             .set({ status: 'published' })
             .where(eq(volumesIssues.id, id));
+
+        // 3. Fetch papers for the newly published issue
+        const issuePapers = await db.select({
+            paperId: submissions.paperId
+        })
+        .from(submissions)
+        .where(eq(submissions.issueId, id));
+
+        const issueRows = await db.select().from(volumesIssues).where(eq(volumesIssues.id, id)).limit(1);
+        const issue = issueRows[0];
+
+        const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '');
+        const urlsToSubmit: string[] = [];
+
+        // Add newly published issue papers (now in current-issue)
+        if (issue && issuePapers.length > 0) {
+            issuePapers.forEach(paper => {
+                urlsToSubmit.push(`${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${paper.paperId}`);
+            });
+        }
+
+        // 4. Fetch papers for the previous latest issue (which are now archived)
+        if (prevLatestIssue && prevLatestIssue.id !== id) {
+            const prevIssuePapers = await db.select({
+                paperId: submissions.paperId
+            })
+            .from(submissions)
+            .where(eq(submissions.issueId, prevLatestIssue.id));
+
+            if (prevIssuePapers.length > 0) {
+                prevIssuePapers.forEach(paper => {
+                    urlsToSubmit.push(`${baseUrl}/archives/volume${prevLatestIssue.volumeNumber}/issue${prevLatestIssue.issueNumber}/${paper.paperId}`);
+                });
+            }
+        }
+
+        // 5. Submit all URLs to IndexNow in a single batch
+        if (urlsToSubmit.length > 0) {
+            submitToIndexNow(urlsToSubmit)
+                .catch((e: unknown) => console.error("IndexNow batch submission failed:", e));
+        }
 
         revalidatePath('/admin/publications');
         revalidatePath('/archives');
