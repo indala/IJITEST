@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import {
@@ -23,7 +24,7 @@ import {
     type SubmissionFile,
     type ReviewWithReviewer,
 } from "@/db/types";
-import { revalidatePath } from "next/cache";
+import { cacheTag, revalidatePath, updateTag } from "next/cache";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { eq, desc, and, isNull, inArray, or, like, sql, SQL } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
@@ -34,68 +35,43 @@ import {
     triggerDocxToPdfConversion 
 } from "@/lib/fs-utils";
 
-/**
- * Fetch a unified submission object with all related data joined.
- * Resolves the structural mismatches between the legacy "flat" schema and the new normalized schema.
- */
-export async function getSubmissionById(id: number): Promise<ActionResponse<SubmissionUI>> {
-    try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user) return { success: false, error: "Authentication required" };
+const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> => {
+    "use cache";
+    cacheTag(`submission-${id}`, 'submissions');
 
-        // 1. Fetch Core Submission + Profile + Latest Version + Publication + Issue
-        const submissionRows = await db.select({
-            submission: submissions,
-            author: users,
-            authorProfile: userProfiles,
-            issue: volumesIssues,
-            publication: publications,
-            payment: payments
-        })
-            .from(submissions)
-            .where(and(eq(submissions.id, id), isNull(submissions.deletedAt)))
-            .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
-            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-            .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
-            .leftJoin(publications, eq(submissions.id, publications.submissionId))
-            .leftJoin(payments, eq(submissions.id, payments.submissionId))
-            .limit(1);
+    // 1. Fetch Core Submission + Profile + Latest Version + Publication + Issue
+    const submissionRows = await db.select({
+        submission: submissions,
+        author: users,
+        authorProfile: userProfiles,
+        issue: volumesIssues,
+        publication: publications,
+        payment: payments
+    })
+        .from(submissions)
+        .where(and(eq(submissions.id, id), isNull(submissions.deletedAt)))
+        .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
+        .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+        .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
+        .leftJoin(publications, eq(submissions.id, publications.submissionId))
+        .leftJoin(payments, eq(submissions.id, payments.submissionId))
+        .limit(1);
 
-        const row = submissionRows[0];
-        if (!row) return { success: false, error: "Submission not found" };
+    const row = submissionRows[0];
+    if (!row) return null;
 
-        // RBAC: Verify user has permission to see this submission
-        if (session.user.role === 'author' && row.submission.correspondingAuthorId !== session.user.id) {
-            return { success: false, error: "Unauthorized access" };
-        }
-        if (session.user.role === 'reviewer') {
-            const [assignment] = await db.select()
-                .from(reviewAssignments)
-                .where(and(
-                    eq(reviewAssignments.submissionId, id),
-                    eq(reviewAssignments.reviewerId, session.user.id)
-                ))
-                .limit(1);
-            if (!assignment) return { success: false, error: "Unauthorized access: You are not assigned to this manuscript." };
-        }
-
-        // 2. Fetch Latest Version
-        const versionRows = await db.select()
+    // 2-4. Parallel fetch: version, authors, assignments (independent queries)
+    const [versionRows, authors, assignments] = await Promise.all([
+        db.select()
             .from(submissionVersions)
             .where(eq(submissionVersions.submissionId, id))
             .orderBy(desc(submissionVersions.versionNumber))
-            .limit(1);
-
-        const latestVersion = versionRows[0];
-
-        // 3. Fetch Authors (Co-authors)
-        const authors = await db.select()
+            .limit(1),
+        db.select()
             .from(submissionAuthors)
             .where(eq(submissionAuthors.submissionId, id))
-            .orderBy(submissionAuthors.orderIndex);
-
-        // 4. Fetch Review Assignments with Reviewer Profiles and Decisions
-        const assignments = await db.select({
+            .orderBy(submissionAuthors.orderIndex),
+        db.select({
             ra: reviewAssignments,
             reviewer: users,
             profile: userProfiles,
@@ -105,54 +81,83 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
             .where(eq(reviewAssignments.submissionId, id))
             .leftJoin(users, eq(reviewAssignments.reviewerId, users.id))
             .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-            .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId));
+            .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId)),
+    ]);
 
-        // 5. Fetch Files for the Latest Version
-        const files = latestVersion
-            ? await db.select().from(submissionFiles).where(eq(submissionFiles.versionId, latestVersion.id))
-            : [];
+    const latestVersion = versionRows[0];
 
-        // 6. Map to Domain Types
-        const typedAssignments: ReviewWithReviewer[] = assignments.map(a => ({
-            ...a.ra,
-            reviewer: (a.reviewer && a.profile) ? { ...a.reviewer, profile: a.profile } : ({} as UserWithProfile),
-            review: a.review
-        }));
+    // 5. Fetch Files for the Latest Version (depends on version query)
+    const files = latestVersion
+        ? await db.select().from(submissionFiles).where(eq(submissionFiles.versionId, latestVersion.id))
+        : [];
 
-        const submissionData: SubmissionDetail = {
-            ...row.submission,
-            correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } as UserWithProfile : undefined,
-            versions: latestVersion ? [{ ...latestVersion, files: files as SubmissionFile[] }] : [],
-            authors,
-            payment: row.payment,
-            reviewAssignments: typedAssignments,
-            issue: row.issue,
-            publication: row.publication
-        };
+    // 6. Map to Domain Types
+    const typedAssignments: ReviewWithReviewer[] = assignments.map(a => ({
+        ...a.ra,
+        reviewer: (a.reviewer && a.profile) ? { ...a.reviewer, profile: a.profile } : ({} as UserWithProfile),
+        review: a.review
+    }));
 
-        // 7. Map to UI-Friendly Composite Object (Flat properties for historical compatibility)
-        const mainManuscript = files.find(f => f.fileType === 'mainManuscript');
-        const pdfVersion = files.find(f => f.fileType === 'pdfVersion');
-        const finalPdf = row.publication?.finalPdfUrl;
+    const submissionData: SubmissionDetail = {
+        ...row.submission,
+        correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } as UserWithProfile : undefined,
+        versions: latestVersion ? [{ ...latestVersion, files: files as SubmissionFile[] }] : [],
+        authors,
+        payment: row.payment,
+        reviewAssignments: typedAssignments,
+        issue: row.issue,
+        publication: row.publication
+    };
 
-        const data: SubmissionUI = {
-            ...submissionData,
-            title: latestVersion?.title || "Untitled Manuscript",
-            abstract: latestVersion?.abstract || null,
-            keywords: latestVersion?.keywords || null,
-            filePath: mainManuscript?.fileUrl || "",
-            pdfUrl: finalPdf || pdfVersion?.fileUrl || "", // Priority: Published PDF > Review PDF
-            authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
-            authorEmail: submissionData.correspondingAuthor?.email || "",
-            coAuthors: submissionData.authors,
-            volumeNumber: submissionData.issue?.volumeNumber,
-            issueNumber: submissionData.issue?.issueNumber,
-            startPage: submissionData.publication?.startPage,
-            endPage: submissionData.publication?.endPage,
-            latestVersion: latestVersion ? { ...latestVersion, files: files as SubmissionFile[] } : undefined,
-            allFiles: files as SubmissionFile[],
-            allReviews: typedAssignments,
-        };
+    // 7. Map to UI-Friendly Composite Object (Flat properties for historical compatibility)
+    const mainManuscript = files.find(f => f.fileType === 'mainManuscript');
+    const pdfVersion = files.find(f => f.fileType === 'pdfVersion');
+    const finalPdf = row.publication?.finalPdfUrl;
+
+    const data: SubmissionUI = {
+        ...submissionData,
+        title: latestVersion?.title || "Untitled Manuscript",
+        abstract: latestVersion?.abstract || null,
+        keywords: latestVersion?.keywords || null,
+        filePath: mainManuscript?.fileUrl || "",
+        pdfUrl: finalPdf || pdfVersion?.fileUrl || "", // Priority: Published PDF > Review PDF
+        authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
+        authorEmail: submissionData.correspondingAuthor?.email || "",
+        coAuthors: submissionData.authors,
+        volumeNumber: submissionData.issue?.volumeNumber,
+        issueNumber: submissionData.issue?.issueNumber,
+        startPage: submissionData.publication?.startPage,
+        endPage: submissionData.publication?.endPage,
+        latestVersion: latestVersion ? { ...latestVersion, files: files as SubmissionFile[] } : undefined,
+        allFiles: files as SubmissionFile[],
+        allReviews: typedAssignments,
+    };
+
+    return data;
+};
+
+/**
+ * Fetch a unified submission object with all related data joined.
+ * Resolves the structural mismatches between the legacy "flat" schema and the new normalized schema.
+ */
+export async function getSubmissionById(id: number): Promise<ActionResponse<SubmissionUI>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user) return { success: false, error: "Authentication required" };
+
+        const data = await fetchRawSubmissionData(id);
+        if (!data) return { success: false, error: "Submission not found" };
+
+        // RBAC: Verify user has permission to see this submission
+        if (session.user.role === 'author' && data.correspondingAuthorId !== session.user.id) {
+            return { success: false, error: "Unauthorized access" };
+        }
+        if (session.user.role === 'reviewer') {
+            const isAssigned = data.reviewAssignments.some(ra => ra.reviewerId === session.user.id);
+            if (!isAssigned) {
+                return { success: false, error: "Unauthorized access: You are not assigned to this manuscript." };
+            }
+        }
 
         return { success: true, data };
     } catch (error) {
@@ -216,7 +221,8 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
             .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
             .leftJoin(publications, eq(submissions.id, publications.submissionId))
             .where(and(...conditions))
-            .orderBy(desc(submissions.submittedAt));
+            .orderBy(desc(submissions.submittedAt))
+            .limit(200);
 
         if (rows.length === 0) return { success: true, data: [] };
 
@@ -318,6 +324,8 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
 
         revalidatePath('/admin/submissions');
         revalidatePath(`/admin/submissions/${id}`);
+        updateTag(`submission-${id}`);
+        updateTag('submissions');
         return { success: true };
     } catch (error) {
         return { success: false, error: "Failed to finalize decision: " + (error instanceof Error ? error.message : String(error)) };
@@ -355,6 +363,8 @@ export async function requestResubmissionWithComments(
         await sendEmail({ to: submission.authorEmail, subject: emailData.subject, html: emailData.html });
 
         revalidatePath(`/admin/submissions/${submissionId}`);
+        updateTag(`submission-${submissionId}`);
+        updateTag('submissions');
         return { success: true };
     } catch (error) {
         return { success: false, error: error instanceof Error ? error.message : String(error) };
@@ -417,6 +427,8 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
         }
 
         revalidatePath('/admin/submissions');
+        updateTag(`submission-${id}`);
+        updateTag('submissions');
         return { success: true };
     } catch (error) {
         return { success: false, error: "Failed to delete: " + (error instanceof Error ? error.message : String(error)) };
@@ -495,6 +507,8 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');
+        updateTag(`submission-${submissionId}`);
+        updateTag('submissions');
 
         return { success: true };
     } catch (error) {
@@ -563,6 +577,8 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/reviewer/submissions/${submissionId}`);
+        updateTag(`submission-${submissionId}`);
+        updateTag('submissions');
 
         return { success: true };
     } catch (error) {

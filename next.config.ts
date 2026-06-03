@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
-const storageUrl = process.env['STORAGE_SERVICE_URL'] || "http://localhost:4000";
+const storageUrl = process.env['STORAGE_SERVICE_URL'] || "https://www.api.ijitest.org";
 const wsStorageUrl = storageUrl.replace(/^http/, "ws");
 
 const csp = [
@@ -22,7 +22,8 @@ const csp = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  allowedDevOrigins: ['diet-steal-unavailable-divided.trycloudflare.com'],
+  cacheComponents: true,
+  allowedDevOrigins: process.env['ALLOWED_DEV_ORIGINS']?.split(',').filter(Boolean) ?? [],
   experimental: {
     serverActions: {
       bodySizeLimit: "20mb"

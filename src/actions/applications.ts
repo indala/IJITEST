@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import { 
@@ -42,7 +43,8 @@ export async function getApplications(filters?: { role?: string, status?: string
         const apps = await db.select()
             .from(applications)
             .where(whereClauses.length > 0 ? and(...whereClauses) : undefined)
-            .orderBy(desc(applications.createdAt));
+            .orderBy(desc(applications.createdAt))
+            .limit(200);
 
         // 2. Fetch all interests for these applications
         const appIds = apps.map(a => a.id);
@@ -150,7 +152,7 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
         const { app, role, invitationToken } = result as { app: Application, role: string, invitationToken: string };
 
         // 5. Send Invitation Email
-        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000';
+        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org';
         const setupUrl = `${baseUrl}/auth/setup-password?token=${invitationToken}&ctx=setup`;
         
         const template = emailTemplates.boardInvitation(app.fullName, role, setupUrl);

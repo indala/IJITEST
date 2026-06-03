@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import { contactMessages } from "@/db/schema";
@@ -51,7 +52,8 @@ export async function getMessages(filters?: { status?: 'pending' | 'resolved' | 
         })
         .from(contactMessages)
         .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-        .orderBy(desc(contactMessages.createdAt));
+        .orderBy(desc(contactMessages.createdAt))
+        .limit(200);
 
         return actionSuccess(rows as ContactMessageRow[]);
     } catch (error) {

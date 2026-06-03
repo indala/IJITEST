@@ -5,8 +5,6 @@ import ProfileDossier from "@/features/profile/components/ProfileDossier";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
     title: "Review Board Profile | IJITEST",
 };

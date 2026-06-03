@@ -13,8 +13,6 @@ export const metadata = {
     title: "My Submissions | IJITEST",
 };
 
-export const dynamic = 'force-dynamic';
-
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
     submitted: { label: 'Under Review', color: 'text-blue-600', bg: 'bg-blue-500/10' },
     editorAssigned: { label: 'Editor Assigned', color: 'text-indigo-600', bg: 'bg-indigo-500/10' },

@@ -21,8 +21,6 @@ export const metadata = {
     title: "Editor Dashboard | IJITEST",
 };
 
-export const dynamic = 'force-dynamic';
-
 export default async function EditorDashboard() {
     const session = await getServerSession(authOptions);
     if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {

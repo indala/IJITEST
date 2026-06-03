@@ -1,8 +1,10 @@
 "use client";
 
+import dynamic from 'next/dynamic';
 import { useState } from "react";
-import { ManageMessagesContent } from "@/features/messages/components/ManageMessagesContent";
-import { LiveChatContent } from "@/features/chat/components/LiveChatContent";
+
+const ManageMessagesContent = dynamic(() => import("@/features/messages/components/ManageMessagesContent").then(m => m.ManageMessagesContent), { ssr: false });
+const LiveChatContent = dynamic(() => import("@/features/chat/components/LiveChatContent").then(m => m.LiveChatContent), { ssr: false });
 import { MessageSquare, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 

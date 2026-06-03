@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import {
@@ -15,7 +16,7 @@ import {
     type PaperWithPublication
 } from "@/db/types";
 import { eq, and, sql, desc, count } from "drizzle-orm";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { getSettingsData } from "./settings";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { downloadFileFromStorage } from "@/lib/fs-utils";
@@ -66,8 +67,8 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
         });
         revalidatePath('/admin/publications');
         revalidatePath('/', 'layout');
-        revalidateTag('publications', {});
-        revalidateTag('public-data', {});
+        updateTag('publications');
+        updateTag('public-data');
         return actionSuccess();
     } catch (error) {
         console.error("Create Publication Error:", error);
@@ -79,55 +80,51 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
  * Fetch all volumes and issues with paper counts
  */
 export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { paperCount: number })[]>> {
-    return unstable_cache(
-        async () => {
-            try {
-                const rows = await db.select({
-                    vi: volumesIssues,
-                    paperCount: count(submissions.id)
-                })
-                    .from(volumesIssues)
-                    .leftJoin(submissions, eq(submissions.issueId, volumesIssues.id))
-                    .groupBy(volumesIssues.id)
-                    .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber));
+    'use cache'
+    cacheLife('hours')
+    cacheTag('publications', 'public-data')
 
-                const data = rows.map(r => ({
-                    ...r.vi,
-                    paperCount: r.paperCount
-                }));
-                return actionSuccess(data);
-            } catch (error) {
-                console.error("Get Publications Error:", error);
-                return actionError<(Issue & { paperCount: number })[]>(error instanceof Error ? error.message : String(error));
-            }
-        },
-        ['volumes-issues-list'],
-        { tags: ['publications', 'public-data'], revalidate: 3600 }
-    )();
+    try {
+        const rows = await db.select({
+            vi: volumesIssues,
+            paperCount: count(submissions.id)
+        })
+            .from(volumesIssues)
+            .leftJoin(submissions, eq(submissions.issueId, volumesIssues.id))
+            .groupBy(volumesIssues.id)
+            .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber));
+
+        const data = rows.map(r => ({
+            ...r.vi,
+            paperCount: r.paperCount
+        }));
+        return actionSuccess(data);
+    } catch (error) {
+        console.error("Get Publications Error:", error);
+        return actionError<(Issue & { paperCount: number })[]>(error instanceof Error ? error.message : String(error));
+    }
 }
 
 /**
  * Get the latest published issue
  */
 export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> {
-    return unstable_cache(
-        async () => {
-            try {
-                const rows = await db.select()
-                    .from(volumesIssues)
-                    .where(eq(volumesIssues.status, 'published'))
-                    .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber))
-                    .limit(1);
-                if (!rows[0]) return actionError<Issue>("No published issues found");
-                return actionSuccess(rows[0]);
-            } catch (error) {
-                console.error("Get Latest Published Issue Error:", error);
-                return actionError<Issue>(error instanceof Error ? error.message : String(error));
-            }
-        },
-        ['latest-published-issue'],
-        { tags: ['publications', 'latest-issue', 'public-data'], revalidate: 3600 }
-    )();
+    'use cache'
+    cacheLife('hours')
+    cacheTag('publications', 'latest-issue', 'public-data')
+
+    try {
+        const rows = await db.select()
+            .from(volumesIssues)
+            .where(eq(volumesIssues.status, 'published'))
+            .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber))
+            .limit(1);
+        if (!rows[0]) return actionError<Issue>("No published issues found");
+        return actionSuccess(rows[0]);
+    } catch (error) {
+        console.error("Get Latest Published Issue Error:", error);
+        return actionError<Issue>(error instanceof Error ? error.message : String(error));
+    }
 }
 
 /**
@@ -251,10 +248,10 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         revalidatePath('/admin/publications');
         revalidatePath('/archives');
         revalidatePath('/', 'layout');
-        revalidateTag('publications', {});
-        revalidateTag('archives', {});
-        revalidateTag('public-data', {});
-        revalidateTag('latest-issue', {});
+        updateTag('publications');
+        updateTag('archives');
+        updateTag('public-data');
+        updateTag('latest-issue');
         return actionSuccess();
     } catch (error) {
         console.error("Assign Paper Error:", error);
@@ -283,10 +280,10 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');
-        revalidateTag('publications', {});
-        revalidateTag('archives', {});
-        revalidateTag('public-data', {});
-        revalidateTag('latest-issue', {});
+        updateTag('publications');
+        updateTag('archives');
+        updateTag('public-data');
+        updateTag('latest-issue');
         return actionSuccess();
     } catch (error) {
         console.error("Publish Issue Error:", error);
@@ -364,10 +361,10 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');
-        revalidateTag('publications', {});
-        revalidateTag('archives', {});
-        revalidateTag('public-data', {});
-        revalidateTag('latest-issue', {});
+        updateTag('publications');
+        updateTag('archives');
+        updateTag('public-data');
+        updateTag('latest-issue');
         return actionSuccess();
     } catch (error) {
         return actionError("Failed to unassign paper: " + (error instanceof Error ? error.message : String(error)));
@@ -403,8 +400,8 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
             .where(eq(volumesIssues.id, id));
 
         revalidatePath('/admin/publications');
-        revalidateTag('publications', {});
-        revalidateTag('public-data', {});
+        updateTag('publications');
+        updateTag('public-data');
         return actionSuccess();
     } catch (error) {
         console.error("Update Publication Error:", error);
@@ -438,10 +435,10 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
         return actionError("Failed to delete: " + (error instanceof Error ? error.message : String(error)));
     } finally {
         revalidatePath('/admin/publications');
-        revalidateTag('publications', {});
-        revalidateTag('archives', {});
-        revalidateTag('public-data', {});
-        revalidateTag('latest-issue', {});
+        updateTag('publications');
+        updateTag('archives');
+        updateTag('public-data');
+        updateTag('latest-issue');
     }
 }
 

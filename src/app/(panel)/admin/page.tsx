@@ -33,8 +33,6 @@ export const metadata = {
     title: "Admin Dashboard | IJITEST",
 };
 
-export const dynamic = 'force-dynamic';
-
 async function getHealthMetrics() {
     // 2. Health Calculations
     const startDb = Date.now();

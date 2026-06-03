@@ -24,8 +24,6 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export const revalidate = 3600;
-
 export default async function EditorialBoard() {
     const res = await getEditorialBoard();
     const initialMembers = res.success ? res.data || [] : [];

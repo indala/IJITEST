@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import { payments, submissions, submissionVersions, userProfiles, users } from "@/db/schema";
@@ -48,8 +49,9 @@ export async function getPayments(): Promise<ActionResponse<PaymentRow[]>> {
             eq(submissionVersions.submissionId, submissions.id),
             eq(submissionVersions.versionNumber, latestVersions.maxVersion)
         ))
-        .orderBy(desc(payments.createdAt));
-        
+        .orderBy(desc(payments.createdAt))
+        .limit(200);
+
         return { success: true, data: results as PaymentRow[] };
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);

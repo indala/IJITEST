@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
  
 import { db } from "@/lib/db";
 import { submissions, reviews, reviewAssignments, submissionVersions, userProfiles, users } from "@/db/schema";

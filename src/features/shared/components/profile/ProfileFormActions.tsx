@@ -1,5 +1,3 @@
-"use client";
-
 import React from 'react';
 import { Save, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Button } from "@/components/ui/button";

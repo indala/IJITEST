@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import {
@@ -12,7 +13,7 @@ import {
     submissionVersions,
     reviewAssignments
 } from "@/db/schema";
-import { eq, sql, and, desc } from "drizzle-orm";
+import { eq, sql, and, desc, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import { getServerSession } from "next-auth/next";
@@ -264,22 +265,25 @@ export async function updateResearchInterests(userId: string, interests: string[
             // Update the many-to-many interests join table
             await tx.delete(applicationInterests).where(eq(applicationInterests.applicationId, applicationId));
 
-            for (const name of cleanInterests) {
-                let interestId: number;
-                const existing = await tx.select().from(masterInterests).where(eq(masterInterests.name, name)).limit(1);
+            // Batch: fetch all existing interests in one query
+            const existingInterests = await tx.select().from(masterInterests).where(
+                inArray(masterInterests.name, cleanInterests)
+            );
+            const existingMap = new Map(existingInterests.map(i => [i.name, i.id]));
 
-                if (existing[0]) {
-                    interestId = existing[0].id;
-                } else {
-                    const [inserted] = await tx.insert(masterInterests).values({ name });
-                    interestId = inserted.insertId;
-                }
-
-                await tx.insert(applicationInterests).values({
-                    applicationId,
-                    interestId
-                });
+            // Batch: insert any missing interests
+            const newNames = cleanInterests.filter(name => !existingMap.has(name));
+            for (const name of newNames) {
+                const [inserted] = await tx.insert(masterInterests).values({ name });
+                existingMap.set(name, inserted.insertId);
             }
+
+            // Batch: insert all join table entries
+            const joinRows = cleanInterests.map(name => ({
+                applicationId,
+                interestId: existingMap.get(name)!
+            }));
+            await tx.insert(applicationInterests).values(joinRows);
         });
 
         revalidatePath("/(panel)", "layout");

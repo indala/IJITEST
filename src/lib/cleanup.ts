@@ -1,3 +1,4 @@
+import 'server-only'
 import { db } from "./db";
 import { users, submissions, submissionVersions, submissionFiles } from "@/db/schema";
 import { eq, and, lte, inArray, notInArray } from "drizzle-orm";

@@ -3,7 +3,7 @@ import { getPublishedPapers, getLatestIssuePapers } from '@/actions/archives';
 import type { PublishedPaperUI } from '@/db/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org';
+  const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '');
 
   // 1. Static Routes
   const staticRoutes = [
@@ -13,8 +13,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/current-issue',
     '/editorial-board',
     '/ethics',
+    '/guidelines',
     '/indexing',
     '/join-us',
+    '/peer-review',
     '/privacy',
     '/reviewer-guidelines',
     '/submit',

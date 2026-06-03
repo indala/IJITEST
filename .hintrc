@@ -8,6 +8,9 @@
       {
         "list": "off"
       }
+    ],
+    "axe/label": [
+      "on"
     ]
   }
 }

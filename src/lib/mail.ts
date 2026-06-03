@@ -1,3 +1,4 @@
+import 'server-only'
 import nodemailer from 'nodemailer';
 
 const allowInsecureTls = process.env["SMTP_ALLOW_INSECURE_TLS"] === 'true';

@@ -1,4 +1,3 @@
-"use client";
 import { memo } from 'react';
 import { CheckCircle2, Clock, Shield, Globe, Award, Zap } from 'lucide-react';
 

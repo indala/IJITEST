@@ -3,8 +3,6 @@ import { db } from "@/lib/db";
 import { chatMessages } from "@/db/schema";
 import { lt } from "drizzle-orm";
 
-export const dynamic = 'force-dynamic';
-
 /**
  * Cron endpoint: Prune chat history older than 2 months.
  * Trigger via external monthly scheduler (e.g. Hostinger Cron Jobs).

@@ -9,8 +9,6 @@ import { XCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import type { SubmissionIdParam } from "@/db/types";
 
-export const dynamic = 'force-dynamic';
-
 export default async function ResubmitPage({ params }: { params: Promise<SubmissionIdParam> }) {
     const session = await getServerSession(authOptions);
     if (!session?.user) redirect('/login');

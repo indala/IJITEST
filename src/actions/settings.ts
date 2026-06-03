@@ -1,14 +1,25 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import { settings } from "@/db/schema";
 import { type ActionResponse, actionSuccess, actionError } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { uploadFileToStorage } from "@/lib/fs-utils";
-import camelCase from "lodash/camelCase";
-import kebabCase from "lodash/kebabCase";
+function camelCase(str: string): string {
+    return str
+        .replace(/[-_\s]+(.)?/g, (_, c: string | undefined) => (c ? c.toUpperCase() : ""))
+        .replace(/^[A-Z]/, (c) => c.toLowerCase());
+}
+
+function kebabCase(str: string): string {
+    return str
+        .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+        .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+        .toLowerCase();
+}
 
 const ALLOWED_SETTING_KEYS = new Set([
     'journalName', 'journalShortName', 'issnNumber', 'apcInr', 'apcUsd',
@@ -42,33 +53,29 @@ const DEFAULT_SETTINGS: Record<string, string> = {
 };
 
 export async function getSettings(): Promise<ActionResponse<Record<string, string>>> {
-    const fetchSettings = unstable_cache(
-        async (): Promise<ActionResponse<Record<string, string>>> => {
-            try {
-                const rows = await db.select().from(settings);
+    'use cache'
+    cacheLife('hours')
+    cacheTag('settings', 'public-data')
 
-                const result: Record<string, string> = { ...DEFAULT_SETTINGS };
+    try {
+        const rows = await db.select().from(settings);
 
-                rows.forEach((row) => {
-                    if (row.settingValue) {
-                        const key = camelCase(row.settingKey);
-                        if (ALLOWED_SETTING_KEYS.has(key)) {
-                            result[key] = row.settingValue;
-                        }
-                    }
-                });
+        const result: Record<string, string> = { ...DEFAULT_SETTINGS };
 
-                return actionSuccess(result);
-            } catch (error) {
-                console.error("Get Settings Error:", error);
-                return actionError(error instanceof Error ? error.message : String(error));
+        rows.forEach((row) => {
+            if (row.settingValue) {
+                const key = camelCase(row.settingKey);
+                if (ALLOWED_SETTING_KEYS.has(key)) {
+                    result[key] = row.settingValue;
+                }
             }
-        },
-        ['site-settings-global'],
-        { tags: ['settings', 'public-data'], revalidate: 3600 }
-    );
+        });
 
-    return await fetchSettings();
+        return actionSuccess(result);
+    } catch (error) {
+        console.error("Get Settings Error:", error);
+        return actionError(error instanceof Error ? error.message : String(error));
+    }
 }
 
 /**
@@ -118,7 +125,7 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
             }
         });
 
-        revalidateTag('settings', {});      // Busts unstable_cache for all pages (Next.js 16 requires 2nd arg)
+        updateTag('settings');           // Immediate cache expiration (Next.js 16)
         revalidatePath('/', 'layout');       // Re-renders root layout + all children
         return actionSuccess();
     } catch (error) {

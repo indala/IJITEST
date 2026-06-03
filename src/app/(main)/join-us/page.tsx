@@ -20,8 +20,6 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export const revalidate = 3600;
-
 export default async function JoinUsPage() {
     return (
         <main className="bg-background min-h-screen">

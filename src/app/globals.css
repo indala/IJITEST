@@ -12,7 +12,7 @@
   --color-foreground: oklch(0.12 0.01 253); /* Near black for better readability */
 
   --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
-  --font-serif: "Crimson Pro", "Lora", serif;
+  --font-serif: var(--font-crimson), "Crimson Pro", serif;
 
   --shadow-vip: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
   --shadow-vip-hover: 0 25px 50px -12px rgb(0 0 0 / 0.1);
@@ -278,5 +278,17 @@
   * {
     scrollbar-width: thin;
     scrollbar-color: #1e3a8a transparent;
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

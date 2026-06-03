@@ -1,3 +1,4 @@
+import 'server-only'
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import type { PDFPage, PDFFont, Color } from 'pdf-lib';
 import fontkit from "@pdf-lib/fontkit";

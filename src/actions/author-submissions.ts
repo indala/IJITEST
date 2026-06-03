@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { and, eq, sql, desc, inArray, notInArray } from "drizzle-orm";
 import { db } from "@/lib/db";
@@ -139,55 +140,49 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
         const sub = subData[0];
         if (!sub) return actionError<AuthorSubmissionDetail>("Submission not found");
 
-        // 2. Files (Restricted to Manuscript and Copyright for Author)
-        const files = await db.select()
-            .from(submissionFiles)
-            .where(and(
-                eq(submissionFiles.versionId, sub.versionId),
-                inArray(submissionFiles.fileType, ['mainManuscript', 'copyrightForm'])
-            ));
-
-        // 3. Authors
-        const authorsList = await db.select()
-            .from(submissionAuthors)
-            .where(eq(submissionAuthors.submissionId, submissionId))
-            .orderBy(submissionAuthors.orderIndex);
-
-        // 4. Payment Info
-        const paymentData = await db.select()
-            .from(payments)
-            .where(eq(payments.submissionId, submissionId))
-            .limit(1);
-
-        // 5. Publication Meta
-        const publicationData = await db.select({
-            finalPdfUrl: publications.finalPdfUrl,
-            doi: publications.doi,
-            publishedAt: publications.publishedAt,
-            volumeNumber: volumesIssues.volumeNumber,
-            issueNumber: volumesIssues.issueNumber,
-            year: volumesIssues.year
-        })
-        .from(publications)
-        .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
-        .where(eq(publications.submissionId, submissionId))
-        .limit(1);
-
-        // 4.5. Review Comments
-        const completedReviews = await db.select({
-            commentsToAuthor: reviews.commentsToAuthor,
-            decision: reviews.decision,
-            submittedAt: reviews.submittedAt,
-            reviewRound: reviewAssignments.reviewRound,
-            deadline: reviewAssignments.deadline
-        })
-        .from(reviews)
-        .innerJoin(reviewAssignments, eq(reviews.assignmentId, reviewAssignments.id))
-        .where(and(
-            eq(reviewAssignments.submissionId, submissionId),
-            eq(reviewAssignments.status, 'completed'),
-            sql`${reviews.commentsToAuthor} IS NOT NULL`
-        ));
+        // 2-5. Parallel fetch: files, authors, payment, publication, reviews (all independent)
+        const [files, authorsList, paymentData, publicationData, completedReviews] = await Promise.all([
+            db.select()
+                .from(submissionFiles)
+                .where(and(
+                    eq(submissionFiles.versionId, sub.versionId),
+                    inArray(submissionFiles.fileType, ['mainManuscript', 'copyrightForm'])
+                )),
+            db.select()
+                .from(submissionAuthors)
+                .where(eq(submissionAuthors.submissionId, submissionId))
+                .orderBy(submissionAuthors.orderIndex),
+            db.select()
+                .from(payments)
+                .where(eq(payments.submissionId, submissionId))
+                .limit(1),
+            db.select({
+                finalPdfUrl: publications.finalPdfUrl,
+                doi: publications.doi,
+                publishedAt: publications.publishedAt,
+                volumeNumber: volumesIssues.volumeNumber,
+                issueNumber: volumesIssues.issueNumber,
+                year: volumesIssues.year
+            })
+                .from(publications)
+                .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+                .where(eq(publications.submissionId, submissionId))
+                .limit(1),
+            db.select({
+                commentsToAuthor: reviews.commentsToAuthor,
+                decision: reviews.decision,
+                submittedAt: reviews.submittedAt,
+                reviewRound: reviewAssignments.reviewRound,
+                deadline: reviewAssignments.deadline
+            })
+                .from(reviews)
+                .innerJoin(reviewAssignments, eq(reviews.assignmentId, reviewAssignments.id))
+                .where(and(
+                    eq(reviewAssignments.submissionId, submissionId),
+                    eq(reviewAssignments.status, 'completed'),
+                    sql`${reviews.commentsToAuthor} IS NOT NULL`
+                )),
+        ]);
 
         return actionSuccess({
             ...sub,

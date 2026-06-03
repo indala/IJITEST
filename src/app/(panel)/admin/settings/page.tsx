@@ -1,9 +1,5 @@
 "use client";
 
-export const metadata = {
-    title: "Settings | IJITEST",
-};
-
 import {
     Save,
     Globe, 

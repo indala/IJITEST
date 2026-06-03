@@ -50,7 +50,7 @@ export default function HomeCarousel() {
                             fill
                             priority
                             className="object-cover object-center opacity-40"
-                            quality={100}
+                            quality={75}
                         />
                     </motion.div>
 
@@ -105,12 +105,19 @@ export default function HomeCarousel() {
             </AnimatePresence>
 
             {/* Slide Indicators */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3" role="tablist" aria-label="Carousel slides">
                 {slides.map((_, idx) => (
-                    <div
+                    <button
+                        type="button"
                         key={idx}
+                        role="tab"
+                        {...{ "aria-selected": idx === currentIndex }}
+                        aria-label={`Go to slide ${idx + 1}`}
+                        tabIndex={0}
+                        onClick={() => setCurrentIndex(idx)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCurrentIndex(idx); } }}
                         className={cn(
-                            "h-1 rounded-full transition-all duration-1000",
+                            "h-1 rounded-full transition-all duration-1000 cursor-pointer border-0 p-0",
                             idx === currentIndex ? "w-12 bg-secondary" : "w-6 bg-white/20"
                         )}
                     />

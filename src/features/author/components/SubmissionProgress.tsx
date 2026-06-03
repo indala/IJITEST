@@ -1,5 +1,3 @@
-"use client"
-
 import { cn } from "@/lib/utils"
 import { CheckCircle2, Clock, Send, BookOpen } from "lucide-react"
 

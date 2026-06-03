@@ -13,13 +13,12 @@ import { Badge } from '@/components/ui/badge';
 import { type PublishedPaperUI } from '@/db/types';
 
 interface ArchivesClientProps {
-    initialPapers: PublishedPaperUI[];
     mode?: 'current' | 'archive';
 }
 
-export default function ArchivesClient({ initialPapers, mode = 'archive' }: ArchivesClientProps) {
-    const currentIssueQuery = useLatestIssuePapers(mode === 'current' ? initialPapers : []);
-    const archiveQuery = useArchivePapers(mode === 'archive' ? initialPapers : []);
+export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps) {
+    const currentIssueQuery = useLatestIssuePapers();
+    const archiveQuery = useArchivePapers();
 
     const isLoading = mode === 'current' ? currentIssueQuery.isLoading : archiveQuery.isLoading;
     const [searchQuery, setSearchQuery] = useState('');

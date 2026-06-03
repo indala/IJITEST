@@ -54,6 +54,7 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
     return (
         <section ref={sectionRef} className="relative py-12 bg-[#000066] border-b border-white/5 overflow-hidden">
             <div className="container-responsive relative z-10">
+                    <nav aria-label="Breadcrumb">
                     <ol className="flex items-center gap-2 list-none p-0">
                         {breadcrumbs.map((crumb, idx) => {
                             const isLast = idx === breadcrumbs.length - 1;
@@ -79,6 +80,7 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
                             );
                         })}
                     </ol>
+                    </nav>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end">
                     <motion.div

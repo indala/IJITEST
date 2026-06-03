@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import { sql, eq, and, desc, inArray, count } from "drizzle-orm";
@@ -448,7 +449,7 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
             query = query.where(eq(reviewAssignments.reviewerId, reviewerId));
         }
 
-        const rows = await query.orderBy(desc(reviewAssignments.assignedAt));
+        const rows = await query.orderBy(desc(reviewAssignments.assignedAt)).limit(200);
         return { success: true, data: rows as ActiveReview[] };
     } catch (error) {
         console.error("Get Reviews Error:", error);

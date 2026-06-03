@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import { chatMessages, users, userProfiles, reviewAssignments } from "@/db/schema";
@@ -33,7 +34,7 @@ export async function getSocketToken(): Promise<ActionResponse<{ token: string; 
             return { success: false, error: "Storage service secret is not configured" };
         }
 
-        const socketUrl = process.env['STORAGE_SERVICE_URL'] || 'http://localhost:4000';
+        const socketUrl = process.env['STORAGE_SERVICE_URL'] || 'https://www.api.ijitest.org';
 
         // Generate token valid for 2 minutes
         const token = signSocketToken({

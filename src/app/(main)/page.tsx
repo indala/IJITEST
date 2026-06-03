@@ -18,8 +18,6 @@ import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import FaqSection from '@/features/home/components/FaqSection';
 import { JsonLd } from '@/components/shared/JsonLd';
 
-export const revalidate = 3600; // 1 hour
-
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettingsData();
   return {

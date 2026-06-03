@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { razorpay } from "@/lib/razorpay";
 import crypto from "crypto";

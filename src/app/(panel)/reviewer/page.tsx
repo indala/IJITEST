@@ -29,8 +29,6 @@ export const metadata = {
     title: "Reviewer Dashboard | IJITEST",
 };
 
-export const dynamic = 'force-dynamic';
-
 export default async function ReviewerDashboard() {
     const session = await getServerSession(authOptions);
     const user = session?.user;

@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Crimson_Pro } from "next/font/google";
+import { MotionProvider } from "@/providers/MotionProvider";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const crimsonPro = Crimson_Pro({
+  variable: "--font-crimson",
   subsets: ["latin"],
   display: "swap",
 });
@@ -67,6 +74,7 @@ export const metadata: Metadata = {
   },
 };
 
+import { Suspense } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { Toaster } from "sonner";
@@ -82,13 +90,8 @@ import { getSettingsData } from "@/actions/settings";
 import { SettingsProvider } from "@/components/providers/SettingsProvider";
 import type { JournalSettings } from "@/store/useSettingsStore";
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const dynamicSettingsData = await getSettingsData();
-  const dynamicSettings = dynamicSettingsData as JournalSettings;
+async function SettingsLayer({ children }: { children: React.ReactNode }) {
+  const dynamicSettings = await getSettingsData() as JournalSettings;
 
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -117,33 +120,48 @@ export default async function RootLayout({
     }
   };
 
+  return (
+    <>
+      <JsonLd data={organizationSchema} id="global-org" />
+      <JsonLd data={journalSchema} id="global-journal" />
+      <MotionProvider>
+        <NuqsAdapter>
+          <SmoothScroll>
+            <AuthProvider>
+              <QueryProvider>
+                <SettingsProvider initialSettings={dynamicSettings}>
+                  <TooltipProvider>
+                    {children}
+                    <ScrollToTop />
+                    <Toaster position="top-right" offset={50} richColors closeButton />
+                  </TooltipProvider>
+                </SettingsProvider>
+              </QueryProvider>
+            </AuthProvider>
+          </SmoothScroll>
+        </NuqsAdapter>
+      </MotionProvider>
+    </>
+  );
+}
 
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased font-sans`}>
-        <JsonLd data={organizationSchema} id="global-org" />
-        <JsonLd data={journalSchema} id="global-journal" />
+      <body className={`${inter.variable} ${crimsonPro.variable} antialiased font-sans`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          <NuqsAdapter>
-            <SmoothScroll>
-              <AuthProvider>
-                <QueryProvider>
-                  <SettingsProvider initialSettings={dynamicSettings}>
-                    <TooltipProvider>
-                      {children}
-                      <ScrollToTop />
-                      <Toaster position="top-right" offset={50} richColors closeButton />
-                    </TooltipProvider>
-                  </SettingsProvider>
-                </QueryProvider>
-              </AuthProvider>
-            </SmoothScroll>
-          </NuqsAdapter>
+          <Suspense fallback={null}>
+            <SettingsLayer>{children}</SettingsLayer>
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>

@@ -1,10 +1,5 @@
 "use client";
 
-export const metadata = {
-    title: "Forgot Password | IJITEST",
-    description: "Recover your account password securely.",
-};
-
 import { requestPasswordReset } from '@/actions/users';
 import { Mail, ArrowRight, ShieldCheck, MailCheck } from 'lucide-react';
 import { useState, useActionState } from 'react';

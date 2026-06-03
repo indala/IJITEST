@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import {
@@ -91,7 +92,8 @@ export async function getUsers(role?: "admin" | "editor" | "reviewer" | "author"
         })
             .from(users)
             .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-            .where(whereClause);
+            .where(whereClause)
+            .limit(500);
         const data: SafeUserWithProfile[] = rows.map(r => ({
             ...r.user,
             profile: r.profile

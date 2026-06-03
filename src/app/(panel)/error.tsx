@@ -3,6 +3,14 @@
 import { useEffect } from 'react';
 import { ShieldAlert, RotateCcw, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+
+const roleDashboards: Record<string, string> = {
+    admin: '/admin',
+    editor: '/editor',
+    reviewer: '/reviewer',
+    author: '/author',
+};
 
 export default function Error({
     error,
@@ -11,16 +19,19 @@ export default function Error({
     error: Error & { digest?: string };
     reset: () => void;
 }) {
+    const { data: session } = useSession();
+    const dashboardUrl = roleDashboards[session?.user?.role ?? ''] ?? '/login';
+
     useEffect(() => {
         console.error(error);
     }, [error]);
 
     return (
-        <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-white rounded-xl border border-gray-100 shadow-sm mx-auto">
-            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-8">
+        <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mx-auto">
+            <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mb-8">
                 <ShieldAlert className="w-10 h-10 text-gray-400" />
             </div>
-            <h2 className=" font-black text-foreground tracking-wider uppercase">Portal Access Error</h2>
+            <h2 className="font-black text-foreground tracking-wider uppercase">Portal Access Error</h2>
             <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] mb-10 max-w-md mx-auto">
                 The administrative operation could not be completed. This may be due to a session timeout or a database communication failure.
             </p>
@@ -32,7 +43,7 @@ export default function Error({
                     <RotateCcw className="w-4 h-4" /> Retry Operation
                 </button>
                 <Link
-                    href="/admin"
+                    href={dashboardUrl}
                     className="flex items-center justify-center gap-3 px-8 py-4 bg-primary/5 text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-primary/20 transition-all border border-primary/10 cursor-pointer"
                 >
                     <LayoutDashboard className="w-4 h-4" /> Back to Dashboard

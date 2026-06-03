@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -11,7 +12,7 @@ import { type ActionResponse, actionSuccess, actionError } from "@/db/types";
 import { insertApplicationSchema } from "@/db/validation";
 import { emailTemplates, sendEmail } from "@/lib/mail";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
-import { eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 // Local schema extension for application type
@@ -80,26 +81,26 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
                 try {
                     const interests = JSON.parse(researchInterestsStr) as string[];
                     if (Array.isArray(interests) && interests.length > 0) {
-                        // Normalized Interests Insertion
-                        for (const name of interests) {
-                            const trimmedName = name.trim();
-                            if (!trimmedName) continue;
+                        // Batch: fetch all existing interests in one query
+                        const cleanNames = interests.map(n => n.trim()).filter(Boolean);
+                        const existingInterests = await tx.select().from(masterInterests).where(
+                            inArray(masterInterests.name, cleanNames)
+                        );
+                        const existingMap = new Map(existingInterests.map(i => [i.name, i.id]));
 
-                            let interestId: number;
-                            const existing = await tx.select().from(masterInterests).where(eq(masterInterests.name, trimmedName)).limit(1);
-                            
-                            if (existing[0]) {
-                                interestId = existing[0].id;
-                            } else {
-                                const [inserted] = await tx.insert(masterInterests).values({ name: trimmedName });
-                                interestId = inserted.insertId;
-                            }
-
-                            await tx.insert(applicationInterests).values({
-                                applicationId: appId,
-                                interestId: interestId
-                            });
+                        // Batch: insert any missing interests
+                        const newNames = cleanNames.filter(name => !existingMap.has(name));
+                        for (const name of newNames) {
+                            const [inserted] = await tx.insert(masterInterests).values({ name });
+                            existingMap.set(name, inserted.insertId);
                         }
+
+                        // Batch: insert all join table entries
+                        const joinRows = cleanNames.map(name => ({
+                            applicationId: appId,
+                            interestId: existingMap.get(name)!
+                        }));
+                        await tx.insert(applicationInterests).values(joinRows);
                     }
                 } catch (pErr) {
                     console.error("Error parsing/saving interests:", pErr);

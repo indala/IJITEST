@@ -1,10 +1,7 @@
 import PageHeader from "@/components/layout/PageHeader";
-import { getLatestIssuePapers } from '@/actions/archives';
 import ArchivesClient from '@/features/shared/components/ArchivesClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
-
-export const revalidate = 3600; // 1 hour
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
@@ -20,9 +17,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CurrentIssue() {
-    const res = await getLatestIssuePapers();
-    const papers = res.success ? (res.data ?? []) : [];
-
     return (
         <div className="bg-background min-h-screen">
             <PageHeader
@@ -36,7 +30,7 @@ export default async function CurrentIssue() {
                 scrollOnComplete={true}
             />
 
-            <ArchivesClient initialPapers={papers} mode="current" />
+            <ArchivesClient mode="current" />
         </div>
     );
 }

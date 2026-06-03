@@ -1,10 +1,5 @@
 "use client";
 
-export const metadata = {
-    title: "Setup Password | IJITEST",
-    description: "Set up or reset your account password.",
-};
-
 import { getPasswordSetupInfo, setupPassword } from '@/actions/users';
 import { ShieldCheck, Lock, Mail, CheckCircle2, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 import type { ActionResponse } from '@/db/types';

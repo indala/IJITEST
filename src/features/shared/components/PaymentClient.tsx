@@ -8,7 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import PageHeader from "@/components/layout/PageHeader";
 import { useTrackManuscript } from '@/hooks/queries/usePublic';
 import Script from 'next/script';
-import RazorpayPayment from '@/features/submissions/components/RazorpayPayment';
+import dynamic from 'next/dynamic';
+
+const RazorpayPayment = dynamic(() => import('@/features/submissions/components/RazorpayPayment'), { ssr: false });
 
 import { useSettingsStore } from '@/store/useSettingsStore';
 

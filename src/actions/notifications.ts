@@ -1,4 +1,5 @@
 "use server";
+import "server-only"
 
 import { db } from "@/lib/db";
 import { contactMessages, submissions, reviewAssignments } from "@/db/schema";
@@ -13,48 +14,39 @@ export async function getNotificationCounts(): Promise<ActionResponse<{ messages
         if (!session?.user) return { success: false, error: "Unauthorized" };
 
         const { role, id: userId } = session.user;
-        let messageCount = 0;
-        let totalSubmissionCount = 0;
+        const isAdminOrEditor = role === 'admin' || role === 'editor';
 
-        // 1. Messages: Admins and Editors only
-        if (role === 'admin' || role === 'editor') {
-            const [msgResult] = await db.select({ count: count() })
-                .from(contactMessages)
-                .where(eq(contactMessages.status, 'pending'));
-            messageCount = msgResult?.count ?? 0;
-        }
-
-        // 2. Submissions (Desk Screening): Admins and Editors only
-        if (role === 'admin' || role === 'editor') {
-            const [subResult] = await db.select({ count: count() })
-                .from(submissions)
-                .where(eq(submissions.status, 'submitted'));
-            totalSubmissionCount += subResult?.count ?? 0;
-        }
-
-        // 3. Review Assignments: Reviewer (and Admins/Editors if they are reviewers)
-        const [revResult] = await db.select({ count: count() })
-            .from(reviewAssignments)
-            .where(and(
-                eq(reviewAssignments.reviewerId, userId),
-                inArray(reviewAssignments.status, ['assigned', 'accepted'])
-            ));
-        totalSubmissionCount += revResult?.count ?? 0;
-
-        // 4. Submissions Requiring Action: Authors only
-        if (role === 'author') {
-            const [actionResult] = await db.select({ count: count() })
-                .from(submissions)
+        // Run all applicable queries in parallel
+        const [msgResult, subResult, revResult, actionResult] = await Promise.all([
+            // Messages: Admins and Editors only
+            isAdminOrEditor
+                ? db.select({ count: count() }).from(contactMessages).where(eq(contactMessages.status, 'pending'))
+                : Promise.resolve([]),
+            // Submissions (Desk Screening): Admins and Editors only
+            isAdminOrEditor
+                ? db.select({ count: count() }).from(submissions).where(eq(submissions.status, 'submitted'))
+                : Promise.resolve([]),
+            // Review Assignments: all roles
+            db.select({ count: count() })
+                .from(reviewAssignments)
                 .where(and(
-                    eq(submissions.correspondingAuthorId, userId),
-                    inArray(submissions.status, ['revisionRequested', 'paymentPending'])
-                ));
-            totalSubmissionCount += actionResult?.count ?? 0;
-        }
+                    eq(reviewAssignments.reviewerId, userId),
+                    inArray(reviewAssignments.status, ['assigned', 'accepted'])
+                )),
+            // Submissions Requiring Action: Authors only
+            role === 'author'
+                ? db.select({ count: count() })
+                    .from(submissions)
+                    .where(and(
+                        eq(submissions.correspondingAuthorId, userId),
+                        inArray(submissions.status, ['revisionRequested', 'paymentPending'])
+                    ))
+                : Promise.resolve([]),
+        ]);
 
         const data = {
-            messages: messageCount,
-            submissions: totalSubmissionCount
+            messages: msgResult?.[0]?.count ?? 0,
+            submissions: (subResult?.[0]?.count ?? 0) + (revResult?.[0]?.count ?? 0) + (actionResult?.[0]?.count ?? 0)
         };
         return { success: true, data };
     } catch (error) {

@@ -1,9 +1,5 @@
 "use client";
 
-export const metadata = {
-    title: "User Management | IJITEST",
-};
-
 import { Users, UserPlus, Shield, Mail, Trash2, ShieldCheck, UserCog, CheckCircle, AlertCircle, ShieldAlert, Search } from 'lucide-react';
 import { useUsers } from '@/hooks/queries/useUsers';
 import { useSession } from 'next-auth/react';
