@@ -121,7 +121,7 @@ export default async function Home() {
               "name": "What are the submission guidelines for authors?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Authors should ensure their manuscripts follow our standard template, include an abstract, keywords, and properly formatted references. Detailed guidelines are available in our Author Resource Desk."
+                "text": "Authors should ensure their manuscripts follow our standard template, include an abstract, keywords, and properly formatted references. Detailed guidelines are available in our <a href=\"/guidelines\">Author Resource Desk</a>."
               }
             },
             {
@@ -137,7 +137,7 @@ export default async function Home() {
               "name": "How can I join the Editorial Board or become a Reviewer?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "We welcome experts from various engineering and science disciplines. You can apply through our 'Join Us' page by submitting your CV and area of expertise."
+                "text": "We welcome experts from various engineering and science disciplines. You can apply through our <a href=\"/join-us\">Join Us</a> page by submitting your CV and area of expertise."
               }
             }
           ]

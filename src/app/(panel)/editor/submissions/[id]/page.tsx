@@ -2,7 +2,6 @@ import { getSubmissionById, decideSubmission } from "@/actions/submissions";
 import { waivePayment } from "@/actions/payments";
 import DeleteSubmissionButton from "@/features/submissions/components/DeleteSubmissionButton";
 import AdminPdfUpload from "@/features/submissions/components/AdminPdfUpload";
-import PublicationAssignment from "@/features/submissions/components/PublicationAssignment";
 import {
     User,
     Mail,
@@ -370,7 +369,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
 
                                     {submission.status === 'accepted' && (!submission.payment || ['paid', 'verified', 'waived'].includes(submission.payment.status)) && (
                                         <div className="space-y-4">
-                                            <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-xl space-y-6">
+                                            <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-xl space-y-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 bg-white border border-emerald-100 rounded-xl flex items-center justify-center shrink-0">
                                                         <CheckCircle className="w-5 h-5 text-emerald-600" />
@@ -380,11 +379,9 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
                                                         <p className="text-[10px] font-medium text-muted-foreground ">Payment Verified / Waived</p>
                                                     </div>
                                                 </div>
-
-                                                <PublicationAssignment 
-                                                    submissionId={submission.id} 
-                                                    currentIssueId={submission.issueId ?? null} 
-                                                />
+                                                <p className="text-[10px] font-semibold text-[#000066] leading-relaxed uppercase tracking-wider pl-1 border-l-2 border-[#000066]/20">
+                                                    {"This manuscript is awaiting administrative assignment and publication in a journal volume/issue."}
+                                                </p>
                                             </div>
                                         </div>
                                     )}

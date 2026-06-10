@@ -36,7 +36,7 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers }
                 ]
             },
             {
-                role: "Editorial Board Members",
+                role: "Editorial Board Members & Reviewers",
                 members: staticEditorialBoardMembers
             },
         ];

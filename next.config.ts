@@ -7,7 +7,7 @@ const wsStorageUrl = storageUrl.replace(/^http/, "ws");
 const csp = [
   "default-src 'self'",
   "base-uri 'self'",
-  "frame-ancestors 'none'",
+  "frame-ancestors 'self'",
   "object-src 'none'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",

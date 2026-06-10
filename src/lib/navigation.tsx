@@ -33,7 +33,7 @@ export const sidebarItems: NavigationItem[] = [
         }
     },
     { name: 'Submissions', icon: <FileStack />, href: 'submissions', roles: ['admin', 'editor', 'author'] },
-    { name: 'Publications', icon: <BookOpen />, href: 'publications', roles: ['admin', 'editor'] },
+    { name: 'Publications', icon: <BookOpen />, href: 'publications', roles: ['admin'] },
     { name: 'Peer Review', icon: <ShieldAlert />, href: 'reviews', roles: ['admin', 'editor', 'reviewer'] },
     { name: 'Payments', icon: <CreditCard />, href: 'payments', roles: ['admin', 'author'] },
     { name: 'Messages', icon: <MessageSquare />, href: 'messages', roles: ['admin', 'editor', 'reviewer'] },

@@ -12,8 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
-import { useSettingsStore } from '@/store/useSettingsStore';
-import { JsonLd } from '@/components/shared/JsonLd';
 
 interface FAQ {
   category: 'general' | 'author' | 'review' | 'fees';
@@ -22,13 +20,14 @@ interface FAQ {
   plainTextAnswer: string;
 }
 
-export default function FaqsClient() {
+interface FaqsClientProps {
+  apcInr: string;
+  apcUsd: string;
+}
+
+export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'general' | 'author' | 'review' | 'fees'>('all');
-
-  const settings = useSettingsStore((state) => state.settings);
-  const apcInr = settings['apcInr'] || '2500';
-  const apcUsd = settings['apcUsd'] || '50';
 
   const categories = [
     { id: 'all', name: 'All FAQs', icon: Sparkles },
@@ -128,26 +127,8 @@ export default function FaqsClient() {
     });
   }, [faqs, activeTab, searchQuery]);
 
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://www.ijitest.org';
-
-  const faqSchema = useMemo(() => ({
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "@id": `${baseUrl}/faqs#faq-schema`,
-    "mainEntity": faqs.map(faq => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.plainTextAnswer
-      }
-    }))
-  }), [faqs, baseUrl]);
-
   return (
     <div className="w-full max-w-4xl space-y-10">
-      <JsonLd id="faqs-page-schema" data={faqSchema as Record<string, unknown>} />
-      
       {/* Search Bar */}
       <div className="relative max-w-lg mx-auto">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />

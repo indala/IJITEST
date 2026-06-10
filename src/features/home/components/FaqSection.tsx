@@ -1,6 +1,6 @@
 'use client';
 
-
+import React from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -9,8 +9,15 @@ import {
 } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Link from 'next/link';
 
-const FAQS = [
+interface FAQ {
+  question: string;
+  answer: React.ReactNode;
+}
+
+const FAQS: FAQ[] = [
   {
     question: "How long does the peer-review process take?",
     answer: "Our standard peer-review process typically takes 4-6 weeks. We prioritize quality and thoroughness while ensuring a fast-track publication path for groundbreaking research."
@@ -25,11 +32,30 @@ const FAQS = [
   },
   {
     question: "What are the submission guidelines for authors?",
-    answer: "Authors should ensure their manuscripts follow our standard template, include an abstract, keywords, and properly formatted references. Detailed guidelines are available in our Author Resource Desk."
+    answer: (
+      <span>
+        Authors should ensure their manuscripts follow our standard template, include an abstract, keywords, and properly formatted references. Detailed guidelines are available in our{" "}
+        <Link href="/guidelines" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+          Author Resource Desk
+        </Link>.
+      </span>
+    )
   },
   {
     question: "Do you provide Open Access publication?",
     answer: "Yes, IJITEST is a Gold Open Access journal. All published articles are immediately available to the global research community without any subscription barriers."
+  },
+  {
+    question: "How can I join the Editorial Board or become a Reviewer?",
+    answer: (
+      <span>
+        We welcome experts from various engineering and science disciplines. You can apply through our{" "}
+        <Link href="/join-us" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+          Join Us
+        </Link>{" "}
+        page by submitting your CV and area of expertise.
+      </span>
+    )
   }
 ];
 
@@ -71,10 +97,13 @@ export default function FaqSection() {
             ))}
           </Accordion>
 
-          <div className="pt-8 text-center border-t border-border/50">
+          <div className="pt-8 flex flex-col items-center gap-4 border-t border-border/50">
             <p className="text-xs 2xl:text-sm text-muted-foreground italic">
               Can&apos;t find what you&apos;re looking for? <a href="/contact" className="text-[#000066] font-semibold underline-offset-4 hover:underline">Contact our support team</a> directly.
             </p>
+            <Button asChild variant="outline" className="h-10 px-5 rounded-xl text-xs font-semibold uppercase tracking-wider text-[#000066] border-[#000066]/20 hover:bg-[#000066]/5 cursor-pointer">
+              <Link href="/faqs">View Full FAQ Directory</Link>
+            </Button>
           </div>
         </div>
       </div>

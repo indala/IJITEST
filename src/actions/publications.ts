@@ -33,7 +33,7 @@ import { submitToIndexNow } from "@/lib/indexnow";
  */
 export async function createVolumeIssue(formData: FormData): Promise<ActionResponse> {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+    if (!session?.user || session.user.role !== 'admin') {
         return actionError("Unauthorized");
     }
     
@@ -133,7 +133,7 @@ export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> 
 export async function assignPaperToIssue(submissionId: number, issueId: number, startPage?: number, endPage?: number): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        if (!session?.user || session.user.role !== 'admin') {
             return actionError("Unauthorized");
         }
 
@@ -273,7 +273,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
 export async function publishIssue(id: number): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        if (!session?.user || session.user.role !== 'admin') {
             return actionError("Unauthorized");
         }
 
@@ -353,7 +353,7 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
 export async function getPapersByIssueId(issueId: number): Promise<ActionResponse<PaperWithPublication[]>> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        if (!session?.user || session.user.role !== 'admin') {
             return actionError("Unauthorized");
         }
 
@@ -403,7 +403,7 @@ export async function getPapersByIssueId(issueId: number): Promise<ActionRespons
 export async function unassignPaperFromIssue(submissionId: number): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        if (!session?.user || session.user.role !== 'admin') {
             return actionError("Unauthorized");
         }
 
@@ -433,7 +433,7 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
 export async function updateVolumeIssue(id: number, formData: FormData): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        if (!session?.user || session.user.role !== 'admin') {
             return actionError("Unauthorized");
         }
 
@@ -556,7 +556,7 @@ export async function incrementPaperDownloads(submissionId: number): Promise<Act
 export async function rebrandPaperPdf(submissionId: number): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        if (!session?.user || session.user.role !== 'admin') {
             return actionError("Unauthorized");
         }
 

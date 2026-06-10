@@ -67,7 +67,7 @@ export default function RebrandPdfButton({ submissionId }: RebrandPdfButtonProps
                     </div>
                     <AlertDialogTitle className="text-2xl font-black text-primary tracking-widerer">Re-brand Publication PDF</AlertDialogTitle>
                     <AlertDialogDescription className="text-xs font-medium text-primary/40 leading-relaxed tracking-widest">
-                        This action will regenerate the header and footer branding for this published paper's PDF using the latest journal metadata (ISSN, Website URL, and Journal Name) currently in your system settings. The page numbering and volume assignments will remain intact.
+                        {"This action will regenerate the header and footer branding for this published paper's PDF using the latest journal metadata (ISSN, Website URL, and Journal Name) currently in your system settings. The page numbering and volume assignments will remain intact."}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="pt-6 gap-4">
