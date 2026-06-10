@@ -1,16 +1,11 @@
 "use client";
 
-import { useEffect, useState, memo, useCallback, experimental_useEffectEvent as useEffectEvent } from "react"
+import { useEffect, useState, memo, useCallback, useEffectEvent } from "react"
 import { useLenis } from "lenis/react"
 import { ArrowUp } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 
-declare module 'react' {
-  export function experimental_useEffectEvent<Args extends unknown[], R>(
-    callback: (...args: Args) => R
-  ): (...args: Args) => R;
-}
 
 function ScrollToTopComponent() {
   const [isVisible, setIsVisible] = useState(false)
