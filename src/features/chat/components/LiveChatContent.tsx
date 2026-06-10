@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useOptimistic, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { io, Socket } from "socket.io-client";
 import { 
@@ -38,6 +38,14 @@ export function LiveChatContent() {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null);
   const [messages, setMessages] = useState<ChatMessageRow[]>([]);
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic(
+    messages,
+    (state, newMessage: ChatMessageRow) => {
+      if (state.some((m) => m.id === newMessage.id)) return state;
+      return [...state, newMessage];
+    }
+  );
+  const [, startTransition] = useTransition();
   const [newMessage, setNewMessage] = useState("");
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [unreadCounts, setUnreadCounts] = useState<Record<ChatUser['id'], number>>({});
@@ -230,42 +238,63 @@ export function LiveChatContent() {
   }, [selectedUser, scrollToBottom]);
 
   // Send Message implementation
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedUser || !newMessage.trim()) return;
+    if (!selectedUser || !newMessage.trim() || !currentUserId) return;
 
     const textToSend = newMessage.trim();
     setNewMessage("");
 
-    // 1. Save to database via Next.js Server Action
-    const response = await sendChatMessage(selectedUser.id, textToSend);
-    if (response.success && response.data) {
-      const savedMsg = response.data;
-      
-      // Inject sender details for local UI consistency
-      const fullMsg: ChatMessageRow = {
-        ...savedMsg,
-        senderName: session?.user?.name || "Me",
-      };
+    // Create temporary optimistic message
+    const tempMsg: ChatMessageRow = {
+      id: -Date.now(),
+      senderId: currentUserId,
+      receiverId: selectedUser.id,
+      messageText: textToSend,
+      createdAt: new Date(),
+      senderName: session?.user?.name || "Me",
+      submissionId: null,
+      isRead: false,
+    };
 
-      // 2. Add locally in UI
-      setMessages((prev) => [...prev, fullMsg]);
-      setTimeout(() => scrollToBottom("smooth"), 100);
+    startTransition(async () => {
+      // 1. Instantly display in UI via optimistic state
+      addOptimisticMessage(tempMsg);
+      setTimeout(() => scrollToBottom("smooth"), 50);
 
-      // 3. Update last message time for sorting
-      setLastMessageTime((prev) => ({
-        ...prev,
-        [selectedUser.id]: fullMsg.createdAt ? new Date(fullMsg.createdAt) : new Date(),
-      }));
+      // 2. Save to database via Next.js Server Action
+      const response = await sendChatMessage(selectedUser.id, textToSend);
+      if (response.success && response.data) {
+        const savedMsg = response.data;
+        
+        // Inject sender details for local UI consistency
+        const fullMsg: ChatMessageRow = {
+          ...savedMsg,
+          senderName: session?.user?.name || "Me",
+        };
 
-      // 4. Emit via socket to relay instantly
-      if (socket && isConnected) {
-        console.log("Emitting sendMessage via socket:", fullMsg);
-        socket.emit("sendMessage", fullMsg);
-      } else {
-        console.warn("Socket emission skipped. socket:", !!socket, "isConnected:", isConnected);
+        // 3. Add permanently to state (this replaces the optimistic message once the transition ends)
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === fullMsg.id)) return prev;
+          return [...prev, fullMsg];
+        });
+        setTimeout(() => scrollToBottom("smooth"), 50);
+
+        // 4. Update last message time for sorting
+        setLastMessageTime((prev) => ({
+          ...prev,
+          [selectedUser.id]: fullMsg.createdAt ? new Date(fullMsg.createdAt) : new Date(),
+        }));
+
+        // 5. Emit via socket to relay instantly
+        if (socket && isConnected) {
+          console.log("Emitting sendMessage via socket:", fullMsg);
+          socket.emit("sendMessage", fullMsg);
+        } else {
+          console.warn("Socket emission skipped. socket:", !!socket, "isConnected:", isConnected);
+        }
       }
-    }
+    });
   };
 
   const getRoleBadgeClass = (role: UserRole) => {
@@ -443,7 +472,7 @@ export function LiveChatContent() {
                   <Loader2 className="w-8 h-8 animate-spin text-primary" />
                   <p className="font-mono text-[10px] uppercase tracking-[0.2em] animate-pulse">Decoding encrypted logs...</p>
                 </div>
-              ) : messages.length === 0 ? (
+              ) : optimisticMessages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center gap-2 opacity-50 p-4">
                   <MessageSquare className="w-10 h-10 text-primary/30" />
                   <p className="text-xs font-bold text-foreground">Secure Thread Initialized</p>
@@ -452,7 +481,7 @@ export function LiveChatContent() {
                   </p>
                 </div>
               ) : (
-                messages.map((msg, index) => {
+                optimisticMessages.map((msg, index) => {
                   const isSelf = msg.senderId === currentUserId;
                   const formattedTime = msg.createdAt
                     ? new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })

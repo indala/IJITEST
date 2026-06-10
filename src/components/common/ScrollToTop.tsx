@@ -1,27 +1,46 @@
-"use client"
+"use client";
 
-import { useEffect, useState, memo, useCallback } from "react"
+import { useEffect, useState, memo, useCallback, experimental_useEffectEvent as useEffectEvent } from "react"
 import { useLenis } from "lenis/react"
 import { ArrowUp } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 
+declare module 'react' {
+  export function experimental_useEffectEvent<Args extends unknown[], R>(
+    callback: (...args: Args) => R
+  ): (...args: Args) => R;
+}
+
 function ScrollToTopComponent() {
   const [isVisible, setIsVisible] = useState(false)
   const lenis = useLenis()
 
+  // Define effect event to read latest isVisible state without triggering re-registration of listeners
+  const checkVisibility = useEffectEvent((scrollY: number) => {
+    if (scrollY > 400 && !isVisible) {
+      setIsVisible(true)
+    } else if (scrollY <= 400 && isVisible) {
+      setIsVisible(false)
+    }
+  })
+
+  // Monitor scroll position via Lenis to update visibility when Lenis is active
+  useLenis((lenisInstance) => {
+    checkVisibility(lenisInstance.scroll)
+  }, [])
+
+  // Fallback for native scroll when Lenis is not active
   useEffect(() => {
+    if (lenis) return
+
     const handleScroll = () => {
-      if (window.scrollY > 400) {
-        setIsVisible(true)
-      } else {
-        setIsVisible(false)
-      }
+      checkVisibility(window.scrollY)
     }
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [lenis])
 
   const scrollToTop = useCallback(() => {
     if (lenis) {

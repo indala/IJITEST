@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import {
@@ -46,6 +46,44 @@ const CATEGORIES = [
 
 export function ProfileDossierClient({ data: initialData, role, userId }: ProfileDossierClientProps) {
     const [data, setData] = useState<ProfileData>(initialData)
+
+    const completeness = useMemo(() => {
+        let score = 0;
+        let total = 0;
+        const missing: string[] = [];
+
+        const check = (val: unknown, label: string) => {
+            total++;
+            if (val && (Array.isArray(val) ? val.length > 0 : val.toString().trim().length > 0)) {
+                score++;
+            } else {
+                missing.push(label);
+            }
+        };
+
+        check(data.name, 'Full Name');
+        check(data.designation, 'Designation');
+        check(data.email, 'Email Address');
+        check(data.institute, 'Academic Institute');
+        check(data.nationality, 'Nationality/Country');
+        check(data.phone, 'Phone Number');
+        check(data.bio, 'Biography');
+
+        if (role !== 'admin' && role !== 'author') {
+            check(data.researchInterests, 'Research Interests');
+        }
+        check(data.photoUrl, 'Profile Photo');
+        check(data.orcidId, 'ORCID ID');
+        check(data.history, role === 'author' ? 'Submission History' : 'Activity History');
+
+        return {
+            score,
+            total,
+            percentage: Math.round((score / total) * 100),
+            missing
+        };
+    }, [data, role]);
+
     const [isEditingInterests, setIsEditingInterests] = useState(false)
     const [newInterest, setNewInterest] = useState("")
     const [tempInterests, setTempInterests] = useState<string[]>(initialData.researchInterests)
@@ -374,8 +412,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
 
                             <div className="pt-2 max-w-sm">
                                 <DossierProgress
-                                    percentage={data.completeness.percentage}
-                                    missing={data.completeness.missing}
+                                    percentage={completeness.percentage}
+                                    missing={completeness.missing}
                                     onChipClick={scrollToSection}
                                 />
                             </div>

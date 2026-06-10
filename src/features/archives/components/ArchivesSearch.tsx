@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Search, Archive, Layers, BookOpen, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,10 +25,13 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
 
-    // Filter papers client-side based on search query
+    // Defer the search query to keep typing responsive
+    const deferredSearchQuery = useDeferredValue(searchQuery);
+
+    // Filter papers client-side based on deferred search query
     const filteredPapers = useMemo(() => {
-        if (!searchQuery.trim()) return [];
-        const query = searchQuery.toLowerCase().trim();
+        if (!deferredSearchQuery.trim()) return [];
+        const query = deferredSearchQuery.toLowerCase().trim();
         return papers.filter((p) =>
             p.title.toLowerCase().includes(query) ||
             p.authorName.toLowerCase().includes(query) ||
@@ -36,7 +39,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
             (p.keywords && p.keywords.toLowerCase().includes(query)) ||
             p.paperId.toLowerCase().includes(query)
         );
-    }, [papers, searchQuery]);
+    }, [papers, deferredSearchQuery]);
 
     // Close dropdown on click outside
     useEffect(() => {

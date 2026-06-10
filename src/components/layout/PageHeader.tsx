@@ -5,6 +5,7 @@ import { ChevronRight } from 'lucide-react';
 import { motion, animate } from 'framer-motion';
 import type { AnimationPlaybackControls } from 'framer-motion';
 import { useRef, useEffect } from 'react';
+import { useLenis } from 'lenis/react';
 
 interface PageHeaderProps {
     title: string;
@@ -16,6 +17,7 @@ interface PageHeaderProps {
 export default function PageHeader({ title, description, breadcrumbs, scrollOnComplete = true }: PageHeaderProps) {
     const sectionRef = useRef<HTMLElement>(null);
     const animationRef = useRef<AnimationPlaybackControls | null>(null);
+    const lenis = useLenis();
 
     useEffect(() => {
         const stopAnimation = () => {
@@ -42,11 +44,18 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
             const sectionBottom =
                 sectionRef.current.getBoundingClientRect().bottom + window.scrollY - 80;
 
-            animationRef.current = animate(window.scrollY, sectionBottom, {
-                duration: 1.2,
-                ease: [0.32, 0.72, 0, 1],
-                onUpdate: (latest) => window.scrollTo(0, latest),
-            });
+            if (lenis) {
+                lenis.scrollTo(sectionBottom, {
+                    duration: 1.2,
+                    easing: (t) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t), // smooth ease-out-expo
+                });
+            } else {
+                animationRef.current = animate(window.scrollY, sectionBottom, {
+                    duration: 1.2,
+                    ease: [0.32, 0.72, 0, 1],
+                    onUpdate: (latest) => window.scrollTo(0, latest),
+                });
+            }
         }
     };
 

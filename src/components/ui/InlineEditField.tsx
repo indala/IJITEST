@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useTransition } from "react"
 import { Pencil, Check, X, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,7 +30,7 @@ export function InlineEditField({
     const [isEditing, setIsEditing] = useState(false)
     const [prevValue, setPrevValue] = useState(value)
     const [currentValue, setCurrentValue] = useState(value)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -50,21 +50,20 @@ export function InlineEditField({
         }
     }, [isEditing, type])
 
-    const handleSave = async () => {
+    const handleSave = () => {
         if (currentValue === value) {
             setIsEditing(false)
             return
         }
-        setIsLoading(true)
         setError(null)
-        try {
-            await onSave(currentValue)
-            setIsEditing(false)
-        } catch (e) {
-            setError(e instanceof Error ? e.message : "Failed to save")
-        } finally {
-            setIsLoading(false)
-        }
+        startTransition(async () => {
+            try {
+                await onSave(currentValue)
+                setIsEditing(false)
+            } catch (e) {
+                setError(e instanceof Error ? e.message : "Failed to save")
+            }
+        })
     }
 
     const handleCancel = () => {
@@ -94,7 +93,7 @@ export function InlineEditField({
                                     value={currentValue}
                                     onChange={(e) => setCurrentValue(e.target.value)}
                                     placeholder={placeholder}
-                                    disabled={isLoading}
+                                    disabled={isPending}
                                     className={cn(
                                         "w-full min-h-[120px] p-4 bg-background/50 border border-primary/20 rounded-xl font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/20 text-sm resize-none",
                                         error && "border-rose-500/50"
@@ -110,7 +109,7 @@ export function InlineEditField({
                                         if (e.key === "Escape") handleCancel()
                                     }}
                                     placeholder={placeholder}
-                                    disabled={isLoading}
+                                    disabled={isPending}
                                     className={cn(
                                         "h-12 bg-background/50 border-primary/20 rounded-xl font-bold transition-all focus:border-primary focus:ring-1 focus:ring-primary/20",
                                         icon && "pl-10"
@@ -123,17 +122,17 @@ export function InlineEditField({
                                 size="icon"
                                 variant="ghost"
                                 onClick={handleSave}
-                                disabled={isLoading}
+                                disabled={isPending}
                                 className="h-10 w-10 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10 rounded-xl"
                                 aria-label="Save"
                             >
-                                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
+                                {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
                             </Button>
                             <Button
                                 size="icon"
                                 variant="ghost"
                                 onClick={handleCancel}
-                                disabled={isLoading}
+                                disabled={isPending}
                                 className="h-10 w-10 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl"
                                 aria-label="Cancel"
                             >
