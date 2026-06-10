@@ -84,7 +84,7 @@ const ApplicationItemCard = React.memo(({
                     <div className="flex items-center gap-3">
                         <h3 className="font-bold text-sm lg:text-lg text-foreground truncate uppercase tracking-tight">{app.fullName}</h3>
                         <Badge className={`rounded-lg h-5 px-2.5 border-none text-[7px] lg:text-[8px] font-black uppercase tracking-widest ${
-                            app.type === 'editor' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                            app.type === 'editor' ? 'bg-purple-500/10 text-purple-600 ' : 'bg-blue-500/10 text-blue-600 '
                         }`}>
                             {app.type}
                         </Badge>
@@ -471,7 +471,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                                                     <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">No CV document uploaded.</p>
                                                 </div>
                                             ) : inspectApp.cvUrl?.toLowerCase().endsWith('.pdf') ? (
-                                                <iframe src={inspectApp.cvUrl || undefined} title="Preview" className="w-full h-full border-none dark:invert dark:hue-rotate-180" />
+                                                <iframe src={inspectApp.cvUrl || undefined} title="Preview" className="w-full h-full border-none" />
                                             ) : (
                                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center space-y-6">
                                                     <FileText className="w-16 h-16 opacity-20" />

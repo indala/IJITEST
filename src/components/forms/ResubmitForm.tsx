@@ -57,7 +57,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
 
     if (success) {
         return (
-            <Card className="border-emerald-200 dark:border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-500/5">
+            <Card className="border-emerald-200 bg-emerald-50/50">
                 <CardContent className="p-10 flex flex-col items-center gap-4 text-center">
                     <CheckCircle className="w-12 h-12 text-emerald-500" />
                     <h3 className="font-black text-xl uppercase tracking-widest text-foreground">Resubmission Received</h3>
@@ -73,8 +73,8 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
         <form action={formAction} className="space-y-6">
             {/* Urgency Banner */}
             <div className={`flex items-start gap-3 px-4 py-3 rounded-xl text-sm font-medium border ${isUrgent
-                ? 'bg-orange-50 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20 text-orange-700 dark:text-orange-400'
-                : 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400'}`}>
+                ? 'bg-orange-50  border-orange-200  text-orange-700 '
+                : 'bg-amber-50  border-amber-200  text-amber-700 '}`}>
                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                 <span>
                     <span className="font-black">{daysRemaining} day{daysRemaining === 1 ? '' : 's'} remaining</span> to submit your revision.
@@ -102,7 +102,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
                     Revised Manuscript <span className="text-rose-500">*</span>
                 </Label>
                 <div
-                    className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${manuscript ? 'border-emerald-400 bg-emerald-50/30 dark:bg-emerald-500/5' : 'border-border hover:border-primary/40 bg-muted/10'}`}
+                    className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${manuscript ? 'border-emerald-400 bg-emerald-50/30 ' : 'border-border hover:border-primary/40 bg-muted/10'}`}
                     onClick={() => !isPending && document.getElementById('manuscript-upload')?.click()}
                 >
                     <input
@@ -146,7 +146,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
 
             {/* Error */}
             {error && (
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 text-sm font-medium">
+                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-sm font-medium">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     {error}
                 </div>
@@ -155,7 +155,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
             <Button
                 type="submit"
                 disabled={isPending}
-                className="w-full h-12 bg-primary text-white dark:text-black hover:bg-primary/90 font-black uppercase tracking-widest text-sm rounded-xl shadow cursor-pointer"
+                className="w-full h-12 bg-primary text-white hover:bg-primary/90 font-black uppercase tracking-widest text-sm rounded-xl shadow cursor-pointer"
             >
                 {isPending ? (
                     <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Submitting…</span>

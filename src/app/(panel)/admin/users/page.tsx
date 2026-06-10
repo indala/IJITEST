@@ -33,9 +33,9 @@ import {
 
 const getRoleVariant = (role: string) => {
     switch (role) {
-        case 'admin': return 'bg-primary text-white border-none dark:bg-primary/20 dark:text-primary';
-        case 'editor': return 'bg-blue-600/10 text-blue-600 border-none hover:bg-blue-600/20 dark:bg-blue-600/20 dark:text-blue-600';
-        case 'reviewer': return 'bg-emerald-600/10 text-emerald-600 border-none hover:bg-emerald-600/20 dark:bg-emerald-600/20 dark:text-emerald-600';
+        case 'admin': return 'bg-primary text-white border-none  ';
+        case 'editor': return 'bg-blue-600/10 text-blue-600 border-none hover:bg-blue-600/20  ';
+        case 'reviewer': return 'bg-emerald-600/10 text-emerald-600 border-none hover:bg-emerald-600/20  ';
         default: return 'bg-muted text-muted-foreground border-none';
     }
 };
@@ -250,7 +250,7 @@ export default function UserManagement() {
         });
     }, [userToDelete, queryClient]);
 
-    if (loading) return <div className="p-20 text-center font-semibold text-muted-foreground  tracking-widest text-xs animate-pulse ">Scanning Directory...</div>;
+    if (loading) return <div className="p-20 text-center font-semibold text-muted-foreground tracking-widest text-xs animate-pulse">Scanning Directory...</div>;
 
     return (
         <section className="space-y-6">
@@ -398,7 +398,7 @@ export default function UserManagement() {
                         <Card key={guide.role} className="border-border/50 shadow-sm">
                             <CardContent className="p-6">
                                 <div className="flex flex-col gap-3 mb-5">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white dark:text-slate-900 shadow-lg ${guide.variant === 'primary' ? 'bg-primary shadow-primary/20' : guide.variant === 'blue' ? 'bg-blue-600 shadow-blue-600/20' : 'bg-emerald-600 shadow-emerald-600/20'}`}>
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white  shadow-lg ${guide.variant === 'primary' ? 'bg-primary shadow-primary/20' : guide.variant === 'blue' ? 'bg-blue-600 shadow-blue-600/20' : 'bg-emerald-600 shadow-emerald-600/20'}`}>
                                         {guide.role === 'Admin' ? <Shield className="w-6 h-6" /> : guide.role === 'Editor' ? <UserCog className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
                                     </div>
                                     <div>
@@ -424,10 +424,10 @@ export default function UserManagement() {
                     <Table>
                         <TableHeader className="bg-muted/30">
                             <TableRow className="border-border/50">
-                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-[10px] 2xl:text-lg font-semibold text-muted-foreground  tracking-widest">Level</TableHead>
-                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-[10px] 2xl:text-lg font-semibold text-muted-foreground  tracking-widest">Focus</TableHead>
-                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-[10px] 2xl:text-lg font-semibold text-muted-foreground  tracking-widest text-center">Publish?</TableHead>
-                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-[10px] 2xl:text-lg font-semibold text-muted-foreground  tracking-widest text-center">Manage Staff?</TableHead>
+                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-[10px] 2xl:text-lg font-semibold text-muted-foreground tracking-widest">Level</TableHead>
+                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-[10px] 2xl:text-lg font-semibold text-muted-foreground tracking-widest">Focus</TableHead>
+                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-[10px] 2xl:text-lg font-semibold text-muted-foreground tracking-widest text-center">Publish?</TableHead>
+                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-[10px] 2xl:text-lg font-semibold text-muted-foreground tracking-widest text-center">Manage Staff?</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

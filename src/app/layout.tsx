@@ -76,12 +76,9 @@ export const metadata: Metadata = {
 
 import { Suspense } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import AuthProvider from "@/components/providers/AuthProvider";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/lib/query-provider";
-import { ThemeProvider } from "@/providers/ThemeProvider";
 import SmoothScroll from "@/providers/SmoothScroll";
-import ScrollToTop from "@/components/common/ScrollToTop";
 
 import { NuqsAdapter } from "nuqs/adapters/next";
 
@@ -127,17 +124,14 @@ async function SettingsLayer({ children }: { children: React.ReactNode }) {
       <MotionProvider>
         <NuqsAdapter>
           <SmoothScroll>
-            <AuthProvider>
-              <QueryProvider>
-                <SettingsProvider initialSettings={dynamicSettings}>
-                  <TooltipProvider>
-                    {children}
-                    <ScrollToTop />
-                    <Toaster position="top-right" offset={50} richColors closeButton />
-                  </TooltipProvider>
-                </SettingsProvider>
-              </QueryProvider>
-            </AuthProvider>
+            <QueryProvider>
+              <SettingsProvider initialSettings={dynamicSettings}>
+                <TooltipProvider>
+                  {children}
+                  <Toaster position="top-right" offset={50} richColors closeButton />
+                </TooltipProvider>
+              </SettingsProvider>
+            </QueryProvider>
           </SmoothScroll>
         </NuqsAdapter>
       </MotionProvider>
@@ -153,16 +147,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${crimsonPro.variable} antialiased font-sans`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Suspense fallback={null}>
-            <SettingsLayer>{children}</SettingsLayer>
-          </Suspense>
-        </ThemeProvider>
+        <Suspense fallback={null}>
+          <SettingsLayer>{children}</SettingsLayer>
+        </Suspense>
       </body>
     </html>
   );

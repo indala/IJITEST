@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 01, 2026 at 08:16 AM
+-- Generation Time: Jun 06, 2026 at 05:13 PM
 -- Server version: 12.3.1-MariaDB-log
 -- PHP Version: 7.2.34
 
@@ -179,12 +179,12 @@ INSERT INTO `publications` (`id`, `submission_id`, `issue_id`, `final_pdf_url`, 
 (3, 3, 1, '/uploads/published/IJITEST-2026-003-published.pdf', 13, 20, NULL, '2026-03-29 11:00:00', 3, 0, 0),
 (4, 4, 1, '/uploads/published/IJITEST-2026-004-published.pdf', 21, 26, NULL, '2026-03-30 12:00:00', 1, 0, 0),
 (5, 5, 1, '/uploads/published/IJITEST-2026-005-published.pdf', 27, 32, NULL, '2026-03-31 13:00:00', 1, 0, 0),
-(6, 6, 1, '/uploads/published/IJITEST-2026-006-published.pdf', 33, 37, NULL, '2026-03-31 14:00:00', 1, 0, 0),
+(6, 6, 1, '/uploads/published/IJITEST-2026-006-published.pdf', 33, 37, NULL, '2026-03-31 14:00:00', 2, 0, 0),
 (7, 7, 1, '/uploads/published/IJITEST-2026-007-published.pdf', 38, 41, NULL, '2026-03-31 15:00:00', 0, 0, 0),
 (8, 8, 1, '/uploads/published/IJITEST-2026-008-published.pdf', 42, 45, NULL, '2026-03-31 16:00:00', 0, 0, 0),
 (9, 9, 1, '/uploads/published/IJITEST-2026-009-published.pdf', 46, 49, NULL, '2026-03-31 17:00:00', 0, 0, 0),
 (10, 10, 1, '/uploads/published/IJITEST-2026-010-published.pdf', 50, 53, NULL, '2026-03-31 18:00:00', 3, 1, 0),
-(11, 58, 2, '/uploads/published/IJITEST-2026-011-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24', 14, 1, 0),
+(11, 58, 2, '/uploads/published/IJITEST-2026-011-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24', 15, 1, 0),
 (12, 59, 2, '/uploads/published/IJITEST-2026-012-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24', 3, 0, 0),
 (13, 60, 2, '/uploads/published/IJITEST-2026-013-published.pdf', NULL, NULL, NULL, '2026-05-02 07:21:24', 2, 0, 0),
 (14, 61, 3, '/uploads/published/IJITEST-2026-014-published.pdf', 1, 7, NULL, '2026-05-28 02:48:22', 5, 2, 0);
@@ -207,6 +207,8 @@ CREATE TABLE `rate_limits` (
 --
 
 INSERT INTO `rate_limits` (`key`, `count`, `reset_at`, `updated_at`) VALUES
+('pub:views:117.250.212.183, 117.250.212.183,2a02:4780:11:13::2:58', 1, 1780563751153, '2026-06-04 09:01:31'),
+('pub:views:117.250.212.183, 117.250.212.183,2a02:4780:11:13::2:6', 1, 1780563900847, '2026-06-04 09:04:00'),
 ('submit:razh1977@gmail.com', 1, 1779902578820, '2026-05-27 17:12:58');
 
 -- --------------------------------------------------------

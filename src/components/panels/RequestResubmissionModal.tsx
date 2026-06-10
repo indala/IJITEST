@@ -54,7 +54,7 @@ export function RequestResubmissionModal({ submissionId, paperId, paperTitle }: 
                 onClick={() => setOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-9 text-xs font-bold uppercase rounded-xl border-orange-300 text-orange-700 hover:bg-orange-50 dark:border-orange-500/30 dark:text-orange-400 dark:hover:bg-orange-500/10 transition-all"
+                className="h-9 text-xs font-bold uppercase rounded-xl border-orange-300 text-orange-700 hover:bg-orange-50 transition-all"
             >
                 <RotateCcw className="w-3.5 h-3.5 mr-2" /> Request Resubmission
             </Button>
@@ -96,13 +96,13 @@ export function RequestResubmissionModal({ submissionId, paperId, paperTitle }: 
                                 </div>
 
                                 {error && (
-                                    <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 text-xs font-medium">
+                                    <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-medium">
                                         <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                                         {error}
                                     </div>
                                 )}
 
-                                <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px]">
+                                <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[10px]">
                                     <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                                     The author will have <strong>15 days</strong> to resubmit. If they don&apos;t act, their account will be auto-deactivated.
                                 </div>

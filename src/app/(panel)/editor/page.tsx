@@ -10,9 +10,8 @@ import { getMySubmissions } from '@/actions/author-submissions';
 import { Button } from "@/components/ui/button";
 import { DashboardRegistry } from '@/features/dashboard/components/DashboardRegistry';
 import os from 'os';
-import fs from 'fs';
-import path from 'path';
 import { performance } from 'perf_hooks';
+import { getStorageSizeFromService } from '@/lib/fs-utils';
 function mean(values: number[]): number {
     return values.reduce((a, b) => a + b, 0) / values.length;
 }
@@ -72,12 +71,7 @@ export default async function EditorDashboard() {
         await db.select({ val: sql`1` }).from(schema.users).limit(1);
         const dbLatency = (performance.now() - startDb).toFixed(2);
         
-        const uploadsPath = path.join(process.cwd(), 'public', 'uploads');
-        const storagePath = path.join(process.cwd(), 'storage');
-        const getDirSize = (p: string): number => {
-            let s = 0; try { fs.readdirSync(p).forEach(f => { const fp = path.join(p, f); const st = fs.statSync(fp); s += st.isDirectory() ? getDirSize(fp) : st.size; }); } catch { /* ignore */ } return s;
-        };
-        const totalStorageBytes = getDirSize(uploadsPath) + getDirSize(storagePath);
+        const totalStorageBytes = await getStorageSizeFromService();
         const storageMB = (totalStorageBytes / (1024 * 1024)).toFixed(1);
         const memUsed = ((os.totalmem() - os.freemem()) / os.totalmem()) * 100;
         const uptimeHours = (os.uptime() / 3600).toFixed(1);

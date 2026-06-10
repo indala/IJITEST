@@ -2,14 +2,11 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { sidebarItems, getFullHref } from '@/lib/navigation';
 import { updateUserLastActive } from '@/actions/users';
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import dynamic from 'next/dynamic';
-
-const PreferencesDialog = dynamic(() => import('@/features/shared/components/PreferencesDialog'), { ssr: false });
 import { PanelSidebar } from './_components/PanelSidebar';
 import { PanelHeader } from './_components/PanelHeader';
 
@@ -23,7 +20,6 @@ interface PanelShellProps {
 export function PanelShell({ children, session }: PanelShellProps) {
     const pathname = usePathname();
     const router = useRouter();
-    const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
 
     const user = session?.user ?? null;
     const role = user?.role ?? 'reviewer';
@@ -62,7 +58,7 @@ export function PanelShell({ children, session }: PanelShellProps) {
 
     return (
         <SidebarProvider defaultOpen={true}>
-            <div className="flex min-h-screen bg-muted/30 dark:bg-slate-950/50 w-full transition-colors duration-500">
+            <div className="flex min-h-screen bg-muted/30 w-full transition-colors duration-500">
                 <PanelSidebar
                     pathname={pathname}
                     user={user}
@@ -76,7 +72,6 @@ export function PanelShell({ children, session }: PanelShellProps) {
                         pathname={pathname}
                         user={user}
                         handleLogout={handleLogout}
-                        setShowPreferences={setIsPreferencesOpen}
                     />
 
                     <section className="p-3 lg:p-6 2xl:p-8 max-w-screen-2xl 2xl:max-w-[1600px] mx-auto w-full transition-all duration-500">
@@ -84,10 +79,6 @@ export function PanelShell({ children, session }: PanelShellProps) {
                     </section>
                 </SidebarInset>
 
-                <PreferencesDialog
-                    open={isPreferencesOpen}
-                    onOpenChange={setIsPreferencesOpen}
-                />
             </div>
         </SidebarProvider>
     );

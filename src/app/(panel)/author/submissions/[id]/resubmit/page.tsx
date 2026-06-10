@@ -48,7 +48,7 @@ export default async function ResubmitPage({ params }: { params: Promise<Submiss
             </header>
 
             {!eligibility.eligible ? (
-                <Card className="border-rose-200 dark:border-rose-500/20 bg-rose-50/50 dark:bg-rose-500/5">
+                <Card className="border-rose-200 bg-rose-50/50">
                     <CardContent className="p-10 flex flex-col items-center gap-4 text-center">
                         <XCircle className="w-12 h-12 text-rose-500" />
                         <h3 className="font-black text-xl uppercase tracking-widest text-foreground">Not Eligible</h3>

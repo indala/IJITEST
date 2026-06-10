@@ -16,12 +16,12 @@ export default function Error({
     }, [error]);
 
     return (
-        <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-gray-900 rounded-[3rem] border border-red-50 dark:border-red-900/30 shadow-xl shadow-red-500/5 my-10 max-w-2xl mx-auto">
-            <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-8">
+        <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-white rounded-[3rem] border border-red-50 shadow-xl shadow-red-500/5 my-10 max-w-2xl mx-auto">
+            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-8">
                 <AlertTriangle className="w-10 h-10 text-red-500" />
             </div>
-            <h2 className="font-serif font-black text-gray-900 dark:text-gray-100 mb-4">Interruption in Services</h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-10 font-medium leading-relaxed">
+            <h2 className="font-serif font-black text-gray-900 mb-4">Interruption in Services</h2>
+            <p className="text-gray-500 mb-10 font-medium leading-relaxed">
                 An unexpected technical error has occurred while processing your request. Our systems have logged this event for administrative review.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
@@ -33,7 +33,7 @@ export default function Error({
                 </button>
                 <Link
                     href="/"
-                    className="flex items-center justify-center px-8 py-4 border-2 border-gray-100 dark:border-gray-700 text-gray-400 rounded-2xl font-black text-xs 2xl:text-sm tracking-widest hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+                    className="flex items-center justify-center px-8 py-4 border-2 border-gray-100 text-gray-400 rounded-2xl font-black text-xs 2xl:text-sm tracking-widest hover:bg-gray-50 transition-all"
                 >
                     Return Home
                 </Link>

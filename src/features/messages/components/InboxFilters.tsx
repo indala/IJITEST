@@ -45,7 +45,7 @@ export function InboxFilters({
                             className={cn(
                                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200 group text-[11px] xl:text-xs whitespace-nowrap",
                                 isActive 
-                                    ? "bg-primary text-white dark:text-slate-950 font-bold shadow-sm" 
+                                    ? "bg-primary text-white  font-bold shadow-sm" 
                                     : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground"
                             )}
                         >

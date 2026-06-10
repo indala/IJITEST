@@ -282,7 +282,7 @@ export function LiveChatContent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row gap-4 h-[calc(100vh-220px)] min-h-0 bg-slate-900/10 dark:bg-slate-950/20 rounded-2xl overflow-hidden">
+    <div className="flex-1 flex flex-col md:flex-row gap-4 h-[calc(100vh-220px)] min-h-0 bg-slate-900/10 rounded-2xl overflow-hidden">
       
       {/* 👥 Left Panel: Users & Search */}
       <div className="w-full md:w-80 shrink-0 flex flex-col bg-card/45 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-xl">

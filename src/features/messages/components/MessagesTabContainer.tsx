@@ -18,7 +18,7 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
     return (
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Sleek Custom Tab Switcher */}
-            <div className="flex gap-2 p-1.5 bg-slate-900/10 dark:bg-slate-950/40 rounded-2xl w-fit mb-4 border border-white/5">
+            <div className="flex gap-2 p-1.5 bg-slate-900/10 rounded-2xl w-fit mb-4 border border-white/5">
                 <button
                     onClick={() => setActiveTab('inquiry')}
                     className={cn(

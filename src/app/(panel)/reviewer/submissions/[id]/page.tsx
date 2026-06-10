@@ -100,7 +100,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 <CardTitle>
                                     {submission.title}
                                 </CardTitle>
-                                <div className="flex flex-wrap items-center gap-6 2xl:gap-10 text-[10px] 2xl:text-lg font-black text-primary/40 dark:text-black tracking-[0.2em] uppercase">
+                                <div className="flex flex-wrap items-center gap-6 2xl:gap-10 text-[10px] 2xl:text-lg font-black text-primary/40 tracking-[0.2em] uppercase">
                                     <div className="flex items-center gap-2 2xl:gap-4">
                                         <Shield className="w-4 h-4 2xl:w-7 2xl:h-7" />
                                         <span>{submission.paperId}</span>
@@ -122,7 +122,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 </p>
                             </div>
 
-                            <Separator className="bg-primary/5 dark:bg-green-900" />
+                            <Separator className="bg-primary/5" />
 
                             {submission.keywords && (
                                 <div className="space-y-4">
@@ -131,7 +131,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
                                         {submission.keywords.split(',').map((k: string) => (
-                                            <Badge key={k} variant="outline" className="h-7 px-3 text-[10px] font-black tracking-widest border-primary/10 bg-primary/5 dark:text-blue-900 lg:text-xl text-primary rounded-lg uppercase">
+                                            <Badge key={k} variant="outline" className="h-7 px-3 text-[10px] font-black tracking-widest border-primary/10 bg-primary/5 lg:text-xl text-primary rounded-lg uppercase">
                                                 {k.trim()}
                                             </Badge>
                                         ))}
@@ -158,7 +158,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                             <div className="pt-4 2xl:pt-8">
                                 {submission.pdfUrl ? (
                                     <>
-                                        <Button asChild className="w-full h-12 2xl:h-20 gap-3 2xl:gap-5 font-bold text-[11px] 2xl:text-xl tracking-widest shadow-xl shadow-primary/20 rounded-xl 2xl:rounded-2xl bg-primary hover:opacity-90 transition-all uppercase cursor-pointer text-white dark:text-black">
+                                        <Button asChild className="w-full h-12 2xl:h-20 gap-3 2xl:gap-5 font-bold text-[11px] 2xl:text-xl tracking-widest shadow-xl shadow-primary/20 rounded-xl 2xl:rounded-2xl bg-primary hover:opacity-90 transition-all uppercase cursor-pointer text-white">
                                             <a href={getSecureUrl(submission.pdfUrl)} download>
                                                 <Download className="w-4 h-4 2xl:w-8 2xl:h-8" /> Download PDF
                                             </a>

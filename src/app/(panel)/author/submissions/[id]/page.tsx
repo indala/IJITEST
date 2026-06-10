@@ -172,7 +172,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                         />
                     ) : isAcceptedOrPublished ? (
                         copyrightFile ? (
-                            <Card className="border-emerald-200 dark:border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-500/5 animate-in fade-in duration-500 rounded-2xl">
+                            <Card className="border-emerald-200 bg-emerald-50/50 animate-in fade-in duration-500 rounded-2xl">
                                 <CardContent className="p-6 flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">

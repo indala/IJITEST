@@ -9,8 +9,7 @@ import {
     reviewAssignments
 } from '@/db/schema';
 import { eq, and, or } from 'drizzle-orm';
-import fs from 'fs/promises';
-import { getPublicUploadsPath, downloadFileFromStorage } from '@/lib/fs-utils';
+import { downloadFileFromStorage } from '@/lib/fs-utils';
 import path from 'path';
 
 
@@ -96,22 +95,9 @@ async function serveFile(relativePath: string) {
                 'Content-Disposition': `inline; filename="${safeFilename}"`,
             },
         });
-    } catch (err) { // Fallback to legacy public path for migration period
-        console.error("Storage download failed, trying legacy local filesystem fallback:", err);
-        try {
-            const legacyPath = getPublicUploadsPath(relativePath);
-            await fs.access(legacyPath);
-            const fileBuffer = await fs.readFile(legacyPath);
-            return new NextResponse(fileBuffer, {
-                headers: {
-                    'Content-Type': 'application/octet-stream', // Simple fallback
-                    'Content-Disposition': `inline; filename="${path.basename(legacyPath)}"`,
-                },
-            });
-        } catch (legacyErr) {
-            console.error("Legacy local filesystem fallback failed:", legacyErr);
-            return new NextResponse("File Not Found", { status: 404 });
-        }
+    } catch (err) {
+        console.error("Storage download failed:", err);
+        return new NextResponse("File Not Found", { status: 404 });
     }
 }
 

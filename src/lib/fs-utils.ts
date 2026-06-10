@@ -1,45 +1,5 @@
 import 'server-only'
-import fs from "fs/promises";
 import path from "path";
-
-function resolvePathWithinBase(baseDir: string, inputPath: string): string {
-    const normalizedInput = inputPath.replace(/^\/+/, "");
-    const resolvedBase = path.resolve(baseDir);
-    const resolvedTarget = path.resolve(resolvedBase, normalizedInput);
-    const isInsideBase =
-        resolvedTarget === resolvedBase ||
-        resolvedTarget.startsWith(resolvedBase + path.sep);
-
-    if (!isInsideBase) {
-        throw new Error("Unsafe path: traversal outside allowed directory.");
-    }
-
-    return resolvedTarget;
-}
-
-export function getStoragePath(relativePath: string): string {
-    return resolvePathWithinBase(path.join(process.cwd(), "storage"), relativePath);
-}
-
-export function getPublicUploadsPath(relativePath: string): string {
-    return resolvePathWithinBase(path.join(process.cwd(), "public", "uploads"), relativePath);
-}
-
-export function resolveAbsolutePath(filePath: string): string {
-    const cleanPath = filePath.replace(/^\/+/, '');
-    
-    if (cleanPath.startsWith('api/files/')) {
-        const pathWithoutPrefix = cleanPath.replace('api/files/', '');
-        return getStoragePath(pathWithoutPrefix);
-    }
-    
-    if (cleanPath.startsWith('uploads/')) {
-        const pathWithoutPrefix = cleanPath.replace('uploads/', '');
-        return getPublicUploadsPath(pathWithoutPrefix);
-    }
-
-    return getStoragePath(cleanPath);
-}
 
 /**
  * Extracts a clean relative storage path from a file URL or path.
@@ -65,12 +25,7 @@ export async function safeDeleteFile(fileUrl: string | null | undefined): Promis
         const serviceUrl = process.env['STORAGE_SERVICE_URL'];
         const secret = process.env['STORAGE_SERVICE_SECRET'];
         if (!serviceUrl || !secret) {
-            console.warn("Storage service not configured. Falling back to local filesystem deletion.");
-            const absolutePath = resolveAbsolutePath(fileUrl);
-            try {
-                await fs.access(absolutePath);
-                await fs.unlink(absolutePath);
-            } catch { /* ignore */ }
+            console.warn("Storage service is not configured. File deletion skipped.");
             return;
         }
 
@@ -184,5 +139,85 @@ export async function triggerDocxToPdfConversion(inputUrl: string, outputUrl: st
 
     const data = await response.json() as { success: boolean; pdfPath: string; fileSize: number };
     return data.fileSize;
+}
+
+/**
+ * Retrieves the total storage size from the NestJS storage service.
+ */
+export async function getStorageSizeFromService(): Promise<number> {
+    try {
+        const serviceUrl = process.env['STORAGE_SERVICE_URL'];
+        const secret = process.env['STORAGE_SERVICE_SECRET'];
+        if (!serviceUrl || !secret) {
+            console.warn("Storage service is not configured. Unable to retrieve storage size.");
+            return 0;
+        }
+
+        const response = await fetch(`${serviceUrl}/storage/size`, {
+            headers: {
+                'Authorization': `Bearer ${secret}`
+            }
+        });
+
+        if (!response.ok) {
+            console.error(`Failed to fetch storage size from service: ${response.statusText}`);
+            return 0;
+        }
+
+        const data = await response.json() as { sizeBytes: number };
+        return data.sizeBytes || 0;
+    } catch (error) {
+        console.error("Error fetching storage size:", error);
+        return 0;
+    }
+}
+
+export interface BrandingMetadata {
+    journalName: string;
+    journalShortName: string;
+    volume: string | number;
+    issue: string | number;
+    year: string | number;
+    monthRange: string;
+    issn: string;
+    website: string;
+    paperId: string;
+    startPage?: number | null;
+    endPage?: number | null;
+}
+
+/**
+ * Triggers PDF branding on the NestJS helper service.
+ */
+export async function triggerPdfBranding(
+    inputUrl: string,
+    outputUrl: string,
+    metadata: BrandingMetadata
+): Promise<void> {
+    const serviceUrl = process.env['STORAGE_SERVICE_URL'];
+    const secret = process.env['STORAGE_SERVICE_SECRET'];
+    if (!serviceUrl || !secret) {
+        throw new Error("Storage service is not configured.");
+    }
+
+    const inputPath = getRelativePath(inputUrl);
+    const outputPath = getRelativePath(outputUrl);
+
+    const response = await fetch(
+        `${serviceUrl}/process/brand-pdf?inputPath=${encodeURIComponent(inputPath)}&outputPath=${encodeURIComponent(outputPath)}`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${secret}`
+            },
+            body: JSON.stringify(metadata)
+        }
+    );
+
+    if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Failed to brand PDF: ${errText}`);
+    }
 }
 

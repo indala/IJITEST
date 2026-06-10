@@ -56,7 +56,7 @@ export default async function AuthorSubmissionsList() {
                     <h1 className="font-black text-foreground tracking-widest uppercase text-2xl">My Submissions</h1>
                     <p className="text-xs text-muted-foreground font-medium mt-1">All manuscripts you have submitted to IJITEST</p>
                 </div>
-                <Button asChild className="bg-primary text-white dark:text-black hover:bg-primary/90 font-bold uppercase text-xs rounded-xl h-10 px-5">
+                <Button asChild className="bg-primary text-white hover:bg-primary/90 font-bold uppercase text-xs rounded-xl h-10 px-5">
                     <Link href="/submit">+ New Submission</Link>
                 </Button>
             </header>
@@ -66,7 +66,7 @@ export default async function AuthorSubmissionsList() {
                     <CardContent className="flex flex-col items-center gap-3 text-muted-foreground">
                         <FileText className="w-10 h-10 opacity-20" />
                         <span className="font-bold uppercase tracking-widest text-xs">No Submissions</span>
-                        <Button asChild size="sm" className="mt-2 bg-primary text-white dark:text-black hover:bg-primary/90 font-bold uppercase text-[10px] rounded-lg">
+                        <Button asChild size="sm" className="mt-2 bg-primary text-white hover:bg-primary/90 font-bold uppercase text-[10px] rounded-lg">
                             <Link href="/submit">Start Your First Submission</Link>
                         </Button>
                     </CardContent>

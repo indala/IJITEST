@@ -24,9 +24,8 @@ import type {
 } from '@/features/dashboard/components/DashboardRegistry';
 import InviteEditorModal from './components/InviteEditorModal';
 import os from 'os';
-import fs from 'fs';
-import path from 'path';
 import { redirect } from 'next/navigation';
+import { getStorageSizeFromService } from '@/lib/fs-utils';
 
 
 export const metadata = {
@@ -40,23 +39,7 @@ async function getHealthMetrics() {
     const endDb = Date.now();
     const dbLatency = (endDb - startDb).toFixed(2);
 
-    const uploadsPath = path.join(process.cwd(), 'public', 'uploads');
-    const storagePath = path.join(process.cwd(), 'storage');
-
-    const getDirSize = (p: string): number => {
-        let s = 0;
-        try {
-            const files = fs.readdirSync(p);
-            files.forEach(f => {
-                const fp = path.join(p, f);
-                const st = fs.statSync(fp);
-                s += st.isDirectory() ? getDirSize(fp) : st.size;
-            });
-        } catch { /* ignore */ }
-        return s;
-    };
-
-    const totalStorageBytes = getDirSize(uploadsPath) + getDirSize(storagePath);
+    const totalStorageBytes = await getStorageSizeFromService();
     const storageMB = (totalStorageBytes / (1024 * 1024)).toFixed(1);
     const uptimeHours = (os.uptime() / 3600).toFixed(1);
 

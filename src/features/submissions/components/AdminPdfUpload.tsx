@@ -52,7 +52,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
                     <Button
                         asChild
                         variant="outline"
-                        className="group w-full h-14 gap-3 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 font-black text-xs tracking-widest rounded-xl hover:bg-emerald-500 hover:text-white dark:hover:text-black transition-all cursor-pointer shadow-sm shadow-emerald-500/5"
+                        className="group w-full h-14 gap-3 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 font-black text-xs tracking-widest rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-sm shadow-emerald-500/5"
                     >
                         <a href={currentUrl} download className="flex items-center justify-center w-full">
                             <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -106,7 +106,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
                     onClick={() => convertAction(new FormData())}
                     disabled={isConverting || isUploading}
                     variant="outline"
-                    className="w-full h-16 gap-4 border-primary/20 bg-primary/5 text-primary font-black text-[11px] tracking-widest rounded-2xl hover:bg-primary hover:text-white dark:hover:text-black transition-all shadow-xl shadow-primary/5 cursor-pointer relative overflow-hidden group"
+                    className="w-full h-16 gap-4 border-primary/20 bg-primary/5 text-primary font-black text-[11px] tracking-widest rounded-2xl hover:bg-primary hover:text-white transition-all shadow-xl shadow-primary/5 cursor-pointer relative overflow-hidden group"
                 >
                     <div className="flex flex-col items-center gap-1">
                         <div className="flex items-center gap-3">
@@ -155,7 +155,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
             <Button
                 type="submit"
                 disabled={isUploading || isConverting}
-                className="w-full h-12 gap-3 bg-primary text-white dark:text-black font-black text-xs tracking-widest rounded-xl transition-all shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 cursor-pointer"
+                className="w-full h-12 gap-3 bg-primary text-white font-black text-xs tracking-widest rounded-xl transition-all shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 cursor-pointer"
             >
                 {isUploading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

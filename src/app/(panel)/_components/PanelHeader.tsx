@@ -12,7 +12,6 @@ interface PanelHeaderProps {
     pathname: string;
     user: Session['user'] | null;
     handleLogout: () => Promise<void>;
-    setShowPreferences: (show: boolean) => void;
 }
 
 export function PanelHeader({
@@ -20,7 +19,6 @@ export function PanelHeader({
     pathname,
     user,
     handleLogout,
-    setShowPreferences
 }: PanelHeaderProps) {
     const activeItem = filteredItems.find(i => pathname === i.fullHref);
 
@@ -41,7 +39,6 @@ export function PanelHeader({
                 <UserNav
                     user={user}
                     handleLogout={handleLogout}
-                    setShowPreferences={setShowPreferences}
                 />
             </div>
         </header>

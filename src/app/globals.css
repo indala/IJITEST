@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
 
 @theme {
   --color-primary: oklch(0.35 0.15 255); /* Deeper, more vibrant blue */
@@ -180,35 +179,6 @@
   --sidebar-accent-foreground: oklch(0.35 0.15 255);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.35 0.15 255 / 0.2);
-}
-
-.dark {
-  --background: oklch(0.12 0.01 255);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.15 0.01 255);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.15 0.01 255);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.6 0.15 255); /* Lighter blue for dark mode */
-  --primary-foreground: oklch(0.1 0 0);
-  --secondary: oklch(0.7 0.2 25);
-  --secondary-foreground: oklch(0.1 0 0);
-  --muted: oklch(0.2 0.01 255);
-  --muted-foreground: oklch(0.75 0.01 255);
-  --accent: oklch(0.2 0.01 255);
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.6 0.2 25);
-  --border: oklch(0.25 0.01 255);
-  --input: oklch(0.25 0.01 255);
-  --ring: oklch(0.6 0.15 255 / 0.3);
-  --sidebar: oklch(0.15 0.01 255);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.6 0.15 255);
-  --sidebar-primary-foreground: oklch(0.1 0 0);
-  --sidebar-accent: oklch(0.25 0.01 255);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.25 0.01 255);
-  --sidebar-ring: oklch(0.6 0.15 255 / 0.3);
 }
 
 @layer base {

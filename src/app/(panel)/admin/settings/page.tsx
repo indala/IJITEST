@@ -127,7 +127,7 @@ export default function SystemSettings() {
                 {/* Header Section */}
                 <motion.header 
                     variants={itemVariants}
-                    className="relative group p-6 sm:p-8 bg-white/40 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden"
+                    className="relative group p-6 sm:p-8 bg-white/40 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
                 >
                     <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
                     
@@ -136,10 +136,10 @@ export default function SystemSettings() {
                             <Badge variant="outline" className="px-3 py-1 rounded-full border-primary/20 text-primary bg-primary/5 text-[9px] font-bold tracking-wider uppercase">
                                 Root Administrator Console
                             </Badge>
-                            <h1 className="text-slate-900 dark:text-white text-3xl font-black">
+                            <h1 className="text-slate-900 text-3xl font-black">
                                 System <span className="text-primary underline decoration-primary/10 underline-offset-8">Settings</span>
                             </h1>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">
+                            <p className="text-slate-600 text-sm font-medium">
                                 Configure the bedrock parameters of your journal environment.
                             </p>
                         </div>
@@ -163,7 +163,7 @@ export default function SystemSettings() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 2xl:gap-12">
                     {/* Journal Identity */}
                     <motion.div variants={itemVariants}>
-                        <Card className="group relative overflow-hidden bg-white/60 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 shadow-xl rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-primary/5">
+                        <Card className="group relative overflow-hidden bg-white/60 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-primary/5">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:scale-150 transition-transform duration-1000" />
                             <CardHeader className="p-6 pb-2">
                                 <div className="flex items-center gap-4 mb-2">
@@ -171,43 +171,43 @@ export default function SystemSettings() {
                                         <Globe className="w-6 h-6" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <CardTitle className="text-slate-900 dark:text-white">Journal Identity</CardTitle>
-                                        <CardDescription className="text-slate-500 dark:text-slate-400 text-xs">Branding & metadata protocols.</CardDescription>
+                                        <CardTitle className="text-slate-900">Journal Identity</CardTitle>
+                                        <CardDescription className="text-slate-500 text-xs">Branding & metadata protocols.</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-6 pt-0 space-y-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Full Publication Handle</Label>
+                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Full Publication Handle</Label>
                                     <Input
                                         name="journalName"
                                         defaultValue={settings.journalName}
-                                        className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-primary/20 font-bold text-sm shadow-sm rounded-xl px-4 transition-all"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm shadow-sm rounded-xl px-4 transition-all"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Publishing Syndicate</Label>
+                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Publishing Syndicate</Label>
                                     <Input
                                         name="publisherName"
                                         defaultValue={settings.publisherName}
-                                        className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-primary/20 font-bold text-sm shadow-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm shadow-sm rounded-xl px-4"
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">SEO Cipher</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">SEO Cipher</Label>
                                         <Input
                                             name="journalShortName"
                                             defaultValue={settings.journalShortName}
-                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-primary/20 font-black text-sm shadow-sm rounded-xl px-4 tracking-widest"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-black text-sm shadow-sm rounded-xl px-4 tracking-widest"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">ISSN Protocol</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">ISSN Protocol</Label>
                                         <Input
                                             name="issnNumber"
                                             defaultValue={settings.issnNumber}
-                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-primary/20 font-bold text-sm font-mono shadow-sm rounded-xl px-4"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm font-mono shadow-sm rounded-xl px-4"
                                         />
                                     </div>
                                 </div>
@@ -217,7 +217,7 @@ export default function SystemSettings() {
 
                     {/* Financial Infrastructure */}
                     <motion.div variants={itemVariants}>
-                        <Card className="group relative overflow-hidden bg-white/60 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 shadow-xl rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-emerald-500/5">
+                        <Card className="group relative overflow-hidden bg-white/60 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-emerald-500/5">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:scale-150 transition-transform duration-1000" />
                             <CardHeader className="p-6 pb-2">
                                 <div className="flex items-center gap-4 mb-2">
@@ -225,43 +225,43 @@ export default function SystemSettings() {
                                         <CreditCard className="w-6 h-6" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <CardTitle className="text-slate-900 dark:text-white">Econometrics</CardTitle>
-                                        <CardDescription className="text-slate-500 dark:text-slate-400 text-xs">Transmission fees & parameters.</CardDescription>
+                                        <CardTitle className="text-slate-900">Econometrics</CardTitle>
+                                        <CardDescription className="text-slate-500 text-xs">Transmission fees & parameters.</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-6 pt-0 space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Domestic (INR)</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Domestic (INR)</Label>
                                         <div className="relative">
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-emerald-600/50 text-base">₹</span>
                                             <Input
                                                 name="apcInr"
                                                 defaultValue={settings.apcInr}
-                                                className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-emerald-500/20 font-black text-lg pl-8 rounded-xl"
+                                                className="h-12 bg-white/50 border-slate-200 focus-visible:ring-emerald-500/20 font-black text-lg pl-8 rounded-xl"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">International (USD)</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">International (USD)</Label>
                                         <div className="relative">
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-emerald-600/50 text-base">$</span>
                                             <Input
                                                 name="apcUsd"
                                                 defaultValue={settings.apcUsd}
-                                                className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-emerald-500/20 font-black text-lg pl-8 rounded-xl"
+                                                className="h-12 bg-white/50 border-slate-200 focus-visible:ring-emerald-500/20 font-black text-lg pl-8 rounded-xl"
                                             />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Financial Disclosure Text</Label>
+                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Financial Disclosure Text</Label>
                                     <Textarea
                                         name="apcDescription"
                                         defaultValue={settings.apcDescription}
                                         rows={3}
-                                        className="bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-emerald-500/20 font-medium text-xs p-4 rounded-xl resize-none min-h-[100px]"
+                                        className="bg-white/50 border-slate-200 focus-visible:ring-emerald-500/20 font-medium text-xs p-4 rounded-xl resize-none min-h-[100px]"
                                     />
                                 </div>
                             </CardContent>
@@ -270,7 +270,7 @@ export default function SystemSettings() {
                     
                     {/* Academic Metadata */}
                     <motion.div variants={itemVariants}>
-                        <Card className="group relative overflow-hidden bg-white/60 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 shadow-xl rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-blue-500/5">
+                        <Card className="group relative overflow-hidden bg-white/60 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-blue-500/5">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:scale-150 transition-transform duration-1000" />
                             <CardHeader className="p-6 pb-2">
                                 <div className="flex items-center gap-4 mb-2">
@@ -278,54 +278,54 @@ export default function SystemSettings() {
                                         <Sparkles className="w-6 h-6" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <CardTitle className="text-slate-900 dark:text-white">Academic Metadata</CardTitle>
-                                        <CardDescription className="text-slate-500 dark:text-slate-400 text-xs">Scholarly indexing & registration.</CardDescription>
+                                        <CardTitle className="text-slate-900">Academic Metadata</CardTitle>
+                                        <CardDescription className="text-slate-500 text-xs">Scholarly indexing & registration.</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-6 pt-0 space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Starting Year</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Starting Year</Label>
                                         <Input
                                             name="startingYear"
                                             defaultValue={settings.startingYear}
-                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Frequency</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Frequency</Label>
                                         <Input
                                             name="publicationFrequency"
                                             defaultValue={settings.publicationFrequency}
-                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
                                         />
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Language</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Language</Label>
                                         <Input
                                             name="journalLanguage"
                                             defaultValue={settings.journalLanguage}
-                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">UDYAM / MSME</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">UDYAM / MSME</Label>
                                         <Input
                                             name="udyamRegistration"
                                             defaultValue={settings.udyamRegistration}
-                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Subject Area</Label>
+                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Subject Area</Label>
                                     <Input
                                         name="journalSubject"
                                         defaultValue={settings.journalSubject}
-                                        className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
                                     />
                                 </div>
                             </CardContent>
@@ -334,7 +334,7 @@ export default function SystemSettings() {
 
                     {/* Operational Support */}
                     <motion.div variants={itemVariants} className="lg:col-span-2">
-                        <Card className="group relative overflow-hidden bg-white/40 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-lg rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-amber-500/5">
+                        <Card className="group relative overflow-hidden bg-white/40 backdrop-blur-md border border-slate-200 shadow-lg rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-amber-500/5">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full -mr-32 -mt-32 blur-[100px] group-hover:scale-110 transition-transform duration-1000" />
                             <CardHeader className="p-6 pb-2">
                                 <div className="flex items-center gap-4 mb-2">
@@ -342,37 +342,37 @@ export default function SystemSettings() {
                                         <Headphones className="w-6 h-6" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <CardTitle className="text-slate-900 dark:text-white">Operations Center</CardTitle>
-                                        <CardDescription className="text-slate-500 dark:text-slate-400 text-xs">Support pathways & physical logistics.</CardDescription>
+                                        <CardTitle className="text-slate-900">Operations Center</CardTitle>
+                                        <CardDescription className="text-slate-500 text-xs">Support pathways & physical logistics.</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-6 pt-0 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Editorial Council Inbox</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Editorial Council Inbox</Label>
                                         <Input
                                             name="supportEmail"
                                             defaultValue={settings.supportEmail}
-                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-amber-500/20 font-bold text-sm rounded-xl px-4"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-amber-500/20 font-bold text-sm rounded-xl px-4"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">Direct Operations Phone</Label>
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Direct Operations Phone</Label>
                                         <Input
                                             name="supportPhone"
                                             defaultValue={settings.supportPhone}
-                                            className="h-12 bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-amber-500/20 font-bold text-sm rounded-xl px-4"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-amber-500/20 font-bold text-sm rounded-xl px-4"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-slate-900 dark:text-slate-300 tracking-wider px-1 uppercase">HQ Physical Architecture</Label>
+                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">HQ Physical Architecture</Label>
                                     <Textarea
                                         name="officeAddress"
                                         defaultValue={settings.officeAddress}
                                         rows={2}
-                                        className="bg-white/50 border-slate-200 dark:border-slate-800 focus-visible:ring-amber-500/20 font-bold text-sm p-4 rounded-xl resize-none"
+                                        className="bg-white/50 border-slate-200 focus-visible:ring-amber-500/20 font-bold text-sm p-4 rounded-xl resize-none"
                                     />
                                 </div>
                             </CardContent>
@@ -381,37 +381,37 @@ export default function SystemSettings() {
 
                     {/* Resources */}
                     <motion.div variants={itemVariants} className="lg:col-span-2">
-                        <Card className="group relative bg-white shadow-xl rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-                            <CardHeader className="p-6 pb-2 border-b border-slate-50 dark:border-slate-900">
+                        <Card className="group relative bg-white shadow-xl rounded-2xl border border-slate-200 overflow-hidden">
+                            <CardHeader className="p-6 pb-2 border-b border-slate-50">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-inner">
                                         <Layout className="w-6 h-6" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <CardTitle className="text-slate-900 dark:text-white">Asset Repository</CardTitle>
-                                        <CardDescription className="text-slate-500 dark:text-slate-400 text-xs">Manage templates & covenants.</CardDescription>
+                                        <CardTitle className="text-slate-900">Asset Repository</CardTitle>
+                                        <CardDescription className="text-slate-500 text-xs">Manage templates & covenants.</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {/* Template Asset */}
-                                    <div className="group/asset bg-slate-50/50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 transition-all hover:bg-white dark:hover:bg-slate-900 hover:shadow-xl">
+                                    <div className="group/asset bg-slate-50/50 p-6 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-xl">
                                         <div className="flex items-start justify-between mb-6">
                                             <div className="space-y-1">
                                                 <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-bold text-[8px] tracking-wider uppercase rounded-lg px-2 py-0.5">
                                                     MS-DOCX / PDF
                                                 </Badge>
-                                                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Upload Template</h4>
+                                                <h4 className="text-sm font-bold text-slate-900">Upload Template</h4>
                                             </div>
-                                            <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-blue-600">
+                                            <div className="w-10 h-10 rounded-lg bg-white shadow-sm border border-slate-100 flex items-center justify-center text-blue-600">
                                                 <FileText className="w-5 h-5" />
                                             </div>
                                         </div>
                                         
                                         <div className={cn(
                                             "relative group/field h-28 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-all overflow-hidden",
-                                            selectedTemplate ? "border-blue-400 bg-blue-50/50 dark:bg-blue-900/10" : "border-slate-200 dark:border-slate-800 hover:border-blue-300 hover:bg-blue-50/30"
+                                            selectedTemplate ? "border-blue-400 bg-blue-50/50 " : "border-slate-200  hover:border-blue-300 hover:bg-blue-50/30"
                                         )}>
                                             <Input
                                                 type="file"
@@ -447,12 +447,12 @@ export default function SystemSettings() {
                                         </div>
 
                                         {settings.templateUrl && (
-                                            <div className="mt-4 flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+                                            <div className="mt-4 flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100">
                                                 <div className="flex items-center gap-2 min-w-0">
-                                                    <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 shrink-0">
+                                                    <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
                                                         <FileText className="w-3.5 h-3.5" />
                                                     </div>
-                                                    <p className="truncate text-xs font-medium text-slate-600 dark:text-slate-400">{settings.templateUrl.split('/').pop()}</p>
+                                                    <p className="truncate text-xs font-medium text-slate-600">{settings.templateUrl.split('/').pop()}</p>
                                                 </div>
                                                 <Button asChild variant="ghost" size="icon" className="w-7 h-7 rounded-lg hover:bg-blue-50 hover:text-blue-600">
                                                     <a href={settings.templateUrl} target="_blank" download title="Download Template"><ExternalLink className="w-3.5 h-3.5" /></a>
@@ -462,22 +462,22 @@ export default function SystemSettings() {
                                     </div>
 
                                     {/* Copyright Asset */}
-                                    <div className="group/asset bg-slate-50/50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 transition-all hover:bg-white dark:hover:bg-slate-900 hover:shadow-xl">
+                                    <div className="group/asset bg-slate-50/50 p-6 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-xl">
                                         <div className="flex items-start justify-between mb-6">
                                             <div className="space-y-1">
                                                 <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 border-none font-bold text-[8px] tracking-wider uppercase rounded-lg px-2 py-0.5">
                                                     Legal Covenant
                                                 </Badge>
-                                                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Upload Copyright Form</h4>
+                                                <h4 className="text-sm font-bold text-slate-900">Upload Copyright Form</h4>
                                             </div>
-                                            <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-indigo-600">
+                                            <div className="w-10 h-10 rounded-lg bg-white shadow-sm border border-slate-100 flex items-center justify-center text-indigo-600">
                                                 <Shield className="w-5 h-5" />
                                             </div>
                                         </div>
                                         
                                         <div className={cn(
                                             "relative group/field h-28 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-all overflow-hidden",
-                                            selectedCopyright ? "border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/10" : "border-slate-200 dark:border-slate-800 hover:border-indigo-300 hover:bg-indigo-50/30"
+                                            selectedCopyright ? "border-indigo-400 bg-indigo-50/50 " : "border-slate-200  hover:border-indigo-300 hover:bg-indigo-50/30"
                                         )}>
                                             <Input
                                                 type="file"
@@ -513,12 +513,12 @@ export default function SystemSettings() {
                                         </div>
 
                                         {settings.copyrightUrl && (
-                                            <div className="mt-4 flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+                                            <div className="mt-4 flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100">
                                                 <div className="flex items-center gap-2 min-w-0">
-                                                    <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 shrink-0">
+                                                    <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
                                                         <FileText className="w-3.5 h-3.5" />
                                                     </div>
-                                                    <p className="truncate text-xs font-medium text-slate-600 dark:text-slate-400">{settings.copyrightUrl.split('/').pop()}</p>
+                                                    <p className="truncate text-xs font-medium text-slate-600">{settings.copyrightUrl.split('/').pop()}</p>
                                                 </div>
                                                 <Button asChild variant="ghost" size="icon" className="w-7 h-7 rounded-lg hover:bg-indigo-50 hover:text-indigo-600">
                                                     <a href={settings.copyrightUrl} target="_blank" download title="Download Copyright Form"><ExternalLink className="w-3.5 h-3.5" /></a>
@@ -532,15 +532,15 @@ export default function SystemSettings() {
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="lg:col-span-2">
-                        <Card className="relative overflow-hidden bg-white/40 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-lg rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-8">
+                        <Card className="relative overflow-hidden bg-white/40 backdrop-blur-md border border-slate-200 shadow-lg rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-8">
                             <div className="absolute top-0 left-0 w-1.5 h-full bg-purple-500/20" />
                             <div className="flex items-center gap-6">
                                 <div className="w-16 h-16 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shadow-xl border border-purple-100 shrink-0 rotate-3">
                                     <Sparkles className="w-8 h-8" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-slate-900 dark:text-white font-bold">Growth Protocol <span className="text-slate-400 text-xs ml-2">v2.4</span></h3>
-                                    <p className="text-slate-600 dark:text-slate-400 text-xs max-w-md font-medium">Override global promotion modules for landing zones & user interfaces.</p>
+                                    <h3 className="text-slate-900 font-bold">Growth Protocol <span className="text-slate-400 text-xs ml-2">v2.4</span></h3>
+                                    <p className="text-slate-600 text-xs max-w-md font-medium">Override global promotion modules for landing zones & user interfaces.</p>
                                 </div>
                             </div>
                             <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
@@ -548,7 +548,7 @@ export default function SystemSettings() {
                                     name="isPromotionActive"
                                     defaultValue={settings.isPromotionActive || "true"}
                                     aria-label="Promotion Module Status"
-                                    className="h-12 w-full sm:w-56 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all shadow-md text-slate-900 dark:text-white cursor-pointer outline-none ring-offset-background focus:ring-2 focus:ring-purple-200"
+                                    className="h-12 w-full sm:w-56 rounded-xl bg-white border border-slate-200 px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all shadow-md text-slate-900 cursor-pointer outline-none ring-offset-background focus:ring-2 focus:ring-purple-200"
                                 >
                                     <option value="true">Active Transmission</option>
                                     <option value="false">Silent Protocol</option>

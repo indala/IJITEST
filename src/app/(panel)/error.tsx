@@ -27,8 +27,8 @@ export default function Error({
     }, [error]);
 
     return (
-        <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mx-auto">
-            <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mb-8">
+        <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-white rounded-xl border border-gray-100 shadow-sm mx-auto">
+            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-8">
                 <ShieldAlert className="w-10 h-10 text-gray-400" />
             </div>
             <h2 className="font-black text-foreground tracking-wider uppercase">Portal Access Error</h2>

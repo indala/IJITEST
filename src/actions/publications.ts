@@ -19,8 +19,7 @@ import { eq, and, sql, desc, count } from "drizzle-orm";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { getSettingsData } from "./settings";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import { downloadFileFromStorage } from "@/lib/fs-utils";
-import { brandPdf } from "@/lib/pdf-branding";
+import { downloadFileFromStorage, triggerPdfBranding } from "@/lib/fs-utils";
 import { getSubmissionById } from "./submissions";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -195,7 +194,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         const brandedRelativePath = `/api/files/published/${brandedFileName}`;
         const cleanInput = latestPdf.fileUrl;
 
-        await brandPdf(cleanInput, brandedRelativePath, {
+        await triggerPdfBranding(cleanInput, brandedRelativePath, {
             journalName: settings['journalName'] || "IJITEST",
             journalShortName: "IJITEST",
             volume: issue.volumeNumber,
@@ -550,3 +549,83 @@ export async function incrementPaperDownloads(submissionId: number): Promise<Act
         return actionError("Failed to increment downloads");
     }
 }
+
+/**
+ * Re-runs the PDF branding for an already published paper using the latest settings.
+ */
+export async function rebrandPaperPdf(submissionId: number): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return actionError("Unauthorized");
+        }
+
+        // 1. Fetch Publication & Issue Details
+        const pubRows = await db.select({
+            pub: publications,
+            sub: submissions,
+            issue: volumesIssues
+        })
+        .from(publications)
+        .innerJoin(submissions, eq(publications.submissionId, submissions.id))
+        .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+        .where(eq(publications.submissionId, submissionId))
+        .limit(1);
+
+        const row = pubRows[0];
+        if (!row) return actionError("Publication not found or not published yet.");
+        const { pub, sub, issue } = row;
+
+        // 2. Fetch Latest Versions of this submission to get the original unbranded pdf
+        const subRes = await getSubmissionById(submissionId);
+        if (!subRes.success || !subRes.data) {
+            return actionError(subRes.error || "Submission details not found");
+        }
+        const submission = subRes.data;
+
+        const latestPdf = submission.allFiles.find(f => f.fileType === 'pdfVersion');
+        if (!latestPdf) {
+            return actionError("Original styled PDF is missing from the submission version records.");
+        }
+
+        const settings = await getSettingsData();
+        const cleanInput = latestPdf.fileUrl;
+        const brandedRelativePath = pub.finalPdfUrl; // Reuse the existing published URL path
+
+        // 3. Trigger branding again on NestJS backend
+        await triggerPdfBranding(cleanInput, brandedRelativePath, {
+            journalName: settings['journalName'] || "IJITEST",
+            journalShortName: "IJITEST",
+            volume: issue.volumeNumber,
+            issue: issue.issueNumber,
+            year: issue.year,
+            monthRange: issue.monthRange || "",
+            issn: settings['issnNumber'] || "XXXX-XXXX",
+            website: settings['journalWebsite'] || "https://www.ijitest.org",
+            paperId: sub.paperId,
+            startPage: pub.startPage,
+            endPage: pub.endPage
+        });
+
+        // 4. Update the published date/time in the db or just revalidate
+        await db.update(publications)
+            .set({ publishedAt: new Date() })
+            .where(eq(publications.submissionId, submissionId));
+
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath('/admin/submissions');
+        revalidatePath('/archives');
+        revalidatePath('/', 'layout');
+        updateTag(`submission-${submissionId}`);
+        updateTag('publications');
+        updateTag('archives');
+        updateTag('public-data');
+        updateTag('latest-issue');
+
+        return actionSuccess();
+    } catch (error) {
+        console.error("Re-brand Paper Error:", error);
+        return actionError("Failed to re-brand paper: " + (error instanceof Error ? error.message : String(error)));
+    }
+}
+

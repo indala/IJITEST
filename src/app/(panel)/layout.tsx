@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PanelShell } from './PanelShell';
+import AuthProvider from '@/components/providers/AuthProvider';
 
 export default async function PanelLayout({
     children,
@@ -9,5 +10,9 @@ export default async function PanelLayout({
 }) {
     const session = await getServerSession(authOptions) ?? null;
 
-    return <PanelShell session={session}>{children}</PanelShell>;
+    return (
+        <AuthProvider session={session}>
+            <PanelShell session={session}>{children}</PanelShell>
+        </AuthProvider>
+    );
 }

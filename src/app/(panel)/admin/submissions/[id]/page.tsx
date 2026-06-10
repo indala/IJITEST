@@ -2,6 +2,7 @@ import { getSubmissionById } from "@/actions/submissions";
 import DeleteSubmissionButton from "@/features/submissions/components/DeleteSubmissionButton";
 import AdminPdfUpload from "@/features/submissions/components/AdminPdfUpload";
 import PublicationAssignment from "@/features/submissions/components/PublicationAssignment";
+import RebrandPdfButton from "@/features/submissions/components/RebrandPdfButton";
 import { SubmissionDecisionActions } from "./_components/SubmissionDecisionActions";
 import {
     User,
@@ -361,6 +362,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
                                                                 <ExternalLink className="w-3.5 h-3.5" /> View Public Archive
                                                             </Link>
                                                         </Button>
+                                                        <RebrandPdfButton submissionId={submission.id} />
                                                     </div>
                                                 </CardContent>
                                             </Card>

@@ -125,7 +125,7 @@ const ReviewItemCard = React.memo(({
                         {item.status !== 'completed' && isReviewer && (
                             <Dialog onOpenChange={(open) => !open && setFeedbackFile(null)}>
                                 <DialogTrigger asChild>
-                                    <Button className="w-full h-12 gap-3 font-semibold text-[10px] shadow-lg rounded-xl bg-primary text-white dark:text-slate-900 transition-all cursor-pointer">
+                                    <Button className="w-full h-12 gap-3 font-semibold text-[10px] shadow-lg rounded-xl bg-primary text-white transition-all cursor-pointer">
                                         <FileUp className="w-4 h-4" /> Submit Review
                                     </Button>
                                 </DialogTrigger>
@@ -237,7 +237,7 @@ const ReviewItemCard = React.memo(({
                                         </div>
 
                                         <DialogFooter className="pt-2 border-t border-border/50">
-                                            <Button type="submit" disabled={isPending} className="w-full h-12 bg-primary text-white dark:text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer">
+                                            <Button type="submit" disabled={isPending} className="w-full h-12 bg-primary text-white font-bold text-xs rounded-lg transition-all cursor-pointer">
                                                 {isPending ? 'Submitting...' : 'Submit'}
                                             </Button>
                                         </DialogFooter>
@@ -787,7 +787,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                 {isInternalStaff && (
                     <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
                         <DialogTrigger asChild>
-                            <Button className="h-10 px-6 gap-3 bg-primary text-white font-semibold text-[10px] rounded-xl shadow-lg transition-all cursor-pointer dark:text-black">
+                            <Button className="h-10 px-6 gap-3 bg-primary text-white font-semibold text-[10px] rounded-xl shadow-lg transition-all cursor-pointer">
                                 <Plus className="w-4 h-4" />Assign Reviewer
                             </Button>
                         </DialogTrigger>
@@ -863,7 +863,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                                             onClick={handleAutoConvert}
                                             disabled={isConverting}
                                             variant="outline"
-                                            className="w-full h-14 gap-3 border-primary/20 bg-primary/5 text-primary font-black text-[10px] tracking-widest rounded-xl hover:bg-primary hover:text-white dark:hover:text-black transition-all shadow-xl shadow-primary/5 cursor-pointer group"
+                                            className="w-full h-14 gap-3 border-primary/20 bg-primary/5 text-primary font-black text-[10px] tracking-widest rounded-xl hover:bg-primary hover:text-white transition-all shadow-xl shadow-primary/5 cursor-pointer group"
                                         >
                                             {isConverting ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-700" />}
                                             <span>Upload using PDF Converter</span>
@@ -898,7 +898,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                                     </div>
                                 </div>
                                 <DialogFooter className="pt-4">
-                                    <Button type="submit" disabled={isAssigning || isConverting} className="w-full h-16 bg-primary text-white font-semibold text-[10px] tracking-[0.3em] rounded-xl shadow-2xl shadow-primary/20 hover:scale-[1.01] transition-all cursor-pointer dark:text-black">
+                                    <Button type="submit" disabled={isAssigning || isConverting} className="w-full h-16 bg-primary text-white font-semibold text-[10px] tracking-[0.3em] rounded-xl shadow-2xl shadow-primary/20 hover:scale-[1.01] transition-all cursor-pointer">
                                         {isAssigning ? 'SYNCHRONIZING...' : 'COMMIT ASSIGNMENT'}
                                     </Button>
                                 </DialogFooter>

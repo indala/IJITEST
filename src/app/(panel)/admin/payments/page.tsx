@@ -61,7 +61,7 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                             <span className="text-primary/60">{item.paperId}</span>
                         </div>
                     </div>
-                    <h3 className="text-foreground dark:text-white line-clamp-1 group-hover:text-secondary transition-colors duration-500">
+                    <h3 className="text-foreground line-clamp-1 group-hover:text-secondary transition-colors duration-500">
                         {item.title}
                     </h3>
                     <div className="flex flex-wrap gap-12 2xl:gap-20 items-center border-t border-primary/5 pt-6 2xl:pt-10">
@@ -83,13 +83,13 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                 </div>
                 <div className="shrink-0 flex flex-wrap items-center gap-4 2xl:gap-8 border-t xl:border-t-0 pt-6 xl:pt-0 border-primary/5">
                     <div className="flex items-center gap-3 2xl:gap-5">
-                        <Button asChild variant="ghost" size="icon" aria-label="View manuscript detail" className="w-12 h-12 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl bg-primary/5 text-primary/60 dark:text-primary/80 hover:text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer">
+                        <Button asChild variant="ghost" size="icon" aria-label="View manuscript detail" className="w-12 h-12 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl bg-primary/5 text-primary/60 hover:text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer">
                             <Link href={`/admin/submissions/${item.submissionId}`} title="View manuscript detail">
                                 <Eye className="w-5 h-5 2xl:w-9 2xl:h-9" />
                                 <span className="sr-only">View manuscript detail</span>
                             </Link>
                         </Button>
-                        <Button asChild variant="ghost" size="icon" aria-label={`Contact ${item.authorName}`} className="w-12 h-12 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl bg-primary/5 text-primary/60 dark:text-primary/80 hover:text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer">
+                        <Button asChild variant="ghost" size="icon" aria-label={`Contact ${item.authorName}`} className="w-12 h-12 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl bg-primary/5 text-primary/60 hover:text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer">
                             <a href={`mailto:${item.authorEmail}`} title={`Contact ${item.authorName}`}>
                                 <Mail className="w-5 h-5 2xl:w-9 2xl:h-9" />
                                 <span className="sr-only">Contact {item.authorName}</span>
@@ -105,7 +105,7 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                                     await onUpdateStatus(item.id, 'paid', txId);
                                 }
                             }}
-                            className="h-14 2xl:h-20 px-8 2xl:px-12 gap-3 2xl:gap-5 bg-card border-2 border-secondary text-secondary hover:text-white dark:hover:text-slate-900 rounded-xl 2xl:rounded-2xl hover:bg-secondary transition-all shadow-lg shadow-secondary/5"
+                            className="h-14 2xl:h-20 px-8 2xl:px-12 gap-3 2xl:gap-5 bg-card border-2 border-secondary text-secondary hover:text-white rounded-xl 2xl:rounded-2xl hover:bg-secondary transition-all shadow-lg shadow-secondary/5"
                         >
                             <CheckCircle className="w-5 h-5 2xl:w-9 2xl:h-9" /> VERIFY REMITTANCE
                         </Button>
@@ -116,7 +116,7 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                                     await onUpdateStatus(item.id, 'verified', item.transactionId || '');
                                 }
                             }}
-                            className="h-14 2xl:h-20 px-10 2xl:px-14 gap-3 2xl:gap-5 bg-emerald-600 text-white dark:text-slate-900 rounded-xl 2xl:rounded-2xl shadow-xl shadow-emerald-600/20 hover:bg-emerald-700 hover:scale-[1.02] transition-all"
+                            className="h-14 2xl:h-20 px-10 2xl:px-14 gap-3 2xl:gap-5 bg-emerald-600 text-white rounded-xl 2xl:rounded-2xl shadow-xl shadow-emerald-600/20 hover:bg-emerald-700 hover:scale-[1.02] transition-all"
                         >
                             <ShieldCheck className="w-5 h-5 2xl:w-9 2xl:h-9" /> AUTHORIZE ARCHIVE
                         </Button>
@@ -234,7 +234,7 @@ export default function PaymentManagement() {
                 <div className="flex items-center gap-3">
                     <Dialog open={showInitModal} onOpenChange={setShowInitModal}>
                         <DialogTrigger asChild>
-                            <Button className="h-10 xl:h-12 2xl:h-14 px-6 gap-3 bg-primary text-white dark:text-slate-900 rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all cursor-pointer">
+                            <Button className="h-10 xl:h-12 2xl:h-14 px-6 gap-3 bg-primary text-white rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all cursor-pointer">
                                 <Plus className="w-5 h-5 2xl:w-6 2xl:h-6" /> Initialize APC request
                             </Button>
                         </DialogTrigger>
@@ -250,7 +250,7 @@ export default function PaymentManagement() {
                                 <div className="space-y-3">
                                     <Label className="text-muted-foreground px-1">Accepted Paper</Label>
                                     <Select name="submissionId" required>
-                                        <SelectTrigger className="h-16 w-full rounded-xl bg-muted border-none px-6 text-foreground dark:text-primary focus:ring-4 focus:ring-primary/5">
+                                        <SelectTrigger className="h-16 w-full rounded-xl bg-muted border-none px-6 text-foreground focus:ring-4 focus:ring-primary/5">
                                             <SelectValue placeholder="Select target paper..." />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-xl border-primary/5 bg-card">
@@ -270,7 +270,7 @@ export default function PaymentManagement() {
                                     <div className="space-y-3">
                                         <Label className="text-muted-foreground px-1">Currency</Label>
                                         <Select name="currency" defaultValue="INR">
-                                            <SelectTrigger className="h-16 w-full rounded-xl bg-muted border-none px-6 text-foreground dark:text-primary focus:ring-4 focus:ring-primary/5">
+                                            <SelectTrigger className="h-16 w-full rounded-xl bg-muted border-none px-6 text-foreground focus:ring-4 focus:ring-primary/5">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl border-primary/5 bg-card">
@@ -281,7 +281,7 @@ export default function PaymentManagement() {
                                     </div>
                                 </div>
                                 <DialogFooter className="pt-4">
-                                    <Button type="submit" disabled={isInitPaymentPending} className="w-full h-14 bg-primary text-white dark:text-slate-900 shadow-vip hover:scale-[1.02] transition-transform rounded-xl cursor-pointer">
+                                    <Button type="submit" disabled={isInitPaymentPending} className="w-full h-14 bg-primary text-white shadow-vip hover:scale-[1.02] transition-transform rounded-xl cursor-pointer">
                                         {isInitPaymentPending ? "CREATING NODE..." : "CREATE PAYMENT NODE"}
                                     </Button>
                                 </DialogFooter>
@@ -306,7 +306,7 @@ export default function PaymentManagement() {
                             </div>
                             <div className="space-y-1 2xl:space-y-2">
                                 <p className="opacity-40 leading-none transition-all duration-500">{stat.label}</p>
-                                <h3 className="text-foreground dark:text-white transition-all duration-500">{stat.value}</h3>
+                                <h3 className="text-foreground transition-all duration-500">{stat.value}</h3>
                             </div>
                         </CardContent>
                     </Card>
@@ -328,7 +328,7 @@ export default function PaymentManagement() {
                 </InputGroup>
                 <div className="flex items-center gap-2 w-full md:w-auto">
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="h-16 2xl:h-24 px-8 2xl:px-12 bg-card border border-primary/5 rounded-xl shadow-sm focus:ring-4 focus:ring-primary/5 transition-all text-foreground dark:text-primary min-w-[200px] 2xl:min-w-[350px]">
+                        <SelectTrigger className="h-16 2xl:h-24 px-8 2xl:px-12 bg-card border border-primary/5 rounded-xl shadow-sm focus:ring-4 focus:ring-primary/5 transition-all text-foreground min-w-[200px] 2xl:min-w-[350px]">
                             <SelectValue placeholder="Global Status" />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-primary/5 bg-card">
@@ -362,8 +362,8 @@ export default function PaymentManagement() {
                                 <AlertTriangle className="w-10 h-10" />
                             </div>
                             <div className="text-center space-y-2">
-                                <h3 className="text-primary/60 dark:text-primary/80">Record Depth Null</h3>
-                                <p className="opacity-40 dark:text-primary/60">No financial transactions correlate with your active query.</p>
+                                <h3 className="text-primary/60">Record Depth Null</h3>
+                                <p className="opacity-40">No financial transactions correlate with your active query.</p>
                             </div>
                         </div>
                     )}

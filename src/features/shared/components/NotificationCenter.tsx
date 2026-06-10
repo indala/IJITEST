@@ -85,9 +85,9 @@ export default function NotificationCenter() {
                                 </div>
                             </Link>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-emerald-600 text-white dark:text-slate-900 font-bold p-3 rounded-xl shadow-2xl border-none">
+                        <TooltipContent className="bg-emerald-600 text-white font-bold p-3 rounded-xl shadow-2xl border-none">
                             <p className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-900 animate-pulse" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                                 {counts.messages} Unread Contact Inquiries
                             </p>
                         </TooltipContent>
