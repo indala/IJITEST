@@ -201,7 +201,7 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
 }
 
 /**
- * Check if the paper is eligible for resubmission (Window: 15 days).
+ * Check if the paper is eligible for resubmission (Window: 28 days).
  */
 export async function checkResubmissionEligibility(submissionId: number): Promise<ActionResponse<{ eligible: boolean; daysRemaining: number }>> {
     try {
@@ -229,7 +229,7 @@ export async function checkResubmissionEligibility(submissionId: number): Promis
 
         const updatedAt = new Date(sub.updatedAt || new Date());
         const daysSinceUpdate = Math.floor((Date.now() - updatedAt.getTime()) / (1000 * 60 * 60 * 24));
-        const daysRemaining = 15 - daysSinceUpdate;
+        const daysRemaining = 28 - daysSinceUpdate;
         const eligible = daysRemaining >= 0;
 
         return actionSuccess({ eligible, daysRemaining });
@@ -599,9 +599,9 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
             return actionError<{ deletedCount: number }>("Unauthorized: Admin privileges required.");
         }
 
-        const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+        const twentyEightDaysAgo = new Date(Date.now() - 28 * 24 * 60 * 60 * 1000);
 
-        // 1. Find submissions that are 'rejected' or 'revisionRequested' and not updated for 15 days
+        // 1. Find submissions that are 'rejected' or 'revisionRequested' and not updated for 28 days
         const targetSubmissions = await db.select({
             id: submissions.id,
             authorId: submissions.correspondingAuthorId
@@ -609,7 +609,7 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
         .from(submissions)
         .where(and(
             inArray(submissions.status, ['rejected', 'revisionRequested']),
-            sql`${submissions.updatedAt} < ${fifteenDaysAgo}`
+            sql`${submissions.updatedAt} < ${twentyEightDaysAgo}`
         ));
 
         if (targetSubmissions.length === 0) {

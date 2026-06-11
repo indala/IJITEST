@@ -16,7 +16,7 @@ const poolOptions = {
     database: process.env['DB_NAME'] as string,
     port: Number(process.env['DB_PORT'] || '3306'),
     waitForConnections: true,
-    connectionLimit: 5, // Reduced from 10 to avoid hitting limits on Hostinger
+    connectionLimit: 12, // Increased to 12 as confirmed safe for this Hostinger plan
     queueLimit: 0,
     enableKeepAlive: true,
     keepAliveInitialDelay: 0,

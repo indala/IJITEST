@@ -5,19 +5,19 @@ import { eq, and, lte, inArray, notInArray } from "drizzle-orm";
 import { safeDeleteFile } from "./fs-utils";
 
 /**
- * Automatically clean up author accounts that haven't taken action within 15 days 
+ * Automatically clean up author accounts that haven't taken action within 28 days 
  * of a rejection or revision request.
  * 
  * Logic:
- * 1. Find all authors whose ONLY submissions are older than 15 days and in 'stalled' status.
+ * 1. Find all authors whose ONLY submissions are older than 28 days and in 'stalled' status.
  * 2. If an author has ANY 'published' or 'underReview' paper, we DO NOT delete the account.
  * 3. Delete files from disk before removing DB records.
  */
 export async function cleanupInactiveAuthors() {
     try {
-        const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+        const twentyEightDaysAgo = new Date(Date.now() - 28 * 24 * 60 * 60 * 1000);
 
-        // 1. Find submissions that reached 15-day deadline
+        // 1. Find submissions that reached 28-day deadline
         const stalledSubmissions = await db.select({
             id: submissions.id,
             authorId: submissions.correspondingAuthorId,
@@ -26,7 +26,7 @@ export async function cleanupInactiveAuthors() {
         .from(submissions)
         .where(and(
             inArray(submissions.status, ['rejected', 'revisionRequested']),
-            lte(submissions.updatedAt, fifteenDaysAgo)
+            lte(submissions.updatedAt, twentyEightDaysAgo)
         ));
 
         if (stalledSubmissions.length === 0) return { deletedCount: 0 };

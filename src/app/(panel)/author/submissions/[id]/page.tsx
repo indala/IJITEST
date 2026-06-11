@@ -168,7 +168,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                     {eligibility.eligible ? (
                         <ResubmissionForm 
                             submissionId={submissionId} 
-                            daysRemaining={eligibility.daysRemaining || 15} 
+                            daysRemaining={eligibility.daysRemaining || 28} 
                         />
                     ) : isAcceptedOrPublished ? (
                         copyrightFile ? (
@@ -204,7 +204,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             <AlertTriangle className="w-4 h-4 text-red-600" />
                             <AlertTitle className="text-xs font-black uppercase tracking-widest text-red-900">Window Expired</AlertTitle>
                             <AlertDescription className="text-sm text-red-700 font-bold">
-                                {eligError || "Submission window (15 days) has expired."}
+                                {eligError || "Submission window (28 days) has expired."}
                             </AlertDescription>
                         </Alert>
                     )}

@@ -13,9 +13,9 @@ export async function GET(req: Request) {
     }
 
     try {
-        // 1. Identify stale submissions (> 15 days, status = rejected/revisionRequested)
-        const fifteenDaysAgo = new Date();
-        fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+        // 1. Identify stale submissions (> 28 days, status = rejected/revisionRequested)
+        const twentyEightDaysAgo = new Date();
+        twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 28);
 
         const staleSubmissions = await db.select({
             id: submissions.id,
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
         .from(submissions)
         .where(and(
             inArray(submissions.status, ['rejected', 'revisionRequested']),
-            lt(submissions.updatedAt, fifteenDaysAgo)
+            lt(submissions.updatedAt, twentyEightDaysAgo)
         ));
 
         if (staleSubmissions.length === 0) {

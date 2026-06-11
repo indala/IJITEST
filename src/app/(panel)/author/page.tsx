@@ -44,7 +44,7 @@ interface DashboardStat {
 
 function getDaysRemaining(updatedAt: Date | null): number {
     if (!updatedAt) return 0;
-    const d = 15 - Math.floor((Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24));
+    const d = 28 - Math.floor((Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24));
     return Math.max(0, d);
 }
 
@@ -290,7 +290,7 @@ export default async function AuthorDashboard() {
                                 <div className="space-y-1">
                                     <p className="opacity-80">Note</p>
                                     <p className="opacity-60">
-                                        Rejected or revision-required manuscripts are held for 15 days.
+                                        Rejected or revision-required manuscripts are held for 28 days.
                                     </p>
                                 </div>
                             </div>

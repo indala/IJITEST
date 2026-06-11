@@ -388,7 +388,7 @@ export const emailTemplates = {
                 <div style="margin-top: 15px; color: #475569; font-size: 14px; white-space: pre-wrap; line-height: 1.8;">${comments || 'Please address the detailed reviewer comments available in the portal.'}</div>
             </div>
 
-            <p>Please submit your revised version within 15 days to remain in the current publication cycle.</p>
+            <p>Please submit your revised version within 28 days to remain in the current publication cycle.</p>
         `;
 
         return {

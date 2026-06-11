@@ -104,7 +104,7 @@ export function RequestResubmissionModal({ submissionId, paperId, paperTitle }: 
 
                                 <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[10px]">
                                     <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                                    The author will have <strong>15 days</strong> to resubmit. If they don&apos;t act, their account will be auto-deactivated.
+                                    The author will have <strong>28 days</strong> to resubmit. If they don&apos;t act, their account will be auto-deactivated.
                                 </div>
                             </div>
 
