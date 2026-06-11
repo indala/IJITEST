@@ -184,6 +184,7 @@ export interface BrandingMetadata {
     paperId: string;
     startPage?: number | null;
     endPage?: number | null;
+    doi?: string | null;
 }
 
 /**

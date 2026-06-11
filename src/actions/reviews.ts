@@ -4,6 +4,7 @@ import "server-only"
 import { db } from "@/lib/db";
 import { sql, eq, and, desc, inArray, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { invalidateReviewerAssignmentsCount, invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount, createNotification } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { 
     reviewAssignments,
@@ -231,7 +232,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
             return { success: false, error: txResult.error || "Failed to assign reviewer." };
         }
 
-        // 9. Send email AFTER transaction commits (fire-and-forget)
+        // 9. Send email & in-app notification AFTER transaction commits (fire-and-forget)
         if (txResult.staff?.email && txResult.paper) {
             const template = emailTemplates.reviewAssignment(
                 txResult.staff.name || "Reviewer",
@@ -244,6 +245,20 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 .catch(e => console.error("Reviewer assignment email failed:", e));
         }
 
+        if (txResult.paper) {
+            await createNotification({
+                userId: reviewerId,
+                createdByUserId: assignedBy,
+                type: "review_assigned",
+                priority: "high",
+                message: `You have been assigned to review manuscript ${txResult.paper.paperId}: "${txResult.paper.title}"`,
+                actionLink: `/reviewer/reviews`,
+                metadata: { submissionId, paperId: txResult.paper.paperId }
+            });
+        }
+
+        await invalidateReviewerAssignmentsCount(reviewerId);
+        await invalidateSubmittedSubmissionsCount();
         revalidatePath('/admin/reviews');
         return { success: true };
     } catch (error) {
@@ -289,7 +304,8 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                 title: submissionVersions.title,
                 authorEmail: users.email,
                 authorName: userProfiles.fullName,
-                reviewerId: reviewAssignments.reviewerId
+                reviewerId: reviewAssignments.reviewerId,
+                correspondingAuthorId: submissions.correspondingAuthorId
             })
                 .from(reviewAssignments)
                 .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
@@ -355,7 +371,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
         // 6. Asynchronous Notifications (Outside Transaction)
         if (result.success && result.info) {
             const { info } = result;
-            const admins = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
+            const admins = await db.select({ id: users.id, email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
             
             const decisionLabels: Record<string, string> = {
                 accept: 'Accept',
@@ -372,13 +388,31 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                 `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/admin/submissions/${info.submissionId}`
             );
 
-            await Promise.allSettled(admins.map(a => sendEmail({
-                to: a.email,
-                subject: staffAlert.subject,
-                html: staffAlert.html
-            })));
+            await Promise.allSettled(admins.map(async (a) => {
+                // In-app Notification
+                await createNotification({
+                    userId: a.id,
+                    createdByUserId: session.user.id,
+                    type: "review_completed",
+                    priority: "medium",
+                    message: `Review completed for ${info.paperId}: recommendation of '${label}' by Reviewer`,
+                    actionLink: `/admin/submissions/${info.submissionId}`,
+                    metadata: { submissionId: info.submissionId, paperId: info.paperId }
+                });
+
+                // Email
+                return sendEmail({
+                    to: a.email,
+                    subject: staffAlert.subject,
+                    html: staffAlert.html
+                });
+            }));
         }
 
+        await invalidateReviewerAssignmentsCount(result.info.reviewerId);
+        if (result.info.correspondingAuthorId) {
+            await invalidateAuthorActionsCount(result.info.correspondingAuthorId);
+        }
         revalidatePath('/admin/reviews');
         revalidatePath('/reviewer/reviews');
         return { success: true };

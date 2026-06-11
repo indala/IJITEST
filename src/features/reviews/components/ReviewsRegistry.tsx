@@ -628,6 +628,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                     const res = await decideSubmission(item.submissionId, 'accepted');
                     if (res.success) {
                         toast.success('Accepted');
+                        queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
                         refetchReviews();
                     } else toast.error(res.error);
                 }
@@ -637,7 +638,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                 onClick: () => {}
             }
         });
-    }, [refetchReviews]);
+    }, [refetchReviews, queryClient]);
 
     const handleReject = useCallback((item: ReviewAssignment) => {
         toast('Commit final rejection?', {
@@ -647,6 +648,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                     const res = await decideSubmission(item.submissionId, 'rejected');
                     if (res.success) {
                         toast.success('Rejected');
+                        queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
                         refetchReviews();
                     } else toast.error(res.error);
                 }
@@ -656,7 +658,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                 onClick: () => {}
             }
         });
-    }, [refetchReviews]);
+    }, [refetchReviews, queryClient]);
 
     const handleFeedbackSubmit = useCallback(async (item: ReviewAssignment, formData: FormData) => {
         const toastId = toast.loading('Submitting...');
@@ -664,6 +666,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
             const result = await submitReview(item.id, formData);
             if (result.success) {
                 toast.success('Feedback committed', { id: toastId });
+                queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
                 await refetchReviews();
             } else {
                 toast.error(result.error, { id: toastId });
@@ -671,7 +674,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
         } catch {
             toast.error('Failed to submit findings', { id: toastId });
         }
-    }, [refetchReviews]);
+    }, [refetchReviews, queryClient]);
 
     const handleAcceptGroup = useCallback((submissionId: number) => {
         toast('Authorize acceptance for this manuscript?', {
@@ -681,6 +684,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                     const res = await decideSubmission(submissionId, 'accepted');
                     if (res.success) {
                         toast.success('Accepted');
+                        queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
                         refetchReviews();
                     } else toast.error(res.error);
                 }
@@ -690,7 +694,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                 onClick: () => {}
             }
         });
-    }, [refetchReviews]);
+    }, [refetchReviews, queryClient]);
 
     const handleRejectGroup = useCallback((submissionId: number) => {
         toast('Commit final rejection?', {
@@ -700,6 +704,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                     const res = await decideSubmission(submissionId, 'rejected');
                     if (res.success) {
                         toast.success('Rejected');
+                        queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
                         refetchReviews();
                     } else toast.error(res.error);
                 }
@@ -709,7 +714,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                 onClick: () => {}
             }
         });
-    }, [refetchReviews]);
+    }, [refetchReviews, queryClient]);
 
     const handleRevisionGroup = useCallback(async (submissionId: number, comments: string) => {
         const toastId = toast.loading('Submitting revision request...');
@@ -717,6 +722,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
             const res = await requestResubmissionWithComments(submissionId, comments);
             if (res.success) {
                 toast.success('Revision request committed', { id: toastId });
+                queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
                 refetchReviews();
             } else {
                 toast.error(res.error, { id: toastId });
@@ -724,7 +730,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
         } catch {
             toast.error('Failed to submit revision request', { id: toastId });
         }
-    }, [refetchReviews]);
+    }, [refetchReviews, queryClient]);
 
     const filteredReviews = useMemo(() => {
         return reviews.filter(r => {
@@ -807,6 +813,7 @@ export function ReviewsRegistry({ role }: { role: 'admin' | 'editor' | 'reviewer
                                         setAssignFile(null);
                                         queryClient.invalidateQueries({ queryKey: ['reviews'] });
                                         queryClient.invalidateQueries({ queryKey: ['unassignedPapers'] });
+                                        queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
                                     } else toast.error(res.error);
                                 });
                             }} className="space-y-5 pt-5">

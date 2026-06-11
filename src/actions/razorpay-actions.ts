@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { payments, submissions, settings, userProfiles, users, submissionVersions } from "@/db/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { invalidateAuthorActionsCount, createNotification } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -125,6 +126,7 @@ export async function verifyRazorpayPayment(data: {
             return { success: false, error: "Payment record mismatch. Verification failed." };
         }
 
+        let authorId: string | null = null;
         // 2. Update Payment Status & Submission Status in DB
         await db.transaction(async (tx) => {
             await tx.update(payments)
@@ -135,20 +137,30 @@ export async function verifyRazorpayPayment(data: {
                 })
                 .where(eq(payments.submissionId, submissionId));
 
-            const [submission] = await tx.select({ status: submissions.status })
+            const [submission] = await tx.select({ 
+                status: submissions.status,
+                correspondingAuthorId: submissions.correspondingAuthorId
+            })
                 .from(submissions)
                 .where(eq(submissions.id, submissionId))
                 .limit(1);
 
-            if (submission && submission.status !== 'published' && submission.status !== 'retracted' && submission.status !== 'rejected') {
-                await tx.update(submissions)
-                    .set({ 
-                        status: 'accepted',
-                        updatedAt: new Date()
-                    })
-                    .where(eq(submissions.id, submissionId));
+            if (submission) {
+                authorId = submission.correspondingAuthorId;
+                if (submission.status !== 'published' && submission.status !== 'retracted' && submission.status !== 'rejected') {
+                    await tx.update(submissions)
+                        .set({ 
+                            status: 'accepted',
+                            updatedAt: new Date()
+                        })
+                        .where(eq(submissions.id, submissionId));
+                }
             }
         });
+
+        if (authorId) {
+            await invalidateAuthorActionsCount(authorId);
+        }
 
         // 4. Notify Author
         try {
@@ -168,6 +180,18 @@ export async function verifyRazorpayPayment(data: {
 
             const sub = subData[0];
             if (sub) {
+                if (authorId) {
+                    await createNotification({
+                        userId: authorId,
+                        createdByUserId: session.user.id,
+                        type: "payment_verified",
+                        priority: "high",
+                        message: `Payment successful and verified for manuscript ${sub.paperId}. Your paper is cleared for publication.`,
+                        actionLink: `/author/submissions/${submissionId}`,
+                        metadata: { submissionId, paperId: sub.paperId }
+                    });
+                }
+
                 const template = emailTemplates.paymentVerified(sub.authorName, sub.title, sub.paperId);
                 // Fire-and-forget — payment is already recorded, email failure is non-critical
                 sendEmail({ to: sub.authorEmail, subject: template.subject, html: template.html })

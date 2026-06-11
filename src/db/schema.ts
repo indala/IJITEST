@@ -1,7 +1,7 @@
 import { 
   mysqlTable, int, mysqlEnum, varchar, timestamp, 
   text, index, unique, decimal, date, boolean, bigint,
-  primaryKey 
+  primaryKey, json
 } from "drizzle-orm/mysql-core";
 import { relations } from "drizzle-orm";
 
@@ -32,7 +32,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     invitations: many(userInvitations),
     assignedSubmissions: many(submissionEditors),
     reviewAssignments: many(reviewAssignments),
-    notifications: many(notifications),
+    receivedNotifications: many(notifications, { relationName: "recipient" }),
+    createdNotifications: many(notifications, { relationName: "creator" }),
     activityLogs: many(activityLogs),
 }));
 
@@ -409,12 +410,30 @@ export const contactMessages = mysqlTable("contact_messages", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const notificationTypes = [
+  "submission_created",
+  "review_assigned",
+  "review_completed",
+  "revision_requested",
+  "paper_accepted",
+  "paper_rejected",
+  "payment_pending",
+  "payment_verified",
+  "chat_message",
+  "paper_published",
+] as const;
+
+export type NotificationType = typeof notificationTypes[number];
+
 export const notifications = mysqlTable("notifications", {
     id: int("id").primaryKey().autoincrement().notNull(),
     userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
-    type: varchar("type", { length: 50 }).notNull(), 
+    createdByUserId: varchar("created_by_user_id", { length: 36 }).references(() => users.id, { onDelete: "set null" }),
+    type: varchar("type", { length: 50 }).$type<NotificationType>().notNull(), 
+    priority: varchar("priority", { length: 10 }).$type<"low" | "medium" | "high">().default("medium").notNull(),
     message: text("message").notNull(),
     actionLink: varchar("action_link", { length: 255 }),
+    metadata: json("metadata").$type<{ submissionId?: number; paperId?: string; reviewAssignmentId?: number; paymentId?: number }>(),
     isRead: boolean("is_read").default(false),
     createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
@@ -425,6 +444,12 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
     user: one(users, {
         fields: [notifications.userId],
         references: [users.id],
+        relationName: "recipient"
+    }),
+    creator: one(users, {
+        fields: [notifications.createdByUserId],
+        references: [users.id],
+        relationName: "creator"
     }),
 }));
 

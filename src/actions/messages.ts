@@ -12,6 +12,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 
 import { type ActionResponse, actionSuccess, actionError, type ContactMessageRow } from "@/db/types";
 import { insertContactSchema } from "@/db/validation";
+import { invalidateMessagesCount } from "./notifications";
 
 /**
  * Fetch contact messages for the admin panel with filtering and search.
@@ -76,6 +77,7 @@ export async function updateMessageStatus(id: number, status: 'resolved' | 'arch
             .set({ status })
             .where(eq(contactMessages.id, id));
 
+        await invalidateMessagesCount();
         revalidatePath('/admin/messages');
         return actionSuccess();
     } catch (error) {
@@ -98,6 +100,7 @@ export async function bulkUpdateMessageStatus(ids: number[], status: 'resolved' 
             .set({ status })
             .where(inArray(contactMessages.id, ids));
 
+        await invalidateMessagesCount();
         revalidatePath('/admin/messages');
         return actionSuccess({ count: ids.length });
     } catch (error) {
@@ -117,6 +120,7 @@ export async function deleteMessage(id: number): Promise<ActionResponse> {
         }
 
         await db.delete(contactMessages).where(eq(contactMessages.id, id));
+        await invalidateMessagesCount();
         revalidatePath('/admin/messages');
         return actionSuccess();
     } catch (error) {
@@ -162,6 +166,7 @@ export async function replyToMessage(id: number, replyContent: string): Promise<
             .set({ status: 'resolved' })
             .where(eq(contactMessages.id, id));
 
+        await invalidateMessagesCount();
         revalidatePath('/admin/messages');
         return actionSuccess();
     } catch (error) {
@@ -208,6 +213,8 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
             message,
             status: 'pending'
         });
+
+        await invalidateMessagesCount();
 
         // 1. Auto-reply to visitor (fire-and-forget)
         const receiptTemplate = emailTemplates.contactReceipt(name || "Visitor", subject || "Inquiry");

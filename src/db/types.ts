@@ -33,6 +33,7 @@ export type ContactStatus = InferSelectModel<typeof contactMessages>['status'];
 export type VolumeIssueStatus = InferSelectModel<typeof volumesIssues>['status'];
 export type FileType = InferSelectModel<typeof submissionFiles>['fileType'];
 export type FinalDecision = InferSelectModel<typeof submissions>['finalDecision'];
+export type NotificationType = InferSelectModel<typeof notifications>['type'];
 
 // 👤 Users & Profiles
 export type User = InferSelectModel<typeof users>;

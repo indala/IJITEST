@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Crimson_Pro } from "next/font/google";
 import { MotionProvider } from "@/providers/MotionProvider";
 import "./globals.css";
@@ -72,6 +72,18 @@ export const metadata: Metadata = {
     ],
     apple: '/favicon_io/apple-touch-icon.png',
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "IJITEST",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000066",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 import { Suspense } from "react";
@@ -79,6 +91,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/lib/query-provider";
 import SmoothScroll from "@/providers/SmoothScroll";
+import { SerwistProvider } from "@serwist/turbopack/react";
 
 import { NuqsAdapter } from "nuqs/adapters/next";
 
@@ -148,7 +161,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${crimsonPro.variable} antialiased font-sans`}>
         <Suspense fallback={null}>
-          <SettingsLayer>{children}</SettingsLayer>
+          <SerwistProvider swUrl="/serwist/sw.js">
+            <SettingsLayer>{children}</SettingsLayer>
+          </SerwistProvider>
         </Suspense>
       </body>
     </html>

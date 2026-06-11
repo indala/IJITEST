@@ -20,6 +20,7 @@ export function useUpdateMessageStatus() {
             updateMessageStatus(id, status),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['messages'] });
+            queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
         }
     });
 }
@@ -32,6 +33,7 @@ export function useBulkUpdateMessages() {
             bulkUpdateMessageStatus(ids, status),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['messages'] });
+            queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
         }
     });
 }
@@ -43,6 +45,7 @@ export function useRevertMessage() {
         mutationFn: (id: number) => revertMessageStatus(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['messages'] });
+            queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
         }
     });
 }
@@ -54,6 +57,7 @@ export function useDeleteMessage() {
         mutationFn: (id: number) => deleteMessage(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['messages'] });
+            queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
         }
     });
 }
@@ -66,6 +70,7 @@ export function useReplyToMessage() {
             replyToMessage(id, content),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['messages'] });
+            queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
         }
     });
 }

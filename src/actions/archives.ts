@@ -25,6 +25,8 @@ import {
     actionError
 } from "@/db/types";
 import { cacheLife, cacheTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
+import { cacheLogger } from "@/lib/cache-logger";
 
 /**
  * FETCH ALL PUBLISHED PAPERS
@@ -34,9 +36,10 @@ import { cacheLife, cacheTag } from "next/cache";
 export async function getPublishedPapers(): Promise<ActionResponse<PublishedPaperUI[]>> {
     'use cache'
     cacheLife('hours')
-    cacheTag('archives', 'public-data')
+    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.PUBLIC_DATA)
 
     try {
+        cacheLogger.miss(CACHE_TAGS.ARCHIVES, "getPublishedPapers");
         const rows = await db.select({
             publication: publications,
             submission: submissions,
@@ -76,7 +79,7 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
 
         return actionSuccess(data);
     } catch (error) {
-        console.error("Get Published Papers Error:", error);
+        cacheLogger.error(CACHE_TAGS.ARCHIVES, error);
         return actionError<PublishedPaperUI[]>(error instanceof Error ? error.message : String(error));
     }
 }
@@ -84,9 +87,10 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
 export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPaperUI[]>> {
     'use cache'
     cacheLife('hours')
-    cacheTag('archives', 'latest-issue', 'public-data')
+    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE, CACHE_TAGS.PUBLIC_DATA)
 
     try {
+        cacheLogger.miss(CACHE_TAGS.ARCHIVES, "getLatestIssuePapers");
         const issues = await db.select()
             .from(volumesIssues)
             .where(eq(volumesIssues.status, 'published'))
@@ -137,7 +141,7 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
 
         return actionSuccess(data);
     } catch (error) {
-        console.error("Get Latest Issue Papers Error:", error);
+        cacheLogger.error(CACHE_TAGS.ARCHIVES, error);
         return actionError<PublishedPaperUI[]>(error instanceof Error ? error.message : String(error));
     }
 }
@@ -145,9 +149,10 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
 export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionResponse<PublishedPaperUI[]>> {
     'use cache'
     cacheLife('hours')
-    cacheTag('archives', 'public-data')
+    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.PUBLIC_DATA)
 
     try {
+        cacheLogger.miss(CACHE_TAGS.ARCHIVES, `getArchivePapers limit=${limit} offset=${offset}`);
         const issues = await db.select()
             .from(volumesIssues)
             .where(eq(volumesIssues.status, 'published'))
@@ -198,7 +203,7 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
 
         return actionSuccess(data);
     } catch (error) {
-        console.error("Get Archive Papers Error:", error);
+        cacheLogger.error(CACHE_TAGS.ARCHIVES, error);
         return actionError<PublishedPaperUI[]>(error instanceof Error ? error.message : String(error));
     }
 }
@@ -206,9 +211,10 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
 export async function getPaperById(id: string): Promise<ActionResponse<PublishedPaperUI>> {
     'use cache'
     cacheLife('hours')
-    cacheTag(`paper-${id}`, 'public-data')
+    cacheTag(CACHE_TAGS.PAPER(id), CACHE_TAGS.PUBLIC_DATA)
 
     try {
+        cacheLogger.miss(CACHE_TAGS.PAPER(id), `getPaperById id=${id}`);
         const numericId = Number(id);
         const whereClause = isNaN(numericId)
             ? eq(submissions.paperId, id)
@@ -261,7 +267,7 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
         });
         return actionSuccess(data);
     } catch (error) {
-        console.error("Get Paper By ID Error:", error);
+        cacheLogger.error(CACHE_TAGS.PAPER(id), error);
         return actionError<PublishedPaperUI>(error instanceof Error ? error.message : String(error));
     }
 }

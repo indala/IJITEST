@@ -18,9 +18,12 @@ import {
 import { eq, and, sql, desc, count } from "drizzle-orm";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { getSettingsData } from "./settings";
+import { CACHE_TAGS } from "@/lib/cache-tags";
+import { cacheLogger } from "@/lib/cache-logger";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { downloadFileFromStorage, triggerPdfBranding } from "@/lib/fs-utils";
 import { getSubmissionById } from "./submissions";
+import { createNotification } from "./notifications";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -67,8 +70,9 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
         });
         revalidatePath('/admin/publications');
         revalidatePath('/', 'layout');
-        updateTag('publications');
-        updateTag('public-data');
+        cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, "createVolumeIssue");
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {
         console.error("Create Publication Error:", error);
@@ -82,9 +86,10 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
 export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { paperCount: number })[]>> {
     'use cache'
     cacheLife('hours')
-    cacheTag('publications', 'public-data')
+    cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.PUBLIC_DATA)
 
     try {
+        cacheLogger.miss(CACHE_TAGS.PUBLICATIONS, "getVolumesIssues");
         const rows = await db.select({
             vi: volumesIssues,
             paperCount: count(submissions.id)
@@ -100,7 +105,7 @@ export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { pape
         }));
         return actionSuccess(data);
     } catch (error) {
-        console.error("Get Publications Error:", error);
+        cacheLogger.error(CACHE_TAGS.PUBLICATIONS, error);
         return actionError<(Issue & { paperCount: number })[]>(error instanceof Error ? error.message : String(error));
     }
 }
@@ -111,9 +116,10 @@ export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { pape
 export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> {
     'use cache'
     cacheLife('hours')
-    cacheTag('publications', 'latest-issue', 'public-data')
+    cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.LATEST_ISSUE, CACHE_TAGS.PUBLIC_DATA)
 
     try {
+        cacheLogger.miss(CACHE_TAGS.PUBLICATIONS, "getLatestPublishedIssue");
         const rows = await db.select()
             .from(volumesIssues)
             .where(eq(volumesIssues.status, 'published'))
@@ -122,7 +128,7 @@ export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> 
         if (!rows[0]) return actionError<Issue>("No published issues found");
         return actionSuccess(rows[0]);
     } catch (error) {
-        console.error("Get Latest Published Issue Error:", error);
+        cacheLogger.error(CACHE_TAGS.PUBLICATIONS, error);
         return actionError<Issue>(error instanceof Error ? error.message : String(error));
     }
 }
@@ -194,6 +200,9 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         const brandedRelativePath = `/api/files/published/${brandedFileName}`;
         const cleanInput = latestPdf.fileUrl;
 
+        const doiPrefix = settings['doiPrefix'] ? settings['doiPrefix'].trim() : "";
+        const generatedDoi = doiPrefix.startsWith("10.") ? `${doiPrefix}/${submission.paperId}` : null;
+
         await triggerPdfBranding(cleanInput, brandedRelativePath, {
             journalName: settings['journalName'] || "IJITEST",
             journalShortName: "IJITEST",
@@ -205,7 +214,8 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
             website: settings['journalWebsite'] || "https://www.ijitest.org",
             paperId: submission.paperId,
             startPage: confirmedStartPage,
-            endPage: confirmedEndPage
+            endPage: confirmedEndPage,
+            doi: generatedDoi
         });
 
         // 6. Database transaction — only pure DB ops
@@ -216,6 +226,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
                 finalPdfUrl: brandedRelativePath,
                 startPage: confirmedStartPage,
                 endPage: confirmedEndPage,
+                doi: generatedDoi,
                 publishedAt: new Date()
             }).onDuplicateKeyUpdate({
                 set: {
@@ -223,6 +234,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
                     finalPdfUrl: brandedRelativePath,
                     startPage: confirmedStartPage,
                     endPage: confirmedEndPage,
+                    doi: generatedDoi,
                     publishedAt: new Date()
                 }
             });
@@ -244,6 +256,17 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })
             .catch(e => console.error("Publication email failed:", e));
 
+        // In-app Panel Notification
+        createNotification({
+            userId: submission.correspondingAuthorId,
+            createdByUserId: session.user.id,
+            type: "paper_published",
+            priority: "high",
+            message: `Congratulations! Your manuscript ${submission.paperId} has been successfully published in Vol ${issue.volumeNumber}, Issue ${issue.issueNumber}.`,
+            actionLink: `/article/${submission.paperId}`,
+            metadata: { submissionId, paperId: submission.paperId }
+        }).catch(e => console.error("In-app publication notification failed:", e));
+
         // 8. IndexNow notification AFTER transaction (fire-and-forget)
         const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '');
         const paperUrl = `${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${submission.paperId}`;
@@ -254,10 +277,12 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         revalidatePath('/admin/publications');
         revalidatePath('/archives');
         revalidatePath('/', 'layout');
-        updateTag('publications');
-        updateTag('archives');
-        updateTag('public-data');
-        updateTag('latest-issue');
+        cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `assignPaperToIssue ${submissionId}`);
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.LATEST_ISSUE);
         return actionSuccess();
     } catch (error) {
         console.error("Assign Paper Error:", error);
@@ -336,10 +361,11 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');
-        updateTag('publications');
-        updateTag('archives');
-        updateTag('public-data');
-        updateTag('latest-issue');
+        cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `publishIssue ${id}`);
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.LATEST_ISSUE);
         return actionSuccess();
     } catch (error) {
         console.error("Publish Issue Error:", error);
@@ -417,10 +443,12 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');
-        updateTag('publications');
-        updateTag('archives');
-        updateTag('public-data');
-        updateTag('latest-issue');
+        cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `unassignPaperFromIssue ${submissionId}`);
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.LATEST_ISSUE);
         return actionSuccess();
     } catch (error) {
         return actionError("Failed to unassign paper: " + (error instanceof Error ? error.message : String(error)));
@@ -456,8 +484,9 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
             .where(eq(volumesIssues.id, id));
 
         revalidatePath('/admin/publications');
-        updateTag('publications');
-        updateTag('public-data');
+        cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `updateVolumeIssue ${id}`);
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {
         console.error("Update Publication Error:", error);
@@ -491,10 +520,11 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
         return actionError("Failed to delete: " + (error instanceof Error ? error.message : String(error)));
     } finally {
         revalidatePath('/admin/publications');
-        updateTag('publications');
-        updateTag('archives');
-        updateTag('public-data');
-        updateTag('latest-issue');
+        cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `deleteVolumeIssue ${id}`);
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.LATEST_ISSUE);
     }
 }
 
@@ -604,7 +634,8 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
             website: settings['journalWebsite'] || "https://www.ijitest.org",
             paperId: sub.paperId,
             startPage: pub.startPage,
-            endPage: pub.endPage
+            endPage: pub.endPage,
+            doi: pub.doi
         });
 
         // 4. Update the published date/time in the db or just revalidate
@@ -616,11 +647,12 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
         revalidatePath('/admin/submissions');
         revalidatePath('/archives');
         revalidatePath('/', 'layout');
-        updateTag(`submission-${submissionId}`);
-        updateTag('publications');
-        updateTag('archives');
-        updateTag('public-data');
-        updateTag('latest-issue');
+        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), `rebrandPaperPdf ${submissionId}`);
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.LATEST_ISSUE);
 
         return actionSuccess();
     } catch (error) {

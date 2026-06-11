@@ -25,6 +25,9 @@ import {
     type ReviewWithReviewer,
 } from "@/db/types";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
+import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount, createNotification } from "./notifications";
+import { CACHE_TAGS } from "@/lib/cache-tags";
+import { cacheLogger } from "@/lib/cache-logger";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { eq, desc, and, isNull, inArray, or, like, sql, SQL } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
@@ -37,103 +40,109 @@ import {
 
 const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> => {
     "use cache";
-    cacheTag(`submission-${id}`, 'submissions');
+    cacheTag(CACHE_TAGS.SUBMISSION(id), CACHE_TAGS.SUBMISSIONS);
 
-    // 1. Fetch Core Submission + Profile + Latest Version + Publication + Issue
-    const submissionRows = await db.select({
-        submission: submissions,
-        author: users,
-        authorProfile: userProfiles,
-        issue: volumesIssues,
-        publication: publications,
-        payment: payments
-    })
-        .from(submissions)
-        .where(and(eq(submissions.id, id), isNull(submissions.deletedAt)))
-        .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
-        .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
-        .leftJoin(publications, eq(submissions.id, publications.submissionId))
-        .leftJoin(payments, eq(submissions.id, payments.submissionId))
-        .limit(1);
-
-    const row = submissionRows[0];
-    if (!row) return null;
-
-    // 2-4. Parallel fetch: version, authors, assignments (independent queries)
-    const [versionRows, authors, assignments] = await Promise.all([
-        db.select()
-            .from(submissionVersions)
-            .where(eq(submissionVersions.submissionId, id))
-            .orderBy(desc(submissionVersions.versionNumber))
-            .limit(1),
-        db.select()
-            .from(submissionAuthors)
-            .where(eq(submissionAuthors.submissionId, id))
-            .orderBy(submissionAuthors.orderIndex),
-        db.select({
-            ra: reviewAssignments,
-            reviewer: users,
-            profile: userProfiles,
-            review: reviews
+    try {
+        cacheLogger.miss(CACHE_TAGS.SUBMISSION(id), `fetchRawSubmissionData id=${id}`);
+        // 1. Fetch Core Submission + Profile + Latest Version + Publication + Issue
+        const submissionRows = await db.select({
+            submission: submissions,
+            author: users,
+            authorProfile: userProfiles,
+            issue: volumesIssues,
+            publication: publications,
+            payment: payments
         })
-            .from(reviewAssignments)
-            .where(eq(reviewAssignments.submissionId, id))
-            .leftJoin(users, eq(reviewAssignments.reviewerId, users.id))
+            .from(submissions)
+            .where(and(eq(submissions.id, id), isNull(submissions.deletedAt)))
+            .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
             .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-            .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId)),
-    ]);
+            .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
+            .leftJoin(publications, eq(submissions.id, publications.submissionId))
+            .leftJoin(payments, eq(submissions.id, payments.submissionId))
+            .limit(1);
 
-    const latestVersion = versionRows[0];
+        const row = submissionRows[0];
+        if (!row) return null;
 
-    // 5. Fetch Files for the Latest Version (depends on version query)
-    const files = latestVersion
-        ? await db.select().from(submissionFiles).where(eq(submissionFiles.versionId, latestVersion.id))
-        : [];
+        // 2-4. Parallel fetch: version, authors, assignments (independent queries)
+        const [versionRows, authors, assignments] = await Promise.all([
+            db.select()
+                .from(submissionVersions)
+                .where(eq(submissionVersions.submissionId, id))
+                .orderBy(desc(submissionVersions.versionNumber))
+                .limit(1),
+            db.select()
+                .from(submissionAuthors)
+                .where(eq(submissionAuthors.submissionId, id))
+                .orderBy(submissionAuthors.orderIndex),
+            db.select({
+                ra: reviewAssignments,
+                reviewer: users,
+                profile: userProfiles,
+                review: reviews
+            })
+                .from(reviewAssignments)
+                .where(eq(reviewAssignments.submissionId, id))
+                .leftJoin(users, eq(reviewAssignments.reviewerId, users.id))
+                .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+                .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId)),
+        ]);
 
-    // 6. Map to Domain Types
-    const typedAssignments: ReviewWithReviewer[] = assignments.map(a => ({
-        ...a.ra,
-        reviewer: (a.reviewer && a.profile) ? { ...a.reviewer, profile: a.profile } : ({} as UserWithProfile),
-        review: a.review
-    }));
+        const latestVersion = versionRows[0];
 
-    const submissionData: SubmissionDetail = {
-        ...row.submission,
-        correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } as UserWithProfile : undefined,
-        versions: latestVersion ? [{ ...latestVersion, files: files as SubmissionFile[] }] : [],
-        authors,
-        payment: row.payment,
-        reviewAssignments: typedAssignments,
-        issue: row.issue,
-        publication: row.publication
-    };
+        // 5. Fetch Files for the Latest Version (depends on version query)
+        const files = latestVersion
+            ? await db.select().from(submissionFiles).where(eq(submissionFiles.versionId, latestVersion.id))
+            : [];
 
-    // 7. Map to UI-Friendly Composite Object (Flat properties for historical compatibility)
-    const mainManuscript = files.find(f => f.fileType === 'mainManuscript');
-    const pdfVersion = files.find(f => f.fileType === 'pdfVersion');
-    const finalPdf = row.publication?.finalPdfUrl;
+        // 6. Map to Domain Types
+        const typedAssignments: ReviewWithReviewer[] = assignments.map(a => ({
+            ...a.ra,
+            reviewer: (a.reviewer && a.profile) ? { ...a.reviewer, profile: a.profile } : ({} as UserWithProfile),
+            review: a.review
+        }));
 
-    const data: SubmissionUI = {
-        ...submissionData,
-        title: latestVersion?.title || "Untitled Manuscript",
-        abstract: latestVersion?.abstract || null,
-        keywords: latestVersion?.keywords || null,
-        filePath: mainManuscript?.fileUrl || "",
-        pdfUrl: finalPdf || pdfVersion?.fileUrl || "", // Priority: Published PDF > Review PDF
-        authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
-        authorEmail: submissionData.correspondingAuthor?.email || "",
-        coAuthors: submissionData.authors,
-        volumeNumber: submissionData.issue?.volumeNumber,
-        issueNumber: submissionData.issue?.issueNumber,
-        startPage: submissionData.publication?.startPage,
-        endPage: submissionData.publication?.endPage,
-        latestVersion: latestVersion ? { ...latestVersion, files: files as SubmissionFile[] } : undefined,
-        allFiles: files as SubmissionFile[],
-        allReviews: typedAssignments,
-    };
+        const submissionData: SubmissionDetail = {
+            ...row.submission,
+            correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } as UserWithProfile : undefined,
+            versions: latestVersion ? [{ ...latestVersion, files: files as SubmissionFile[] }] : [],
+            authors,
+            payment: row.payment,
+            reviewAssignments: typedAssignments,
+            issue: row.issue,
+            publication: row.publication
+        };
 
-    return data;
+        // 7. Map to UI-Friendly Composite Object (Flat properties for historical compatibility)
+        const mainManuscript = files.find(f => f.fileType === 'mainManuscript');
+        const pdfVersion = files.find(f => f.fileType === 'pdfVersion');
+        const finalPdf = row.publication?.finalPdfUrl;
+
+        const data: SubmissionUI = {
+            ...submissionData,
+            title: latestVersion?.title || "Untitled Manuscript",
+            abstract: latestVersion?.abstract || null,
+            keywords: latestVersion?.keywords || null,
+            filePath: mainManuscript?.fileUrl || "",
+            pdfUrl: finalPdf || pdfVersion?.fileUrl || "", // Priority: Published PDF > Review PDF
+            authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
+            authorEmail: submissionData.correspondingAuthor?.email || "",
+            coAuthors: submissionData.authors,
+            volumeNumber: submissionData.issue?.volumeNumber,
+            issueNumber: submissionData.issue?.issueNumber,
+            startPage: submissionData.publication?.startPage,
+            endPage: submissionData.publication?.endPage,
+            latestVersion: latestVersion ? { ...latestVersion, files: files as SubmissionFile[] } : undefined,
+            allFiles: files as SubmissionFile[],
+            allReviews: typedAssignments,
+        };
+
+        return data;
+    } catch (error) {
+        cacheLogger.error(CACHE_TAGS.SUBMISSION(id), error);
+        return null;
+    }
 };
 
 /**
@@ -322,10 +331,34 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
         sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })
             .catch(e => console.error("Decision email failed:", e));
 
+        // Trigger in-app notification for the corresponding author
+        const notifType = decision === 'accepted' 
+            ? (isFree ? 'paper_accepted' : 'payment_pending') 
+            : 'paper_rejected';
+
+        const notifMessage = decision === 'accepted'
+            ? (isFree 
+                ? `Congratulations! Your manuscript ${submission.paperId} has been accepted for publication.` 
+                : `Your manuscript ${submission.paperId} has been accepted. Processing charge payment is pending.`)
+            : `Your manuscript ${submission.paperId} has been rejected after editorial review.`;
+
+        await createNotification({
+            userId: submission.correspondingAuthorId,
+            createdByUserId: session.user.id,
+            type: notifType,
+            priority: "high",
+            message: notifMessage,
+            actionLink: `/author/submissions/${id}`,
+            metadata: { submissionId: id, paperId: submission.paperId }
+        });
+
+        await invalidateSubmittedSubmissionsCount();
+        await invalidateAuthorActionsCount(submission.correspondingAuthorId);
         revalidatePath('/admin/submissions');
         revalidatePath(`/admin/submissions/${id}`);
-        updateTag(`submission-${id}`);
-        updateTag('submissions');
+        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(id), "decideSubmission");
+        updateTag(CACHE_TAGS.SUBMISSION(id));
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         return { success: true };
     } catch (error) {
         return { success: false, error: "Failed to finalize decision: " + (error instanceof Error ? error.message : String(error)) };
@@ -362,9 +395,22 @@ export async function requestResubmissionWithComments(
         );
         await sendEmail({ to: submission.authorEmail, subject: emailData.subject, html: emailData.html });
 
+        await createNotification({
+            userId: submission.correspondingAuthorId,
+            createdByUserId: session.user.id,
+            type: "revision_requested",
+            priority: "high",
+            message: `Revision requested for manuscript ${submission.paperId}: please review editorial comments.`,
+            actionLink: `/author/submissions/${submissionId}`,
+            metadata: { submissionId, paperId: submission.paperId }
+        });
+
+        await invalidateSubmittedSubmissionsCount();
+        await invalidateAuthorActionsCount(submission.correspondingAuthorId);
         revalidatePath(`/admin/submissions/${submissionId}`);
-        updateTag(`submission-${submissionId}`);
-        updateTag('submissions');
+        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), "requestResubmissionWithComments");
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         return { success: true };
     } catch (error) {
         return { success: false, error: error instanceof Error ? error.message : String(error) };
@@ -383,6 +429,7 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
 
         const subRes = await getSubmissionById(id);
         if (!subRes.success || !subRes.data) return { success: false, error: subRes.error || "Submission not found" };
+        const authorId = subRes.data.correspondingAuthorId;
         // 1. Fetch ALL files for ALL versions of this submission
         const allSubmissionFiles = await db.select({
             fileUrl: submissionFiles.fileUrl
@@ -426,9 +473,12 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
             await safeDeleteFile(file.fileUrl);
         }
 
+        await invalidateSubmittedSubmissionsCount();
+        await invalidateAuthorActionsCount(authorId);
         revalidatePath('/admin/submissions');
-        updateTag(`submission-${id}`);
-        updateTag('submissions');
+        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(id), "deleteSubmission");
+        updateTag(CACHE_TAGS.SUBMISSION(id));
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         return { success: true };
     } catch (error) {
         return { success: false, error: "Failed to delete: " + (error instanceof Error ? error.message : String(error)) };
@@ -507,8 +557,9 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');
-        updateTag(`submission-${submissionId}`);
-        updateTag('submissions');
+        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), "uploadManuscriptPdf");
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.SUBMISSIONS);
 
         return { success: true };
     } catch (error) {
@@ -577,8 +628,9 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/reviewer/submissions/${submissionId}`);
-        updateTag(`submission-${submissionId}`);
-        updateTag('submissions');
+        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), "autoSyncManuscriptToPdf");
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.SUBMISSIONS);
 
         return { success: true };
     } catch (error) {

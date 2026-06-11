@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
+import { withSerwist } from "@serwist/turbopack";
 
 const storageUrl = process.env['STORAGE_SERVICE_URL'] || "https://www.api.ijitest.org";
 const wsStorageUrl = storageUrl.replace(/^http/, "ws");
@@ -15,6 +16,9 @@ const csp = [
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://api.razorpay.com",
   "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
   `connect-src 'self' https: wss: ${storageUrl} ${wsStorageUrl}`,
+  "worker-src 'self' blob:",
+  "child-src 'self' blob:",
+  "manifest-src 'self'",
   "form-action 'self'",
   "upgrade-insecure-requests",
 ].join("; ");
@@ -62,6 +66,20 @@ const nextConfig: NextConfig = {
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         ],
       },
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+      {
+        source: "/serwist/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
     ];
   },
 };
@@ -70,4 +88,4 @@ const analyzer = withBundleAnalyzer({
   enabled: process.env['ANALYZE'] === 'true',
 });
 
-export default analyzer(nextConfig);
+export default withSerwist(analyzer(nextConfig));

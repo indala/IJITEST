@@ -36,6 +36,7 @@ export function useInitializePayment() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['payments'] });
             queryClient.invalidateQueries({ queryKey: ['unpaid-papers'] });
+            queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
         },
     });
 }
@@ -49,6 +50,7 @@ export function useUpdatePaymentStatus() {
         onSuccess: (data) => {
             if (data.success) {
                 queryClient.invalidateQueries({ queryKey: ['payments'] });
+                queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
             }
         },
     });

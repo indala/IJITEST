@@ -20,6 +20,7 @@ import {
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { 
     type ActionResponse, 
@@ -368,6 +369,8 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             // Non-blocking for the user
         }
 
+        await invalidateSubmittedSubmissionsCount();
+        await invalidateAuthorActionsCount(author.id);
         revalidatePath('/author');
         return actionSuccess(undefined);
 

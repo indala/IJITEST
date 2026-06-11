@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { payments, submissions, submissionVersions, userProfiles, users } from "@/db/schema";
 import { eq, desc, and, isNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { invalidateAuthorActionsCount, createNotification } from "./notifications";
 import { type ActionResponse, type PaymentRow, type UnpaidPaperRow, type PaymentStatus } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -67,6 +68,7 @@ export async function updatePaymentStatus(paymentId: number, status: PaymentStat
             return { success: false, error: "Unauthorized" };
         }
 
+        let authorId: string | null = null;
         await db.transaction(async (tx) => {
             await tx.update(payments)
                 .set({ 
@@ -80,21 +82,51 @@ export async function updatePaymentStatus(paymentId: number, status: PaymentStat
             if (status === 'verified' || status === 'waived') {
                 const [payment] = await tx.select({ 
                     submissionId: payments.submissionId,
-                    currentStatus: submissions.status
+                    currentStatus: submissions.status,
+                    correspondingAuthorId: submissions.correspondingAuthorId
                 })
                     .from(payments)
                     .innerJoin(submissions, eq(payments.submissionId, submissions.id))
                     .where(eq(payments.id, paymentId))
                     .limit(1);
                 
-                if (payment && payment.currentStatus !== 'published' && payment.currentStatus !== 'retracted' && payment.currentStatus !== 'rejected') {
-                    await tx.update(submissions)
-                        .set({ status: 'accepted' })
-                        .where(eq(submissions.id, payment.submissionId));
+                if (payment) {
+                    authorId = payment.correspondingAuthorId;
+                    if (payment.currentStatus !== 'published' && payment.currentStatus !== 'retracted' && payment.currentStatus !== 'rejected') {
+                        await tx.update(submissions)
+                            .set({ status: 'accepted' })
+                            .where(eq(submissions.id, payment.submissionId));
+                    }
                 }
             }
         });
 
+        if (authorId) {
+            await invalidateAuthorActionsCount(authorId);
+
+            if (status === 'verified' || status === 'waived') {
+                const payInfo = await db.select({ 
+                    paperId: submissions.paperId,
+                    submissionId: payments.submissionId
+                })
+                    .from(payments)
+                    .innerJoin(submissions, eq(payments.submissionId, submissions.id))
+                    .where(eq(payments.id, paymentId))
+                    .limit(1);
+
+                if (payInfo[0]) {
+                    await createNotification({
+                        userId: authorId,
+                        createdByUserId: session.user.id,
+                        type: "payment_verified",
+                        priority: "high",
+                        message: `Payment verified for manuscript ${payInfo[0].paperId}. Your paper has been cleared for publication.`,
+                        actionLink: `/author/submissions/${payInfo[0].submissionId}`,
+                        metadata: { submissionId: payInfo[0].submissionId, paperId: payInfo[0].paperId }
+                    });
+                }
+            }
+        }
         revalidatePath('/admin/payments');
         return { success: true };
     } catch (error) {
@@ -117,6 +149,25 @@ export async function initializePayment(submissionId: number, amount: number, cu
             currency,
             status: 'pending'
         });
+
+        // Trigger payment_pending notification
+        const [sub] = await db.select({ correspondingAuthorId: submissions.correspondingAuthorId, paperId: submissions.paperId })
+            .from(submissions)
+            .where(eq(submissions.id, submissionId))
+            .limit(1);
+
+        if (sub) {
+            await createNotification({
+                userId: sub.correspondingAuthorId,
+                createdByUserId: session.user.id,
+                type: "payment_pending",
+                priority: "high",
+                message: `Publication fee payment of ${amount} ${currency} is pending for manuscript ${sub.paperId}.`,
+                actionLink: `/author/submissions/${submissionId}`,
+                metadata: { submissionId, paperId: sub.paperId }
+            });
+        }
+
         revalidatePath('/admin/payments');
         return { success: true };
     } catch (error) {
@@ -179,7 +230,16 @@ export async function waivePayment(submissionId: number): Promise<ActionResponse
             return { success: false, error: "Unauthorized" };
         }
 
+        let authorId: string | null = null;
         await db.transaction(async (tx) => {
+            const [sub] = await tx.select({ correspondingAuthorId: submissions.correspondingAuthorId })
+                .from(submissions)
+                .where(eq(submissions.id, submissionId))
+                .limit(1);
+            if (sub) {
+                authorId = sub.correspondingAuthorId;
+            }
+
             await tx.update(payments)
                 .set({ status: 'waived', paidAt: new Date() })
                 .where(eq(payments.submissionId, submissionId));
@@ -190,6 +250,26 @@ export async function waivePayment(submissionId: number): Promise<ActionResponse
                 .where(eq(submissions.id, submissionId));
         });
 
+        if (authorId) {
+            await invalidateAuthorActionsCount(authorId);
+
+            const [sub] = await db.select({ paperId: submissions.paperId })
+                .from(submissions)
+                .where(eq(submissions.id, submissionId))
+                .limit(1);
+
+            if (sub) {
+                await createNotification({
+                    userId: authorId,
+                    createdByUserId: session.user.id,
+                    type: "payment_verified",
+                    priority: "high",
+                    message: `Payment waived for manuscript ${sub.paperId}. Your paper has been cleared for publication.`,
+                    actionLink: `/author/submissions/${submissionId}`,
+                    metadata: { submissionId, paperId: sub.paperId }
+                });
+            }
+        }
         revalidatePath('/admin/submissions');
         revalidatePath('/admin/submissions/[id]');
         revalidatePath('/admin/payments');

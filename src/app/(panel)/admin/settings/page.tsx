@@ -49,6 +49,7 @@ interface JournalSettings {
     templateUrl?: string;
     copyrightUrl?: string;
     isPromotionActive?: string;
+    doiPrefix?: string;
 }
 
 const containerVariants: Variants = {
@@ -100,7 +101,20 @@ export default function SystemSettings() {
         }
     }, null);
 
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        const formData = new FormData(e.currentTarget);
+        const newDoi = (formData.get("doiPrefix") as string || "").trim();
+        const oldDoi = (settings.doiPrefix || "").trim();
 
+        if (newDoi !== oldDoi && newDoi.startsWith("10.")) {
+            const confirmed = window.confirm(
+                "CRITICAL WARNING:\n\nYou are updating the DOI Prefix to '" + newDoi + "'.\n\nThis will instantly generate and overwrite DOIs for ALL published papers in the database. Authors and indexing services will receive these updates.\n\nAre you sure you want to synchronize this prefix?"
+            );
+            if (!confirmed) {
+                e.preventDefault();
+            }
+        }
+    };
 
     if (loading) {
         return (
@@ -123,7 +137,7 @@ export default function SystemSettings() {
             variants={containerVariants}
             className="pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-6"
         >
-            <form action={formAction} className="space-y-6">
+            <form action={formAction} onSubmit={handleSubmit} className="space-y-6">
                 {/* Header Section */}
                 <motion.header 
                     variants={itemVariants}
@@ -210,6 +224,15 @@ export default function SystemSettings() {
                                             className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm font-mono shadow-sm rounded-xl px-4"
                                         />
                                     </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">DOI Prefix Protocol</Label>
+                                    <Input
+                                        name="doiPrefix"
+                                        defaultValue={settings.doiPrefix}
+                                        placeholder="e.g. 10.6084"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm font-mono shadow-sm rounded-xl px-4"
+                                    />
                                 </div>
                             </CardContent>
                         </Card>

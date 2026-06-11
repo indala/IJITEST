@@ -2,12 +2,15 @@
 import "server-only"
 
 import { db } from "@/lib/db";
-import { settings } from "@/db/schema";
+import { settings, submissions, publications } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { type ActionResponse, actionSuccess, actionError } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { uploadFileToStorage } from "@/lib/fs-utils";
+import { CACHE_TAGS } from "@/lib/cache-tags";
+import { cacheLogger } from "@/lib/cache-logger";
 function camelCase(str: string): string {
     return str
         .replace(/[-_\s]+(.)?/g, (_, c: string | undefined) => (c ? c.toUpperCase() : ""))
@@ -26,7 +29,8 @@ const ALLOWED_SETTING_KEYS = new Set([
     'supportEmail', 'supportPhone', 'officeAddress', 'publisherName',
     'journalWebsite', 'apcDescription', 'templateUrl', 'copyrightUrl',
     'isPromotionActive', 'publicationFrequency', 'startingYear', 
-    'publicationFormat', 'journalLanguage', 'journalSubject', 'udyamRegistration'
+    'publicationFormat', 'journalLanguage', 'journalSubject', 'udyamRegistration',
+    'doiPrefix'
 ]);
 
 const DEFAULT_SETTINGS: Record<string, string> = {
@@ -49,15 +53,17 @@ const DEFAULT_SETTINGS: Record<string, string> = {
     publicationFormat: 'Online',
     journalLanguage: 'English',
     journalSubject: 'Multidisciplinary (Engineering, Science and Technology, Healthcare, Management Sciences)',
-    udyamRegistration: 'UDYAM-AP-10-0125617'
+    udyamRegistration: 'UDYAM-AP-10-0125617',
+    doiPrefix: ''
 };
 
 export async function getSettings(): Promise<ActionResponse<Record<string, string>>> {
     'use cache'
     cacheLife('hours')
-    cacheTag('settings', 'public-data')
+    cacheTag(CACHE_TAGS.SETTINGS, CACHE_TAGS.PUBLIC_DATA)
 
     try {
+        cacheLogger.miss(CACHE_TAGS.SETTINGS, "settings, public-data");
         const rows = await db.select().from(settings);
 
         const result: Record<string, string> = { ...DEFAULT_SETTINGS };
@@ -73,7 +79,7 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
 
         return actionSuccess(result);
     } catch (error) {
-        console.error("Get Settings Error:", error);
+        cacheLogger.error(CACHE_TAGS.SETTINGS, error);
         return actionError(error instanceof Error ? error.message : String(error));
     }
 }
@@ -116,6 +122,10 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
             }
         }
 
+        // Check if doiPrefix was provided and is not empty
+        const doiPrefixEntry = resolvedEntries.find(([key]) => key === 'doiPrefix');
+        const newDoiPrefix = doiPrefixEntry ? doiPrefixEntry[1].trim() : null;
+
         await db.transaction(async (tx) => {
             for (const [key, value] of resolvedEntries) {
                 // Store as camelCase in DB as requested
@@ -123,9 +133,28 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
                     .values({ settingKey: key, settingValue: value })
                     .onDuplicateKeyUpdate({ set: { settingValue: value } });
             }
+
+            // If a valid DOI prefix is set, dynamically update DOIs for all publications
+            if (newDoiPrefix && newDoiPrefix.startsWith("10.")) {
+                // Fetch all publications and their submission paperIds
+                const pubs = await tx.select({
+                    id: publications.id,
+                    paperId: submissions.paperId
+                })
+                .from(publications)
+                .innerJoin(submissions, eq(publications.submissionId, submissions.id));
+
+                for (const pub of pubs) {
+                    const generatedDoi = `${newDoiPrefix}/${pub.paperId}`;
+                    await tx.update(publications)
+                        .set({ doi: generatedDoi })
+                        .where(eq(publications.id, pub.id));
+                }
+            }
         });
 
-        updateTag('settings');           // Immediate cache expiration (Next.js 16)
+        cacheLogger.invalidation(CACHE_TAGS.SETTINGS, "settings updated");
+        updateTag(CACHE_TAGS.SETTINGS);           // Immediate cache expiration (Next.js 16)
         revalidatePath('/', 'layout');       // Re-renders root layout + all children
         return actionSuccess();
     } catch (error) {

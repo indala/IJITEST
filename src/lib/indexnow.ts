@@ -3,7 +3,7 @@ import "server-only";
 interface IndexNowPayload {
   host: string;
   key: string;
-  keyLocation: string;
+  keyLocation?: string;
   urlList: string[];
 }
 
@@ -30,15 +30,10 @@ export async function submitToIndexNow(urls: string[]): Promise<boolean> {
     // Parse host from NEXT_PUBLIC_APP_URL
     const parsedUrl = new URL(appUrl);
     const host = parsedUrl.host;
-    const baseUrl = appUrl.replace(/\/$/, '');
-
-    // Option 2: Host the key at /indexnow-key.txt
-    const keyLocation = `${baseUrl}/indexnow-key.txt`;
 
     const payload: IndexNowPayload = {
       host,
       key,
-      keyLocation,
       urlList: urls,
     };
 

@@ -14,6 +14,7 @@ import {
 } from "@/db/schema";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { invalidateSubmittedSubmissionsCount, createNotification } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { eq, inArray } from "drizzle-orm";
 import crypto from 'crypto';
@@ -227,7 +228,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
             await tx.insert(submissionFiles).values(fileRecords);
 
-            return { paperId, subId, mName, cName: undefined };
+            return { paperId, subId, mName, cName: undefined, userId };
         });
 
         // 3. File Uploads (Happens post-transaction to strictly follow "DB First" rule)
@@ -297,11 +298,11 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         }
 
         // Team Notification — role-specific links
-        const staff = await db.select({ email: users.email, role: users.role, profile: userProfiles }).from(users)
+        const staff = await db.select({ id: users.id, email: users.email, role: users.role, profile: userProfiles }).from(users)
             .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
             .where(inArray(users.role, ['admin', 'editor']));
 
-        await Promise.allSettled(staff.map(s => {
+        await Promise.allSettled(staff.map(async (s) => {
             const dashboardLink = s.role === 'admin'
                 ? `${baseUrl}/admin/submissions/${result.subId}`
                 : `${baseUrl}/editor/submissions/${result.subId}`;
@@ -313,6 +314,21 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 dashboardLink
             );
 
+            // Dispatch in-app notification
+            const localLink = s.role === 'admin'
+                ? `/admin/submissions/${result.subId}`
+                : `/editor/submissions/${result.subId}`;
+
+            await createNotification({
+                userId: s.id,
+                createdByUserId: result.userId,
+                type: "submission_created",
+                priority: "medium",
+                message: `New manuscript submitted: ${result.paperId} - "${validated.data.title}" by ${validated.data.authorName}`,
+                actionLink: localLink,
+                metadata: { submissionId: result.subId, paperId: result.paperId }
+            });
+
             return sendEmail({
                 to: s.email,
                 subject: staffTemplate.subject,
@@ -320,6 +336,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             });
         }));
 
+        await invalidateSubmittedSubmissionsCount();
         revalidatePath('/admin/submissions');
         return { success: true, data: { paperId: result.paperId } };
 
