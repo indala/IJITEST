@@ -16,11 +16,11 @@ const poolOptions = {
     database: process.env['DB_NAME'] as string,
     port: Number(process.env['DB_PORT'] || '3306'),
     waitForConnections: true,
-    connectionLimit: 12, // Increased to 12 as confirmed safe for this Hostinger plan
+    connectionLimit: 8, // Set to a safe limit of 8 connections
     queueLimit: 0,
     enableKeepAlive: true,
     keepAliveInitialDelay: 0,
-    idleTimeout: 60000,
+    idleTimeout: 3000, // Shortened to 3 seconds to release idle sockets immediately on Hostinger
     connectTimeout: 20000 // Increased for remote stability
 };
 

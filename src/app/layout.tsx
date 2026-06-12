@@ -90,8 +90,7 @@ import { Suspense } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/lib/query-provider";
-import SmoothScroll from "@/providers/SmoothScroll";
-import { SerwistProvider } from "@serwist/turbopack/react";
+import ServiceWorkerRegister from "@/components/common/ServiceWorkerRegister";
 
 import { NuqsAdapter } from "nuqs/adapters/next";
 
@@ -136,16 +135,14 @@ async function SettingsLayer({ children }: { children: React.ReactNode }) {
       <JsonLd data={journalSchema} id="global-journal" />
       <MotionProvider>
         <NuqsAdapter>
-          <SmoothScroll>
-            <QueryProvider>
-              <SettingsProvider initialSettings={dynamicSettings}>
-                <TooltipProvider>
-                  {children}
-                  <Toaster position="top-right" offset={50} richColors closeButton />
-                </TooltipProvider>
-              </SettingsProvider>
-            </QueryProvider>
-          </SmoothScroll>
+          <QueryProvider>
+            <SettingsProvider initialSettings={dynamicSettings}>
+              <TooltipProvider>
+                {children}
+                <Toaster position="top-right" offset={50} richColors closeButton />
+              </TooltipProvider>
+            </SettingsProvider>
+          </QueryProvider>
         </NuqsAdapter>
       </MotionProvider>
     </>
@@ -161,10 +158,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${crimsonPro.variable} antialiased font-sans`}>
         <Suspense fallback={null}>
-          <SerwistProvider swUrl="/serwist/sw.js">
-            <SettingsLayer>{children}</SettingsLayer>
-          </SerwistProvider>
+          <ServiceWorkerRegister />
         </Suspense>
+        <SettingsLayer>{children}</SettingsLayer>
       </body>
     </html>
   );

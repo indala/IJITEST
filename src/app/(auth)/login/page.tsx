@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -8,8 +10,16 @@ export const metadata = {
     description: "Sign in to your IJITEST account.",
 };
 
-// Login Page component wrapper for the auth route group
-export default async function LoginPage() {
+function LoginFallback() {
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background text-muted-foreground">
+            <Loader2 className="w-8 h-8 animate-spin opacity-20" />
+            <p className="text-[10px] font-semibold capitalize tracking-widest animate-pulse">Checking credentials...</p>
+        </div>
+    );
+}
+
+async function LoginContent() {
     const session = await getServerSession(authOptions);
 
     if (session?.user) {
@@ -18,4 +28,13 @@ export default async function LoginPage() {
     }
 
     return <LoginClient />;
+}
+
+// Login Page component wrapper for the auth route group
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<LoginFallback />}>
+            <LoginContent />
+        </Suspense>
+    );
 }

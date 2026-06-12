@@ -1,9 +1,20 @@
+import { Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PanelShell } from './PanelShell';
 import AuthProvider from '@/components/providers/AuthProvider';
 
-export default async function PanelLayout({
+function PanelShellFallback() {
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background text-muted-foreground">
+            <Loader2 className="w-8 h-8 animate-spin opacity-20" />
+            <p className="text-[10px] font-semibold capitalize tracking-widest animate-pulse">Initializing panel clearance...</p>
+        </div>
+    );
+}
+
+async function PanelLayoutContent({
     children,
 }: {
     children: React.ReactNode;
@@ -14,5 +25,17 @@ export default async function PanelLayout({
         <AuthProvider session={session}>
             <PanelShell session={session}>{children}</PanelShell>
         </AuthProvider>
+    );
+}
+
+export default function PanelLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <Suspense fallback={<PanelShellFallback />}>
+            <PanelLayoutContent>{children}</PanelLayoutContent>
+        </Suspense>
     );
 }

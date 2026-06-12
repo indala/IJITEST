@@ -35,10 +35,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 2. Dynamic Manuscript Routes
   try {
-    const [res, latestRes] = await Promise.all([
-      getPublishedPapers(),
-      getLatestIssuePapers()
-    ]);
+    const res = await getPublishedPapers();
+    const latestRes = await getLatestIssuePapers();
     
     const papers = res.success ? res.data ?? [] : [];
     const latestPapers = latestRes.success ? latestRes.data ?? [] : [];

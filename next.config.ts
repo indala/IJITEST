@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
-import { withSerwist } from "@serwist/turbopack";
 
 const storageUrl = process.env['STORAGE_SERVICE_URL'] || "https://www.api.ijitest.org";
 const wsStorageUrl = storageUrl.replace(/^http/, "ws");
@@ -31,7 +30,9 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "20mb"
-    }
+    },
+    workerThreads: false,
+    cpus: 2
   },
   logging: process.env.NODE_ENV !== "production"
     ? {
@@ -73,13 +74,6 @@ const nextConfig: NextConfig = {
           { key: "Service-Worker-Allowed", value: "/" },
         ],
       },
-      {
-        source: "/serwist/:path*",
-        headers: [
-          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
-          { key: "Service-Worker-Allowed", value: "/" },
-        ],
-      },
     ];
   },
 };
@@ -88,4 +82,4 @@ const analyzer = withBundleAnalyzer({
   enabled: process.env['ANALYZE'] === 'true',
 });
 
-export default withSerwist(analyzer(nextConfig));
+export default analyzer(nextConfig);
