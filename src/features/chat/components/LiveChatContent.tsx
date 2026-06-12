@@ -22,7 +22,8 @@ import {
   MessageSquare, 
   Loader2, 
   MessageCircle,
-  Hash
+  Hash,
+  ArrowLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -109,7 +110,7 @@ export function LiveChatContent() {
       // Connect to storage service socket gateway
       activeSocket = io(socketUrl, {
         auth: { token },
-        transports: ["websocket"],
+        transports: ["polling", "websocket"],
       }) as Socket<ServerToClientEvents, ClientToServerEvents>;
 
       activeSocket.on("connect", () => {
@@ -311,10 +312,13 @@ export function LiveChatContent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row gap-4 h-[calc(100vh-220px)] min-h-0 bg-slate-900/10 rounded-2xl overflow-hidden">
+    <div className="flex-1 flex flex-col md:flex-row gap-4 h-[calc(100vh-140px)] md:h-[calc(100vh-220px)] min-h-0 bg-slate-900/10 rounded-2xl overflow-hidden">
       
       {/* 👥 Left Panel: Users & Search */}
-      <div className="w-full md:w-80 shrink-0 flex flex-col bg-card/45 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+      <div className={cn(
+        "w-full md:w-80 shrink-0 flex flex-col bg-card/45 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-xl",
+        selectedUser ? "hidden md:flex" : "flex"
+      )}>
         
         {/* Search Header */}
         <div className="p-4 border-b border-white/5 bg-slate-950/10 space-y-2">
@@ -422,12 +426,23 @@ export function LiveChatContent() {
       </div>
 
       {/* 💬 Right Panel: Messages Stream */}
-      <div className="flex-1 flex flex-col bg-card/45 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-xl min-w-0">
+      <div className={cn(
+        "flex-1 flex flex-col bg-card/45 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-xl min-w-0",
+        selectedUser ? "flex" : "hidden md:flex"
+      )}>
         {selectedUser ? (
           <>
             {/* Active Header */}
-            <div className="px-6 py-4 border-b border-white/5 bg-slate-950/10 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-3">
+            <div className="px-4 md:px-6 py-4 border-b border-white/5 bg-slate-950/10 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2 md:gap-3">
+                {/* Back Button for Mobile Viewports (WhatsApp / Instagram style) */}
+                <button
+                  onClick={() => setSelectedUser(null)}
+                  className="md:hidden p-2 -ml-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/5 transition-colors"
+                  aria-label="Back to chat list"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
                 <div className="relative">
                   <div className="w-10 h-10 rounded-full bg-slate-800 border border-white/5 flex items-center justify-center text-sm font-bold text-primary-foreground uppercase shadow-md">
                     {selectedUser.fullName.substring(0, 2)}
@@ -455,7 +470,7 @@ export function LiveChatContent() {
                 </div>
               </div>
 
-              <div className="text-[10px] text-muted-foreground flex items-center gap-1.5 bg-slate-950/20 px-3 py-1.5 rounded-lg border border-white/5">
+              <div className="hidden md:flex text-[10px] text-muted-foreground items-center gap-1.5 bg-slate-950/20 px-3 py-1.5 rounded-lg border border-white/5">
                 <Hash className="w-3.5 h-3.5 text-primary/60" />
                 <span className="font-mono">Direct Communication Channel</span>
               </div>

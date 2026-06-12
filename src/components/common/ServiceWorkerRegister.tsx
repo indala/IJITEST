@@ -9,7 +9,7 @@ export default function ServiceWorkerRegister() {
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
       const register = () => {
         navigator.serviceWorker
-          .register("/sw.js")
+          .register("/sw.js", { scope: "/", updateViaCache: "none" })
           .then((reg) => {
             console.log("Service Worker registered successfully with scope:", reg.scope);
           })

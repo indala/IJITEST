@@ -70,7 +70,9 @@ const nextConfig: NextConfig = {
       {
         source: "/sw.js",
         headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
           { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
           { key: "Service-Worker-Allowed", value: "/" },
         ],
       },

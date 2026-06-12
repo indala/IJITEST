@@ -1,8 +1,13 @@
 import type { MetadataRoute } from 'next';
 import { getPublishedPapers, getLatestIssuePapers } from '@/actions/archives';
 import type { PublishedPaperUI } from '@/db/types';
+import { cacheLife, cacheTag } from 'next/cache';
+import { CACHE_TAGS } from '@/lib/cache-tags';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  'use cache';
+  cacheLife('hours');
+  cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.PUBLIC_DATA);
   const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '');
 
   // 1. Static Routes

@@ -200,6 +200,14 @@
   background-size: 200% 100%;
 }
 
+@utility scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;

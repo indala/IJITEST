@@ -1,17 +1,48 @@
-// Service worker for PWA installability and Push Notifications
+// Service worker for PWA installability, Push Notifications, and Offline Fallback
+
+const OFFLINE_CACHE_NAME = 'offline-v1';
+const OFFLINE_URL = '/~offline';
 
 self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(OFFLINE_CACHE_NAME).then((cache) => {
+      return cache.add(OFFLINE_URL);
+    })
+  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== OFFLINE_CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', (event) => {
-  // A simple fetch handler is required for PWA installability.
-  // We don't cache anything and fall back to the network.
-  event.respondWith(fetch(event.request));
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
+    return;
+  }
+
+  // Intercept main page navigations (navigating to any URL in the browser)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        // Serve pre-cached offline page on connection loss
+        return caches.match(OFFLINE_URL);
+      })
+    );
+  }
+  
+  // For other requests (images, stylesheets, scripts, API calls), we don't call event.respondWith.
+  // The browser will handle these requests natively, preventing unhandled fetch promise rejections in the console.
 });
 
 // Handle Push Notifications
