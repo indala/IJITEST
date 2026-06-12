@@ -74,7 +74,7 @@ export function SubmissionDecisionActions({
                         type="submit"
                         disabled={isDeciding}
                         variant="outline"
-                        className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 border-red-500/20 text-red-600 font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl cursor-pointer"
+                        className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 border-red-500/20 text-red-600 font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl hover:bg-red-500/10 hover:text-red-700 hover:border-red-500/30 cursor-pointer"
                     >
                         <XCircle className="w-4 h-4 2xl:w-6 2xl:h-6" />
                         {isDeciding ? "Processing..." : "Final Rejection"}

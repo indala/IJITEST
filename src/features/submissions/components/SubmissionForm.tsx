@@ -388,7 +388,7 @@ export default function SubmissionForm() {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.3 }}
                                 >
-                                    <div className="bg-card border border-border/50 shadow-sm rounded-xl overflow-hidden transition-all p-1">
+                                    <div className="relative bg-card border border-border/50 shadow-sm rounded-xl overflow-hidden transition-all p-1">
                                         <Button
                                             type="button"
                                             variant="ghost"

@@ -306,7 +306,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
                                                     'use server';
                                                     await decideSubmission(submission.id, 'rejected');
                                                 }}>
-                                                    <Button variant="outline" className="w-full h-11 gap-2 border-red-500/20 text-red-600 font-semibold text-[11px]  tracking-widest rounded-xl cursor-pointer">
+                                                    <Button variant="outline" className="w-full h-11 gap-2 border-red-500/20 text-red-600 font-semibold text-[11px]  tracking-widest rounded-xl hover:bg-red-500/10 hover:text-red-700 hover:border-red-500/30 cursor-pointer">
                                                         <XCircle className="w-4 h-4" /> Final Rejection
                                                     </Button>
                                                 </form>
@@ -328,7 +328,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
                                                     'use server';
                                                     await waivePayment(submission.id);
                                                 }}>
-                                                    <Button variant="outline" className="w-full h-9 gap-2 border-emerald-500/30 text-emerald-600 font-semibold text-[9px]  tracking-widest rounded-lg hover:bg-emerald-500 cursor-pointer">
+                                                    <Button variant="outline" className="w-full h-9 gap-2 border-emerald-500/30 text-emerald-600 font-semibold text-[9px]  tracking-widest rounded-lg hover:bg-emerald-500 hover:text-white cursor-pointer">
                                                         Waive Transaction Fee
                                                     </Button>
                                                 </form>
