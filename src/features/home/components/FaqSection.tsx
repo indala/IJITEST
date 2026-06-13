@@ -20,7 +20,7 @@ interface FAQ {
 const FAQS: FAQ[] = [
   {
     question: "How long does the peer-review process take?",
-    answer: "Our standard peer-review process typically takes 4-6 weeks. We prioritize quality and thoroughness while ensuring a fast-track publication path for groundbreaking research."
+    answer: "Our peer-review process is designed to balance speed with rigor. Standard reviews take 4–6 weeks, while groundbreaking submissions may be considered for fast-track publication to ensure timely visibility."
   },
   {
     question: "Is IJITEST indexed in major databases?",
@@ -38,6 +38,18 @@ const FAQS: FAQ[] = [
         <Link href="/guidelines" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
           Author Resource Desk
         </Link>.
+      </span>
+    )
+  },
+  {
+    question: "How do I track and manage my manuscript after submission?",
+    answer: (
+      <span>
+        Upon submission, you can access your dedicated{" "}
+        <Link href="/login" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+          Author Dashboard Panel
+        </Link>{" "}
+        using your registered email. Inside, you can track peer-review status in real-time, view generated PDF drafts, upload revisions, and make APC payments.
       </span>
     )
   },
@@ -80,7 +92,7 @@ export default function FaqSection() {
           <Accordion type="single" collapsible className="w-full space-y-4">
             {FAQS.map((faq, index) => (
               <AccordionItem 
-                key={index} 
+                key={faq.question} 
                 value={`item-${index}`}
                 className="border border-border/50 rounded-xl bg-card px-4 md:px-6 transition-all hover:border-[#000066]/20 shadow-sm"
               >

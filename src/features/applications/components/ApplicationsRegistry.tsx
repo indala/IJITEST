@@ -58,10 +58,14 @@ const ApplicationItemCard = React.memo(({
         >
             <CardContent className="p-0 flex flex-col lg:flex-row items-stretch lg:items-center">
                 <div 
-                    className="px-6 py-4 lg:py-10 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-primary/5 bg-muted/5 lg:bg-transparent"
-                    onClick={(e) => { e.stopPropagation(); onToggle(app.id); }}
+                    className={`px-6 py-4 lg:py-10 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-primary/5 bg-muted/5 lg:bg-transparent ${app.status !== 'pending' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={(e) => { 
+                        if (app.status !== 'pending') return;
+                        e.stopPropagation(); 
+                        onToggle(app.id); 
+                    }}
                 >
-                    <Checkbox checked={isSelected} />
+                    <Checkbox checked={isSelected} disabled={app.status !== 'pending'} />
                 </div>
 
                 <div className="p-4 flex justify-center shrink-0 lg:border-r border-primary/5">
@@ -119,7 +123,7 @@ ApplicationItemCard.displayName = 'ApplicationItemCard';
 export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'editor' }) {
     const [filters, setFilters] = useQueryStates({
         role: parseAsString.withDefault('all'),
-        status: parseAsString.withDefault('all'),
+        status: parseAsString.withDefault('pending'),
         interest: parseAsString.withDefault('')
     }, { shallow: false, history: 'replace' });
 
@@ -152,10 +156,18 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
         );
     }, [applications, interest]);
 
+    const pendingApps = useMemo(() => filteredApps.filter(app => app.status === 'pending'), [filteredApps]);
+
+    // Filter selected IDs during render to ensure they only contain currently pending/filtered applications
+    const currentSelectedIds = useMemo(() => {
+        const pendingIds = new Set(pendingApps.map(app => app.id));
+        return selectedIds.filter(id => pendingIds.has(id));
+    }, [selectedIds, pendingApps]);
+
     const handleSelectAll = useCallback((checked: boolean) => {
-        if (checked) setSelectedIds(filteredApps.map(app => app.id));
+        if (checked) setSelectedIds(pendingApps.map(app => app.id));
         else setSelectedIds([]);
-    }, [filteredApps]);
+    }, [pendingApps]);
 
     const toggleSelect = useCallback((id: number) => {
         setSelectedIds(prev => 
@@ -207,11 +219,11 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
     };
 
     const handleBulkApprove = async () => {
-        if (selectedIds.length === 0) return;
-        const toastId = toast.loading(`Authorizing ${selectedIds.length} candidates...`);
+        if (currentSelectedIds.length === 0) return;
+        const toastId = toast.loading(`Authorizing ${currentSelectedIds.length} candidates...`);
         startActionTransition(async () => {
             try {
-                const res = await bulkApproveApplications(selectedIds);
+                const res = await bulkApproveApplications(currentSelectedIds);
                 if (res.success) {
                     toast.success("Collective authorization complete", { id: toastId });
                     setSelectedIds([]);
@@ -226,15 +238,15 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
     };
 
     const handleBulkReject = async (reason: string) => {
-        if (selectedIds.length === 0) return;
+        if (currentSelectedIds.length === 0) return;
         if (reason.length < 20) {
             toast.error("Vetting rationale must be at least 20 characters");
             return;
         }
-        const toastId = toast.loading(`Declining ${selectedIds.length} proposals...`);
+        const toastId = toast.loading(`Declining ${currentSelectedIds.length} proposals...`);
         startActionTransition(async () => {
             try {
-                const res = await bulkRejectApplications(selectedIds, reason);
+                const res = await bulkRejectApplications(currentSelectedIds, reason);
                 if (res.success) {
                     toast.success("Collective rejection processed", { id: toastId });
                     setSelectedIds([]);
@@ -296,20 +308,20 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                 </Select>
             </div>
 
-            {filteredApps.length > 0 && (
+            {pendingApps.length > 0 && (
                 <div className="flex flex-col sm:flex-row items-center gap-4 px-4 py-3 bg-muted/30 rounded-2xl border border-primary/5 w-fit">
                     <div className="flex items-center gap-3">
                         <Checkbox 
-                            checked={selectedIds.length === filteredApps.length && filteredApps.length > 0}
+                            checked={currentSelectedIds.length === pendingApps.length && pendingApps.length > 0}
                             onCheckedChange={handleSelectAll}
                             id="select-all"
                         />
                         <label htmlFor="select-all" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest cursor-pointer">
-                            {selectedIds.length === 0 ? "Select for batch action" : `${selectedIds.length} applicants selected`}
+                            {currentSelectedIds.length === 0 ? "Select for batch action" : `${currentSelectedIds.length} applicants selected`}
                         </label>
                     </div>
 
-                    {selectedIds.length > 0 && (
+                    {currentSelectedIds.length > 0 && (
                         <div className="flex items-center gap-2 pl-4 border-l border-primary/10">
                             <Button 
                                 variant="outline" 
@@ -383,7 +395,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: 'admin' | 'ed
                                 <ApplicationItemCard 
                                     key={app.id}
                                     app={app}
-                                    isSelected={selectedIds.includes(app.id)}
+                                    isSelected={currentSelectedIds.includes(app.id)}
                                     onToggle={toggleSelect}
                                     onInspect={setInspectApp}
                                 />

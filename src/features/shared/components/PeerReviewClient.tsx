@@ -86,7 +86,7 @@ export default function PeerReviewClient() {
                             <div className="space-y-1">
                                 <h3 className="text-lg font-semibold text-primary m-0">Rapid Verdict</h3>
                                 <p className="text-muted-foreground text-sm leading-relaxed m-0 italic">
-                                    &quot;{journalShortName} target first-round decisions within 2-3 days of submission.&quot;
+                                    &quot;Our peer-review process is designed to balance speed with rigor. Standard reviews take 4–6 weeks, while groundbreaking submissions may be considered for fast-track publication to ensure timely visibility.&quot;
                                 </p>
                             </div>
                         </div>

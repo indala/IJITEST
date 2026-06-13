@@ -33,7 +33,7 @@ export default function GuidelinesContent() {
                         "The reviewers recommendations determine the process of whether the submitted paper should be accepted/accepted subject to changes/subject to resubmission with significant changes/rejected.",
                         "The papers which needs change, will be requested for change and the modified paper will be reviewed by the same reviewers.",
                         "The Review report of the reviewed articles will be kept in confidential.",
-                        "It will take 2-3 weeks to review a paper."
+                        "Initial screening and desk-review decisions are completed within 2-3 days of submission. The double-blind peer-review evaluation takes 2-3 weeks, with final editorial decisions and acceptance notifications completed within 4-6 weeks."
                     ].map((item, i) => (
                         <li key={i} className="flex gap-4">
                             <div className="mt-2 w-1.5 h-1.5 bg-secondary rounded-full shrink-0" />
@@ -158,6 +158,32 @@ export default function GuidelinesContent() {
                             </a>
                         </Button>
                     </div>
+                </div>
+            )
+        },
+        {
+            title: "Author Dashboard Panel",
+            content: (
+                <div className="space-y-4">
+                    <p>
+                        Upon manuscript submission, authors gain access to their dedicated <b>Author Dashboard Panel</b>. By logging in, authors can manage and track their papers throughout the publishing cycle:
+                    </p>
+                    <ul className="space-y-3 list-none pl-0">
+                        {[
+                            "Track manuscript evaluation and peer-review status in real-time.",
+                            "Download system-generated PDF proofs and review layout alignment.",
+                            "Receive peer review reports and submit revised manuscript files directly.",
+                            "Upload signed Copyright Forms and process APC payments securely after acceptance."
+                        ].map((item, i) => (
+                            <li key={i} className="flex gap-4">
+                                <div className="mt-2 w-1.5 h-1.5 bg-secondary rounded-full shrink-0" />
+                                <span>{item}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <p className="pt-2">
+                        Authors can access their panel by clicking on <b>Login</b> at the top right of the homepage or navigating directly to <Link href="/login" className="text-secondary font-bold hover:underline">Portal Access</Link>.
+                    </p>
                 </div>
             )
         }

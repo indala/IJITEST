@@ -1,8 +1,9 @@
 "use client";
 
 import { usePathname, useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { sidebarItems, getFullHref } from '@/lib/navigation';
 import { updateUserLastActive } from '@/actions/users';
 
@@ -20,16 +21,24 @@ interface PanelShellProps {
 export function PanelShell({ children, session }: PanelShellProps) {
     const pathname = usePathname();
     const router = useRouter();
+    const { status } = useSession();
+    const queryClient = useQueryClient();
+
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+            router.replace('/login');
+        }
+    }, [status, router]);
 
     const user = session?.user ?? null;
     const role = user?.role ?? 'reviewer';
 
     // Track user active status
     useEffect(() => {
-        if (!user?.id) return;
+        if (!user?.id || status !== 'authenticated') return;
 
         const updateActivity = () => {
-            if (document.visibilityState === 'visible') {
+            if (document.visibilityState === 'visible' && status === 'authenticated') {
                 void updateUserLastActive();
             }
         };
@@ -42,7 +51,7 @@ export function PanelShell({ children, session }: PanelShellProps) {
             document.removeEventListener('visibilitychange', updateActivity);
             clearInterval(interval);
         };
-    }, [user?.id]);
+    }, [user?.id, status]);
 
     const filteredItems = sidebarItems.filter(item =>
         item.roles.includes(role)
@@ -52,8 +61,9 @@ export function PanelShell({ children, session }: PanelShellProps) {
     }));
 
     const handleLogout = async () => {
+        queryClient.clear();
         await signOut({ redirect: false });
-        router.push('/login');
+        router.replace('/login');
     };
 
     return (

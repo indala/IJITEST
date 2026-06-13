@@ -7,7 +7,8 @@ import {
     users, 
     userProfiles, 
     userInvitations,
-    applicationInterests 
+    applicationInterests,
+    masterInterests
 } from "@/db/schema";
 import { 
     type Application, 
@@ -50,10 +51,35 @@ export async function getApplications(filters?: { role?: string, status?: string
         const appIds = apps.map(a => a.id);
         if (appIds.length === 0) return { success: true, data: [] };
 
-        const allInterests = await db.query.applicationInterests.findMany({
-            where: inArray(applicationInterests.applicationId, appIds),
-            with: { interest: true }
-        });
+        const allInterestsRaw = await db
+            .select({
+                id: applicationInterests.id,
+                applicationId: applicationInterests.applicationId,
+                interestId: applicationInterests.interestId,
+                interestIdNullable: masterInterests.id,
+                interestName: masterInterests.name,
+                interestCreatedAt: masterInterests.createdAt,
+            })
+            .from(applicationInterests)
+            .leftJoin(masterInterests, eq(applicationInterests.interestId, masterInterests.id))
+            .where(inArray(applicationInterests.applicationId, appIds));
+
+        const allInterests = allInterestsRaw
+            .filter((row): row is typeof row & { interestIdNullable: number; interestName: string; interestCreatedAt: Date } => 
+                row.interestIdNullable !== null && 
+                row.interestName !== null && 
+                row.interestCreatedAt !== null
+            )
+            .map(row => ({
+                id: row.id,
+                applicationId: row.applicationId,
+                interestId: row.interestId,
+                interest: {
+                    id: row.interestIdNullable,
+                    name: row.interestName,
+                    createdAt: row.interestCreatedAt,
+                }
+            }));
 
         // 3. Map interests back to applications
         const mappedData: Application[] = apps.map(app => {

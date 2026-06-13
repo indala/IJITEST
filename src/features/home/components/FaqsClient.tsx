@@ -25,6 +25,25 @@ interface FaqsClientProps {
   apcUsd: string;
 }
 
+function highlightText(text: string, search: string): React.ReactNode {
+  if (!search.trim()) return text;
+  const regex = new RegExp(`(${search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+  return (
+    <>
+      {parts.map((part, index) => 
+        regex.test(part) ? (
+          <mark key={index} className="bg-yellow-100 text-[#000066] font-semibold rounded-xs px-0.5">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
 export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'general' | 'author' | 'review' | 'fees'>('all');
@@ -41,8 +60,8 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
     {
       category: 'review',
       question: "How long does the peer-review process take?",
-      answer: "Our standard peer-review process typically takes 4-6 weeks. We prioritize quality and thoroughness while ensuring a fast-track publication path for groundbreaking research.",
-      plainTextAnswer: "Our standard peer-review process typically takes 4-6 weeks. We prioritize quality and thoroughness while ensuring a fast-track publication path for groundbreaking research."
+      answer: "Our peer-review process is designed to balance speed with rigor. Standard reviews take 4–6 weeks, while groundbreaking submissions may be considered for fast-track publication to ensure timely visibility.",
+      plainTextAnswer: "Our peer-review process is designed to balance speed with rigor. Standard reviews take 4–6 weeks, while groundbreaking submissions may be considered for fast-track publication to ensure timely visibility."
     },
     {
       category: 'fees',
@@ -70,6 +89,20 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
       plainTextAnswer: "Authors should ensure their manuscripts follow our standard template, include an abstract, keywords, and properly formatted references. Detailed guidelines are available in our Author Resource Desk."
     },
     {
+      category: 'author',
+      question: "How do I track and manage my manuscript after submission?",
+      answer: (
+        <span>
+          Upon submission, you can access your dedicated{" "}
+          <Link href="/login" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+            Author Dashboard Panel
+          </Link>{" "}
+          using your registered email. Inside, you can track peer-review status in real-time, view generated PDF drafts, upload revisions, and make APC payments.
+        </span>
+      ),
+      plainTextAnswer: "Upon submission, you can access your dedicated Author Dashboard Panel using your registered email. Inside, you can track peer-review status in real-time, view generated PDF drafts, upload revisions, and make APC payments."
+    },
+    {
       category: 'general',
       question: "Do you provide Open Access publication?",
       answer: "Yes, IJITEST is a Gold Open Access journal. All published articles are immediately available to the global research community without any subscription barriers.",
@@ -92,8 +125,8 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
     {
       category: 'fees',
       question: "What are the Article Processing Charges (APC)?",
-      answer: `The Article Processing Charges (APC) are only applicable after acceptance. Standard charges are INR ${apcInr} for Indian authors and USD ${apcUsd} for international authors. However, we are offering a 100% APC Waiver for the inaugural 2026 volume.`,
-      plainTextAnswer: `The Article Processing Charges (APC) are only applicable after acceptance. Standard charges are INR ${apcInr} for Indian authors and USD ${apcUsd} for international authors. However, we are offering a 100% APC Waiver for the inaugural 2026 volume.`
+      answer: `Article Processing Charges (APCs) are only applicable after acceptance. For the inaugural 2026 volume, we are currently offering a full waiver, meaning no APCs will be charged to either Indian or international authors. This waiver applies to accepted articles in 2026, though future volumes may introduce standard APCs (standard charges are INR ${apcInr} for Indian authors and USD ${apcUsd} for international authors).`,
+      plainTextAnswer: `Article Processing Charges (APCs) are only applicable after acceptance. For the inaugural 2026 volume, we are currently offering a full waiver, meaning no APCs will be charged to either Indian or international authors. This waiver applies to accepted articles in 2026, though future volumes may introduce standard APCs (standard charges are INR ${apcInr} for Indian authors and USD ${apcUsd} for international authors).`
     },
     {
       category: 'author',
@@ -104,10 +137,10 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
           <Link href="/track" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
             Track Manuscript
           </Link>{" "}
-          portal using your Submission ID or registered email.
+          portal using your Submission ID and registered email.
         </span>
       ),
-      plainTextAnswer: "You can track your paper in real-time on our Track Manuscript portal using your Submission ID or registered email."
+      plainTextAnswer: "You can track your paper in real-time on our Track Manuscript portal using your Submission ID and registered email."
     },
     {
       category: 'author',
@@ -137,6 +170,7 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
           placeholder="Search questions or keywords..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          aria-label="Search FAQs"
           className="pl-11 h-12 bg-white rounded-xl border border-border/50 shadow-sm focus-visible:ring-[#000066]/20 focus-visible:border-[#000066]"
         />
       </div>
@@ -169,18 +203,18 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
         <Accordion type="single" collapsible className="w-full space-y-4">
           {filteredFaqs.map((faq, index) => (
             <AccordionItem
-              key={index}
+              key={faq.question}
               value={`item-${index}`}
               className="border border-border/50 rounded-2xl bg-card px-6 md:px-8 transition-all hover:border-[#000066]/20 shadow-sm overflow-hidden"
             >
               <AccordionTrigger className="text-left py-6 text-sm md:text-base font-semibold text-foreground hover:no-underline hover:text-[#000066] transition-colors">
                 <div className="flex items-center gap-3">
                   <HelpCircle className="w-4 h-4 text-[#000066]/60 shrink-0" />
-                  {faq.question}
+                  {highlightText(faq.question, searchQuery)}
                 </div>
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground/90 text-sm leading-relaxed pb-6 border-t border-border/10 mt-1 pt-4">
-                {faq.answer}
+                {typeof faq.answer === 'string' ? highlightText(faq.answer, searchQuery) : faq.answer}
               </AccordionContent>
             </AccordionItem>
           ))}

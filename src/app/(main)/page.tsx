@@ -97,7 +97,15 @@ export default async function Home() {
               "name": "How long does the peer-review process take?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Our standard peer-review process typically takes 4-6 weeks. We prioritize quality and thoroughness while ensuring a fast-track publication path for groundbreaking research."
+                "text": "Our peer-review process is designed to balance speed with rigor. Standard reviews take 4–6 weeks, while groundbreaking submissions may be considered for fast-track publication to ensure timely visibility."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I track and manage my manuscript after submission?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Upon submission, you can access your dedicated Author Dashboard Panel (/login) using your registered email. Inside, you can track peer-review status in real-time, view generated PDF drafts, upload revisions, and make APC payments."
               }
             },
             {

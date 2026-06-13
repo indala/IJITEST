@@ -34,9 +34,19 @@ self.addEventListener('fetch', (event) => {
   // Intercept main page navigations (navigating to any URL in the browser)
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        // Serve pre-cached offline page on connection loss
-        return caches.match(OFFLINE_URL);
+      fetch(event.request).catch(async () => {
+        const cachedResponse = await caches.match(OFFLINE_URL);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        // Return a basic HTML response if cache match fails to prevent uncaught promise rejection
+        return new Response(
+          '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Offline | IJITEST</title><style>body{font-family:system-ui,-apple-system,sans-serif;text-align:center;padding:50px;background:#f8fafc;color:#1e293b;}h1{font-size:24px;margin-bottom:10px;color:#1e293b;}p{color:#64748b;margin-bottom:20px;font-size:14px;}button{background:#000066;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold;}</style></head><body><h1>Connection Lost</h1><p>You are offline and no cached version of this page is available.</p><button onclick="window.location.reload()">Retry Connection</button></body></html>',
+          {
+            status: 503,
+            headers: { 'Content-Type': 'text/html; charset=utf-8' },
+          }
+        );
       })
     );
   }

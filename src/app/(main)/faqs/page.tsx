@@ -20,7 +20,11 @@ export default async function FaqsPage() {
     const faqsDataForSchema = [
         {
             question: "How long does the peer-review process take?",
-            answer: "Our standard peer-review process typically takes 4-6 weeks. We prioritize quality and thoroughness while ensuring a fast-track publication path for groundbreaking research."
+            answer: "Our peer-review process is designed to balance speed with rigor. Standard reviews take 4–6 weeks, while groundbreaking submissions may be considered for fast-track publication to ensure timely visibility."
+        },
+        {
+            question: "How do I track and manage my manuscript after submission?",
+            answer: "Upon submission, you can access your dedicated Author Dashboard Panel (/login) using your registered email. Inside, you can track peer-review status in real-time, view generated PDF drafts, upload revisions, and make APC payments."
         },
         {
             question: "Is IJITEST indexed in major databases?",
@@ -44,11 +48,11 @@ export default async function FaqsPage() {
         },
         {
             question: "What are the Article Processing Charges (APC)?",
-            answer: `The Article Processing Charges (APC) are only applicable after acceptance. Standard charges are INR ${apcInr} for Indian authors and USD ${apcUsd} for international authors. However, we are offering a 100% APC Waiver for the inaugural 2026 volume.`
+            answer: `Article Processing Charges (APCs) are only applicable after acceptance. For the inaugural 2026 volume, we are currently offering a full waiver, meaning no APCs will be charged to either Indian or international authors. This waiver applies to accepted articles in 2026, though future volumes may introduce standard APCs (standard charges are INR ${apcInr} for Indian authors and USD ${apcUsd} for international authors).`
         },
         {
             question: "How can I track the status of my submitted paper?",
-            answer: "You can track your paper in real-time on our Track Manuscript portal using your Submission ID or registered email."
+            answer: "You can track your paper in real-time on our Track Manuscript portal using your Submission ID and registered email."
         },
         {
             question: "Can I submit my manuscript in DOCX format?",

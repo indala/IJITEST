@@ -68,6 +68,12 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: "/(admin|editor|reviewer|author)/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
+        ],
+      },
+      {
         source: "/sw.js",
         headers: [
           { key: "Content-Type", value: "application/javascript; charset=utf-8" },
