@@ -3,7 +3,7 @@ import "server-only"
 
 import { db } from "@/lib/db";
 import { chatMessages, users, userProfiles, reviewAssignments } from "@/db/schema";
-import { eq, and, or, asc, like, not } from "drizzle-orm";
+import { eq, and, or, asc, like, not, inArray } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import crypto from "crypto";
@@ -155,8 +155,6 @@ export async function getChatHistory(
     }
 }
 
-// Helper to handle inArray type-safety
-import { inArray } from "drizzle-orm";
 
 /**
  * Action: Search for users that the current user is allowed to chat with.
@@ -194,10 +192,14 @@ export async function searchChatUsers(query: string): Promise<ActionResponse<Cha
 
             return { success: true, data: rows };
         } else if (role === 'reviewer') {
-            // Reviewers can only search editors who assigned them reviews
+            // Reviewers can search editors who assigned them reviews OR who initiated a chat with them
             const assignersSubquery = db.select({ id: reviewAssignments.assignedBy })
                 .from(reviewAssignments)
                 .where(eq(reviewAssignments.reviewerId, userId));
+
+            const messagersSubquery = db.select({ id: chatMessages.senderId })
+                .from(chatMessages)
+                .where(eq(chatMessages.receiverId, userId));
 
             const rows = await db.select({
                 id: users.id,
@@ -208,7 +210,10 @@ export async function searchChatUsers(query: string): Promise<ActionResponse<Cha
             .from(users)
             .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
             .where(and(
-                inArray(users.id, assignersSubquery),
+                or(
+                    inArray(users.id, assignersSubquery),
+                    inArray(users.id, messagersSubquery)
+                ),
                 or(
                     like(userProfiles.fullName, searchPattern),
                     like(users.email, searchPattern)
@@ -248,7 +253,7 @@ async function checkChatPermission(
     }
 
     if (senderRole === 'reviewer') {
-        // Reviewer can only chat with editors/admins who assigned them reviews
+        // Reviewers can message editors/admins who assigned them reviews
         const assignments = await db.select()
             .from(reviewAssignments)
             .where(and(
@@ -257,7 +262,20 @@ async function checkChatPermission(
             ))
             .limit(1);
         
-        return assignments.length > 0;
+        if (assignments.length > 0) {
+            return true;
+        }
+
+        // OR if the editor/admin initiated the chat (sent a message to this reviewer)
+        const initiatedMessages = await db.select()
+            .from(chatMessages)
+            .where(and(
+                eq(chatMessages.senderId, receiverId),
+                eq(chatMessages.receiverId, senderId)
+            ))
+            .limit(1);
+
+        return initiatedMessages.length > 0;
     }
 
     return false;
