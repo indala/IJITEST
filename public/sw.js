@@ -1,7 +1,7 @@
 // Service worker for PWA installability, Push Notifications, and Offline Fallback
 
-const OFFLINE_CACHE_NAME = 'offline-v1';
-const OFFLINE_URL = '/~offline';
+const OFFLINE_CACHE_NAME = 'offline-v2';
+const OFFLINE_URL = '/offline.html';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

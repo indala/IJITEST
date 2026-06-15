@@ -50,7 +50,7 @@ export default function RebrandPdfButton({ submissionId }: RebrandPdfButtonProps
                 <Button 
                     variant="ghost" 
                     disabled={isPending}
-                    className="w-full h-10 gap-2 bg-white/5 hover:bg-white/10 text-white font-semibold text-[10px] tracking-widest border border-white/10 rounded-xl cursor-pointer disabled:opacity-50"
+                    className="w-full h-10 gap-2 bg-white/5  text-white font-semibold text-[10px] tracking-widest border border-white/10 rounded-xl cursor-pointer disabled:opacity-50"
                 >
                     {isPending ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />

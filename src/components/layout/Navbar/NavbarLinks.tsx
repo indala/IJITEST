@@ -67,22 +67,23 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                         href={item.href}
                         aria-haspopup={item.children ? "true" : undefined}
                         aria-expanded={item.children ? isMenuOpen : undefined}
-                        className={`transition-all duration-300 flex items-center gap-2 2xl:gap-3 relative px-2 lg:px-3 2xl:px-4 text-sm xl:text-base 2xl:text-xl font-semibold ${isActive ? 'text-primary' : 'text-black hover:text-primary'}`}
+                        className={`transition-all duration-300 flex items-center gap-1 relative px-2 text-sm font-semibold whitespace-nowrap lg:px-2.5 lg:text-[13px] xl:px-3 xl:text-sm 2xl:gap-2 2xl:px-4 2xl:text-base ${isActive ? 'text-primary' : 'text-black hover:text-primary'}`}
                     >
-                        <span className="relative z-10">{item.name}</span>
+                        <span className="relative z-10 py-0.5">
+                            {item.name}
+                            {(isMenuOpen || (isActive && !activeIndex)) && (
+                                <motion.span
+                                    layoutId="nav-underline"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="absolute -bottom-1 left-0 right-0 h-[2px] bg-linear-to-r from-secondary to-secondary/40 rounded-full"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                        </span>
                         {item.children && (
-                            <ChevronDown className={`w-3.5 h-3.5 2xl:w-5 2xl:h-5 transition-transform duration-500 text-secondary/50 group-hover:text-secondary ${isMenuOpen ? 'rotate-180' : ''}`} />
-                        )}
-
-                        {(isMenuOpen || (isActive && !activeIndex)) && (
-                            <motion.span
-                                layoutId="nav-underline"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute -bottom-1 left-0 right-0 h-[2px] bg-linear-to-r from-secondary to-secondary/40 rounded-full"
-                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                            />
+                            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-500 text-secondary/50 group-hover:text-secondary 2xl:w-4 2xl:h-4 ${isMenuOpen ? 'rotate-180' : ''}`} />
                         )}
                     </Link>
 
@@ -93,7 +94,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 8, scale: 0.98 }}
                                 transition={{ duration: 0.2, ease: "easeOut" }}
-                                className="absolute top-[calc(100%-2px)] left-[-20px] w-72 2xl:w-[400px] bg-white/95 backdrop-blur-2xl border border-primary/5 rounded-4xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] py-5 2xl:py-10 z-50 overflow-hidden"
+                                className="absolute top-[calc(100%-2px)] left-[-20px] w-72 bg-white/95 backdrop-blur-2xl border border-primary/5 rounded-4xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] py-5 z-50 overflow-hidden 2xl:w-[400px] 2xl:py-10"
                             >
                                 <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-secondary via-secondary/50 to-transparent" />
                                 <ul className="space-y-1 list-none p-0">
@@ -103,10 +104,10 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                             <li key={child.name}>
                                                 <Link
                                                     href={child.href}
-                                                    className={`block px-8 py-3.5 2xl:px-12 2xl:py-6 tracking-widest transition-all relative group/child ${isChildActive ? 'text-primary' : 'text-black hover:text-primary'}`}
+                                                    className={`block px-8 py-3.5 tracking-widest transition-all relative group/child 2xl:px-12 2xl:py-6 ${isChildActive ? 'text-primary' : 'text-black hover:text-primary'}`}
                                                 >
                                                     <span className="relative z-10 flex items-center gap-3">
-                                                        <div className={`w-1.5 h-1.5 2xl:w-2.5  2xl:h-2.5 rounded-full transition-all duration-300 ${isChildActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'}`} />
+                                                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 2xl:w-2.5 2xl:h-2.5 ${isChildActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'}`} />
                                                         {child.name}
                                                     </span>
                                                     <div className={`absolute inset-0 bg-primary/3 transition-transform duration-500 ${isChildActive ? 'translate-x-0' : '-translate-x-full group-hover/child:translate-x-0'}`} />
@@ -124,7 +125,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
     }, [pathname, activeIndex, isScrolled, handleActivate, handleKeyDown]);
 
     return (
-        <ul className="hidden lg:flex items-center lg:space-x-1 xl:space-x-1 2xl:space-x-8 list-none p-0">
+        <ul className="hidden items-center list-none p-0 lg:flex lg:space-x-1 xl:space-x-2 2xl:space-x-4">
             {memoizedNavigation}
         </ul>
     );
