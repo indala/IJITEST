@@ -16,7 +16,8 @@ import {
     notifications,
     activityLogs,
     settings,
-    chatMessages
+    chatMessages,
+    pushSubscriptions
 } from "./schema";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
@@ -51,31 +52,31 @@ export type SafeUser = Omit<User, 'passwordHash'>;
 export type SafeUserWithProfile = SafeUser & {
     profile: UserProfile | null;
 };
-export type ProfileData = Pick<User, 'id' | 'email'> & 
+export type ProfileData = Pick<User, 'id' | 'email'> &
     Omit<UserProfile, 'userId' | 'createdAt' | 'updatedAt' | 'fullName' | 'id'> & {
-    name: UserProfile['fullName'];
-    application?: {
-        institute: Application['institute'];
-        country: Application['nationality'];
-        status: Application['status'];
-        rejectionReason: string | null;
-        reviewedAt: Application['reviewedAt'];
+        name: UserProfile['fullName'];
+        application?: {
+            institute: Application['institute'];
+            country: Application['nationality'];
+            status: Application['status'];
+            rejectionReason: string | null;
+            reviewedAt: Application['reviewedAt'];
+        };
+        researchInterests: string[];
+        history: Array<{
+            title: Pick<Version, 'title'>['title'];
+            submittedAt?: Submission['submittedAt'];
+            updatedAt?: Submission['updatedAt'];
+            status?: Submission['status'] | null;
+            decision?: Review['decision'] | null;
+        }>;
+        completeness: {
+            score: number;
+            total: number;
+            percentage: number;
+            missing: string[];
+        };
     };
-    researchInterests: string[];
-    history: Array<{
-        title: Pick<Version, 'title'>['title'];
-        submittedAt?: Submission['submittedAt'];
-        updatedAt?: Submission['updatedAt'];
-        status?: Submission['status'] | null;
-        decision?: Review['decision'] | null;
-    }>;
-    completeness: {
-        score: number;
-        total: number;
-        percentage: number;
-        missing: string[];
-    };
-};
 
 // 📄 Submissions
 export type Submission = InferSelectModel<typeof submissions>;
@@ -97,22 +98,22 @@ export type SubmissionDetail = Submission & {
     reviewAssignments: ReviewWithReviewer[];
 };
 
-export type SubmissionUI = SubmissionDetail & 
+export type SubmissionUI = SubmissionDetail &
     Pick<Version, 'title' | 'abstract' | 'keywords'> & {
-    filePath: Pick<SubmissionFile, 'fileUrl'>['fileUrl'];
-    pdfUrl: Pick<Publication, 'finalPdfUrl'>['finalPdfUrl'];
-    authorName: Pick<Author, 'name'>['name'];
-    authorEmail: Pick<Author, 'email'>['email'];
-    coAuthors: Author[];
-    volumeNumber?: Pick<Issue, 'volumeNumber'>['volumeNumber'] | undefined;
-    issueNumber?: Pick<Issue, 'issueNumber'>['issueNumber'] | undefined;
-    startPage?: Pick<Publication, 'startPage'>['startPage'] | undefined;
-    endPage?: Pick<Publication, 'endPage'>['endPage'] | undefined;
-    latestVersion?: (Version & { files: SubmissionFile[] }) | undefined;
-    allFiles: SubmissionFile[];
-    allReviews: ReviewWithReviewer[];
-    completedReviews?: number | undefined;
-};
+        filePath: Pick<SubmissionFile, 'fileUrl'>['fileUrl'];
+        pdfUrl: Pick<Publication, 'finalPdfUrl'>['finalPdfUrl'];
+        authorName: Pick<Author, 'name'>['name'];
+        authorEmail: Pick<Author, 'email'>['email'];
+        coAuthors: Author[];
+        volumeNumber?: Pick<Issue, 'volumeNumber'>['volumeNumber'] | undefined;
+        issueNumber?: Pick<Issue, 'issueNumber'>['issueNumber'] | undefined;
+        startPage?: Pick<Publication, 'startPage'>['startPage'] | undefined;
+        endPage?: Pick<Publication, 'endPage'>['endPage'] | undefined;
+        latestVersion?: (Version & { files: SubmissionFile[] }) | undefined;
+        allFiles: SubmissionFile[];
+        allReviews: ReviewWithReviewer[];
+        completedReviews?: number | undefined;
+    };
 
 // 🧪 Reviews
 export type ReviewAssignment = InferSelectModel<typeof reviewAssignments>;
@@ -255,9 +256,9 @@ export type UnassignedPaper = Pick<Submission, 'id' | 'paperId'> & {
 
 // 🧪 Common Return Types (Discriminated Union)
 // 🛡️ Elite: Discriminated union with conditional requirement for 'data'
-export type ActionResponse<T = void> = 
-    | (T extends void 
-        ? { success: true; data?: T; message?: string } 
+export type ActionResponse<T = void> =
+    | (T extends void
+        ? { success: true; data?: T; message?: string }
         : { success: true; data: T; message?: string })
     | { success: false; error: string; data?: never; message?: string };
 
@@ -308,6 +309,10 @@ export interface ClientToServerEvents {
     sendMessage: (message: ChatMessageRow) => void;
     getOnlineUsers: () => void;
 }
+
+// 🔀 Web Push Types
+export type PushSubscriptionRow = InferSelectModel<typeof pushSubscriptions>;
+export type NewPushSubscriptionRow = InferInsertModel<typeof pushSubscriptions>;
 
 
 

@@ -35,6 +35,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     receivedNotifications: many(notifications, { relationName: "recipient" }),
     createdNotifications: many(notifications, { relationName: "creator" }),
     activityLogs: many(activityLogs),
+    pushSubscriptions: many(pushSubscriptions),
 }));
 
 // 👥 2. USER PROFILES
@@ -516,5 +517,24 @@ export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
     submission: one(submissions, {
         fields: [chatMessages.submissionId],
         references: [submissions.id],
+    }),
+}));
+
+export const pushSubscriptions = mysqlTable("push_subscriptions", {
+    id: int("id").primaryKey().autoincrement().notNull(),
+    userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
+    endpoint: varchar("endpoint", { length: 500 }).notNull(),
+    p256dh: varchar("p256dh", { length: 255 }).notNull(),
+    auth: varchar("auth", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+    unique("endpoint_unique_idx").on(table.endpoint),
+    index("push_user_idx").on(table.userId),
+]);
+
+export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one }) => ({
+    user: one(users, {
+        fields: [pushSubscriptions.userId],
+        references: [users.id],
     }),
 }));

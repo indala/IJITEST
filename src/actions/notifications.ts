@@ -2,14 +2,26 @@
 import "server-only"
 
 import { db } from "@/lib/db";
-import { contactMessages, submissions, reviewAssignments, notifications } from "@/db/schema";
+import { contactMessages, submissions, reviewAssignments, notifications, pushSubscriptions } from "@/db/schema";
 import { eq, count, and, inArray, desc } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { type ActionResponse, type Notification, type NotificationType } from "@/db/types";
+import { type ActionResponse, type Notification, type NotificationType, type PushSubscriptionRow } from "@/db/types";
 import { updateTag, cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";
+import webpush from "web-push";
+
+const vapidPublicKey = process.env['NEXT_PUBLIC_VAPID_PUBLIC_KEY'];
+const vapidPrivateKey = process.env['VAPID_PRIVATE_KEY'];
+
+if (vapidPublicKey && vapidPrivateKey) {
+    webpush.setVapidDetails(
+        "mailto:support@ijitest.org",
+        vapidPublicKey,
+        vapidPrivateKey
+    );
+}
 
 async function getPendingMessagesCountCached(): Promise<number> {
     "use cache";
@@ -171,6 +183,46 @@ export async function createNotification({
         // Invalidate both feed cache and unread count cache
         updateTag(CACHE_TAGS.USER_NOTIFICATIONS(userId));
         updateTag(CACHE_TAGS.USER_NOTIFICATIONS_UNREAD_COUNT(userId));
+
+        // 🚀 Background Web Push trigger
+        if (vapidPublicKey && vapidPrivateKey) {
+            const subs = await db.select()
+                .from(pushSubscriptions)
+                .where(eq(pushSubscriptions.userId, userId));
+
+            if (subs.length > 0) {
+                const title = type.split("_").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+                const payload = JSON.stringify({
+                    title,
+                    body: message,
+                    url: actionLink || "/"
+                });
+
+                Promise.all(
+                    subs.map((sub: PushSubscriptionRow) => {
+                        const pushSub = {
+                            endpoint: sub.endpoint,
+                            keys: {
+                                p256dh: sub.p256dh,
+                                auth: sub.auth
+                            }
+                        };
+                        return webpush.sendNotification(pushSub, payload)
+                            .catch((err: unknown) => {
+                                const pushErr = err as { statusCode?: number; message?: string };
+                                if (pushErr?.statusCode === 410 || pushErr?.statusCode === 404) {
+                                    console.log(`Deleting expired push subscription for user ${userId}:`, sub.endpoint);
+                                    db.delete(pushSubscriptions)
+                                        .where(eq(pushSubscriptions.id, sub.id))
+                                        .catch((dbErr: unknown) => console.error("Failed to delete expired push subscription:", dbErr));
+                                } else {
+                                    console.error("Web Push notification delivery failed:", err);
+                                }
+                            });
+                    })
+                ).catch(err => console.error("Unhandled error in push notifications parallel delivery:", err));
+            }
+        }
 
         return { success: true };
     } catch (error) {

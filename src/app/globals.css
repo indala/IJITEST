@@ -4,11 +4,14 @@
 
 
 @theme {
-  --color-primary: oklch(0.35 0.15 255); /* Deeper, more vibrant blue */
-  --color-secondary: oklch(0.5 0.25 25); /* Richer crimson/maroon */
+  --color-primary: oklch(0.35 0.15 255);
+  /* Deeper, more vibrant blue */
+  --color-secondary: oklch(0.5 0.25 25);
+  /* Richer crimson/maroon */
   --color-accent: var(--accent);
   --color-background: oklch(0.995 0.002 255);
-  --color-foreground: oklch(0.12 0.01 253); /* Near black for better readability */
+  --color-foreground: oklch(0.12 0.01 253);
+  /* Near black for better readability */
 
   --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
   --font-serif: var(--font-crimson), "Crimson Pro", serif;
@@ -49,41 +52,96 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
   }
 
   @keyframes shine {
-    from { left: -100%; }
-    to { left: 200%; }
+    from {
+      left: -100%;
+    }
+
+    to {
+      left: 200%;
+    }
   }
 
   @keyframes blob {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(30px, -50px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
+
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
   }
 
   @keyframes wave {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(15deg); }
-    75% { transform: rotate(-15deg); }
+
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    25% {
+      transform: rotate(15deg);
+    }
+
+    75% {
+      transform: rotate(-15deg);
+    }
   }
 
   @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes tilt {
-    0%, 50%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(0.5deg); }
-    75% { transform: rotate(-0.5deg); }
+
+    0%,
+    50%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    25% {
+      transform: rotate(0.5deg);
+    }
+
+    75% {
+      transform: rotate(-0.5deg);
+    }
   }
 
   @keyframes slide-up {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   --animate-float: float 3s ease-in-out infinite;
@@ -115,7 +173,9 @@
     @apply font-semibold text-primary text-sm xl:text-xl 2xl:text-2xl mb-2;
   }
 
-  h4, h5, h6 {
+  h4,
+  h5,
+  h6 {
     @apply font-semibold text-primary text-xs xl:text-lg 2xl:text-xl mb-1;
   }
 
@@ -146,25 +206,30 @@
   .section-padding {
     @apply py-12 px-4 md:px-6 xl:px-8 2xl:px-10;
   }
-  .container-responsive{
+
+  .container-responsive {
     @apply px-4 md:px-6 xl:px-8 2xl:px-10;
   }
 }
 
 :root {
   --radius: 0.75rem;
-  --color-background: oklch(0.985 0.005 255); /* Very light brand tint instead of pure white */
+  --color-background: oklch(0.985 0.005 255);
+  /* Very light brand tint instead of pure white */
   --color-foreground: oklch(0.145 0 0);
   --color-card: oklch(1 0 0);
   --color-card-foreground: oklch(0.145 0 0);
   --color-popover: oklch(1 0 0);
   --color-popover-foreground: oklch(0.145 0 0);
-  --color-primary: oklch(0.35 0.15 255); /* Deep Brand Blue */
+  --color-primary: oklch(0.35 0.15 255);
+  /* Deep Brand Blue */
   --color-primary-foreground: oklch(0.98 0.01 255);
-  --color-secondary: oklch(0.5 0.25 25); /* Brand Red */
+  --color-secondary: oklch(0.5 0.25 25);
+  /* Brand Red */
   --color-secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.95 0.01 255);
-  --muted-foreground: oklch(0.35 0.02 253); /* Higher contrast for muted text */
+  --muted-foreground: oklch(0.35 0.02 253);
+  /* Higher contrast for muted text */
   --accent: oklch(0.95 0.01 255);
   --accent-foreground: oklch(0.35 0.15 255);
   --destructive: oklch(0.5 0.2 25);
@@ -201,10 +266,14 @@
 }
 
 @utility scrollbar-hide {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+
+  /* IE and Edge */
   &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none;
+    /* Chrome, Safari and Opera */
   }
 }
 
@@ -261,6 +330,7 @@
 
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -270,4 +340,3 @@
     scroll-behavior: auto !important;
   }
 }
-

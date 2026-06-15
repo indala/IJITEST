@@ -15,7 +15,7 @@ import { NumberTicker } from '@/components/ui/number-ticker';
 import type { 
     Application 
 } from '@/db/types';
-import { cn } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 
 interface Stat {
     label: string;
@@ -110,7 +110,7 @@ export function DashboardRegistry({
                             {role}
                         </Badge>
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-muted-foreground" suppressHydrationWarning>
                             {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric', day: 'numeric' })}
                         </span>
                     </div>
@@ -192,7 +192,7 @@ export function DashboardRegistry({
                                                     <div className="min-w-0">
                                                         <h4 className="text-sm font-medium text-foreground truncate group-hover:text-[#000066] transition-colors mb-0.5">{sub.title!}</h4>
                                                         <p className="text-xs text-muted-foreground">
-                                                            {sub.authorName} • {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString() : ''}
+                                                            {sub.authorName} • {formatDate(sub.submittedAt)}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -334,7 +334,7 @@ export function DashboardRegistry({
                                     </div>
                                     <h3 className="text-sm font-semibold text-foreground line-clamp-2 h-10 group-hover:text-[#000066] transition-colors leading-tight">{paper.title}</h3>
                                     <div className="flex items-center justify-between pt-3 border-t border-border/30">
-                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1.5"><Clock className="w-3 h-3" /> {paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : ''}</span>
+                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1.5"><Clock className="w-3 h-3" /> {formatDate(paper.submittedAt)}</span>
                                         <Button asChild variant="ghost" size="sm" className="h-8 px-3 text-xs text-[#000066] hover:bg-[#000066]/5 rounded-lg">
                                             <Link href={`/track?id=${paper.paperId}`} className="flex items-center gap-1.5">
                                                 Track <ExternalLink className="w-3 h-3" />

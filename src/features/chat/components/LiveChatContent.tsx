@@ -522,11 +522,11 @@ export function LiveChatContent() {
                         className={cn(
                           "px-4 py-2.5 text-xs rounded-2xl shadow-xs leading-relaxed border transition-all duration-300",
                           isSelf
-                            ? "bg-primary text-primary-foreground border-primary/20 rounded-tr-none"
-                            : "bg-muted/40 text-foreground border-white/5 rounded-tl-none"
+                            ? "bg-primary border-primary/20 rounded-tr-none"
+                            : "bg-secondary border-border/50 rounded-tl-none"
                         )}
                       >
-                        <p className="whitespace-pre-wrap wrap-break-word">{msg.messageText}</p>
+                        <p className=" text-white whitespace-pre-wrap wrap-break-word">{msg.messageText}</p>
                       </div>
 
                       {/* Timestamp */}

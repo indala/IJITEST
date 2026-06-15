@@ -17,3 +17,17 @@ export function getSecureUrl(url: string | null | undefined) {
     }
     return url;
 }
+
+/**
+ * Deterministic date formatter to prevent Next.js SSR hydration mismatches.
+ * Formats dates in UTC (DD/MM/YYYY) to remain consistent across timezone scopes.
+ */
+export function formatDate(dateInput: Date | string | number | null | undefined): string {
+    if (!dateInput) return "";
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return "";
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const year = d.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+}
