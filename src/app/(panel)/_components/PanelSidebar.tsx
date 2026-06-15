@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import type { Session } from "next-auth";
+import { useSocket } from '@/components/providers/SocketProvider';
 
 interface PanelSidebarProps {
     pathname: string;
@@ -37,6 +38,7 @@ export function PanelSidebar({
 }: PanelSidebarProps) {
     const { state, isMobile, setOpenMobile, toggleSidebar } = useSidebar();
     const isCollapsed = state === "collapsed";
+    const { unreadCount } = useSocket();
 
     return (
         <Sidebar collapsible="icon" className={cn("border-r border-border/50 backdrop-blur-xl transition-all duration-300", isMobile ? "bg-card" : "bg-card/30")}>
@@ -108,9 +110,9 @@ export function PanelSidebar({
                                         isCollapsed && "px-0 justify-center h-16"
                                     )}
                                 >
-                                    <Link href={item.fullHref} className="flex items-center gap-4 w-full" onClick={() => setOpenMobile(false)}>
+                                    <Link href={item.fullHref} className="flex items-center gap-4 w-full relative" onClick={() => setOpenMobile(false)}>
                                         <div className={cn(
-                                            "size-9 2xl:size-12 rounded-lg flex items-center justify-center transition-all shrink-0",
+                                            "size-9 2xl:size-12 rounded-lg flex items-center justify-center transition-all shrink-0 relative",
                                             isActive ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-muted/50 text-muted-foreground group-hover:bg-muted"
                                         )}>
                                             {item.icon && (
@@ -118,10 +120,18 @@ export function PanelSidebar({
                                                     {item.icon}
                                                 </div>
                                             )}
+                                            {isCollapsed && item.name === 'Messages' && unreadCount > 0 && (
+                                                <span className="absolute -top-1 -right-1 size-3 bg-secondary rounded-full border border-card animate-pulse" />
+                                            )}
                                         </div>
                                         {!isCollapsed && (
-                                            <span className="font-medium text-sm">
-                                                {item.labelOverrides?.[user?.role || ''] || item.name}
+                                            <span className="font-medium text-sm flex-1 flex items-center justify-between">
+                                                <span>{item.labelOverrides?.[user?.role || ''] || item.name}</span>
+                                                {item.name === 'Messages' && unreadCount > 0 && (
+                                                    <span className="bg-secondary text-secondary-foreground text-[10px] font-black tracking-normal px-2 py-0.5 rounded-full shrink-0 min-w-5 text-center mr-2 shadow-xs">
+                                                        {unreadCount}
+                                                    </span>
+                                                )}
                                             </span>
                                         )}
                                     </Link>

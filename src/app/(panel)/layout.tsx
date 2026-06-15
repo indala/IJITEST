@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PanelShell } from './PanelShell';
 import AuthProvider from '@/components/providers/AuthProvider';
+import SocketProvider from '@/components/providers/SocketProvider';
 
 function PanelShellFallback() {
     return (
@@ -23,7 +24,9 @@ async function PanelLayoutContent({
 
     return (
         <AuthProvider session={session}>
-            <PanelShell session={session}>{children}</PanelShell>
+            <SocketProvider>
+                <PanelShell session={session}>{children}</PanelShell>
+            </SocketProvider>
         </AuthProvider>
     );
 }

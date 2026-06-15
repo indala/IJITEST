@@ -1,16 +1,14 @@
 "use client";
 
-import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { usePathname, useRouter } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { sidebarItems, getFullHref } from '@/lib/navigation';
 import { updateUserLastActive } from '@/actions/users';
-
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PanelSidebar } from './_components/PanelSidebar';
 import { PanelHeader } from './_components/PanelHeader';
-import { NotificationBanner } from '@/components/panels/NotificationBanner';
 
 import type { Session } from 'next-auth';
 
@@ -21,26 +19,30 @@ interface PanelShellProps {
 
 export function PanelShell({ children, session }: PanelShellProps) {
     const pathname = usePathname();
+    const router = useRouter();
+    const { status } = useSession();
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+            router.replace('/login');
+        }
+    }, [status, router]);
 
     const user = session?.user ?? null;
     const role = user?.role ?? 'reviewer';
 
     // Track user active status
     useEffect(() => {
-        if (!user?.id) return;
+        if (!user?.id || status !== 'authenticated') return;
 
-        const updateActivity = async () => {
-            if (document.visibilityState === 'visible') {
-                try {
-                    await updateUserLastActive();
-                } catch (err) {
-                    console.warn("Failed to update active status:", err);
-                }
+        const updateActivity = () => {
+            if (document.visibilityState === 'visible' && status === 'authenticated') {
+                void updateUserLastActive();
             }
         };
 
-        void updateActivity();
+        updateActivity();
         document.addEventListener('visibilitychange', updateActivity);
         const interval = setInterval(updateActivity, 5 * 60 * 1000);
 
@@ -48,20 +50,7 @@ export function PanelShell({ children, session }: PanelShellProps) {
             document.removeEventListener('visibilitychange', updateActivity);
             clearInterval(interval);
         };
-    }, [user?.id]);
-
-    // Handle bfcache restoration by forcing a page reload, triggering server-side proxy.ts redirects if the session is gone
-    useEffect(() => {
-        const handlePageShow = (event: PageTransitionEvent) => {
-            if (event.persisted) {
-                window.location.reload();
-            }
-        };
-        window.addEventListener('pageshow', handlePageShow);
-        return () => {
-            window.removeEventListener('pageshow', handlePageShow);
-        };
-    }, []);
+    }, [user?.id, status]);
 
     const filteredItems = sidebarItems.filter(item =>
         item.roles.includes(role)
@@ -72,22 +61,8 @@ export function PanelShell({ children, session }: PanelShellProps) {
 
     const handleLogout = async () => {
         queryClient.clear();
-
-        try {
-            if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-                const registration = await navigator.serviceWorker.ready;
-                const subscription = await registration.pushManager.getSubscription();
-                if (subscription) {
-                    const { deletePushSubscription } = await import('@/actions/push');
-                    await deletePushSubscription(subscription.endpoint);
-                    await subscription.unsubscribe();
-                }
-            }
-        } catch (error) {
-            console.warn("Failed to delete push subscription on logout:", error);
-        }
-
-        await signOut({ callbackUrl: '/login' });
+        await signOut({ redirect: false });
+        router.replace('/login');
     };
 
     return (
@@ -112,7 +87,7 @@ export function PanelShell({ children, session }: PanelShellProps) {
                         {children}
                     </section>
                 </SidebarInset>
-                <NotificationBanner />
+
             </div>
         </SidebarProvider>
     );

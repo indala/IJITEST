@@ -2,6 +2,10 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from "react";
+import { useSocket } from "@/components/providers/SocketProvider";
+import { useQuery } from "@tanstack/react-query";
+import { getNotificationCounts } from "@/actions/notifications";
+import { useSession } from "next-auth/react";
 
 const ManageMessagesContent = dynamic(() => import("@/features/messages/components/ManageMessagesContent").then(m => m.ManageMessagesContent), { ssr: false });
 const LiveChatContent = dynamic(() => import("@/features/chat/components/LiveChatContent").then(m => m.LiveChatContent), { ssr: false });
@@ -14,6 +18,19 @@ interface MessagesTabContainerProps {
 
 export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabContainerProps) {
     const [activeTab, setActiveTab] = useState<'inquiry' | 'chat'>(defaultTab);
+    const { data: session } = useSession();
+    const { unreadCount } = useSocket();
+
+    const { data: counts = { messages: 0, submissions: 0 } } = useQuery({
+        queryKey: ['notificationCounts'],
+        queryFn: getNotificationCounts,
+        enabled: !!session?.user,
+        select: (res) => res.success ? res.data : { messages: 0, submissions: 0 },
+        refetchInterval: 30000, 
+        staleTime: 30000,
+    });
+
+    const inquiryUnread = counts.messages;
 
     return (
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -29,7 +46,12 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
                     )}
                 >
                     <MessageSquare className="w-3.5 h-3.5 text-primary" />
-                    Inquiry Messages
+                    <span>Inquiry Messages</span>
+                    {inquiryUnread > 0 && (
+                        <span className="ml-2 bg-secondary text-secondary-foreground text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-4 text-center leading-none">
+                            {inquiryUnread}
+                        </span>
+                    )}
                 </button>
                 <button
                     onClick={() => setActiveTab('chat')}
@@ -41,7 +63,12 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
                     )}
                 >
                     <MessageCircle className="w-3.5 h-3.5 text-primary" />
-                    Live Chat
+                    <span>Live Chat</span>
+                    {unreadCount > 0 && (
+                        <span className="ml-2 bg-secondary text-secondary-foreground text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-4 text-center leading-none animate-pulse">
+                            {unreadCount}
+                        </span>
+                    )}
                 </button>
             </div>
 

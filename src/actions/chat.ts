@@ -3,7 +3,7 @@ import "server-only"
 
 import { db } from "@/lib/db";
 import { chatMessages, users, userProfiles, reviewAssignments } from "@/db/schema";
-import { eq, and, or, asc, like, not, inArray } from "drizzle-orm";
+import { eq, and, or, asc, like, not, inArray, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import crypto from "crypto";
@@ -176,7 +176,13 @@ export async function searchChatUsers(query: string): Promise<ActionResponse<Cha
                 id: users.id,
                 email: users.email,
                 fullName: userProfiles.fullName,
-                role: users.role
+                role: users.role,
+                lastMessageAt: sql<string | null>`(
+                    SELECT MAX(created_at) 
+                    FROM chat_messages 
+                    WHERE (sender_id = ${userId} AND receiver_id = ${users.id})
+                       OR (sender_id = ${users.id} AND receiver_id = ${userId})
+                )`
             })
             .from(users)
             .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
@@ -205,7 +211,13 @@ export async function searchChatUsers(query: string): Promise<ActionResponse<Cha
                 id: users.id,
                 email: users.email,
                 fullName: userProfiles.fullName,
-                role: users.role
+                role: users.role,
+                lastMessageAt: sql<string | null>`(
+                    SELECT MAX(created_at) 
+                    FROM chat_messages 
+                    WHERE (sender_id = ${userId} AND receiver_id = ${users.id})
+                       OR (sender_id = ${users.id} AND receiver_id = ${userId})
+                )`
             })
             .from(users)
             .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
@@ -280,3 +292,42 @@ async function checkChatPermission(
 
     return false;
 }
+
+/**
+ * Action: Get total number of unread chat messages for the current user.
+ */
+export async function getUnreadChatCount(): Promise<ActionResponse<{ count: number; byPartner: Record<string, number> }>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user) {
+            return { success: false, error: "Authentication required" };
+        }
+
+        const userId = session.user.id;
+
+        // Fetch all unread messages for this user
+        const unreadMsgs = await db.select({
+            senderId: chatMessages.senderId
+        })
+        .from(chatMessages)
+        .where(and(
+            eq(chatMessages.receiverId, userId),
+            eq(chatMessages.isRead, false)
+        ));
+
+        const byPartner: Record<string, number> = {};
+        let totalCount = 0;
+
+        for (const msg of unreadMsgs) {
+            if (msg.senderId) {
+                byPartner[msg.senderId] = (byPartner[msg.senderId] || 0) + 1;
+                totalCount++;
+            }
+        }
+
+        return { success: true, data: { count: totalCount, byPartner } };
+    } catch (error) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) };
+    }
+}
+

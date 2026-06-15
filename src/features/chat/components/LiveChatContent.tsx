@@ -2,19 +2,16 @@
 
 import { useState, useEffect, useRef, useCallback, useOptimistic, useTransition } from "react";
 import { useSession } from "next-auth/react";
-import { io, Socket } from "socket.io-client";
 import { 
-  getSocketToken, 
   sendChatMessage, 
   getChatHistory, 
   searchChatUsers
 } from "@/actions/chat";
+import { useSocket } from "@/components/providers/SocketProvider";
 import { 
   type ChatMessageRow, 
   type ChatUser, 
-  type UserRole,
-  type ServerToClientEvents,
-  type ClientToServerEvents
+  type UserRole
 } from "@/db/types";
 import { 
   Send, 
@@ -32,8 +29,15 @@ export function LiveChatContent() {
   const { data: session } = useSession();
   const currentUserId = session?.user?.id;
 
-  const [socket, setSocket] = useState<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
-  const [onlineUsers, setOnlineUsers] = useState<ChatUser['id'][]>([]);
+  const { 
+    socket, 
+    isConnected, 
+    onlineUsers, 
+    unreadCountsByPartner, 
+    setActiveChatPartnerId,
+    clearUnreadCount 
+  } = useSocket();
+
   const [contacts, setContacts] = useState<ChatUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -49,10 +53,7 @@ export function LiveChatContent() {
   const [, startTransition] = useTransition();
   const [newMessage, setNewMessage] = useState("");
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-  const [unreadCounts, setUnreadCounts] = useState<Record<ChatUser['id'], number>>({});
   const [lastMessageTime, setLastMessageTime] = useState<Record<ChatUser['id'], Date | null>>({});
-  const [isConnected, setIsConnected] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -71,6 +72,16 @@ export function LiveChatContent() {
     setIsSearching(false);
     if (response.success && response.data) {
       setContacts(response.data);
+      // Initialize lastMessageTime from backend database records
+      setLastMessageTime((prev) => {
+        const next = { ...prev };
+        response.data.forEach((user) => {
+          if (user.lastMessageAt) {
+            next[user.id] = new Date(user.lastMessageAt);
+          }
+        });
+        return next;
+      });
     }
   }, []);
 
@@ -92,66 +103,6 @@ export function LiveChatContent() {
     return () => clearTimeout(delayDebounce);
   }, [searchQuery, currentUserId, fetchContacts]);
 
-  // Initialize Socket.io Connection
-  useEffect(() => {
-    if (!currentUserId) return;
-
-    let activeSocket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
-
-    async function initSocket() {
-      const response = await getSocketToken();
-      if (!response.success || !response.data) {
-        setAuthError(response.error || "Failed to retrieve authentication token");
-        return;
-      }
-
-      const { token, socketUrl } = response.data;
-
-      // Connect to storage service socket gateway
-      activeSocket = io(socketUrl, {
-        auth: { token },
-        transports: ["polling", "websocket"],
-      }) as Socket<ServerToClientEvents, ClientToServerEvents>;
-
-      activeSocket.on("connect", () => {
-        console.log("Socket connected successfully with ID:", activeSocket?.id);
-        setIsConnected(true);
-        setAuthError(null);
-        // Fetch current online users list
-        activeSocket?.emit("getOnlineUsers");
-      });
-
-      activeSocket.on("disconnect", (reason) => {
-        console.log("Socket disconnected. Reason:", reason);
-        setIsConnected(false);
-      });
-
-      activeSocket.on("onlineUsers", (userIds: string[]) => {
-        setOnlineUsers(userIds);
-      });
-
-      activeSocket.on("authenticated", (data) => {
-        console.log("Socket authenticated successfully:", data);
-        setAuthError(null);
-      });
-
-      activeSocket.on("connect_error", (err) => {
-        console.error("Socket connection error:", err);
-        setAuthError(`Connection error: ${err.message}`);
-      });
-
-      setSocket(activeSocket);
-    }
-
-    initSocket();
-
-    return () => {
-      if (activeSocket) {
-        activeSocket.disconnect();
-      }
-    };
-  }, [currentUserId]);
-
   // Listen for real-time messages
   useEffect(() => {
     if (!socket) return;
@@ -163,17 +114,10 @@ export function LiveChatContent() {
 
       if (isFromOrToSelected) {
         setMessages((prev) => {
-          // Avoid duplicate messages in UI
           if (prev.some((m) => m.id === msg.id)) return prev;
           return [...prev, msg];
         });
         setTimeout(() => scrollToBottom("smooth"), 100);
-      } else {
-        // Increment unread count for the sender
-        setUnreadCounts((prev) => ({
-          ...prev,
-          [msg.senderId]: (prev[msg.senderId] || 0) + 1,
-        }));
       }
 
       // Update last message time for the sender
@@ -196,14 +140,18 @@ export function LiveChatContent() {
       queueMicrotask(() => {
         setMessages([]);
       });
+      setActiveChatPartnerId(null);
       return;
     }
+
+    const targetUserId = selectedUser.id;
+    setActiveChatPartnerId(targetUserId);
+    clearUnreadCount(targetUserId);
 
     let isCurrent = true;
 
     async function fetchHistory() {
       setIsLoadingHistory(true);
-      const targetUserId = selectedUser!.id;
       const response = await getChatHistory(targetUserId);
       
       if (!isCurrent) return;
@@ -212,12 +160,6 @@ export function LiveChatContent() {
       if (response.success && response.data) {
         setMessages(response.data);
         setTimeout(() => scrollToBottom("auto"), 50);
-
-        // Clear unread indicator
-        setUnreadCounts((prev) => ({
-          ...prev,
-          [targetUserId]: 0,
-        }));
 
         // Update last message time from history
         const lastMsg = response.data[response.data.length - 1];
@@ -231,12 +173,12 @@ export function LiveChatContent() {
       }
     }
 
-    fetchHistory();
+    void fetchHistory();
 
     return () => {
       isCurrent = false;
     };
-  }, [selectedUser, scrollToBottom]);
+  }, [selectedUser, scrollToBottom, setActiveChatPartnerId, clearUnreadCount]);
 
   // Send Message implementation
   const handleSendMessage = (e: React.FormEvent) => {
@@ -365,7 +307,7 @@ export function LiveChatContent() {
             }).map((user) => {
               const isSelected = selectedUser?.id === user.id;
               const isOnline = onlineUsers.includes(user.id);
-              const unread = unreadCounts[user.id] || 0;
+              const unread = unreadCountsByPartner[user.id] || 0;
 
               return (
                 <button
@@ -417,12 +359,6 @@ export function LiveChatContent() {
             })
           )}
         </div>
-
-        {authError && (
-          <div className="p-3 bg-rose-500/10 border-t border-rose-500/20 text-[10px] font-mono text-rose-400 text-center wrap-break-word">
-            {authError}
-          </div>
-        )}
       </div>
 
       {/* 💬 Right Panel: Messages Stream */}

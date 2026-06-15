@@ -1,14 +1,8 @@
 import { withAuth } from "next-auth/middleware";
-import type { NextRequestWithAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 function getExternalUrl(path: string, req: NextRequest): URL {
-  // If local development, use req.url directly to avoid host/protocol mismatch CORS errors
-  if (req.nextUrl.hostname === "localhost" || req.nextUrl.hostname === "127.0.0.1") {
-    return new URL(path, req.url);
-  }
-
   const hostHeader = req.headers.get("x-forwarded-host") || req.headers.get("host");
   const host = hostHeader || req.nextUrl.host;
   const proto = req.headers.get("x-forwarded-proto") || "http";
@@ -29,22 +23,20 @@ function isFetchRequest(req: NextRequest) {
 }
 
 export default withAuth(
-  function proxy(req: NextRequestWithAuth) {
+  function proxy(req) {
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
     // Check if user is authenticated
     if (!token && path !== "/login") {
-      const isRsc = req.nextUrl.searchParams.has("_rsc") || 
-                    req.headers.get("x-next-rsc") !== null || 
-                    req.headers.get("rsc") !== null;
+      const isRsc = req.nextUrl.searchParams.has("_rsc") || req.headers.get("x-next-rsc") !== null;
       const isAction = req.headers.get("next-action") !== null;
 
-      if (isRsc) {
+      if (isRsc || isAction) {
         return NextResponse.redirect(getExternalUrl("/login", req));
       }
 
-      if (isAction || isFetchRequest(req)) {
+      if (isFetchRequest(req)) {
         return new NextResponse(
           JSON.stringify({ success: false, error: "Unauthorized" }),
           {
@@ -57,28 +49,24 @@ export default withAuth(
       return NextResponse.redirect(getExternalUrl("/login", req));
     }
 
-    // Authenticated users redirection optimization
-    if (token) {
+    // Redirect authenticated users away from /login
+    if (path === "/login" && token) {
       const role = (token.role as string) || 'reviewer';
+      return NextResponse.redirect(getExternalUrl(`/${role}`, req));
+    }
 
-      // Redirect authenticated users away from /login
-      if (path === "/login") {
-        return NextResponse.redirect(getExternalUrl(`/${role}`, req));
-      }
-
-      // Direct Role-based protection (single-hop redirect)
-      if (path.startsWith("/admin") && role !== "admin") {
-        return NextResponse.redirect(getExternalUrl(`/${role}`, req));
-      }
-      if (path.startsWith("/editor") && !["admin", "editor"].includes(role)) {
-        return NextResponse.redirect(getExternalUrl(`/${role}`, req));
-      }
-      if (path.startsWith("/reviewer") && !["admin", "editor", "reviewer"].includes(role)) {
-        return NextResponse.redirect(getExternalUrl(`/${role}`, req));
-      }
-      if (path.startsWith("/author") && role !== "author") {
-        return NextResponse.redirect(getExternalUrl(`/${role}`, req));
-      }
+    // Role-based protection
+    if (path.startsWith("/admin") && token?.role !== "admin") {
+      return NextResponse.redirect(getExternalUrl("/login", req));
+    }
+    if (path.startsWith("/editor") && !["admin", "editor"].includes(token?.role as string)) {
+      return NextResponse.redirect(getExternalUrl("/login", req));
+    }
+    if (path.startsWith("/reviewer") && !["admin", "editor", "reviewer"].includes(token?.role as string)) {
+      return NextResponse.redirect(getExternalUrl("/login", req));
+    }
+    if (path.startsWith("/author") && token?.role !== "author") {
+      return NextResponse.redirect(getExternalUrl("/login", req));
     }
 
     return NextResponse.next();
@@ -90,7 +78,6 @@ export default withAuth(
     pages: {
       signIn: "/login",
     },
-    secret: process.env.NEXTAUTH_SECRET as string,
   }
 );
 

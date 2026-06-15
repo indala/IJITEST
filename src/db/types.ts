@@ -296,6 +296,7 @@ export type ChatUser = {
     email: User['email'];
     fullName: UserProfile['fullName'];
     role: User['role'];
+    lastMessageAt?: string | null;
 };
 
 // 🔌 WebSocket Event Types (Strongly coupled with NestJS chat.gateway.ts)

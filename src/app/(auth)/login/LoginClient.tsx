@@ -6,11 +6,12 @@ import { useState, useActionState } from 'react';
 import { Lock, Mail, Eye, EyeOff, ShieldCheck, Loader2, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, getSession } from 'next-auth/react';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 
 export default function LoginClient() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
     
@@ -35,11 +36,13 @@ export default function LoginClient() {
         const role = (session?.user as { role?: string })?.role;
 
         if (callbackUrl && callbackUrl.startsWith('/')) {
-            window.location.href = callbackUrl;
+            router.push(callbackUrl);
+            router.refresh();
         } else if (role) {
-            window.location.href = `/${role}`;
+            router.push(`/${role}`);
+            router.refresh();
         } else {
-            window.location.href = '/login?ref=success';
+            router.push('/login');
         }
         return null;
     }, null);
