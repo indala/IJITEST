@@ -645,5 +645,94 @@ export const emailTemplates = {
                 url: `${baseUrl}/admin/submissions/${subId}`
             })
         };
+    },
+
+    reviewDeadlineReminder: (reviewerName: string, paperTitle: string, paperId: string, daysRemaining: number, deadline: string | Date) => {
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const formattedDeadline = new Date(deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+        
+        let timeText = `is due in ${daysRemaining} days`;
+        let urgencyBadge = "Review Deadline Approaching";
+        let priorityColor = JOURNAL.primaryColor;
+        
+        if (daysRemaining === 0) {
+            timeText = "is due TODAY";
+            urgencyBadge = "Review Due Today";
+            priorityColor = "#d97706"; // amber
+        } else if (daysRemaining < 0) {
+            const lateDays = Math.abs(daysRemaining);
+            timeText = `is OVERDUE by ${lateDays} day${lateDays > 1 ? 's' : ''}`;
+            urgencyBadge = "URGENT: Review Overdue";
+            priorityColor = "#dc2626"; // red
+        }
+
+        const content = `
+            <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${reviewerName}</strong>,</p>
+            <p>This is an automated reminder that your peer review evaluation for the manuscript <strong>${timeText}</strong>.</p>
+            
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 35px; border-radius: 20px; margin: 30px 0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                <div style="display: inline-block; background: ${priorityColor}10; color: ${priorityColor}; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">
+                    ${urgencyBadge}
+                </div>
+                <h3 style="margin: 0; color: ${JOURNAL.secondaryColor}; font-size: 18px; line-height: 1.4;">${paperTitle}</h3>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+                    <p style="margin: 0; font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold;">Manuscript ID</p>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: ${JOURNAL.primaryColor};">${paperId}</p>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+                <p style="margin: 0; font-size: 14px; color: #475569;">
+                    <strong>Deadline:</strong> <span style="color: ${priorityColor}; font-weight: bold;">${formattedDeadline}</span>.
+                </p>
+            </div>
+
+            <p style="font-size: 14px; line-height: 1.7; color: #475569;">
+                Please log in to your reviewer dashboard to complete your report and submit your decision.
+            </p>
+        `;
+
+        return {
+            subject: `[${JOURNAL.shortName}] ${daysRemaining < 0 ? 'URGENT: Overdue' : 'Reminder:'} Peer Review for ${paperId}`,
+            html: mailLayout(content, {
+                text: 'Access Reviewer Dashboard',
+                url: `${baseUrl}/reviewer`
+            })
+        };
+    },
+
+    reviewOverdueEscalation: (editorName: string, reviewerName: string, paperTitle: string, paperId: string, daysOverdue: number, deadline: string | Date) => {
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const formattedDeadline = new Date(deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+        
+        const content = `
+            <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${editorName}</strong>,</p>
+            <p>This is a system escalation notification regarding a late review assignment for manuscript <strong>${paperId}</strong>.</p>
+            
+            <div style="background: #ffffff; border: 1px solid #dc262622; border-left: 5px solid #dc2626; padding: 30px; border-radius: 12px; margin: 30px 0;">
+                <div style="display: inline-block; background: #dc26261a; color: #dc2626; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">
+                    Review Assignment Overdue
+                </div>
+                <h3 style="margin: 0; color: ${JOURNAL.secondaryColor}; font-size: 18px; line-height: 1.4;">${paperTitle}</h3>
+                
+                <div style="margin-top: 20px; font-size: 14px; color: #475569;">
+                    <p style="margin: 5px 0;"><strong>Reviewer:</strong> ${reviewerName}</p>
+                    <p style="margin: 5px 0;"><strong>Original Deadline:</strong> ${formattedDeadline}</p>
+                    <p style="margin: 5px 0; color: #dc2626;"><strong>Days Overdue:</strong> ${daysOverdue} days</p>
+                </div>
+            </div>
+
+            <p style="font-size: 14px; line-height: 1.7; color: #475569;">
+                We recommend checking the status or considering reassigning the review if needed.
+            </p>
+        `;
+
+        return {
+            subject: `[${JOURNAL.shortName}] [ESCALATION] Review Overdue for ${paperId}`,
+            html: mailLayout(content, {
+                text: 'Manage Submission in Admin Panel',
+                url: `${baseUrl}/admin/submissions/${paperId}`
+            })
+        };
     }
 };

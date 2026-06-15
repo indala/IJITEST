@@ -234,6 +234,8 @@ export const reviewAssignments = mysqlTable("review_assignments", {
     deadline: date("deadline"),
     assignedAt: timestamp("assigned_at").defaultNow(),
     respondedAt: timestamp("responded_at"),
+    lastReminderSentAt: timestamp("last_reminder_sent_at"),
+    reminderCount: int("reminder_count").default(0).notNull(),
 }, (table) => [
     unique("unique_assignment").on(table.submissionId, table.reviewerId, table.versionId, table.reviewRound),
 ]);
@@ -421,6 +423,8 @@ export const notificationTypes = [
   "payment_verified",
   "chat_message",
   "paper_published",
+  "review_reminder",
+  "review_escalation",
 ] as const;
 
 export type NotificationType = typeof notificationTypes[number];

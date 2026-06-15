@@ -22,11 +22,11 @@ export async function GET(req: Request) {
             paperId: submissions.paperId,
             correspondingAuthorId: submissions.correspondingAuthorId,
         })
-        .from(submissions)
-        .where(and(
-            inArray(submissions.status, ['rejected', 'revisionRequested']),
-            lt(submissions.updatedAt, twentyEightDaysAgo)
-        ));
+            .from(submissions)
+            .where(and(
+                inArray(submissions.status, ['rejected', 'revisionRequested']),
+                lt(submissions.updatedAt, twentyEightDaysAgo)
+            ));
 
         if (staleSubmissions.length === 0) {
             return NextResponse.json({ deleted: 0, message: "No stale submissions found" });

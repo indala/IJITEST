@@ -3,7 +3,7 @@
 // Login Client Component for authentication form and submission.
 
 import { useState, useActionState } from 'react';
-import { Lock, Mail, Eye, EyeOff, ShieldCheck, Loader2 } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, ShieldCheck, Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -47,7 +47,14 @@ export default function LoginClient() {
     }, null);
 
     return (
-        <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 2xl:p-8">
+        <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 2xl:p-8 relative">
+            <div className="absolute top-6 left-6">
+                <Button asChild variant="ghost" className="h-9 gap-2 text-muted-foreground hover:text-primary font-semibold text-[10px] tracking-widest cursor-pointer uppercase">
+                    <Link href="/">
+                        <ArrowLeft className="w-4 h-4" /> Back to Home
+                    </Link>
+                </Button>
+            </div>
             <div className="max-w-md w-full 2xl:max-w-lg">
                 <section className="text-center mb-8 2xl:mb-12">
                     <div className="bg-[#000066]/5 w-16 h-16 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl flex items-center justify-center mx-auto mb-4 2xl:mb-6 border border-[#000066]/10">
