@@ -7,7 +7,7 @@ import { Lock, Mail, Eye, EyeOff, ShieldCheck, Loader2, Home } from 'lucide-reac
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 
 export default function LoginClient() {
@@ -31,10 +31,15 @@ export default function LoginClient() {
             return "Invalid email or password";
         }
 
+        const session = await getSession();
+        const role = (session?.user as { role?: string })?.role;
+
         if (callbackUrl && callbackUrl.startsWith('/')) {
             window.location.href = callbackUrl;
+        } else if (role) {
+            window.location.href = `/${role}`;
         } else {
-            window.location.href = '/login';
+            window.location.href = '/login?ref=success';
         }
         return null;
     }, null);
