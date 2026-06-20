@@ -7,7 +7,7 @@ const wsStorageUrl = storageUrl.replace(/^http/, "ws");
 const csp = [
   "default-src 'self'",
   "base-uri 'self'",
-  "frame-ancestors 'self'",
+  "frame-ancestors 'self' https://indala.vercel.app",
   "object-src 'none'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",
@@ -62,7 +62,6 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: csp },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(self)" },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         ],
