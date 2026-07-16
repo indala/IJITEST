@@ -118,6 +118,7 @@ const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> 
         const mainManuscript = files.find(f => f.fileType === 'mainManuscript');
         const pdfVersion = files.find(f => f.fileType === 'pdfVersion');
         const finalPdf = row.publication?.finalPdfUrl;
+        const publishedAt = row.publication?.publishedAt;
 
         const data: SubmissionUI = {
             ...submissionData,
@@ -125,7 +126,11 @@ const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> 
             abstract: latestVersion?.abstract || null,
             keywords: latestVersion?.keywords || null,
             filePath: mainManuscript?.fileUrl || "",
-            pdfUrl: finalPdf || pdfVersion?.fileUrl || "", // Priority: Published PDF > Review PDF
+            // Priority: Published PDF > Styled PDF. Cache-bust with publishedAt so
+            // rebranded PDFs are fetched fresh by the browser (iframe in Secure preview).
+            pdfUrl: finalPdf
+                ? `${finalPdf}?v=${publishedAt ? new Date(publishedAt).getTime() : Date.now()}`
+                : (pdfVersion?.fileUrl || ""),
             authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
             authorEmail: submissionData.correspondingAuthor?.email || "",
             coAuthors: submissionData.authors,
