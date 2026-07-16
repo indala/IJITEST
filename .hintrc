@@ -1,4 +1,17 @@
 {
+  "connector": {
+    "name": "local",
+    "options": {
+      "pattern": [
+        "**",
+        "!**/*.html",
+        "!**/*.htm",
+        "!.git/**",
+        "!node_modules/**",
+        "!.next/**"
+      ]
+    }
+  },
   "extends": [
     "development"
   ],

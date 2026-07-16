@@ -60,7 +60,7 @@ export default async function FaqsPage() {
         }
     ];
 
-    const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '');
+    const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
 
     const faqSchema = {
         "@context": "https://schema.org",

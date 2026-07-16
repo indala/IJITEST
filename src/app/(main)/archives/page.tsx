@@ -10,9 +10,13 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         title: `Journal Archives | ${settings['journalName']}`,
         description: `Browse the digital repository of ${settings['journalShortName']}. Explore peer-reviewed research, technical reports, and innovative trends in engineering and science since ${settings['journalName']}'s inception.`,
+        alternates: {
+            canonical: '/archives',
+        },
         openGraph: {
             title: `Research repository - ${settings['journalShortName']}`,
             description: `Global access to peer-reviewed technical manuscripts.`,
+            url: '/archives',
             type: 'website',
         }
     };

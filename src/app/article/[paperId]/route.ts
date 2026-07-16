@@ -15,6 +15,12 @@ export async function GET(
             return new NextResponse("Paper ID is required", { status: 400 });
         }
 
+        const canonicalPaperId = paperId.toUpperCase();
+        if (canonicalPaperId !== paperId) {
+            const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
+            return NextResponse.redirect(`${baseUrl}/article/${canonicalPaperId}`, 308);
+        }
+
         // 1. Fetch the publication and volume/issue details for this paper ID
         const pubRows = await db.select({
             id: submissions.id,
@@ -22,11 +28,11 @@ export async function GET(
             volumeNumber: volumesIssues.volumeNumber,
             issueNumber: volumesIssues.issueNumber,
         })
-        .from(submissions)
-        .innerJoin(publications, eq(submissions.id, publications.submissionId))
-        .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
-        .where(eq(submissions.paperId, paperId))
-        .limit(1);
+            .from(submissions)
+            .innerJoin(publications, eq(submissions.id, publications.submissionId))
+            .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+            .where(eq(submissions.paperId, paperId))
+            .limit(1);
 
         const row = pubRows[0];
         if (!row) {
@@ -45,7 +51,7 @@ export async function GET(
         const redirectUrl = `/${basePath}/volume${volumeNumber}/issue${issueNumber}/${paperId}`;
 
         // 3. Perform redirect
-        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org';
+        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
         return NextResponse.redirect(`${baseUrl}${redirectUrl}`, 302);
     } catch (error) {
         console.error("Paper redirect error:", error);

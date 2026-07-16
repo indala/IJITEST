@@ -7,9 +7,13 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         title: `Author Guidelines | ${settings['journalName']}`,
         description: `Comprehensive protocol for submitting manuscripts to ${settings['journalShortName']}. Detailed instructions on formatting, templates, and ethical requirements for global research publication.`,
+        alternates: {
+            canonical: '/guidelines',
+        },
         openGraph: {
             title: `Submission Protocol - ${settings['journalShortName']}`,
             description: `Author resources and manuscript formatting templates.`,
+            url: '/guidelines',
             type: 'website',
         }
     };

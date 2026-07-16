@@ -28,4 +28,4 @@ IJITEST covers a broad spectrum of multidisciplinary areas, including:
 
 ## Verification & Citation
 To verify paper authenticity, use the 'Track Manuscript' feature on the website with the unique Paper ID.
-Official website: [https://www.ijitest.org](https://www.ijitest.org)
+Official website: [https://ijitest.org](https://ijitest.org)

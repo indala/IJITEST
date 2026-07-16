@@ -28,7 +28,7 @@ const ALLOWED_SETTING_KEYS = new Set([
     'journalName', 'journalShortName', 'issnNumber', 'apcInr', 'apcUsd',
     'supportEmail', 'supportPhone', 'officeAddress', 'publisherName',
     'journalWebsite', 'apcDescription', 'templateUrl', 'copyrightUrl',
-    'isPromotionActive', 'publicationFrequency', 'startingYear', 
+    'isPromotionActive', 'publicationFrequency', 'startingYear',
     'publicationFormat', 'journalLanguage', 'journalSubject', 'udyamRegistration',
     'doiPrefix'
 ]);
@@ -43,7 +43,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
     supportPhone: '+91 8919643590',
     officeAddress: 'Dr. Ravibabu T.\nAssociate Professor\nDepartment of Electronics and Communication Engineering\nMES Group of Institutions, Vizianagaram,\nAndhra Pradesh, India - 530048',
     publisherName: 'Felix Academic Publications',
-    journalWebsite: 'www.ijitest.org',
+    journalWebsite: 'ijitest.org',
     apcDescription: 'APC covers SJIF impact evaluation, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.',
     templateUrl: '/docs/template.docx',
     copyrightUrl: '/docs/copyright-form.docx',
@@ -90,7 +90,7 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
 export async function getSettingsData(): Promise<Record<string, string>> {
     const res = await getSettings();
     return res.data || DEFAULT_SETTINGS;
-    
+
 }
 
 export async function updateSettings(formData: FormData): Promise<ActionResponse> {
@@ -141,8 +141,8 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
                     id: publications.id,
                     paperId: submissions.paperId
                 })
-                .from(publications)
-                .innerJoin(submissions, eq(publications.submissionId, submissions.id));
+                    .from(publications)
+                    .innerJoin(submissions, eq(publications.submissionId, submissions.id));
 
                 for (const pub of pubs) {
                     const generatedDoi = `${newDoiPrefix}/${pub.paperId}`;

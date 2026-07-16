@@ -260,7 +260,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         }
 
         // 4. Notifications
-        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org';
+        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
         const loginUrl = `${baseUrl}/login`;
 
         // Author Notification

@@ -18,9 +18,9 @@ function WelcomeSection() {
             className="relative group"
             aria-labelledby="welcome-heading"
         >
-            <h1 id="welcome-heading" className="text-3xl font-black mb-8 sm:mb-12">
+            <h2 id="welcome-heading" className="text-3xl font-black mb-8 sm:mb-12">
                 Welcome to {shortName}
-            </h1>
+            </h2>
 
             <div className="opacity-80 border-l-4 border-secondary/30 group-hover:border-secondary transition-colors duration-300 pl-6 sm:pl-10 space-y-6 text-left text-pretty max-w-none">
                 <p title='welcome description' className='text-justify'>

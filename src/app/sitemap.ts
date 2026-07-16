@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   'use cache';
   cacheLife('hours');
   cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.PUBLIC_DATA);
-  const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '');
+  const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
 
   // 1. Static Routes
   const staticRoutes = [
@@ -42,7 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const res = await getPublishedPapers();
     const latestRes = await getLatestIssuePapers();
-    
+
     const papers = res.success ? res.data ?? [] : [];
     const latestPapers = latestRes.success ? latestRes.data ?? [] : [];
     const latestPaperIds = new Set(latestPapers.map(p => p.id));

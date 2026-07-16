@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '')
+    const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '')
 
     return {
         rules: [
@@ -26,5 +26,5 @@ export default function robots(): MetadataRoute.Robots {
 }
 
 // AI Specific hints at root level (not part of MetadataRoute, but good for LLMs)
-// llms: https://www.ijitest.org/llms.txt
-// llms-full: https://www.ijitest.org/llms-full.txt
+// llms: https://ijitest.org/llms.txt
+// llms-full: https://ijitest.org/llms-full.txt

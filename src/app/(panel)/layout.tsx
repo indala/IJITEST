@@ -5,6 +5,11 @@ import { authOptions } from '@/lib/auth';
 import { PanelShell } from './PanelShell';
 import AuthProvider from '@/components/providers/AuthProvider';
 import SocketProvider from '@/components/providers/SocketProvider';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    robots: 'noindex',
+};
 
 function PanelShellFallback() {
     return (

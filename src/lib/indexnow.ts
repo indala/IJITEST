@@ -14,7 +14,7 @@ interface IndexNowPayload {
  */
 export async function submitToIndexNow(urls: string[]): Promise<boolean> {
   const key = process.env['INDEXNOW_KEY'];
-  const appUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org';
+  const appUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
 
   if (!key) {
     console.warn("IndexNow: INDEXNOW_KEY is not set in environment variables. Skipping submission.");

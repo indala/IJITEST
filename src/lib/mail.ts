@@ -74,7 +74,7 @@ const JOURNAL = {
  * Ensures consistent branding, typography, and professional aesthetics.
  */
 const mailLayout = (content: string, cta?: { text: string, url: string }) => {
-    const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+    const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
     const logoUrl = `${baseUrl}${JOURNAL.logo}`;
 
     return `
@@ -146,7 +146,7 @@ const mailLayout = (content: string, cta?: { text: string, url: string }) => {
 // Helper templates
 export const emailTemplates = {
     submissionReceived: (authorName: string, paperTitle: string, paperId: string, setupUrl?: string) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
             <p>Thank you for choosing <strong>${JOURNAL.shortName}</strong>. We have successfully received your manuscript and it has entered our professional screening queue.</p>
@@ -175,7 +175,7 @@ export const emailTemplates = {
     },
 
     statusUpdate: (authorName: string, paperTitle: string, status: string, paperId: string, isFree: boolean = false) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const isAccepted = status === 'accepted';
         const statusColor = isAccepted ? '#16a34a' : status === 'rejected' ? '#dc2626' : '#2563eb';
 
@@ -206,7 +206,7 @@ export const emailTemplates = {
     },
 
     reviewAssignment: (reviewerName: string, paperTitle: string, deadline: string, paperId: string, setupUrl?: string) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const formattedDeadline = new Date(deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 
         const content = `
@@ -252,7 +252,7 @@ export const emailTemplates = {
     },
 
     manuscriptAcceptance: (authorName: string, paperTitle: string, paperId: string, isFree: boolean = false) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
             <p>I am pleased to inform you that your manuscript has been <strong>ACCEPTED</strong> for publication in the <em>${JOURNAL.name}</em>.</p>
@@ -297,7 +297,7 @@ export const emailTemplates = {
     },
 
     reviewCompleted: (reviewerName: string, paperTitle: string, paperId: string) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear Administrator,</p>
             <p>Reviewer <strong>${reviewerName}</strong> has submitted their final evaluation for manuscript <strong>${paperId}</strong>.</p>
@@ -342,7 +342,7 @@ export const emailTemplates = {
     },
 
     manuscriptPublished: (authorName: string, paperTitle: string, paperId: string, volume: number, issue: number, year: number) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
             <p>We are delighted to inform you that your manuscript is now officially <strong>PUBLISHED</strong> and indexed in the latest issue of ${JOURNAL.shortName}.</p>
@@ -377,7 +377,7 @@ export const emailTemplates = {
     },
 
     resubmissionRequest: (authorName: string, _paperTitle: string, paperId: string, comments?: string, subId?: number) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const resubmitLink = subId ? `${baseUrl}/author/submissions/${subId}/resubmit` : `${baseUrl}/author/submissions`;
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${authorName}</strong>,</p>
@@ -401,7 +401,7 @@ export const emailTemplates = {
     },
 
     resubmissionReceived: (authorName: string, paperTitle: string, paperId: string, subId: number, role: 'admin' | 'editor' = 'admin') => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const dashboardLink = role === 'admin' ? `${baseUrl}/admin/submissions/${subId}` : `${baseUrl}/editor/submissions/${subId}`;
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Hello,</p>
@@ -626,7 +626,7 @@ export const emailTemplates = {
     },
 
     copyrightSubmitted: (authorName: string, paperTitle: string, paperId: string, subId: number) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Hello Editor,</p>
             <p>The corresponding author <strong>${authorName}</strong> has submitted the signed copyright transfer agreement for manuscript <strong>${paperId}</strong>.</p>
@@ -648,13 +648,13 @@ export const emailTemplates = {
     },
 
     reviewDeadlineReminder: (reviewerName: string, paperTitle: string, paperId: string, daysRemaining: number, deadline: string | Date) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const formattedDeadline = new Date(deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
-        
+
         let timeText = `is due in ${daysRemaining} days`;
         let urgencyBadge = "Review Deadline Approaching";
         let priorityColor = JOURNAL.primaryColor;
-        
+
         if (daysRemaining === 0) {
             timeText = "is due TODAY";
             urgencyBadge = "Review Due Today";
@@ -702,9 +702,9 @@ export const emailTemplates = {
     },
 
     reviewOverdueEscalation: (editorName: string, reviewerName: string, paperTitle: string, paperId: string, daysOverdue: number, deadline: string | Date) => {
-        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://www.ijitest.org';
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const formattedDeadline = new Date(deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
-        
+
         const content = `
             <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${editorName}</strong>,</p>
             <p>This is a system escalation notification regarding a late review assignment for manuscript <strong>${paperId}</strong>.</p>

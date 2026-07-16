@@ -31,6 +31,16 @@ export async function GET(
 
     const category = pathSegments[0]; // e.g., "submissions", "reviewer-apps"
     const filename = pathSegments.slice(1).join('/');
+
+    // Handle case-insensitive redirects for published files starting with "ijitest-"
+    if (category === 'published') {
+        const canonicalFilename = filename.replace(/^ijitest-/i, 'IJITEST-');
+        if (canonicalFilename !== filename) {
+            const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
+            return NextResponse.redirect(`${baseUrl}/api/files/published/${canonicalFilename}`, 308);
+        }
+    }
+
     const relativePath = `${category}/${filename}`;
 
     // 0. Published, docs, and profile files are public to all

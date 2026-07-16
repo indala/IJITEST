@@ -16,7 +16,7 @@ const crimsonPro = Crimson_Pro({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org'),
+  metadataBase: new URL(process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org'),
   title: {
     default: "IJITEST | International Journal of Innovative Trends in Engineering Science and Technology",
     template: "%s | IJITEST"
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "IJITEST | International Journal of Innovative Trends in Engineering Science and Technology",
     description: "Global platform for breakthrough research in engineering and technology.",
-    url: 'https://www.ijitest.org',
+    url: 'https://ijitest.org',
     siteName: 'IJITEST',
     images: [
       {
@@ -83,7 +83,6 @@ export const viewport: Viewport = {
   themeColor: "#000066",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 import { Suspense } from "react";
@@ -107,8 +106,8 @@ async function SettingsLayer({ children }: { children: React.ReactNode }) {
     "@type": "Organization",
     "name": dynamicSettings.journalName,
     "alternateName": dynamicSettings.journalShortName,
-    "url": "https://www.ijitest.org",
-    "logo": "https://www.ijitest.org/favicon_io/apple-touch-icon.png",
+    "url": "https://ijitest.org",
+    "logo": "https://ijitest.org/favicon_io/apple-touch-icon.png",
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": dynamicSettings.supportPhone,
@@ -122,7 +121,7 @@ async function SettingsLayer({ children }: { children: React.ReactNode }) {
     "@type": "ScholarlyJournal",
     "name": dynamicSettings.journalName,
     "alternateName": dynamicSettings.journalShortName,
-    "url": "https://www.ijitest.org",
+    "url": "https://ijitest.org",
     "publisher": {
       "@type": "Organization",
       "name": `${dynamicSettings.journalShortName} Publishing`

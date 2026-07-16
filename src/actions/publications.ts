@@ -39,7 +39,7 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
     if (!session?.user || session.user.role !== 'admin') {
         return actionError("Unauthorized");
     }
-    
+
     const volume = parseInt(formData.get('volume') as string);
     const issue = parseInt(formData.get('issue') as string);
     const year = parseInt(formData.get('year') as string);
@@ -211,7 +211,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
             year: issue.year,
             monthRange: issue.monthRange || "",
             issn: settings['issnNumber'] || "XXXX-XXXX",
-            website: settings['journalWebsite'] || "https://www.ijitest.org",
+            website: settings['journalWebsite'] || "https://ijitest.org",
             paperId: submission.paperId,
             startPage: confirmedStartPage,
             endPage: confirmedEndPage,
@@ -268,7 +268,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         }).catch(e => console.error("In-app publication notification failed:", e));
 
         // 8. IndexNow notification AFTER transaction (fire-and-forget)
-        const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '');
+        const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
         const paperUrl = `${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${submission.paperId}`;
         submitToIndexNow([paperUrl])
             .catch((e: unknown) => console.error("IndexNow submission failed:", e));
@@ -319,13 +319,13 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         const issuePapers = await db.select({
             paperId: submissions.paperId
         })
-        .from(submissions)
-        .where(eq(submissions.issueId, id));
+            .from(submissions)
+            .where(eq(submissions.issueId, id));
 
         const issueRows = await db.select().from(volumesIssues).where(eq(volumesIssues.id, id)).limit(1);
         const issue = issueRows[0];
 
-        const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org').replace(/\/$/, '');
+        const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
         const urlsToSubmit: string[] = [];
 
         // Add newly published issue papers (now in current-issue)
@@ -340,8 +340,8 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
             const prevIssuePapers = await db.select({
                 paperId: submissions.paperId
             })
-            .from(submissions)
-            .where(eq(submissions.issueId, prevLatestIssue.id));
+                .from(submissions)
+                .where(eq(submissions.issueId, prevLatestIssue.id));
 
             if (prevIssuePapers.length > 0) {
                 prevIssuePapers.forEach(paper => {
@@ -388,9 +388,9 @@ export async function getPapersByIssueId(issueId: number): Promise<ActionRespons
             submissionId: submissionVersions.submissionId,
             maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
         })
-        .from(submissionVersions)
-        .groupBy(submissionVersions.submissionId)
-        .as('lv');
+            .from(submissionVersions)
+            .groupBy(submissionVersions.submissionId)
+            .as('lv');
 
         const rows = await db.select({
             id: submissions.id,
@@ -596,11 +596,11 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
             sub: submissions,
             issue: volumesIssues
         })
-        .from(publications)
-        .innerJoin(submissions, eq(publications.submissionId, submissions.id))
-        .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
-        .where(eq(publications.submissionId, submissionId))
-        .limit(1);
+            .from(publications)
+            .innerJoin(submissions, eq(publications.submissionId, submissions.id))
+            .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
 
         const row = pubRows[0];
         if (!row) return actionError("Publication not found or not published yet.");
@@ -631,7 +631,7 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
             year: issue.year,
             monthRange: issue.monthRange || "",
             issn: settings['issnNumber'] || "XXXX-XXXX",
-            website: settings['journalWebsite'] || "https://www.ijitest.org",
+            website: settings['journalWebsite'] || "https://ijitest.org",
             paperId: sub.paperId,
             startPage: pub.startPage,
             endPage: pub.endPage,

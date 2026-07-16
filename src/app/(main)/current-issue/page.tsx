@@ -8,9 +8,13 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         title: `Current Issue | ${settings['journalName']}`,
         description: `Explore the latest research and technical papers published in the current issue of ${settings['journalShortName']}.`,
+        alternates: {
+            canonical: '/current-issue',
+        },
         openGraph: {
             title: `Current Issue - ${settings['journalShortName']}`,
             description: `Access the latest peer-reviewed technical manuscripts.`,
+            url: '/current-issue',
             type: 'website',
         }
     };

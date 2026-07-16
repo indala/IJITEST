@@ -1,7 +1,7 @@
 import { getPaperById } from "@/actions/archives";
 import PageHeader from "@/components/layout/PageHeader";
 import PaperDetailClient from "@/features/archives/components/PaperDetailClient";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 import { getLatestIssuePapers } from "@/actions/archives";
@@ -44,12 +44,12 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
 
     if (!paper) return { title: 'Article Not Found | IJITEST' };
 
-    const baseUrl = settings['journalWebsite'] || 'https://www.ijitest.org';
+    const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
     const allAuthors = paper.authorsList || [];
 
     const pubYearStr = paper.publicationYear ? String(paper.publicationYear) : '';
-    const formattedDate: string = (paper.publishedAt 
-        ? new Date(paper.publishedAt).toISOString().split('T')[0] 
+    const formattedDate: string = (paper.publishedAt
+        ? new Date(paper.publishedAt).toISOString().split('T')[0]
         : pubYearStr) as string;
 
     const description = paper.abstract ? paper.abstract.substring(0, 160) : '';
@@ -98,6 +98,12 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
 
 export default async function PaperDetailPage({ params }: { params: Promise<PaperDetailParams> }) {
     const { volume, issue, paperId } = await params;
+
+    const canonicalPaperId = paperId.toUpperCase();
+    if (canonicalPaperId !== paperId) {
+        redirect(`/current-issue/${volume}/${issue}/${canonicalPaperId}`);
+    }
+
     const [paperRes, settings] = await Promise.all([
         getPaperById(paperId),
         getSettingsData()
@@ -107,7 +113,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
 
     if (!paper) notFound();
 
-    const baseUrl = settings['journalWebsite'] || 'https://www.ijitest.org';
+    const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
     const allAuthors = paper.authorsList || [];
 
     return (
@@ -124,7 +130,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
             />
             <PaperDetailClient paper={paper} mode="current" />
 
-            <JsonLd 
+            <JsonLd
                 id="scholarly-article"
                 data={{
                     "@context": "https://schema.org",

@@ -34,7 +34,7 @@ export async function getSocketToken(): Promise<ActionResponse<{ token: string; 
             return { success: false, error: "Storage service secret is not configured" };
         }
 
-        const socketUrl = process.env['STORAGE_SERVICE_URL'] || 'https://www.api.ijitest.org';
+        const socketUrl = process.env['STORAGE_SERVICE_URL'] || 'https://api.ijitest.org';
 
         // Generate token valid for 2 minutes
         const token = signSocketToken({
@@ -53,8 +53,8 @@ export async function getSocketToken(): Promise<ActionResponse<{ token: string; 
  * Action: Send a message (saves it in the database).
  */
 export async function sendChatMessage(
-    receiverId: string, 
-    messageText: string, 
+    receiverId: string,
+    messageText: string,
     submissionId?: number
 ): Promise<ActionResponse<ChatMessageRow>> {
     try {
@@ -98,7 +98,7 @@ export async function sendChatMessage(
  * Action: Get conversation history between current user and partner.
  */
 export async function getChatHistory(
-    partnerId: string, 
+    partnerId: string,
     submissionId?: number
 ): Promise<ActionResponse<ChatMessageRow[]>> {
     try {
@@ -131,10 +131,10 @@ export async function getChatHistory(
             createdAt: chatMessages.createdAt,
             senderName: userProfiles.fullName
         })
-        .from(chatMessages)
-        .leftJoin(userProfiles, eq(chatMessages.senderId, userProfiles.userId))
-        .where(and(...conditions))
-        .orderBy(asc(chatMessages.createdAt));
+            .from(chatMessages)
+            .leftJoin(userProfiles, eq(chatMessages.senderId, userProfiles.userId))
+            .where(and(...conditions))
+            .orderBy(asc(chatMessages.createdAt));
 
         // Mark incoming messages as read
         const unreadIds = messagesList
@@ -184,17 +184,17 @@ export async function searchChatUsers(query: string): Promise<ActionResponse<Cha
                        OR (sender_id = ${users.id} AND receiver_id = ${userId})
                 )`
             })
-            .from(users)
-            .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-            .where(and(
-                not(eq(users.id, userId)),
-                not(eq(users.role, 'author')),
-                or(
-                    like(userProfiles.fullName, searchPattern),
-                    like(users.email, searchPattern)
-                )
-            ))
-            .limit(15);
+                .from(users)
+                .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+                .where(and(
+                    not(eq(users.id, userId)),
+                    not(eq(users.role, 'author')),
+                    or(
+                        like(userProfiles.fullName, searchPattern),
+                        like(users.email, searchPattern)
+                    )
+                ))
+                .limit(15);
 
             return { success: true, data: rows };
         } else if (role === 'reviewer') {
@@ -219,19 +219,19 @@ export async function searchChatUsers(query: string): Promise<ActionResponse<Cha
                        OR (sender_id = ${users.id} AND receiver_id = ${userId})
                 )`
             })
-            .from(users)
-            .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-            .where(and(
-                or(
-                    inArray(users.id, assignersSubquery),
-                    inArray(users.id, messagersSubquery)
-                ),
-                or(
-                    like(userProfiles.fullName, searchPattern),
-                    like(users.email, searchPattern)
-                )
-            ))
-            .limit(15);
+                .from(users)
+                .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+                .where(and(
+                    or(
+                        inArray(users.id, assignersSubquery),
+                        inArray(users.id, messagersSubquery)
+                    ),
+                    or(
+                        like(userProfiles.fullName, searchPattern),
+                        like(users.email, searchPattern)
+                    )
+                ))
+                .limit(15);
 
             return { success: true, data: rows };
         }
@@ -246,9 +246,9 @@ export async function searchChatUsers(query: string): Promise<ActionResponse<Cha
  * Helper: Authorize whether two users are allowed to chat.
  */
 async function checkChatPermission(
-    senderId: string, 
-    senderRole: string, 
-    receiverId: string, 
+    senderId: string,
+    senderRole: string,
+    receiverId: string,
     _submissionId?: number
 ): Promise<boolean> {
     // 1. Staff (Admin/Editor) can chat with each other or anyone except authors (unless managing author paper, but chat is restricted to internal staff for now)
@@ -256,7 +256,7 @@ async function checkChatPermission(
         .from(users)
         .where(eq(users.id, receiverId))
         .limit(1);
-    
+
     if (!receiver) return false;
     if (receiver.role === 'author') return false; // Safety: strictly prevent author chats
 
@@ -273,7 +273,7 @@ async function checkChatPermission(
                 eq(reviewAssignments.assignedBy, receiverId)
             ))
             .limit(1);
-        
+
         if (assignments.length > 0) {
             return true;
         }
@@ -309,11 +309,11 @@ export async function getUnreadChatCount(): Promise<ActionResponse<{ count: numb
         const unreadMsgs = await db.select({
             senderId: chatMessages.senderId
         })
-        .from(chatMessages)
-        .where(and(
-            eq(chatMessages.receiverId, userId),
-            eq(chatMessages.isRead, false)
-        ));
+            .from(chatMessages)
+            .where(and(
+                eq(chatMessages.receiverId, userId),
+                eq(chatMessages.isRead, false)
+            ));
 
         const byPartner: Record<string, number> = {};
         let totalCount = 0;

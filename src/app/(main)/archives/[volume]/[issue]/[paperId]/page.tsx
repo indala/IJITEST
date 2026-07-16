@@ -1,7 +1,7 @@
 import { getPaperById } from "@/actions/archives";
 import PageHeader from "@/components/layout/PageHeader";
 import PaperDetailClient from "@/features/archives/components/PaperDetailClient";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 import { getPublishedPapers } from "@/actions/archives";
@@ -44,10 +44,10 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
 
     if (!paper) return { title: 'Article Not Found | IJITEST' };
 
-    const baseUrl = settings['journalWebsite'] || 'https://www.ijitest.org';
+    const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
     const pubYearStr = paper.publicationYear ? String(paper.publicationYear) : '';
-    const formattedDate: string = (paper.publishedAt 
-        ? new Date(paper.publishedAt).toISOString().split('T')[0] 
+    const formattedDate: string = (paper.publishedAt
+        ? new Date(paper.publishedAt).toISOString().split('T')[0]
         : pubYearStr) as string;
 
     const description = paper.abstract ? paper.abstract.substring(0, 160) : '';
@@ -96,6 +96,12 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
 
 export default async function PaperDetailPage({ params }: { params: Promise<PaperDetailParams> }) {
     const { volume, issue, paperId } = await params;
+
+    const canonicalPaperId = paperId.toUpperCase();
+    if (canonicalPaperId !== paperId) {
+        redirect(`/archives/${volume}/${issue}/${canonicalPaperId}`);
+    }
+
     const [paperRes, settings] = await Promise.all([
         getPaperById(paperId),
         getSettingsData()
@@ -105,7 +111,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
 
     if (!paper) notFound();
 
-    const baseUrl = settings['journalWebsite'] || 'https://www.ijitest.org';
+    const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
 
     return (
         <div className="bg-white min-h-screen pb-20">
@@ -118,7 +124,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                     { name: paper.paperId, href: `/archives/${volume}/${issue}/${paperId}` },
                 ]}
             />
-            <PaperDetailClient 
+            <PaperDetailClient
                 paper={{
                     ...paper,
                     coAuthors: paper.coAuthors ?? null
@@ -164,7 +170,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                     }
                 }}
             />
-            
+
             <JsonLd
                 id="breadcrumb"
                 data={{

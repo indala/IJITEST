@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
-const storageUrl = process.env['STORAGE_SERVICE_URL'] || "https://www.api.ijitest.org";
+const storageUrl = process.env['STORAGE_SERVICE_URL'] || "https://api.ijitest.org";
 const wsStorageUrl = storageUrl.replace(/^http/, "ws");
 
 const csp = [

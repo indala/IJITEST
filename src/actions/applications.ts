@@ -2,17 +2,17 @@
 import "server-only"
 
 import { db } from "@/lib/db";
-import { 
-    applications, 
-    users, 
-    userProfiles, 
+import {
+    applications,
+    users,
+    userProfiles,
     userInvitations,
     applicationInterests,
     masterInterests
 } from "@/db/schema";
-import { 
-    type Application, 
-    type ActionResponse 
+import {
+    type Application,
+    type ActionResponse
 } from "@/db/types";
 import { eq, and, desc, SQL, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -32,7 +32,7 @@ export async function getApplications(filters?: { role?: string, status?: string
         }
 
         const whereClauses: SQL[] = [];
-        
+
         if (filters?.role && filters.role !== 'all') {
             whereClauses.push(eq(applications.type, filters.role as "editor" | "reviewer"));
         }
@@ -65,9 +65,9 @@ export async function getApplications(filters?: { role?: string, status?: string
             .where(inArray(applicationInterests.applicationId, appIds));
 
         const allInterests = allInterestsRaw
-            .filter((row): row is typeof row & { interestIdNullable: number; interestName: string; interestCreatedAt: Date } => 
-                row.interestIdNullable !== null && 
-                row.interestName !== null && 
+            .filter((row): row is typeof row & { interestIdNullable: number; interestName: string; interestCreatedAt: Date } =>
+                row.interestIdNullable !== null &&
+                row.interestName !== null &&
                 row.interestCreatedAt !== null
             )
             .map(row => ({
@@ -86,19 +86,19 @@ export async function getApplications(filters?: { role?: string, status?: string
             const appInterests = allInterests
                 .filter(i => i.applicationId === app.id)
                 .map(i => i.interest.name);
-            
+
             return {
                 ...app,
                 researchInterests: appInterests
             };
         });
 
-    // 4. Client-side filter for interest if needed (since it's a join/relation filter)
+        // 4. Client-side filter for interest if needed (since it's a join/relation filter)
         // Note: For large datasets, this should be done in SQL with an EXISTS clause.
         let finalData = mappedData;
         if (filters?.interest) {
             const search = filters.interest.toLowerCase();
-            finalData = mappedData.filter(app => 
+            finalData = mappedData.filter(app =>
                 app.researchInterests?.some(interest => interest.toLowerCase().includes(search))
             );
         }
@@ -125,7 +125,7 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
         const result = await db.transaction(async (tx) => {
             const appRows = await tx.select().from(applications).where(eq(applications.id, id)).limit(1);
             const app = appRows[0];
-            
+
             if (!app) return { success: false, error: "Application not found" };
             if (app.status !== 'pending') return { success: false, error: `Application is already ${app.status}` };
 
@@ -163,10 +163,10 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
 
             // 4. Update Application Status
             await tx.update(applications)
-                .set({ 
-                    status: 'approved', 
-                    reviewedAt: new Date(), 
-                    reviewedBy: adminId 
+                .set({
+                    status: 'approved',
+                    reviewedAt: new Date(),
+                    reviewedBy: adminId
                 })
                 .where(eq(applications.id, id));
 
@@ -178,9 +178,9 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
         const { app, role, invitationToken } = result as { app: Application, role: string, invitationToken: string };
 
         // 5. Send Invitation Email
-        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://www.ijitest.org';
+        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
         const setupUrl = `${baseUrl}/auth/setup-password?token=${invitationToken}&ctx=setup`;
-        
+
         const template = emailTemplates.boardInvitation(app.fullName, role, setupUrl);
 
         await sendEmail({
@@ -221,15 +221,15 @@ export async function rejectApplication(id: number, reason: string): Promise<Act
         if (app.status !== 'pending') {
             return { success: false, error: `Application is already ${app.status}` };
         }
-        
+
         const role = app.type || 'reviewer';
 
         // 1. Update status to rejected first (DB is source of truth)
         await db.update(applications)
-            .set({ 
-                status: 'rejected', 
-                reviewedAt: new Date(), 
-                reviewedBy: adminId 
+            .set({
+                status: 'rejected',
+                reviewedAt: new Date(),
+                reviewedBy: adminId
             })
             .where(eq(applications.id, id));
 

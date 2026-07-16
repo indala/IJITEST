@@ -8,6 +8,7 @@ import LoginClient from "./LoginClient";
 export const metadata = {
     title: "Login | IJITEST",
     description: "Sign in to your IJITEST account.",
+    robots: 'noindex',
 };
 
 function LoginFallback() {
