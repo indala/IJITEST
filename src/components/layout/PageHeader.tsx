@@ -4,17 +4,47 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { motion, animate } from 'framer-motion';
 import type { AnimationPlaybackControls } from 'framer-motion';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useId } from 'react';
 import { useLenis } from 'lenis/react';
+
+interface BreadcrumbItem {
+    name: string;
+    href: string;
+}
 
 interface PageHeaderProps {
     title: string;
     description?: string;
-    breadcrumbs: { name: string; href: string }[];
+    breadcrumbs: BreadcrumbItem[];
     scrollOnComplete?: boolean;
+    disableBreadcrumbJsonLd?: boolean;
 }
 
-export default function PageHeader({ title, description, breadcrumbs, scrollOnComplete = true }: PageHeaderProps) {
+function BreadcrumbJsonLd({ items, baseUrl }: { items: BreadcrumbItem[]; baseUrl: string }) {
+    const id = useId();
+    const itemListElement = items.map((item, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        name: item.name,
+        item: `${baseUrl}${item.href}`,
+    }));
+
+    return (
+        <script
+            id={id}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'BreadcrumbList',
+                    itemListElement,
+                }),
+            }}
+        />
+    );
+}
+
+export default function PageHeader({ title, description, breadcrumbs, scrollOnComplete = true, disableBreadcrumbJsonLd = false }: PageHeaderProps) {
     const sectionRef = useRef<HTMLElement>(null);
     const animationRef = useRef<AnimationPlaybackControls | null>(null);
     const lenis = useLenis();
@@ -60,8 +90,16 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
     };
 
 
+    const baseUrl = (typeof window !== 'undefined'
+        ? window.location.origin
+        : process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org');
+
     return (
-        <section ref={sectionRef} className="relative py-12 bg-[#000066] border-b border-white/5 overflow-hidden">
+        <>
+            {!disableBreadcrumbJsonLd && (
+                <BreadcrumbJsonLd items={breadcrumbs} baseUrl={baseUrl.replace(/\/$/, '')} />
+            )}
+            <section ref={sectionRef} className="relative py-12 bg-[#000066] border-b border-white/5 overflow-hidden">
             <div className="container-responsive relative z-10">
                 <nav aria-label="Breadcrumb">
                     <ol className="flex items-center gap-2 list-none p-0">
@@ -125,5 +163,6 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
                 </div>
             </div>
         </section>
+        </>
     );
 }
