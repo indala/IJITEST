@@ -6,7 +6,7 @@ import { payments, submissions, submissionVersions, userProfiles, users } from "
 import { eq, desc, and, isNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { invalidateAuthorActionsCount, createNotification } from "./notifications";
-import { type ActionResponse, type PaymentRow, type UnpaidPaperRow, type PaymentStatus } from "@/db/types";
+import { type ActionResponse, type PaymentRow, type UnpaidPaperRow, type PaymentStatus, serverError } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
@@ -55,9 +55,8 @@ export async function getPayments(): Promise<ActionResponse<PaymentRow[]>> {
 
         return { success: true, data: results as PaymentRow[] };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Get Payments Error:", error);
-        return { success: false, error: "Failed to fetch payments: " + message };
+        return serverError(error, "fetch payments");
     }
 }
 
@@ -130,9 +129,8 @@ export async function updatePaymentStatus(paymentId: number, status: PaymentStat
         revalidatePath('/admin/payments');
         return { success: true };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Update Payment Error:", error);
-        return { success: false, error: "Failed to update payment: " + message };
+        return serverError(error, "update payment");
     }
 }
 
@@ -171,9 +169,8 @@ export async function initializePayment(submissionId: number, amount: number, cu
         revalidatePath('/admin/payments');
         return { success: true };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Initialize Payment Error:", error);
-        return { success: false, error: "Failed to initialize payment: " + message };
+        return serverError(error, "initialize payment");
     }
 }
 
@@ -217,9 +214,8 @@ export async function getAcceptedUnpaidPapers(): Promise<ActionResponse<UnpaidPa
 
         return { success: true, data: results };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Get Accepted Unpaid Error:", error);
-        return { success: false, error: "Failed to fetch unpaid papers: " + message };
+        return serverError(error, "fetch unpaid papers");
     }
 }
 
@@ -275,8 +271,7 @@ export async function waivePayment(submissionId: number): Promise<ActionResponse
         revalidatePath('/admin/payments');
         return { success: true };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Waive Payment Error:", error);
-        return { success: false, error: "Failed to waive payment: " + message };
+        return serverError(error, "waive payment");
     }
 }

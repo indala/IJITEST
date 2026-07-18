@@ -22,12 +22,13 @@ import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import { 
-    type ActionResponse, 
-    type AuthorDashboardSubmission, 
+import {
+    type ActionResponse,
+    type AuthorDashboardSubmission,
     type AuthorSubmissionDetail,
     actionSuccess,
-    actionError
+    actionError,
+    serverError
 } from "@/db/types";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 
@@ -89,9 +90,8 @@ export async function getAuthorDashboard(): Promise<ActionResponse<{ submissions
 
         return actionSuccess({ submissions: rows as AuthorDashboardSubmission[] });
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Author Dashboard Error:", error);
-        return actionError<{ submissions: AuthorDashboardSubmission[] }>("Failed to load dashboard: " + message);
+        return serverError<{ submissions: AuthorDashboardSubmission[] }>(error, "load dashboard");
     }
 }
 
@@ -194,9 +194,8 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
             publication: publicationData[0] || null
         } as AuthorSubmissionDetail);
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Get Author Submission Error:", error);
-        return actionError<AuthorSubmissionDetail>("Failed to fetch submission details: " + message);
+        return serverError<AuthorSubmissionDetail>(error, "fetch submission details");
     }
 }
 
@@ -234,8 +233,7 @@ export async function checkResubmissionEligibility(submissionId: number): Promis
 
         return actionSuccess({ eligible, daysRemaining });
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return actionError<{ eligible: boolean; daysRemaining: number }>(message);
+        return serverError<{ eligible: boolean; daysRemaining: number }>(error, "check resubmission eligibility");
     }
 }
 
@@ -375,9 +373,8 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         return actionSuccess(undefined);
 
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Resubmission Failure:", error);
-        return actionError(message || "Failed to process revision.");
+        return serverError(error, "process revision");
     }
 }
 
@@ -535,9 +532,8 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
 
         return actionSuccess(undefined);
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Copyright upload failure:", error);
-        return actionError("Failed to upload copyright transfer form: " + message);
+        return serverError(error, "upload copyright transfer form");
     }
 }
 
@@ -701,8 +697,7 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
         revalidatePath('/admin/users');
         return actionSuccess({ deletedCount }, `Cleanup complete. Deleted ${deletedCount} inactive authors.`);
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Cleanup Error:", error);
-        return actionError<{ deletedCount: number }>("Cleanup failed: " + message);
+        return serverError<{ deletedCount: number }>(error, "cleanup inactive authors");
     }
 }

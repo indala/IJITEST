@@ -26,7 +26,7 @@ import {
     triggerDocxToPdfConversion 
 } from "@/lib/fs-utils";
 
-import { type ActionResponse, type ActiveReview, type UnassignedPaper } from "@/db/types";
+import { type ActionResponse, type ActiveReview, type UnassignedPaper, serverError } from "@/db/types";
 
 /**
  * Assign a reviewer to a submission.
@@ -263,7 +263,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
         return { success: true };
     } catch (error) {
         console.error("Assign Reviewer Error:", error);
-        return { success: false, error: "Failed to assign reviewer: " + (error instanceof Error ? error.message : String(error)) };
+        return serverError(error, "assign reviewer");
     }
 }
 
@@ -419,7 +419,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
 
     } catch (error) {
         console.error("Submit Review Error:", error);
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "submit review");
     }
 }
 
@@ -487,7 +487,7 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
         return { success: true, data: rows as ActiveReview[] };
     } catch (error) {
         console.error("Get Reviews Error:", error);
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "fetch review assignments");
     }
 }
 
@@ -536,6 +536,6 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<Unas
         return { success: true, data: rows };
     } catch (error) {
         console.error("Get Unassigned Error:", error);
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "fetch review details");
     }
 }

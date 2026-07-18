@@ -82,7 +82,7 @@ export async function createRazorpayOrder(submissionId: number, paperId: string)
         };
     } catch (error) {
         console.error("Create Razorpay Order Error:", error);
-        return { success: false, error: "Failed to create payment order: " + (error instanceof Error ? error.message : String(error)) };
+        return { success: false, error: "An unexpected error occurred. Please try again." };
     }
 }
 
@@ -209,6 +209,6 @@ export async function verifyRazorpayPayment(data: {
         return { success: true };
     } catch (error) {
         console.error("Verify Razorpay Payment Error:", error);
-        return { success: false, error: "Failed to verify payment: " + (error instanceof Error ? error.message : String(error)) };
+        return { success: false, error: "An unexpected error occurred. Please try again." };
     }
 }

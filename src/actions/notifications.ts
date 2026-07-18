@@ -6,7 +6,7 @@ import { contactMessages, submissions, reviewAssignments, notifications, pushSub
 import { eq, count, and, inArray, desc } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { type ActionResponse, type Notification, type NotificationType, type PushSubscriptionRow } from "@/db/types";
+import { type ActionResponse, type Notification, type NotificationType, type PushSubscriptionRow, serverError } from "@/db/types";
 import { updateTag, cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";
@@ -142,9 +142,8 @@ export async function getNotificationCounts(): Promise<ActionResponse<{ messages
         };
         return { success: true, data };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Get Notification Counts Error:", error);
-        return { success: false, error: message };
+        return serverError(error, "fetch notification counts");
     }
 }
 
@@ -226,9 +225,8 @@ export async function createNotification({
 
         return { success: true };
     } catch (error) {
-        const errMessage = error instanceof Error ? error.message : String(error);
         console.error("Failed to create notification:", error);
-        return { success: false, error: errMessage };
+        return serverError(error, "create notification");
     }
 }
 
@@ -272,9 +270,8 @@ export async function getRecentNotifications({
         const data = await getRecentNotificationsCached(userId, limit, unreadOnly);
         return { success: true, data };
     } catch (error) {
-        const errMessage = error instanceof Error ? error.message : String(error);
         console.error("Failed to get recent notifications:", error);
-        return { success: false, error: errMessage };
+        return serverError(error, "fetch recent notifications");
     }
 }
 
@@ -307,9 +304,8 @@ export async function getUnreadNotificationsCount(): Promise<ActionResponse<numb
         const data = await getUnreadNotificationsCountCached(userId);
         return { success: true, data };
     } catch (error) {
-        const errMessage = error instanceof Error ? error.message : String(error);
         console.error("Failed to get unread notification count:", error);
-        return { success: false, error: errMessage };
+        return serverError(error, "fetch unread notification count");
     }
 }
 
@@ -331,9 +327,8 @@ export async function markNotificationAsRead(notificationId: number): Promise<Ac
 
         return { success: true };
     } catch (error) {
-        const errMessage = error instanceof Error ? error.message : String(error);
         console.error("Failed to mark notification as read:", error);
-        return { success: false, error: errMessage };
+        return serverError(error, "mark notification as read");
     }
 }
 
@@ -352,8 +347,7 @@ export async function markAllNotificationsAsRead(): Promise<ActionResponse<void>
 
         return { success: true };
     } catch (error) {
-        const errMessage = error instanceof Error ? error.message : String(error);
         console.error("Failed to mark all notifications as read:", error);
-        return { success: false, error: errMessage };
+        return serverError(error, "mark all notifications as read");
     }
 }

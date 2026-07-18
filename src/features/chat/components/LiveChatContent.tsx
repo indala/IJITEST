@@ -108,8 +108,7 @@ export function LiveChatContent() {
     if (!socket) return;
 
     const handleReceiveMessage = (msg: ChatMessageRow) => {
-      console.log("Received message via socket:", msg);
-      const isFromOrToSelected = selectedUser && 
+      const isFromOrToSelected = selectedUser &&
         (msg.senderId === selectedUser.id || msg.receiverId === selectedUser.id);
 
       if (isFromOrToSelected) {
@@ -231,7 +230,6 @@ export function LiveChatContent() {
 
         // 5. Emit via socket to relay instantly
         if (socket && isConnected) {
-          console.log("Emitting sendMessage via socket:", fullMsg);
           socket.emit("sendMessage", fullMsg);
         } else {
           console.warn("Socket emission skipped. socket:", !!socket, "isConnected:", isConnected);

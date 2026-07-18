@@ -7,7 +7,7 @@ import { eq, and, or, asc, like, not, inArray, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import crypto from "crypto";
-import { type ActionResponse, type ChatMessageRow, type ChatUser } from "@/db/types";
+import { type ActionResponse, type ChatMessageRow, type ChatUser, serverError } from "@/db/types";
 
 /**
  * Signs a short-lived HS256 socket token using Node's built-in crypto module.
@@ -45,7 +45,7 @@ export async function getSocketToken(): Promise<ActionResponse<{ token: string; 
 
         return { success: true, data: { token, socketUrl } };
     } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "generate socket token");
     }
 }
 
@@ -90,7 +90,7 @@ export async function sendChatMessage(
 
         return { success: true, data: savedMessage };
     } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "save chat message");
     }
 }
 
@@ -151,10 +151,9 @@ export async function getChatHistory(
 
         return { success: true, data: messagesList };
     } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "fetch messages");
     }
 }
-
 
 /**
  * Action: Search for users that the current user is allowed to chat with.
@@ -238,7 +237,7 @@ export async function searchChatUsers(query: string): Promise<ActionResponse<Cha
 
         return { success: true, data: [] };
     } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "search chat users");
     }
 }
 
@@ -327,7 +326,7 @@ export async function getUnreadChatCount(): Promise<ActionResponse<{ count: numb
 
         return { success: true, data: { count: totalCount, byPartner } };
     } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "fetch unread message count");
     }
 }
 

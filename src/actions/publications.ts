@@ -13,7 +13,8 @@ import {
     type Issue,
     actionSuccess,
     actionError,
-    type PaperWithPublication
+    type PaperWithPublication,
+    serverError
 } from "@/db/types";
 import { eq, and, sql, desc, count } from "drizzle-orm";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
@@ -76,7 +77,7 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
         return actionSuccess();
     } catch (error) {
         console.error("Create Publication Error:", error);
-        return actionError("Failed to create publication: " + (error instanceof Error ? error.message : String(error)));
+        return serverError(error, "create publication");
     }
 }
 
@@ -106,7 +107,7 @@ export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { pape
         return actionSuccess(data);
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.PUBLICATIONS, error);
-        return actionError<(Issue & { paperCount: number })[]>(error instanceof Error ? error.message : String(error));
+        return serverError<(Issue & { paperCount: number })[]>(error, "fetch issues");
     }
 }
 
@@ -129,7 +130,7 @@ export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> 
         return actionSuccess(rows[0]);
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.PUBLICATIONS, error);
-        return actionError<Issue>(error instanceof Error ? error.message : String(error));
+        return serverError<Issue>(error, "fetch issue");
     }
 }
 
@@ -286,7 +287,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         return actionSuccess();
     } catch (error) {
         console.error("Assign Paper Error:", error);
-        return actionError("Failed to assign paper: " + (error instanceof Error ? error.message : String(error)));
+        return serverError(error, "assign paper to issue");
     }
 }
 
@@ -369,7 +370,7 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         return actionSuccess();
     } catch (error) {
         console.error("Publish Issue Error:", error);
-        return actionError("Failed to publish issue: " + (error instanceof Error ? error.message : String(error)));
+        return serverError(error, "publish issue");
     }
 }
 
@@ -419,7 +420,7 @@ export async function getPapersByIssueId(issueId: number): Promise<ActionRespons
         return actionSuccess(data);
     } catch (error) {
         console.error("Get Papers By Issue Error:", error);
-        return actionError<PaperWithPublication[]>(error instanceof Error ? error.message : String(error));
+        return serverError<PaperWithPublication[]>(error, "fetch papers for issue");
     }
 }
 
@@ -451,7 +452,7 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
         updateTag(CACHE_TAGS.LATEST_ISSUE);
         return actionSuccess();
     } catch (error) {
-        return actionError("Failed to unassign paper: " + (error instanceof Error ? error.message : String(error)));
+        return serverError(error, "unassign paper from issue");
     }
 }
 
@@ -490,7 +491,7 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
         return actionSuccess();
     } catch (error) {
         console.error("Update Publication Error:", error);
-        return actionError("Failed to update: " + (error instanceof Error ? error.message : String(error)));
+        return serverError(error, "update publication");
     }
 }
 
@@ -517,7 +518,7 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
 
         return actionSuccess();
     } catch (error) {
-        return actionError("Failed to delete: " + (error instanceof Error ? error.message : String(error)));
+        return serverError(error, "delete publication");
     } finally {
         revalidatePath('/admin/publications');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `deleteVolumeIssue ${id}`);
@@ -657,7 +658,7 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
         return actionSuccess();
     } catch (error) {
         console.error("Re-brand Paper Error:", error);
-        return actionError("Failed to re-brand paper: " + (error instanceof Error ? error.message : String(error)));
+        return serverError(error, "re-brand paper");
     }
 }
 

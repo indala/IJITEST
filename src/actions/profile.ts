@@ -18,7 +18,7 @@ import { revalidatePath } from "next/cache";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { type ActionResponse, actionSuccess, actionError, type ProfileData } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError, type ProfileData, serverError } from "@/db/types";
 import { insertProfileSchema } from "@/db/validation";
 
 
@@ -161,8 +161,7 @@ export async function getProfileData(userId: string, role: 'admin' | 'editor' | 
 
         return actionSuccess(profileData as ProfileData);
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return actionError("Failed to fetch profile: " + message);
+        return serverError(error, "fetch profile");
     }
 }
 
@@ -207,9 +206,8 @@ export async function updateProfileField(userId: string, field: string, value: s
         revalidatePath("/(panel)", "layout");
         return actionSuccess(trimmedValue);
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("updateProfileField error:", error);
-        return actionError("Failed to update field: " + message);
+        return serverError(error, "update profile field");
     }
 }
 
@@ -289,9 +287,8 @@ export async function updateResearchInterests(userId: string, interests: string[
         revalidatePath("/(panel)", "layout");
         return { success: true, data: cleanInterests };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("updateResearchInterests error:", error);
-        return actionError("Failed to update interests: " + message);
+        return serverError(error, "update research interests");
     }
 }
 
@@ -341,9 +338,8 @@ export async function updateProfilePhoto(userId: string, formData: FormData): Pr
         revalidatePath("/(panel)", "layout");
         return { success: true, data: photoUrl };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("updateProfilePhoto error:", error);
-        return actionError("Failed to update photo: " + message);
+        return serverError(error, "update profile photo");
     }
 }
 

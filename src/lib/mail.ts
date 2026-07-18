@@ -46,13 +46,30 @@ export async function sendEmail({ to, subject, text, html, attachments }: SendEm
         return { success: true, messageId: info.messageId };
     } catch (error) {
         console.error("--- SMTP Error Diagnosis ---");
-        console.error("Host:", process.env["SMTP_HOST"]);
-        console.error("User:", process.env["SMTP_USER"]);
         const err = error as Error & { code?: string, response?: unknown };
         console.error("Error Code:", err?.code);
         console.error("SMTP Response:", err?.response);
         console.error("---------------------------");
-        return { success: false, error: err instanceof Error ? err.message : String(error) };
+        return { success: false, error: "Failed to send email. Please try again later." };
+    }
+}
+
+/**
+ * Send an email with automatic retry (up to 3 attempts, exponential backoff).
+ * Logs failures but never throws - safe for fire-and-forget usage.
+ */
+export async function sendEmailWithRetry(props: SendEmailProps, context?: string): Promise<void> {
+    const label = context ? "[" + context + "]" : "";
+    for (let attempt = 1; attempt <= 3; attempt++) {
+        const result = await sendEmail(props);
+        if (result.success) return;
+        if (attempt < 3) {
+            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 4000);
+            console.warn("[Email Retry " + label + "] attempt " + attempt + "/3 failed, retrying in " + delay + "ms");
+            await new Promise(r => setTimeout(r, delay));
+        } else {
+            console.error("[Email permanently failed " + label + "]", result.error);
+        }
     }
 }
 

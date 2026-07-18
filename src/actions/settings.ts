@@ -4,7 +4,7 @@ import "server-only"
 import { db } from "@/lib/db";
 import { settings, submissions, publications } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { type ActionResponse, actionSuccess, actionError } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError, serverError } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
@@ -80,7 +80,7 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
         return actionSuccess(result);
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.SETTINGS, error);
-        return actionError(error instanceof Error ? error.message : String(error));
+        return serverError(error, "fetch settings");
     }
 }
 
@@ -159,6 +159,6 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
         return actionSuccess();
     } catch (error) {
         console.error("Update Settings Error:", error);
-        return actionError("Failed to update settings: " + (error instanceof Error ? error.message : String(error)));
+        return serverError(error, "update settings");
     }
 }

@@ -23,6 +23,7 @@ import {
     type UserWithProfile,
     type SubmissionFile,
     type ReviewWithReviewer,
+    serverError,
 } from "@/db/types";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
 import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount, createNotification } from "./notifications";
@@ -176,7 +177,7 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
         return { success: true, data };
     } catch (error) {
         console.error("Get Submission Detail Error:", error);
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "fetch submission");
     }
 }
 
@@ -290,7 +291,7 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
         return { success: true, data };
     } catch (error) {
         console.error("Get All Submissions Error:", error);
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "reassign editor");
     }
 }
 
@@ -366,7 +367,7 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
         updateTag(CACHE_TAGS.SUBMISSIONS);
         return { success: true };
     } catch (error) {
-        return { success: false, error: "Failed to finalize decision: " + (error instanceof Error ? error.message : String(error)) };
+        return serverError(error, "finalize decision");
     }
 }
 
@@ -418,7 +419,7 @@ export async function requestResubmissionWithComments(
         updateTag(CACHE_TAGS.SUBMISSIONS);
         return { success: true };
     } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "fetch submission");
     }
 }
 
@@ -486,7 +487,7 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
         updateTag(CACHE_TAGS.SUBMISSIONS);
         return { success: true };
     } catch (error) {
-        return { success: false, error: "Failed to delete: " + (error instanceof Error ? error.message : String(error)) };
+        return serverError(error, "delete submission");
     }
 }
 
@@ -569,7 +570,7 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
         return { success: true };
     } catch (error) {
         console.error("Upload PDF Error:", error);
-        return { success: false, error: "Failed to upload PDF: " + (error instanceof Error ? error.message : String(error)) };
+        return serverError(error, "upload PDF");
     }
 }
 
@@ -640,6 +641,6 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
         return { success: true };
     } catch (error) {
         console.error("Auto Sync PDF Error:", error);
-        return { success: false, error: "Conversion failed: " + (error instanceof Error ? error.message : String(error)) };
+        return serverError(error, "convert document");
     }
 }

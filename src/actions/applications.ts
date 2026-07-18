@@ -12,7 +12,8 @@ import {
 } from "@/db/schema";
 import {
     type Application,
-    type ActionResponse
+    type ActionResponse,
+    serverError
 } from "@/db/types";
 import { eq, and, desc, SQL, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -105,9 +106,8 @@ export async function getApplications(filters?: { role?: string, status?: string
 
         return { success: true, data: finalData };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Get Applications Error:", error);
-        return { success: false, error: message };
+        return serverError(error, "fetch applications");
     }
 }
 
@@ -193,9 +193,8 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
         revalidatePath("/admin/users");
         return { success: true };
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
         console.error("Approve Application Error:", error);
-        return { success: false, error: "Failed to approve application: " + message };
+        return serverError(error, "approve application");
     }
 }
 

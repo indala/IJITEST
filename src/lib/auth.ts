@@ -7,10 +7,14 @@ import { eq } from "drizzle-orm";
 import { users, userProfiles } from "@/db/schema";
 import {compare} from "bcryptjs";
 import { type UserRole, type User as DbUser, type UserProfile } from "@/db/types";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const authSecret = process.env['NEXTAUTH_SECRET'] || process.env['JWT_SECRET'];
 if (!authSecret) {
     throw new Error("Missing NEXTAUTH_SECRET (or JWT_SECRET). Refusing to start with an insecure auth secret.");
+}
+if (authSecret.length < 32 || authSecret === 'super_secret_key') {
+    console.warn("[Auth] WARNING: NEXTAUTH_SECRET is weak or too short. Generate a strong secret with: openssl rand -base64 32");
 }
 
 declare module "next-auth" {
@@ -47,6 +51,16 @@ export const authOptions: NextAuthOptions = {
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Missing email or password");
+                }
+
+                // Rate limit: 5 attempts per 15 minutes per email
+                const rateCheck = await checkRateLimit({
+                    key: `login:${credentials.email.toLowerCase().trim()}`,
+                    max: 5,
+                    windowMs: 15 * 60 * 1000,
+                });
+                if (!rateCheck.allowed) {
+                    throw new Error(`Too many login attempts. Please try again in ${rateCheck.retryAfterSeconds} seconds.`);
                 }
 
                 let user;

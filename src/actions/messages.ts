@@ -10,7 +10,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-import { type ActionResponse, actionSuccess, actionError, type ContactMessageRow } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError, type ContactMessageRow, serverError } from "@/db/types";
 import { insertContactSchema } from "@/db/validation";
 import { invalidateMessagesCount } from "./notifications";
 
@@ -58,8 +58,7 @@ export async function getMessages(filters?: { status?: 'pending' | 'resolved' | 
 
         return actionSuccess(rows as ContactMessageRow[]);
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return actionError(message);
+        return serverError(error, 'fetch messages');
     }
 }
 
@@ -81,8 +80,7 @@ export async function updateMessageStatus(id: number, status: 'resolved' | 'arch
         revalidatePath('/admin/messages');
         return actionSuccess();
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return actionError("Failed to update record: " + message);
+        return serverError(error, "update message status");
     }
 }
 
@@ -104,8 +102,7 @@ export async function bulkUpdateMessageStatus(ids: number[], status: 'resolved' 
         revalidatePath('/admin/messages');
         return actionSuccess({ count: ids.length });
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return actionError(message);
+        return serverError(error, 'mark messages as read');
     }
 }
 
@@ -124,8 +121,7 @@ export async function deleteMessage(id: number): Promise<ActionResponse> {
         revalidatePath('/admin/messages');
         return actionSuccess();
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return actionError(message);
+        return serverError(error, 'delete messages');
     }
 }
 
@@ -170,7 +166,7 @@ export async function replyToMessage(id: number, replyContent: string): Promise<
         revalidatePath('/admin/messages');
         return actionSuccess();
     } catch (error) {
-        return actionError("Failed to send reply: " + (error instanceof Error ? error.message : String(error)));
+        return serverError(error, "send reply");
     }
 }
 
@@ -240,7 +236,6 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
 
         return actionSuccess();
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return actionError(message);
+        return serverError(error, 'submit contact message');
     }
 }

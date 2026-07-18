@@ -11,10 +11,10 @@ import {
     userProfiles
 } from "@/db/schema";
 import { eq, desc, and, sql, ne, inArray, asc } from "drizzle-orm";
-import { 
-    type PublishedPaperUI, 
-    type ActionResponse, 
-    type SubmissionStatus, 
+import {
+    type PublishedPaperUI,
+    type ActionResponse,
+    type SubmissionStatus,
     type Author,
     type Submission,
     type Version,
@@ -22,7 +22,8 @@ import {
     type UserProfile,
     type Publication,
     actionSuccess,
-    actionError
+    actionError,
+    serverError
 } from "@/db/types";
 import { cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -80,7 +81,7 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
         return actionSuccess(data);
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.ARCHIVES, error);
-        return actionError<PublishedPaperUI[]>(error instanceof Error ? error.message : String(error));
+        return serverError<PublishedPaperUI[]>(error, "fetch published papers");
     }
 }
 
@@ -142,7 +143,7 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
         return actionSuccess(data);
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.ARCHIVES, error);
-        return actionError<PublishedPaperUI[]>(error instanceof Error ? error.message : String(error));
+        return serverError<PublishedPaperUI[]>(error, "fetch latest issue papers");
     }
 }
 
@@ -204,7 +205,7 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
         return actionSuccess(data);
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.ARCHIVES, error);
-        return actionError<PublishedPaperUI[]>(error instanceof Error ? error.message : String(error));
+        return serverError<PublishedPaperUI[]>(error, "fetch archive papers");
     }
 }
 
@@ -268,7 +269,7 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
         return actionSuccess(data);
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.PAPER(id), error);
-        return actionError<PublishedPaperUI>(error instanceof Error ? error.message : String(error));
+        return serverError<PublishedPaperUI>(error, "fetch paper by ID");
     }
 }
 

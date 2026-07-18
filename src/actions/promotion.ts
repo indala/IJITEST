@@ -7,7 +7,7 @@ import { users } from "@/db/schema";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { type ActionResponse } from "@/db/types";
+import { type ActionResponse, serverError } from "@/db/types";
 
 
 export async function markPromotionAsSeen(): Promise<ActionResponse> {
@@ -26,6 +26,6 @@ export async function markPromotionAsSeen(): Promise<ActionResponse> {
 
     } catch (error) {
         console.error("Mark Promotion As Seen Error:", error);
-        return { success: false, error: "Failed to update promotion status: " + (error instanceof Error ? error.message : String(error)) };
+        return serverError(error, "update promotion status");
     }
 }

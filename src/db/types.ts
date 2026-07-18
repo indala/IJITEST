@@ -282,6 +282,26 @@ export function actionError<T = void>(error: string): ActionResponse<T> {
     return { success: false, error } as ActionResponse<T>;
 }
 
+/**
+ * 🛡️ Elite: Server-safe error helper — logs the real error server-side,
+ * returns a sanitized user-safe message to the client.
+ */
+export function serverError<T = void>(
+    error: unknown,
+    context?: string
+): ActionResponse<T> {
+    const realMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[Server Error]${context ? ` [${context}]` : ''}:`, realMessage,
+        error instanceof Error ? '\n' + error.stack : '');
+
+    // Provide a generic user-safe message based on context
+    const userMessage = context
+        ? `Failed to ${context.toLowerCase()}. Please try again.`
+        : "An unexpected error occurred. Please try again.";
+
+    return { success: false, error: userMessage, data: undefined } as unknown as ActionResponse<T>;
+}
+
 // 💬 Live Chat Types
 export type ChatMessage = InferSelectModel<typeof chatMessages>;
 export type NewChatMessage = InferInsertModel<typeof chatMessages>;

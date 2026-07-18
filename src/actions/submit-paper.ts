@@ -18,7 +18,7 @@ import { invalidateSubmittedSubmissionsCount, createNotification } from "./notif
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { eq, inArray } from "drizzle-orm";
 import crypto from 'crypto';
-import { type ActionResponse } from "@/db/types";
+import { type ActionResponse, serverError } from "@/db/types";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
 
@@ -342,6 +342,6 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
     } catch (error) {
         console.error("Submission Failure:", error);
-        return { success: false, error: error instanceof Error ? error.message : String(error) || "An unexpected error occurred during submission." };
+        return serverError(error, "submit paper");
     }
 }

@@ -6,7 +6,7 @@ import { pushSubscriptions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { type ActionResponse } from "@/db/types";
+import { type ActionResponse, serverError } from "@/db/types";
 
 /**
  * Saves or updates a device's push subscription for the logged-in user.
@@ -45,7 +45,7 @@ export async function savePushSubscription(
 
         return { success: true };
     } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "subscribe to push notifications");
     }
 }
 
@@ -58,6 +58,6 @@ export async function deletePushSubscription(endpoint: string): Promise<ActionRe
             .where(eq(pushSubscriptions.endpoint, endpoint));
         return { success: true };
     } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
+        return serverError(error, "unsubscribe from push notifications");
     }
 }
