@@ -15,10 +15,10 @@ const disciplines = [
     "Renewable Energy and Sustainable Technologies"
 ];
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 function AimAndScope() {
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const shortName = settings['journalShortName'] || '';
 
     return (

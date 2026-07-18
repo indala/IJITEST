@@ -1,15 +1,16 @@
-'use client';
-
 import { ShieldCheck, Clock, ChevronRight, Search, Gavel, Users } from 'lucide-react';
 import Link from 'next/link';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import type { JournalSettings } from '@/db/types';
 
-export default function PeerReviewClient() {
-    const settings = useSettingsStore((state) => state.settings);
-    const journalShortName = settings['journalShortName'] || '';
+interface PeerReviewClientProps {
+    settings: JournalSettings;
+}
+
+export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
+    const journalShortName = settings.journalShortName || '';
 
     const stages = [
         {

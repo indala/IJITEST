@@ -12,10 +12,10 @@ import dynamic from 'next/dynamic';
 
 const RazorpayPayment = dynamic(() => import('@/features/submissions/components/RazorpayPayment'), { ssr: false });
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 export default function PaymentClient({ id }: { id: string }) {
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const apcTotal = parseFloat(settings['apcInr'] || '2500');
     const apcFee = Math.floor(apcTotal * 0.85);
     const apcIndexing = apcTotal - apcFee;

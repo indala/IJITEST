@@ -21,7 +21,7 @@ import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import crypto from 'crypto';
-import { emailTemplates, sendEmail } from '@/lib/mail';
+import { emailTemplates, sendEmail, sendEmailWithRetry } from '@/lib/mail';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
@@ -281,13 +281,11 @@ export async function requestPasswordReset(formData: FormData): Promise<ActionRe
         const resetUrl = `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/auth/setup-password?token=${resetToken}&ctx=reset`;
 
         const template = emailTemplates.passwordReset(user.fullName, resetUrl);
-        sendEmail({
+        sendEmailWithRetry({
             to: email,
             subject: template.subject,
             html: template.html
-        }).catch((err) => {
-            console.error("Password reset email delivery failed:", err);
-        });
+        }, "password reset");
 
         return { success: true };
     } catch (error) {

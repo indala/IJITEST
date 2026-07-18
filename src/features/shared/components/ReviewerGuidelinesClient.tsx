@@ -1,18 +1,19 @@
-'use client';
-
 import { ShieldCheck, BookOpen, ChevronRight, ShieldAlert, MessageCircle, Mail, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import type { JournalSettings } from '@/db/types';
 
-export default function ReviewerGuidelinesClient() {
-    const settings = useSettingsStore((state) => state.settings);
-    const supportEmail = settings['supportEmail'] || '';
-    const supportPhone = settings['supportPhone'] || '';
-    const journalShortName = settings['journalShortName'] || 'IJITEST';
+interface ReviewerGuidelinesClientProps {
+    settings: JournalSettings;
+}
+
+export default function ReviewerGuidelinesClient({ settings }: ReviewerGuidelinesClientProps) {
+    const supportEmail = settings.supportEmail || '';
+    const supportPhone = settings.supportPhone || '';
+    const journalShortName = settings.journalShortName || 'IJITEST';
 
     const directives = [
         { title: "Originality", desc: "Evaluate the significant empirical novelty or conceptual innovation presented in the manuscript." },

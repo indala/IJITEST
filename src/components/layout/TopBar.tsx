@@ -1,7 +1,9 @@
 // Server Component — the structural wrapper ships zero JS
 import { TopBarDynamic } from './TopBarDynamic';
+import { getSettingsData } from '@/actions/settings';
 
-export default function TopBar() {
+export default async function TopBar() {
+    const settings = await getSettingsData();
     return (
         <div className="bg-primary text-white py-2 sm:py-4 px-1 lg:px-1 border-b border-white/5 relative overflow-hidden">
             {/* Subtle background glow */}
@@ -9,7 +11,7 @@ export default function TopBar() {
 
             <div className="relative z-10">
                 {/* Dynamic journal metadata — only this island is hydrated */}
-                <TopBarDynamic />
+                <TopBarDynamic settings={settings} />
             </div>
         </div>
     );

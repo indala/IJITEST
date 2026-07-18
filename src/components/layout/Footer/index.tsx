@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { Phone, MapPin, ShieldCheck } from 'lucide-react';
 import { FooterDynamic } from './FooterDynamic';
+import { getSettingsData } from '@/actions/settings';
 
 function FacebookIcon({ className }: { className?: string }) {
     return (
@@ -34,7 +35,8 @@ const socialLinks = [
     { icon: InstagramIcon, href: process.env['NEXT_PUBLIC_INSTAGRAM_URL'] || '#', label: 'Instagram' },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+    const settings = await getSettingsData();
     return (
         <footer className="bg-slate-950 text-white pt-10 pb-5 font-sans relative overflow-hidden">
             {/* Background decorative glow */}
@@ -98,7 +100,7 @@ export default function Footer() {
                                     </div>
                                     <div>
                                         <p className="text-white/80 mb-1 m-0 text-sm 2xl:text-lg">Direct Line</p>
-                                        <Suspense><FooterDynamic field="supportPhone" /></Suspense>
+                                        <Suspense><FooterDynamic field="supportPhone" settings={settings} /></Suspense>
                                     </div>
                                 </div>
 
@@ -110,7 +112,7 @@ export default function Footer() {
                                     </div>
                                     <div>
                                         <p className="text-white/80 mb-1 m-0 text-sm 2xl:text-lg">Office Location</p>
-                                        <Suspense><FooterDynamic field="officeAddress" className="text-white/70 m-0 text-base 2xl:text-xl italic" /></Suspense>
+                                        <Suspense><FooterDynamic field="officeAddress" className="text-white/70 m-0 text-base 2xl:text-xl italic" settings={settings} /></Suspense>
                                     </div>
                                 </div>
                             </div>
@@ -122,7 +124,7 @@ export default function Footer() {
                 <div className="pt-10 border-t border-white/5 flex flex-col lg:flex-row justify-between items-center gap-8">
                     <div className="flex flex-col items-center lg:items-start gap-2">
                         {/* Dynamic — publisher name + year */}
-                        <Suspense><FooterDynamic field="copyright" /></Suspense>
+                        <Suspense><FooterDynamic field="copyright" settings={settings} /></Suspense>
                         <p className="opacity-40 m-0">All Rights Reserved</p>
                     </div>
 

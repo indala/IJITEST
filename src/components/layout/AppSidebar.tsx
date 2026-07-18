@@ -25,13 +25,13 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 
-import { useSettingsStore } from "@/store/useSettingsStore";
+import { useSettingsContext } from "@/components/providers/SettingsContext";
 
 
 export function AppSidebar() {
     const pathname = usePathname();
     const { setOpenMobile, isMobile } = useSidebar();
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const journalShortName = settings.journalShortName || '';
 
     return (

@@ -20,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ReviewerGuidelines() {
+    const settings = await getSettingsData();
     return (
         <main className="bg-background min-h-screen">
             <PageHeader
@@ -30,7 +31,7 @@ export default async function ReviewerGuidelines() {
                     { name: 'Reviewer Guidelines', href: '/reviewer-guidelines' },
                 ]}
             />
-            <ReviewerGuidelinesClient />
+            <ReviewerGuidelinesClient settings={settings} />
         </main>
     );
 }

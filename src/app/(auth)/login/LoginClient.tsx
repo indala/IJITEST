@@ -3,6 +3,7 @@
 // Login Client Component for authentication form and submission.
 
 import { useState, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Lock, Mail, Eye, EyeOff, ShieldCheck, Loader2, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -69,7 +70,7 @@ export default function LoginClient() {
 
                 <div className="bg-card p-8 2xl:p-10 rounded-xl 2xl:rounded-2xl border border-border/50 shadow-sm overflow-hidden">
                     {error && (
-                        <div 
+                        <div
                             id="login-error"
                             role="alert"
                             className="mb-6 p-4 bg-destructive/5 border border-destructive/10 text-destructive rounded-lg text-xs font-semibold flex items-center gap-2"
@@ -148,17 +149,7 @@ export default function LoginClient() {
                             </Link>
                         </div>
 
-                        <Button
-                            type="submit"
-                            disabled={isPending}
-                            className="w-full h-11 2xl:h-13 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm 2xl:text-base rounded-lg 2xl:rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
-                            {isPending ? (
-                                <>Logging in <Loader2 className="w-4 h-4 2xl:w-5 2xl:h-5 animate-spin" /></>
-                            ) : (
-                                <>Login <ShieldCheck className="w-4 h-4 2xl:w-5 2xl:h-5" /></>
-                            )}
-                        </Button>
+                        <LoginSubmitButton />
                     </form>
                 </div>
 
@@ -167,5 +158,22 @@ export default function LoginClient() {
                 </span>
             </div>
         </main>
+    );
+}
+
+function LoginSubmitButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            className="w-full h-11 2xl:h-13 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm 2xl:text-base rounded-lg 2xl:rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+            {pending ? (
+                <>Logging in <Loader2 className="w-4 h-4 2xl:w-5 2xl:h-5 animate-spin" /></>
+            ) : (
+                <>Login <ShieldCheck className="w-4 h-4 2xl:w-5 2xl:h-5" /></>
+            )}
+        </Button>
     );
 }

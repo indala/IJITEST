@@ -29,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function About() {
+    const settings = await getSettingsData();
     return (
         <main className="bg-background min-h-screen">
             <PageHeader
@@ -45,7 +46,7 @@ export default async function About() {
                 <SidebarLayout
                     sidebar={
                         <>
-                            <JournalParticulars />
+                            <JournalParticulars settings={settings} />
 
                             <div className="p-1 rounded-[2.5rem] bg-linear-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip animate-float">
                                 <div className="bg-white/50 backdrop-blur-sm p-3 rounded-[2.3rem]">
@@ -85,7 +86,7 @@ export default async function About() {
                         </>
                     }
                 >
-                    <AboutClient />
+                    <AboutClient settings={settings} />
                 </SidebarLayout>
             </Section>
         </main>

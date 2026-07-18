@@ -2,10 +2,10 @@
 import { motion } from 'framer-motion';
 import { memo } from 'react';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 function WelcomeSection() {
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const name = settings['journalName'] || '';
     const shortName = settings['journalShortName'] || '';
 

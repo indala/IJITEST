@@ -9,10 +9,10 @@ import Link from 'next/link';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 export default function GuidelinesContent() {
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const supportEmail = settings['supportEmail'] || "support@ijitest.org";
 
     const sections = [

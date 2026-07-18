@@ -302,6 +302,31 @@ export function serverError<T = void>(
     return { success: false, error: userMessage, data: undefined } as unknown as ActionResponse<T>;
 }
 
+// ⚙️ Journal Settings
+export interface JournalSettings {
+    journalName?: string;
+    journalShortName?: string;
+    publisherName?: string;
+    issnNumber?: string;
+    apcInr?: string;
+    apcUsd?: string;
+    apcDescription?: string;
+    startingYear?: string;
+    publicationFrequency?: string;
+    journalLanguage?: string;
+    udyamRegistration?: string;
+    journalSubject?: string;
+    supportEmail?: string;
+    supportPhone?: string;
+    officeAddress?: string;
+    templateUrl?: string;
+    copyrightUrl?: string;
+    publicationFormat?: string;
+    journalWebsite?: string;
+    isPromotionActive?: string;
+    [key: string]: string | undefined;
+}
+
 // 💬 Live Chat Types
 export type ChatMessage = InferSelectModel<typeof chatMessages>;
 export type NewChatMessage = InferInsertModel<typeof chatMessages>;

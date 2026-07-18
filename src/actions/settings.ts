@@ -88,9 +88,12 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
  * Utility for Server Components to get raw settings directly.
  */
 export async function getSettingsData(): Promise<Record<string, string>> {
-    const res = await getSettings();
-    return res.data || DEFAULT_SETTINGS;
-
+    try {
+        const res = await getSettings();
+        return res.data || DEFAULT_SETTINGS;
+    } catch {
+        return { ...DEFAULT_SETTINGS };
+    }
 }
 
 export async function updateSettings(formData: FormData): Promise<ActionResponse> {

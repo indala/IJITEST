@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 function PublisherSection() {
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const publisherName = settings['publisherName'] || "Felix Academic Publications";
     const supportEmail = settings['supportEmail'] || "support@ijitest.org";
 

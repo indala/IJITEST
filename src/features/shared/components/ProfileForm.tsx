@@ -29,7 +29,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const [state, formAction, isPending] = useActionState(async (_prevState: { success?: boolean; error?: string } | null, formData: FormData) => {
+    const [state, formAction] = useActionState(async (_prevState: { success?: boolean; error?: string } | null, formData: FormData) => {
         try {
             const result = await updateUserProfile(formData);
             if (result.success) {
@@ -103,7 +103,6 @@ export default function ProfileForm({ user }: ProfileFormProps) {
 
                 {/* 4. Feedback & Actions */}
                 <ProfileFormActions
-                    isSubmitting={isPending}
                     status={statusForActions}
                 />
             </form>

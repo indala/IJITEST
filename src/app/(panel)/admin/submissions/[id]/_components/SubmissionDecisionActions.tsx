@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { decideSubmission } from "@/actions/submissions";
 import { waivePayment } from "@/actions/payments";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ export function SubmissionDecisionActions({
 }: SubmissionDecisionActionsProps) {
 
     // 1. Decision Action (Accept/Reject)
-    const [, decideAction, isDeciding] = useActionState(
+    const [, decideAction] = useActionState(
         async (_prev: ActionResponse | null, formData: FormData) => {
             const decision = formData.get("decision") as "accepted" | "rejected";
             const result = await decideSubmission(submissionId, decision);
@@ -40,7 +41,7 @@ export function SubmissionDecisionActions({
     );
 
     // 2. Waive Action
-    const [, waiveAction, isWaiving] = useActionState(
+    const [, waiveAction] = useActionState(
         async () => {
             const result = await waivePayment(submissionId);
             if (result.success) {
@@ -58,27 +59,12 @@ export function SubmissionDecisionActions({
             <div className="grid grid-cols-1 gap-2 2xl:gap-4">
                 <form action={decideAction}>
                     <input type="hidden" name="decision" value="accepted" />
-                    <Button
-                        type="submit"
-                        disabled={isDeciding}
-                        className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl shadow-xl shadow-emerald-600/20 cursor-pointer"
-                    >
-                        <CheckCircle className="w-4 h-4 2xl:w-6 2xl:h-6" />
-                        {isDeciding ? "Authorizing..." : "Authorize Acceptance"}
-                    </Button>
+                    <AcceptButton />
                 </form>
 
                 <form action={decideAction}>
                     <input type="hidden" name="decision" value="rejected" />
-                    <Button
-                        type="submit"
-                        disabled={isDeciding}
-                        variant="outline"
-                        className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 border-red-500/20 text-red-600 font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl hover:bg-red-500/10 hover:text-red-700 hover:border-red-500/30 cursor-pointer"
-                    >
-                        <XCircle className="w-4 h-4 2xl:w-6 2xl:h-6" />
-                        {isDeciding ? "Processing..." : "Final Rejection"}
-                    </Button>
+                    <RejectButton />
                 </form>
 
                 <RequestResubmissionModal
@@ -93,17 +79,53 @@ export function SubmissionDecisionActions({
     if (status === 'accepted') {
         return (
             <form action={waiveAction}>
-                <Button
-                    type="submit"
-                    disabled={isWaiving}
-                    variant="outline"
-                    className="w-full h-9 gap-2 border-emerald-500/30 text-emerald-600 font-semibold text-[9px]  tracking-widest rounded-lg hover:bg-emerald-500 hover:text-white cursor-pointer"
-                >
-                    {isWaiving ? "Waiving..." : "Waive Transaction Fee"}
-                </Button>
+                <WaiveButton />
             </form>
         );
     }
 
     return null;
+}
+
+function AcceptButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl shadow-xl shadow-emerald-600/20 cursor-pointer"
+        >
+            <CheckCircle className="w-4 h-4 2xl:w-6 2xl:h-6" />
+            {pending ? "Authorizing..." : "Authorize Acceptance"}
+        </Button>
+    );
+}
+
+function RejectButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            variant="outline"
+            className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 border-red-500/20 text-red-600 font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl hover:bg-red-500/10 hover:text-red-700 hover:border-red-500/30 cursor-pointer"
+        >
+            <XCircle className="w-4 h-4 2xl:w-6 2xl:h-6" />
+            {pending ? "Processing..." : "Final Rejection"}
+        </Button>
+    );
+}
+
+function WaiveButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            variant="outline"
+            className="w-full h-9 gap-2 border-emerald-500/30 text-emerald-600 font-semibold text-[9px] tracking-widest rounded-lg hover:bg-emerald-500 hover:text-white cursor-pointer"
+        >
+            {pending ? "Waiving..." : "Waive Transaction Fee"}
+        </Button>
+    );
 }

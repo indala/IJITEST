@@ -44,6 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
+  const settings = await getSettingsData();
   return (
     <main className="flex flex-col overflow-hidden bg-background relative">
       <AnnouncementBar />
@@ -71,7 +72,7 @@ export default async function Home() {
                 <AnnouncementsWidget />
                 <AuthorQuickLinks />
                 <CallForPapersWidget />
-                <ResourceDeskWidget />
+                <ResourceDeskWidget settings={settings} />
                 <EthicsWidget />
               </div>
             </>

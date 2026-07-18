@@ -4,18 +4,16 @@ import { Mail } from 'lucide-react';
 import { useMemo } from 'react';
 // import { useEditorialBoard } from '@/hooks/queries/usePublic'; // TODO: enable when dynamic board members are ready
 import { staticEditorialBoardMembers, type BoardMember } from '../data/editorial-board';
-import type { SafeUserWithProfile } from '@/db/types';
-
-import { useSettingsStore } from '@/store/useSettingsStore';
+import type { SafeUserWithProfile, JournalSettings } from '@/db/types';
 
 interface EditorialBoardClientProps {
     initialMembers: SafeUserWithProfile[];
+    settings: JournalSettings;
 }
 
-export default function EditorialBoardClient({ initialMembers: _initialMembers }: EditorialBoardClientProps) {
+export default function EditorialBoardClient({ initialMembers: _initialMembers, settings }: EditorialBoardClientProps) {
     // const { data: dynamicMembers = [], isLoading } = useEditorialBoard(initialMembers); // TODO: enable when dynamic board members are ready
-    const settings = useSettingsStore((state) => state.settings);
-    const supportEmail = settings['supportEmail'] || '';
+    const supportEmail = settings.supportEmail || '';
 
     const groupedBoard = useMemo(() => {
         const board = [

@@ -2,13 +2,14 @@
 
 import { Search, Loader2, CheckCircle2, ShieldAlert, FileText, Calendar, CreditCard, ArrowRight, User } from 'lucide-react';
 import { useState, useEffect, useRef, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 import { trackManuscript } from '@/actions/track';
 import { type ActionResponse, type TrackedManuscript, type Submission, type User as DBUser } from "@/db/types";
 
@@ -52,15 +53,36 @@ function Milestone({ title, date, description, icon: Icon, active, last }: Miles
     );
 }
 
+function TrackButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            className="w-full h-12 2xl:h-14 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all active:scale-[0.99] hover:shadow-md hover:-translate-y-0.5 cursor-pointer font-bold text-sm 2xl:text-base tracking-wider uppercase duration-300"
+        >
+            {pending ? (
+                <div className="flex items-center gap-3">
+                    Searching <Loader2 className="w-4 h-4 animate-spin" />
+                </div>
+            ) : (
+                <div className="flex items-center gap-2">
+                    Track Manuscript <ArrowRight className="w-4 h-4" />
+                </div>
+            )}
+        </Button>
+    );
+}
+
 export default function TrackClient() {
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const searchParams = useSearchParams();
     const [paperIdInput, setPaperIdInput] = useState<Submission['paperId']>(searchParams.get('id') || '');
     const [emailInput, setEmailInput] = useState<DBUser['email']>('');
 
     const [localState, setLocalState] = useState<ActionResponse<{ manuscript: TrackedManuscript }> | null>(null);
 
-    const [, formAction, isPending] = useActionState(
+    const [, formAction] = useActionState(
         async (
             _prevState: ActionResponse<{ manuscript: TrackedManuscript }> | null,
             formData: FormData
@@ -175,21 +197,7 @@ export default function TrackClient() {
                             </div>
                         </div>
                         <div className="sm:col-span-2 pt-4">
-                            <Button
-                                type="submit"
-                                disabled={isPending}
-                                className="w-full h-12 2xl:h-14 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all active:scale-[0.99] hover:shadow-md hover:-translate-y-0.5 cursor-pointer font-bold text-sm 2xl:text-base tracking-wider uppercase duration-300"
-                            >
-                                {isPending ? (
-                                    <div className="flex items-center gap-3">
-                                        Searching <Loader2 className="w-4 h-4 animate-spin" />
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-2">
-                                        Track Manuscript <ArrowRight className="w-4 h-4" />
-                                    </div>
-                                )}
-                            </Button>
+                            <TrackButton />
                             <p className="text-center mt-6 text-xs sm:text-sm 2xl:text-base text-muted-foreground uppercase tracking-widest font-bold">
                                 Global Publication Protocol • v4.0
                             </p>

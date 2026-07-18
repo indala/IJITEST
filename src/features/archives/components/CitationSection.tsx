@@ -1,7 +1,7 @@
 'use client';
 
 import { Quote, Share2 } from "lucide-react";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { toast } from "sonner";
 import type { Author } from "@/db/types";
 
@@ -18,7 +18,7 @@ interface CitationSectionProps {
 }
 
 export default function CitationSection({ paper }: CitationSectionProps) {
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
 
     // 1. Parse Authors for the citation
     const getFormattedAuthors = () => {

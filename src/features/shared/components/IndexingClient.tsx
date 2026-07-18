@@ -1,16 +1,18 @@
-'use client';
-
 import { Search, Database, ChevronRight, Globe, Layers, BarChart3, Binary } from 'lucide-react';
 import RoadmapSection from '@/features/indexing/components/RoadmapSection';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
-import { useSettingsStore } from '@/store/useSettingsStore';
 
-export default function IndexingClient() {
-    const settings = useSettingsStore((state) => state.settings);
-    const journalShortName = settings['journalShortName'] || '';
+import type { JournalSettings } from '@/db/types';
+
+interface IndexingClientProps {
+    settings: JournalSettings;
+}
+
+export default function IndexingClient({ settings }: IndexingClientProps) {
+    const journalShortName = settings.journalShortName || '';
 
     const techSpecs = [
         { title: "SJIF Evaluation", desc: "Annual impact factor assessment by SJIF for scientific validation.", icon: BarChart3 },

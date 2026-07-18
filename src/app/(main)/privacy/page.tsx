@@ -20,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PrivacyPolicy() {
+    const settings = await getSettingsData();
     return (
         <main className="bg-background min-h-screen">
             <PageHeader
@@ -30,7 +31,7 @@ export default async function PrivacyPolicy() {
                     { name: 'Privacy Policy', href: '/privacy' },
                 ]}
             />
-            <PrivacyClient />
+            <PrivacyClient settings={settings} />
         </main>
     );
 }

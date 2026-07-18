@@ -1,14 +1,15 @@
-'use client'
-
 import { BookOpen, Target, Building2, FlaskConical, Cpu, Globe, Sparkles } from 'lucide-react';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import type { JournalSettings } from '@/db/types';
 
-export default function AboutClient() {
-    const settings = useSettingsStore((state) => state.settings);
-    const journalName = settings['journalName'] || '';
-    const journalShortName = settings['journalShortName'] || '';
-    const publisherName = settings['publisherName'] || '';
+interface AboutClientProps {
+    settings: JournalSettings;
+}
+
+export default function AboutClient({ settings }: AboutClientProps) {
+    const journalName = settings.journalName || '';
+    const journalShortName = settings.journalShortName || '';
+    const publisherName = settings.publisherName || '';
 
     return (
         <div className="lg:col-span-2 space-y-12 sm:space-y-16">
@@ -25,7 +26,7 @@ export default function AboutClient() {
                         {journalName} ({journalShortName}) is an international, peer-reviewed journal that publishes original research articles, review papers, and survey articles.
                     </p>
                     <p className="font-medium text-foreground italic bg-primary/5 p-3 rounded-lg border-l-4 border-primary">
-                        Subject: {settings['journalSubject'] || 'Multidisciplinary'} • Language: English
+                        Subject: {settings.journalSubject || 'Multidisciplinary'} • Language: English
                     </p>
                     <p>
                         {journalShortName} is dedicated to the dissemination of high-quality research, covering fundamental and applied research, interdisciplinary studies, and emerging technologies that contribute to academic knowledge and industrial growth.
@@ -134,7 +135,7 @@ export default function AboutClient() {
                     {[
                         { label: "Commencement", value: "2026" },
                         { label: "Frequency", value: "12 Issues / Year" },
-                        { label: "E-ISSN", value: (settings['issnNumber'] || '') },
+                        { label: "E-ISSN", value: (settings.issnNumber || '') },
                         { label: "Format", value: "Online, Open" },
                     ].map((item, i) => (
                         <div key={i} className="p-4 rounded-xl bg-card border border-border/50">

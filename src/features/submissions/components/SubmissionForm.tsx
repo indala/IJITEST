@@ -24,7 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CardContent } from "@/components/ui/card";
 import { submitPaper } from "@/actions/submit-paper";
 import { type ActionResponse } from "@/db/types";
-import { useSettings } from "@/hooks/queries/useSettings";
+import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -54,7 +54,7 @@ const formSchema = z.object({
 
 export default function SubmissionForm() {
     const [manuscriptFile, setManuscriptFile] = useState<File | null>(null);
-    const { data: settings = {} } = useSettings();
+    const settings = useSettingsContext();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

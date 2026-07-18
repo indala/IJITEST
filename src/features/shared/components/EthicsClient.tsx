@@ -1,14 +1,15 @@
-'use client';
-
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import type { JournalSettings } from '@/db/types';
 
-export default function EthicsClient() {
-    const settings = useSettingsStore((state) => state.settings);
-    const journalName = settings['journalName'] || '';
-    const supportEmail = settings['supportEmail'] || '';
+interface EthicsClientProps {
+    settings: JournalSettings;
+}
+
+export default function EthicsClient({ settings }: EthicsClientProps) {
+    const journalName = settings.journalName || '';
+    const supportEmail = settings.supportEmail || '';
 
     const sections = [
         {

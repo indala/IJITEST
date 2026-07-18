@@ -1,14 +1,14 @@
 'use client';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import type { JournalSettings } from '@/db/types';
 
 interface FooterDynamicProps {
     field: 'supportPhone' | 'officeAddress' | 'copyright';
     className?: string;
+    settings: JournalSettings;
 }
 
-export function FooterDynamic({ field, className }: FooterDynamicProps) {
-    const settings = useSettingsStore((state) => state.settings);
+export function FooterDynamic({ field, className, settings }: FooterDynamicProps) {
 
     if (field === 'copyright') {
         const year = new Date().getFullYear();

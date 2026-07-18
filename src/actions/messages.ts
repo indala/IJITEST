@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { contactMessages } from "@/db/schema";
 import { eq, and, like, or, desc, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { emailTemplates, sendEmail } from "@/lib/mail";
+import { emailTemplates, sendEmail, sendEmailWithRetry } from "@/lib/mail";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -214,11 +214,11 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
 
         // 1. Auto-reply to visitor (fire-and-forget)
         const receiptTemplate = emailTemplates.contactReceipt(name || "Visitor", subject || "Inquiry");
-        sendEmail({
+        sendEmailWithRetry({
             to: email || "",
             subject: receiptTemplate.subject,
             html: receiptTemplate.html
-        }).catch(e => console.error("Auto-reply email failed:", e));
+        }, "contact auto-reply");
 
         // 2. Notify Admin (fire-and-forget)
         const adminEmail = process.env['ADMIN_EMAIL'] || process.env['SMTP_USER'];
@@ -227,11 +227,11 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
                 `New Inquiry: ${subject || 'Contact Form'}`,
                 `Visitor <strong>${name}</strong> (${email}) has submitted a new inquiry:<br><br>"${message}"`
             );
-            sendEmail({
+            sendEmailWithRetry({
                 to: adminEmail,
                 subject: adminTemplate.subject,
                 html: adminTemplate.html
-            }).catch(e => console.error("Admin notification email failed:", e));
+            }, "admin notification");
         }
 
         return actionSuccess();

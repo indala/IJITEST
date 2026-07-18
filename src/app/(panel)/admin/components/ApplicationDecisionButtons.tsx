@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Button } from "@/components/ui/button";
 import { approveApplication, rejectApplication } from "@/actions/applications";
 import { type ActionResponse } from "@/db/types";
@@ -15,7 +16,7 @@ export default function ApplicationDecisionButtons({ id }: Props) {
     const [reason, setReason] = useState("");
     const [showReasonInput, setShowReasonInput] = useState(false);
 
-    const [, approveAction, isApproving] = useActionState<ActionResponse, FormData>(
+    const [, approveAction] = useActionState<ActionResponse, FormData>(
         async (_prev, _formData) => {
             const toastId = toast.loading("Approving application...");
             const result = await approveApplication(id);
@@ -64,7 +65,7 @@ export default function ApplicationDecisionButtons({ id }: Props) {
         { success: false, error: "" }
     );
 
-    const loading = isApproving || isRejecting;
+    const loading = isRejecting;
 
     function handleRejectClick() {
         if (!showReasonInput) {
@@ -112,21 +113,28 @@ export default function ApplicationDecisionButtons({ id }: Props) {
                 </Button>
                 {!showReasonInput && (
                     <form action={approveAction}>
-                        <Button
-                            type="submit"
-                            disabled={loading}
-                            size="sm"
-                            className="h-7 flex-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-500 hover:bg-emerald-600 text-white"
-                        >
-                            {isApproving ? (
-                                <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                <>Approve <CheckCircle2 className="w-3 h-3 ml-1" /></>
-                            )}
-                        </Button>
+                        <ApproveButton />
                     </form>
                 )}
             </div>
         </div>
+    );
+}
+
+function ApproveButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            size="sm"
+            className="h-7 flex-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-500 hover:bg-emerald-600 text-white"
+        >
+            {pending ? (
+                <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            ) : (
+                <>Approve <CheckCircle2 className="w-3 h-3 ml-1" /></>
+            )}
+        </Button>
     );
 }

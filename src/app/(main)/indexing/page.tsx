@@ -20,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Indexing() {
+    const settings = await getSettingsData();
     return (
         <main className="bg-background min-h-screen">
             <PageHeader
@@ -30,7 +31,7 @@ export default async function Indexing() {
                     { name: 'Indexing', href: '/indexing' },
                 ]}
             />
-            <IndexingClient />
+            <IndexingClient settings={settings} />
         </main>
     );
 }

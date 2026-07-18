@@ -1,13 +1,14 @@
-'use client';
-
 import { ChevronRight, Gavel } from 'lucide-react';
 import Link from 'next/link';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import type { JournalSettings } from '@/db/types';
 
-export default function TermsClient() {
-    const settings = useSettingsStore((state) => state.settings);
-    const journalName = settings['journalName'] || '';
+interface TermsClientProps {
+    settings: JournalSettings;
+}
+
+export default function TermsClient({ settings }: TermsClientProps) {
+    const journalName = settings.journalName || '';
 
     const framework = [
         {

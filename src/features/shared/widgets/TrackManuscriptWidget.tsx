@@ -2,6 +2,7 @@
 
 import { Search, Loader2 } from 'lucide-react';
 import { useState, memo, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ function TrackManuscriptWidget() {
     const [paperId, setPaperId] = useState<Submission['paperId']>('');
     const router = useRouter();
 
-    const [state, formAction, isPending] = useActionState(
+    const [state, formAction] = useActionState(
         async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
             const id = formData.get('paperId') as string;
             if (id && id.trim()) {
@@ -44,21 +45,28 @@ function TrackManuscriptWidget() {
                             <p className="text-[10px] text-destructive pl-1 font-semibold">{state.error}</p>
                         )}
                     </div>
-                    <Button 
-                        type="submit" 
-                        disabled={isPending}
-                        className="w-full h-10 bg-[#000066] hover:bg-[#000088] text-white font-bold text-[10px] 2xl:text-xl tracking-wider rounded-lg transition-all shadow-sm uppercase gap-2"
-                    >
-                        {isPending ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        ) : (
-                            <Search className="w-3.5 h-3.5" />
-                        )}
-                        Track
-                    </Button>
+                    <TrackButton />
                 </form>
             </CardContent>
         </Card>
+    );
+}
+
+function TrackButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            className="w-full h-10 bg-[#000066] hover:bg-[#000088] text-white font-bold text-[10px] 2xl:text-xl tracking-wider rounded-lg transition-all shadow-sm uppercase gap-2"
+        >
+            {pending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+                <Search className="w-3.5 h-3.5" />
+            )}
+            Track
+        </Button>
     );
 }
 

@@ -1,14 +1,15 @@
-'use client';
-
 import { Lock, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import type { JournalSettings } from '@/db/types';
 
-export default function PrivacyClient() {
-    const settings = useSettingsStore((state) => state.settings);
-    const journalName = settings['journalName'] || '';
-    const supportEmail = settings['supportEmail'] || '';
+interface PrivacyClientProps {
+    settings: JournalSettings;
+}
+
+export default function PrivacyClient({ settings }: PrivacyClientProps) {
+    const journalName = settings.journalName || '';
+    const supportEmail = settings.supportEmail || '';
 
     const sections = [
         {

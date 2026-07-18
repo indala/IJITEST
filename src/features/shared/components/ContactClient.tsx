@@ -7,10 +7,10 @@ import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidg
 import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 export default function ContactClient() {
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const supportEmail = settings['supportEmail'] || '';
     const supportPhone = settings['supportPhone'] || '';
 

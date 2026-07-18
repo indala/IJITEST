@@ -1,9 +1,11 @@
-'use client';
+import type { JournalSettings } from '@/db/types';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+interface TopBarDynamicProps {
+    settings: JournalSettings;
+}
 
-export function TopBarDynamic() {
-    const { journalName, issnNumber, publisherName } = useSettingsStore((s) => s.settings) || {};
+export function TopBarDynamic({ settings }: TopBarDynamicProps) {
+    const { journalName, issnNumber, publisherName } = settings;
 
     return (
         <div className="flex flex-col items-center text-center space-y-3">

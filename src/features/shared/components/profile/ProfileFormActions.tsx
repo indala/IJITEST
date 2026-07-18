@@ -1,16 +1,16 @@
 import React from 'react';
+import { useFormStatus } from 'react-dom';
 import { Save, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 interface ProfileFormActionsProps {
-    isSubmitting: boolean;
     status: { success?: boolean; error?: string } | null;
 }
 
 export const ProfileFormActions = React.memo(({
-    isSubmitting,
     status
 }: ProfileFormActionsProps) => {
+    const { pending } = useFormStatus();
     return (
         <div className="space-y-6">
             {status && (
@@ -40,15 +40,15 @@ export const ProfileFormActions = React.memo(({
             <div className="flex justify-end pt-6">
                 <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={pending}
                     className="h-11 px-8 gap-2 bg-[#000066] text-white hover:bg-[#000088] transition-all rounded-lg shadow-sm disabled:opacity-50"
                 >
-                    {isSubmitting ? (
+                    {pending ? (
                         <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                         <Save className="w-3.5 h-3.5" />
                     )}
-                    <span className="text-[10px] font-bold uppercase tracking-widest">{isSubmitting ? "Saving..." : "Save Profile"}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest">{pending ? "Saving..." : "Save Profile"}</span>
                 </Button>
             </div>
         </div>

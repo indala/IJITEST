@@ -8,14 +8,14 @@ import Link from 'next/link';
 
 import { markPromotionAsSeen } from '@/actions/promotion';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 const PROMOTION_SEEN_KEY = 'hasSeenPromotion';
 const PROMOTION_SNOOZED_KEY = 'promotionSnoozedUntil';
 const SNOOZE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export default function PromotionPopup() {
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {

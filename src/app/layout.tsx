@@ -95,8 +95,8 @@ import { NuqsAdapter } from "nuqs/adapters/next";
 
 import { JsonLd } from "@/components/shared/JsonLd";
 import { getSettingsData } from "@/actions/settings";
-import { SettingsProvider } from "@/components/providers/SettingsProvider";
-import type { JournalSettings } from "@/store/useSettingsStore";
+import { SettingsProvider } from "@/components/providers/SettingsContext";
+import type { JournalSettings } from "@/db/types";
 
 async function SettingsLayer({ children }: { children: React.ReactNode }) {
   const dynamicSettings = await getSettingsData() as JournalSettings;
@@ -135,7 +135,7 @@ async function SettingsLayer({ children }: { children: React.ReactNode }) {
       <MotionProvider>
         <NuqsAdapter>
           <QueryProvider>
-            <SettingsProvider initialSettings={dynamicSettings}>
+            <SettingsProvider settings={dynamicSettings}>
               <TooltipProvider>
                 {children}
                 <Toaster position="top-right" offset={50} richColors closeButton />

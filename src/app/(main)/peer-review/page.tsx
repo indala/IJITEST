@@ -20,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PeerReview() {
+    const settings = await getSettingsData();
     return (
         <main className="bg-background min-h-screen">
             <PageHeader
@@ -30,7 +31,7 @@ export default async function PeerReview() {
                     { name: 'Peer Review', href: '/peer-review' },
                 ]}
             />
-            <PeerReviewClient />
+            <PeerReviewClient settings={settings} />
         </main>
     );
 }

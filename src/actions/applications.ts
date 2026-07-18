@@ -17,7 +17,7 @@ import {
 } from "@/db/types";
 import { eq, and, desc, SQL, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { emailTemplates, sendEmail } from "@/lib/mail";
+import { emailTemplates, sendEmail, sendEmailWithRetry } from "@/lib/mail";
 import crypto from "crypto";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -234,11 +234,11 @@ export async function rejectApplication(id: number, reason: string): Promise<Act
 
         // 2. Send Rejection Email (fire-and-forget — DB already committed)
         const template = emailTemplates.boardRejection(app.fullName, role, reason);
-        sendEmail({
+        sendEmailWithRetry({
             to: app.email,
             subject: template.subject,
             html: template.html
-        }).catch(e => console.error("Rejection email failed:", e));
+        }, "board rejection");
 
         revalidatePath("/admin/applications");
         return { success: true };

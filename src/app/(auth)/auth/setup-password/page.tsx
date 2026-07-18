@@ -4,6 +4,7 @@ import { getPasswordSetupInfo, setupPassword } from '@/actions/users';
 import { ShieldCheck, Lock, Mail, CheckCircle2, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 import type { ActionResponse } from '@/db/types';
 import { useState, useEffect, Suspense, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -44,7 +45,7 @@ function SetupContent() {
         return () => { isMounted = false; };
     }, [token]);
 
-    const [state, formAction, isPending] = useActionState(async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
+    const [state, formAction] = useActionState(async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
         const password = formData.get('password') as string;
         const confirm = formData.get('confirmPassword') as string;
 
@@ -191,22 +192,7 @@ function SetupContent() {
                             </div>
                         )}
 
-                        <Button
-                            disabled={isPending}
-                            className="w-full h-11 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-2"
-                        >
-                            {isPending ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    {ctx === 'reset' ? 'Updating...' : 'Securing...'}
-                                </>
-                            ) : (
-                                <>
-                                    {ctx === 'reset' ? 'Update Password' : 'Activate Account'}
-                                    <ArrowRight className="w-4 h-4" />
-                                </>
-                            )}
-                        </Button>
+                        <SetupSubmitButton ctx={ctx} />
                     </form>
                 </div>
 
@@ -215,6 +201,28 @@ function SetupContent() {
                 </span>
             </div>
         </main>
+    );
+}
+
+function SetupSubmitButton({ ctx }: { ctx: string | null }) {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            disabled={pending}
+            className="w-full h-11 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-2"
+        >
+            {pending ? (
+                <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {ctx === 'reset' ? 'Updating...' : 'Securing...'}
+                </>
+            ) : (
+                <>
+                    {ctx === 'reset' ? 'Update Password' : 'Activate Account'}
+                    <ArrowRight className="w-4 h-4" />
+                </>
+            )}
+        </Button>
     );
 }
 

@@ -7,12 +7,12 @@ import { NavbarLinks } from './NavbarLinks';
 import { MobileMenu } from './MobileMenu';
 import Link from 'next/link';
 
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const settings = useSettingsStore((state) => state.settings);
+    const settings = useSettingsContext();
     const shortName = settings.journalShortName;
 
     useEffect(() => {
