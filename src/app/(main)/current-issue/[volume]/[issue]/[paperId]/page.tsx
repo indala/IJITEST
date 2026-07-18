@@ -119,6 +119,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
     return (
         <div className="bg-white min-h-screen pb-20">
             <PageHeader
+                disableBreadcrumbJsonLd
                 title="Current Issue Article"
                 description={paper.paperId}
                 breadcrumbs={[

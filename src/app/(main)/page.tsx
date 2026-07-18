@@ -21,7 +21,7 @@ import { JsonLd } from '@/components/shared/JsonLd';
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettingsData();
   return {
-    title: `${settings['journalName']} | Elite Academic Publishing`,
+    title: settings['journalName'],
     description: `Welcome to ${settings['journalName']} (${settings['journalShortName']}). We provide a global platform for breakthrough research in engineering, science, and technology with rapid, high-quality peer review.`,
     alternates: {
       canonical: '/',
