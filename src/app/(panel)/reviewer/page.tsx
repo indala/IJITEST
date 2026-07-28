@@ -190,7 +190,7 @@ export default async function ReviewerDashboard() {
                                                 </div>
                                             </div>
                                             <Button asChild size="sm" className="h-9 px-5 bg-foreground text-background hover:bg-primary hover:text-white font-bold uppercase text-[10px] tracking-widest rounded-lg transition-all cursor-pointer">
-                                                <Link className="cursor-pointer" href={`/reviewer/reviews/${review.id}`}>
+                                                <Link className="cursor-pointer" href={`/reviewer/submissions/${review.submissionId}`}>
                                                     Evaluate <ArrowRight className="w-3.5 h-3.5 ml-2" />
                                                 </Link>
                                             </Button>
