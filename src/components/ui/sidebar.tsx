@@ -140,8 +140,8 @@ function SidebarProvider({
           data-slot="sidebar-wrapper"
           className={cn(
             "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
-            is2xl ? "[--sidebar-width:24rem]" : "[--sidebar-width:18rem]",
-            "[--sidebar-width-icon:5.5rem]",
+            is2xl ? "[--sidebar-width:16.5rem]" : "[--sidebar-width:15rem]",
+            "[--sidebar-width-icon:4.5rem]",
             className
           )}
           {...props}

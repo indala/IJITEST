@@ -158,6 +158,7 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
 
         cacheLogger.invalidation(CACHE_TAGS.SETTINGS, "settings updated");
         updateTag(CACHE_TAGS.SETTINGS);           // Immediate cache expiration (Next.js 16)
+        updateTag(CACHE_TAGS.PUBLIC_DATA);         // Purge public papers, archives & issue cache
         revalidatePath('/', 'layout');       // Re-renders root layout + all children
         return actionSuccess();
     } catch (error) {

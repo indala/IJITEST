@@ -3,9 +3,10 @@ import "server-only"
 
 import { db } from "@/lib/db";
 import { sql, eq, and, desc, inArray, count } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { invalidateReviewerAssignmentsCount, invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount, createNotification } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { 
     reviewAssignments,
     reviews,
@@ -259,6 +260,8 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
 
         await invalidateReviewerAssignmentsCount(reviewerId);
         await invalidateSubmittedSubmissionsCount();
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/admin/reviews');
         return { success: true };
     } catch (error) {
@@ -413,6 +416,8 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
         if (result.info.correspondingAuthorId) {
             await invalidateAuthorActionsCount(result.info.correspondingAuthorId);
         }
+        updateTag(CACHE_TAGS.SUBMISSION(result.info.submissionId));
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/admin/reviews');
         revalidatePath('/reviewer/reviews');
         return { success: true };

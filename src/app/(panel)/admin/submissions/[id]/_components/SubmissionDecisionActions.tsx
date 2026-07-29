@@ -93,9 +93,9 @@ function AcceptButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl shadow-xl shadow-emerald-600/20 cursor-pointer"
+            className="w-full h-11 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-wider rounded-lg shadow-sm cursor-pointer"
         >
-            <CheckCircle className="w-4 h-4 2xl:w-6 2xl:h-6" />
+            <CheckCircle className="w-4 h-4" />
             {pending ? "Authorizing..." : "Authorize Acceptance"}
         </Button>
     );
@@ -108,9 +108,9 @@ function RejectButton() {
             type="submit"
             disabled={pending}
             variant="outline"
-            className="w-full h-11 2xl:h-16 gap-2 2xl:gap-4 border-red-500/20 text-red-600 font-semibold text-[11px] 2xl:text-lg tracking-widest rounded-xl hover:bg-red-500/10 hover:text-red-700 hover:border-red-500/30 cursor-pointer"
+            className="w-full h-11 gap-2 border-red-500/20 text-red-600 font-semibold text-xs uppercase tracking-wider rounded-lg hover:bg-red-500/10 hover:text-red-700 hover:border-red-500/30 cursor-pointer"
         >
-            <XCircle className="w-4 h-4 2xl:w-6 2xl:h-6" />
+            <XCircle className="w-4 h-4" />
             {pending ? "Processing..." : "Final Rejection"}
         </Button>
     );

@@ -92,21 +92,21 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                 {/* Left Column: Metadata (4 Cols) */}
                 <div className="lg:col-span-4 space-y-6">
                     <Card className="border-primary/5 shadow-vip overflow-hidden sticky top-24 rounded-xl pb-10 2xl:rounded-3xl bg-white">
-                        <CardHeader className="p-8 2xl:p-14 bg-primary/5 border-b border-primary/5">
-                            <div className="space-y-4 2xl:space-y-8">
-                                <Badge className="h-6 2xl:h-9 px-3 2xl:px-5 text-[9px] sm:text-[10px] xl:text-[11px] 2xl:text-base font-black tracking-[0.2em] bg-emerald-500 text-white border-none shadow-sm rounded-lg uppercase">
+                        <CardHeader className="p-6 bg-primary/5 border-b border-primary/10">
+                            <div className="space-y-3">
+                                <Badge className="h-6 px-2.5 text-xs font-bold tracking-wide bg-emerald-600 text-white border-none shadow-xs rounded-md uppercase w-fit">
                                     Assigned for Review
                                 </Badge>
-                                <CardTitle>
+                                <CardTitle className="text-lg sm:text-xl font-bold tracking-tight text-foreground leading-snug">
                                     {submission.title}
                                 </CardTitle>
-                                <div className="flex flex-wrap items-center gap-6 2xl:gap-10 text-[10px] 2xl:text-lg font-black text-primary/40 tracking-[0.2em] uppercase">
-                                    <div className="flex items-center gap-2 2xl:gap-4">
-                                        <Shield className="w-4 h-4 2xl:w-7 2xl:h-7" />
+                                <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground">
+                                    <div className="flex items-center gap-1.5 font-semibold text-primary">
+                                        <Shield className="w-4 h-4" />
                                         <span>{submission.paperId}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 2xl:gap-4">
-                                        <Clock className="w-4 h-4 2xl:w-7 2xl:h-7" />
+                                    <div className="flex items-center gap-1.5">
+                                        <Clock className="w-4 h-4" />
                                         <span>{submission.submittedAt ? new Date(submission.submittedAt).toLocaleDateString() : 'Unknown Date'}</span>
                                     </div>
                                 </div>
@@ -131,7 +131,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
                                         {submission.keywords.split(',').map((k: string) => (
-                                            <Badge key={k} variant="outline" className="h-7 px-3 text-[10px] font-black tracking-widest border-primary/10 bg-primary/5 lg:text-xl text-primary rounded-lg uppercase">
+                                            <Badge key={k} variant="outline" className="h-auto py-1 px-3 text-xs font-semibold border-primary/10 bg-primary/5 text-primary rounded-lg">
                                                 {k.trim()}
                                             </Badge>
                                         ))}
@@ -158,12 +158,12 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                             <div className="pt-4 2xl:pt-8">
                                 {submission.pdfUrl ? (
                                     <>
-                                        <Button asChild className="w-full h-12 2xl:h-20 gap-3 2xl:gap-5 font-bold text-[11px] 2xl:text-xl tracking-widest shadow-xl shadow-primary/20 rounded-xl 2xl:rounded-2xl bg-primary hover:opacity-90 transition-all uppercase cursor-pointer text-white">
+                                        <Button asChild className="w-full h-11 gap-2.5 font-bold text-xs uppercase tracking-wider shadow-md rounded-lg bg-primary hover:bg-primary/90 transition-all cursor-pointer text-white">
                                             <a href={getSecureUrl(submission.pdfUrl)} download>
-                                                <Download className="w-4 h-4 2xl:w-8 2xl:h-8" /> Download PDF
+                                                <Download className="w-4 h-4" /> Download PDF
                                             </a>
                                         </Button>
-                                        <p className="opacity-30 text-center mt-4">
+                                        <p className="text-xs text-muted-foreground text-center mt-2.5 font-medium">
                                             Official Review Version (Protected)
                                         </p>
                                     </>
@@ -179,10 +179,10 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                 </div>
 
                 <div className="lg:col-span-8">
-                    <Card className="border-border/50 shadow-sm overflow-hidden h-screen min-h-[85vh] bg-muted/10">
+                    <Card className="border-border/50 shadow-sm overflow-hidden h-[calc(100vh-140px)] min-h-[600px] sticky top-24 bg-muted/10">
                         <CardContent className="p-0 h-full flex flex-col">
                             {submission.pdfUrl ? (
-                                <div className="flex-1 min-h-[85vh] relative group">
+                                <div className="flex-1 h-full relative group">
                                     <PdfViewer
                                         pdfUrl={getSecureUrl(submission.pdfUrl)}
                                         title={submission.title}

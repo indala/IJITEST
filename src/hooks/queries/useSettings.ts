@@ -20,6 +20,8 @@ export function useUpdateSettings() {
         onSuccess: (data) => {
             if (data.success) {
                 queryClient.invalidateQueries({ queryKey: ['settings'] });
+                queryClient.invalidateQueries({ queryKey: ['public'] });
+                queryClient.invalidateQueries({ queryKey: ['publications'] });
             }
         },
     });

@@ -13,9 +13,10 @@ import {
     userInvitations
 } from "@/db/schema";
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { invalidateSubmittedSubmissionsCount, createNotification } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { eq, inArray } from "drizzle-orm";
 import crypto from 'crypto';
 import { type ActionResponse, serverError } from "@/db/types";
@@ -337,6 +338,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         }));
 
         await invalidateSubmittedSubmissionsCount();
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/admin/submissions');
         return { success: true, data: { paperId: result.paperId } };
 

@@ -105,18 +105,18 @@ export function PanelSidebar({
                                     size="lg"
                                     tooltip={item.name}
                                     className={cn(
-                                        "h-12 2xl:h-16 w-full px-4 rounded-xl transition-all",
+                                        "h-11 2xl:h-12 w-full px-3.5 rounded-xl transition-all",
                                         isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                                        isCollapsed && "px-0 justify-center h-16"
+                                        isCollapsed && "px-0 justify-center h-12"
                                     )}
                                 >
-                                    <Link href={item.fullHref} className="flex items-center gap-4 w-full relative" onClick={() => setOpenMobile(false)}>
+                                    <Link href={item.fullHref} className="flex items-center gap-3.5 w-full relative" onClick={() => setOpenMobile(false)}>
                                         <div className={cn(
-                                            "size-9 2xl:size-12 rounded-lg flex items-center justify-center transition-all shrink-0 relative",
+                                            "size-8 2xl:size-9 rounded-lg flex items-center justify-center transition-all shrink-0 relative",
                                             isActive ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-muted/50 text-muted-foreground group-hover:bg-muted"
                                         )}>
                                             {item.icon && (
-                                                <div className="[&>svg]:size-5 2xl:[&>svg]:size-7">
+                                                <div className="[&>svg]:size-4 2xl:[&>svg]:size-5">
                                                     {item.icon}
                                                 </div>
                                             )}
