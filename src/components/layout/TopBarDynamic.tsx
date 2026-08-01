@@ -18,7 +18,9 @@ export function TopBarDynamic({ settings }: TopBarDynamicProps) {
             <div className="flex flex-wrap items-center justify-center gap-x-2 md:gap-x-10 2xl:gap-x-12 gap-y-3 text-xs md:text-sm 2xl:text-base font-bold tracking-[0.2em]">
                 <div className="flex items-center gap-2.5">
                     <span className="text-white">ISSN:</span>
-                    <span className="text-white/80">{issnNumber}</span>
+                    <span className="text-white/80">
+                        {issnNumber}{issnNumber && !issnNumber.toLowerCase().includes('(online)') ? ' (online)' : ''}
+                    </span>
                 </div>
 
                 <div className="hidden md:block w-2 h-2 rounded-full bg-secondary" />

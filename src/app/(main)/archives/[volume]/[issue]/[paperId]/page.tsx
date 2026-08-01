@@ -67,6 +67,7 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
             'citation_publication_date': formattedDate.replace(/-/g, '/'),
             'citation_journal_title': settings['journalName'] || 'IJITEST',
             'citation_issn': settings['issnNumber'] || '',
+            'citation_abstract': paper.abstract || '',
             'citation_doi': paper.doi || '',
             'citation_volume': paper.volumeNumber ? String(paper.volumeNumber) : '',
             'citation_issue': paper.issueNumber ? String(paper.issueNumber) : '',
@@ -111,7 +112,8 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
 
     if (!paper) notFound();
 
-    const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
+    const rawBaseUrl = settings['journalWebsite'] || 'https://ijitest.org';
+    const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl.replace(/\/$/, '') : `https://${rawBaseUrl.replace(/\/$/, '')}`;
 
     return (
         <div className="bg-white min-h-screen pb-20">
@@ -182,7 +184,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                             "@type": "ListItem",
                             "position": 1,
                             "name": "Home",
-                            "item": `${baseUrl}/`
+                            "item": `${baseUrl}`
                         },
                         {
                             "@type": "ListItem",

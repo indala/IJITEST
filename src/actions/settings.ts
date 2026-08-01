@@ -121,7 +121,14 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
             } else if (value instanceof File && value.size === 0) {
                 continue; // skip empty file — preserve existing
             } else {
-                resolvedEntries.push([key, String(value ?? "")]);
+                let stringVal = String(value ?? "");
+                if (key === 'issnNumber') {
+                    stringVal = stringVal
+                        .replace(/^(e-?issn:\s*)/i, '')
+                        .replace(/\s*\(online\)/i, '')
+                        .trim();
+                }
+                resolvedEntries.push([key, stringVal]);
             }
         }
 

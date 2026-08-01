@@ -70,6 +70,7 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
             'citation_publication_date': formattedDate.replace(/-/g, '/'),
             'citation_journal_title': settings['journalName'] || 'IJITEST',
             'citation_issn': settings['issnNumber'] || '',
+            'citation_abstract': paper.abstract || '',
             'citation_doi': paper.doi || '',
             'citation_volume': paper.volumeNumber ? String(paper.volumeNumber) : '',
             'citation_issue': paper.issueNumber ? String(paper.issueNumber) : '',
@@ -113,7 +114,8 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
 
     if (!paper) notFound();
 
-    const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
+    const rawBaseUrl = settings['journalWebsite'] || 'https://ijitest.org';
+    const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl.replace(/\/$/, '') : `https://${rawBaseUrl.replace(/\/$/, '')}`;
     const allAuthors = paper.authorsList || [];
 
     return (
@@ -124,7 +126,6 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                 description={paper.paperId}
                 breadcrumbs={[
                     { name: 'Home', href: '/' },
-                    { name: 'Publication', href: '#' },
                     { name: 'Current Issue', href: '/current-issue' },
                     { name: paper.paperId, href: `/current-issue/${volume}/${issue}/${paperId}` },
                 ]}
@@ -178,23 +179,17 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                             "@type": "ListItem",
                             "position": 1,
                             "name": "Home",
-                            "item": `${baseUrl}/`
+                            "item": `${baseUrl}`
                         },
                         {
                             "@type": "ListItem",
                             "position": 2,
-                            "name": "Publication",
-                            "item": `${baseUrl}/#`
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 3,
                             "name": "Current Issue",
                             "item": `${baseUrl}/current-issue`
                         },
                         {
                             "@type": "ListItem",
-                            "position": 4,
+                            "position": 3,
                             "name": paper.paperId,
                             "item": `${baseUrl}/current-issue/${volume}/${issue}/${paperId}`
                         }

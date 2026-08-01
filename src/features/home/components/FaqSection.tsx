@@ -28,7 +28,7 @@ const FAQS: FAQ[] = [
   },
   {
     question: "Does the journal have an ISSN number?",
-    answer: "We have initiated the application process for the International Standard Serial Number (ISSN). Authors will be updated as soon as the formal registration is completed, which will apply retrospectively to all published volumes."
+    answer: "Yes! IJITEST is officially registered with the ISSN International Centre with E-ISSN: 3139-6887."
   },
   {
     question: "What are the submission guidelines for authors?",

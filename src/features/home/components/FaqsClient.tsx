@@ -72,8 +72,8 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
     {
       category: 'fees',
       question: "Does the journal have an ISSN number?",
-      answer: "We have initiated the application process for the International Standard Serial Number (ISSN). Authors will be updated as soon as the formal registration is completed, which will apply retrospectively to all published volumes.",
-      plainTextAnswer: "We have initiated the application process for the International Standard Serial Number (ISSN). Authors will be updated as soon as the formal registration is completed, which will apply retrospectively to all published volumes."
+      answer: "Yes! IJITEST is officially registered with the ISSN International Centre with E-ISSN: 3139-6887.",
+      plainTextAnswer: "Yes! IJITEST is officially registered with the ISSN International Centre with E-ISSN: 3139-6887."
     },
     {
       category: 'author',

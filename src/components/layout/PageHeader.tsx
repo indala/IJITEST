@@ -90,9 +90,10 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
     };
 
 
-    const baseUrl = (typeof window !== 'undefined'
+    const rawBaseUrl = (typeof window !== 'undefined'
         ? window.location.origin
         : process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org');
+    const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl.replace(/\/$/, '') : `https://${rawBaseUrl.replace(/\/$/, '')}`;
 
     return (
         <>
