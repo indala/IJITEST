@@ -35,8 +35,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<PaperDetailParams> }): Promise<Metadata> {
     const { volume, issue, paperId } = await params;
+    const canonicalPaperId = paperId.toUpperCase();
     const [paperRes, settings] = await Promise.all([
-        getPaperById(paperId),
+        getPaperById(canonicalPaperId),
         getSettingsData()
     ]);
 
@@ -74,7 +75,7 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
             'citation_firstpage': paper.startPage ? String(paper.startPage) : '',
             'citation_lastpage': paper.endPage ? String(paper.endPage) : '',
             'citation_pdf_url': paper.pdfUrl ? (paper.pdfUrl.startsWith('http') ? paper.pdfUrl : `${baseUrl}${paper.pdfUrl}`) : '',
-            'citation_fulltext_html_url': `${baseUrl}/archives/${volume}/${issue}/${paperId}`,
+            'citation_fulltext_html_url': `${baseUrl}/archives/${volume}/${issue}/${canonicalPaperId}`,
             'dc.title': paper.title || '',
             'dc.creator': paper.authorsList,
             'dc.date': formattedDate,
@@ -85,7 +86,7 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
             'dc.type': 'Research Article',
         },
         alternates: {
-            canonical: `${baseUrl}/archives/${volume}/${issue}/${paperId}`
+            canonical: `${baseUrl}/archives/${volume}/${issue}/${canonicalPaperId}`
         },
         twitter: {
             card: 'summary_large_image',
@@ -104,7 +105,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
     }
 
     const [paperRes, settings] = await Promise.all([
-        getPaperById(paperId),
+        getPaperById(canonicalPaperId),
         getSettingsData()
     ]);
 

@@ -35,8 +35,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<PaperDetailParams> }): Promise<Metadata> {
     const { volume, issue, paperId } = await params;
+    const canonicalPaperId = paperId.toUpperCase();
     const [paperRes, settings] = await Promise.all([
-        getPaperById(paperId),
+        getPaperById(canonicalPaperId),
         getSettingsData()
     ]);
 
@@ -87,7 +88,7 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
             'dc.type': 'Research Article',
         },
         alternates: {
-            canonical: `${baseUrl}/current-issue/${volume}/${issue}/${paperId}`
+            canonical: `${baseUrl}/current-issue/${volume}/${issue}/${canonicalPaperId}`
         },
         twitter: {
             card: 'summary_large_image',
@@ -106,7 +107,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
     }
 
     const [paperRes, settings] = await Promise.all([
-        getPaperById(paperId),
+        getPaperById(canonicalPaperId),
         getSettingsData()
     ]);
 

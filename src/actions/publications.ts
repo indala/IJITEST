@@ -649,6 +649,11 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
         revalidatePath('/archives');
         revalidatePath('/', 'layout');
         cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), `rebrandPaperPdf ${submissionId}`);
+        
+        if (sub.paperId) {
+            updateTag(CACHE_TAGS.PAPER(sub.paperId));
+        }
+
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);

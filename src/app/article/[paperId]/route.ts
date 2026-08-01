@@ -31,7 +31,7 @@ export async function GET(
             .from(submissions)
             .innerJoin(publications, eq(submissions.id, publications.submissionId))
             .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
-            .where(eq(submissions.paperId, paperId))
+            .where(eq(submissions.paperId, canonicalPaperId))
             .limit(1);
 
         const row = pubRows[0];
@@ -48,7 +48,7 @@ export async function GET(
         const isCurrent = latestPapers.some((p) => p.id === id);
 
         const basePath = isCurrent ? "current-issue" : "archives";
-        const redirectUrl = `/${basePath}/volume${volumeNumber}/issue${issueNumber}/${paperId}`;
+        const redirectUrl = `/${basePath}/volume${volumeNumber}/issue${issueNumber}/${canonicalPaperId}`;
 
         // 3. Perform redirect
         const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
