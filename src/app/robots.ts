@@ -17,7 +17,7 @@ export default function robots(): MetadataRoute.Robots {
                 ],
             },
             {
-                userAgent: ['GPTBot', 'Claude-Web', 'PerplexityBot', 'Googlebot'],
+                userAgent: ['Googlebot', 'Googlebot-Scholar', 'bingbot', 'GPTBot', 'Claude-Web', 'PerplexityBot'],
                 allow: '/',
             }
         ],

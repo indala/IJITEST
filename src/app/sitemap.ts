@@ -58,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         return {
           url: `${baseUrl}/${basePath}/${volume}/${issue}/${paperId}`,
-          lastModified: new Date(paper.updatedAt || new Date()),
+          lastModified: new Date(paper.updatedAt || paper.publishedAt || new Date()),
           changeFrequency: 'weekly' as const,
           priority: 0.6,
         };

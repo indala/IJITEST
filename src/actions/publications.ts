@@ -355,7 +355,7 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
             }
         }
 
-        // 5. Submit all URLs to IndexNow in a single batch
+        // 5. Submit all updated URLs to IndexNow (Bing, Yandex, Naver)
         if (urlsToSubmit.length > 0) {
             submitToIndexNow(urlsToSubmit)
                 .catch((e: unknown) => console.error("IndexNow batch submission failed:", e));
