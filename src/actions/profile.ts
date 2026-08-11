@@ -14,7 +14,8 @@ import {
     reviewAssignments
 } from "@/db/schema";
 import { eq, sql, and, desc, inArray } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -284,7 +285,9 @@ export async function updateResearchInterests(userId: string, interests: string[
             await tx.insert(applicationInterests).values(joinRows);
         });
 
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         revalidatePath("/(panel)", "layout");
+        revalidatePath("/editorial-board");
         return { success: true, data: cleanInterests };
     } catch (error) {
         console.error("updateResearchInterests error:", error);
@@ -335,7 +338,9 @@ export async function updateProfilePhoto(userId: string, formData: FormData): Pr
 
         await safeDeleteFile(oldPhoto);
 
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         revalidatePath("/(panel)", "layout");
+        revalidatePath("/editorial-board");
         return { success: true, data: photoUrl };
     } catch (error) {
         console.error("updateProfilePhoto error:", error);

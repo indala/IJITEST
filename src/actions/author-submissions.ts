@@ -19,7 +19,8 @@ import {
 } from "@/db/schema";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import {
@@ -369,7 +370,13 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
 
         await invalidateSubmittedSubmissionsCount();
         await invalidateAuthorActionsCount(author.id);
+        if (submissionId) {
+            updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        }
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/author');
+        revalidatePath(`/author/submissions/${submissionId}`);
+        revalidatePath('/admin/submissions');
         return actionSuccess(undefined);
 
     } catch (error) {
@@ -527,6 +534,10 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
             console.error("Copyright upload email dispatch error:", mailErr);
         }
 
+        if (submissionId) {
+            updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        }
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/author');
         revalidatePath(`/author/submissions/${submissionId}`);
 

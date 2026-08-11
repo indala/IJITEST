@@ -18,7 +18,8 @@ import {
 } from "@/db/types";
 import { eq, and, sql, inArray, isNotNull, not } from "drizzle-orm";
 import { hash } from "bcryptjs";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import crypto from 'crypto';
 import { emailTemplates, sendEmail, sendEmailWithRetry } from '@/lib/mail';
@@ -310,7 +311,9 @@ export async function updateUserRole(userId: string, role: "admin" | "editor" | 
             .set({ role })
             .where(eq(users.id, userId));
 
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         revalidatePath('/admin/users');
+        revalidatePath('/editorial-board');
         return { success: true };
     } catch (error) {
         console.error("Update User Role Error:", error);
@@ -380,7 +383,9 @@ export async function deleteUser(id: string): Promise<ActionResponse> {
                 await safeDeleteFile(profile[0].photoUrl);
             }
 
+            updateTag(CACHE_TAGS.PUBLIC_DATA);
             revalidatePath('/admin/users');
+            revalidatePath('/editorial-board');
             return { success: true };
         });
     } catch (error) {
@@ -464,7 +469,9 @@ export async function updateUserProfile(formData: FormData): Promise<ActionRespo
             await safeDeleteFile(oldPhotoUrl);
         }
 
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         revalidatePath(`/${session.user.role}/profile`);
+        revalidatePath('/editorial-board');
         return { success: true };
     } catch (error) {
         console.error("Update User Profile Error:", error);

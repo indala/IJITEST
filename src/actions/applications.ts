@@ -16,7 +16,8 @@ import {
     serverError
 } from "@/db/types";
 import { eq, and, desc, SQL, inArray } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { emailTemplates, sendEmail, sendEmailWithRetry } from "@/lib/mail";
 import crypto from "crypto";
 import { getServerSession } from "next-auth/next";
@@ -189,8 +190,10 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
             html: template.html
         });
 
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         revalidatePath("/admin/applications");
         revalidatePath("/admin/users");
+        revalidatePath("/editorial-board");
         return { success: true };
     } catch (error) {
         console.error("Approve Application Error:", error);

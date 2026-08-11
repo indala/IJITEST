@@ -280,6 +280,9 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         revalidatePath('/', 'layout');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `assignPaperToIssue ${submissionId}`);
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        if (submission?.paperId) {
+            updateTag(CACHE_TAGS.PAPER(submission.paperId));
+        }
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.PUBLIC_DATA);
@@ -318,6 +321,7 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
 
         // 3. Fetch papers for the newly published issue
         const issuePapers = await db.select({
+            id: submissions.id,
             paperId: submissions.paperId
         })
             .from(submissions)
@@ -362,7 +366,11 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath('/', 'layout');
-        cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `publishIssue ${id}`);
+        issuePapers.forEach(paper => {
+            if (paper?.id) updateTag(CACHE_TAGS.SUBMISSION(paper.id));
+            if (paper?.paperId) updateTag(CACHE_TAGS.PAPER(paper.paperId));
+        });
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.PUBLIC_DATA);
@@ -521,7 +529,9 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
         return serverError(error, "delete publication");
     } finally {
         revalidatePath('/admin/publications');
+        revalidatePath('/admin/submissions');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `deleteVolumeIssue ${id}`);
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.PUBLIC_DATA);
@@ -548,6 +558,8 @@ export async function incrementPaperViews(submissionId: number): Promise<ActionR
         await db.update(publications)
             .set({ views: sql`views + 1` })
             .where(eq(publications.submissionId, submissionId));
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {
         console.error("Increment Views Error:", error);
@@ -574,6 +586,8 @@ export async function incrementPaperDownloads(submissionId: number): Promise<Act
         await db.update(publications)
             .set({ downloads: sql`downloads + 1` })
             .where(eq(publications.submissionId, submissionId));
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {
         console.error("Increment Downloads Error:", error);
@@ -650,6 +664,9 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
         revalidatePath('/', 'layout');
         cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), `rebrandPaperPdf ${submissionId}`);
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        if (sub?.paperId) {
+            updateTag(CACHE_TAGS.PAPER(sub.paperId));
+        }
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.PUBLIC_DATA);

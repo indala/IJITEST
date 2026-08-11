@@ -109,7 +109,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
                         id="manuscript-upload"
                         type="file"
                         title="Upload revised manuscript"
-                        accept=".doc,.docx,.pdf"
+                        accept=".docx"
                         className="hidden"
                         onChange={(e) => setManuscript(e.target.files?.[0] || null)}
                         disabled={isPending}
@@ -124,7 +124,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
                         <>
                             <Upload className="w-8 h-8 text-muted-foreground/50 mb-2" />
                             <p className="text-sm font-bold text-muted-foreground">Click to upload revised manuscript</p>
-                            <p className="text-[10px] text-muted-foreground/70">DOC, DOCX, or PDF (max 20MB)</p>
+                            <p className="text-[10px] text-muted-foreground/70">Strict Policy: .DOCX only (max 20MB)</p>
                         </>
                     )}
                 </div>
@@ -139,7 +139,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
                     id="changelog"
                     name="changelog"
                     placeholder="Summarize the changes made in response to reviewer comments..."
-                    className="min-h-[140px] text-sm resize-none border-border/60 focus:border-primary/40 rounded-xl"
+                    className="min-h-35 text-sm resize-none border-border/60 focus:border-primary/40 rounded-xl"
                     disabled={isPending}
                 />
             </div>
