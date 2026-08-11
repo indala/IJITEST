@@ -216,7 +216,8 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
             paperId: submission.paperId,
             startPage: confirmedStartPage,
             endPage: confirmedEndPage,
-            doi: generatedDoi
+            doi: generatedDoi,
+            license: "Creative Commons Attribution 4.0 International (CC BY 4.0)"
         });
 
         // 6. Database transaction — only pure DB ops
@@ -650,7 +651,8 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
             paperId: sub.paperId,
             startPage: pub.startPage,
             endPage: pub.endPage,
-            doi: pub.doi
+            doi: pub.doi,
+            license: "Creative Commons Attribution 4.0 International (CC BY 4.0)"
         });
 
         // 4. Update the published date/time in the db or just revalidate

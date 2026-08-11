@@ -152,16 +152,18 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                     </div>
 
                     {/* Abstract Section */}
-                    <div className="bg-gray-50/50 p-10 md:p-14 rounded-[3rem] border border-gray-100 relative group">
-                        <h2 className=" font-serif font-black text-gray-900 mb-8 flex items-center gap-3">
-                            <FileText className="w-6 h-6 text-primary opacity-50" /> Abstract
-                        </h2>
-                        <p className="text-gray-800 leading-[1.8] text-justify font-medium indent-8">
-                            {paper.abstract}
-                        </p>
+                    <div className="bg-gray-50/50 p-10 md:p-14 rounded-[3rem] border border-gray-100 relative group space-y-8">
+                        <div>
+                            <h2 className=" font-serif font-black text-gray-900 mb-8 flex items-center gap-3">
+                                <FileText className="w-6 h-6 text-primary opacity-50" /> Abstract
+                            </h2>
+                            <p className="text-gray-800 leading-[1.8] text-justify font-medium indent-8">
+                                {paper.abstract}
+                            </p>
+                        </div>
 
                         {paper.keywords && (
-                            <div className="mt-12 pt-8 border-t border-gray-200/50">
+                            <div className="pt-8 border-t border-gray-200/50">
                                 <div className="flex items-center gap-2 text-[10px] font-black text-gray-600 tracking-widest mb-4">
                                     <Hash className="w-3 h-3" /> Keywords
                                 </div>
@@ -174,6 +176,28 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                 </div>
                             </div>
                         )}
+
+                        {/* Open Access & Creative Commons License */}
+                        <div className="p-6 rounded-2xl bg-white border border-primary/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                            <div className="space-y-1">
+                                <p className="text-xs font-black text-primary uppercase tracking-widest">Open Access License</p>
+                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                    Copyright © {new Date((paper.publishedAt || paper.updatedAt || new Date()) as string | number | Date).getFullYear()} The Author(s). 
+                                    This article is distributed under the terms of the{' '}
+                                    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-primary font-bold underline hover:opacity-80">
+                                        Creative Commons Attribution 4.0 International License (CC BY 4.0)
+                                    </a>.
+                                </p>
+                            </div>
+                            <a
+                                href="https://creativecommons.org/licenses/by/4.0/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-4 py-2 bg-primary/5 hover:bg-primary/10 border border-primary/20 text-primary text-[10px] font-black tracking-widest rounded-xl transition-colors shrink-0"
+                            >
+                                CC BY 4.0
+                            </a>
+                        </div>
                     </div>
                 </div>
 
