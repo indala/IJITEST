@@ -83,7 +83,7 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
                             id="changelog" 
                             name="changelog"
                             placeholder="Briefly describe the changes made in this revision..."
-                            className="min-h-[120px] rounded-xl border-primary/10 focus:border-secondary transition-all"
+                            className="min-h-30 rounded-xl border-primary/10 focus:border-secondary transition-all"
                             required
                             disabled={isPending}
                         />
@@ -94,9 +94,9 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
                         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary/10 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className="w-8 h-8 text-primary/20 mb-2" />
-                                <p className="text-xs text-primary/40 font-bold">DOCX, PDF (Max 20MB)</p>
+                                <p className="text-xs text-primary/40 font-bold">Strict Policy: .DOCX Only (Max 20MB)</p>
                             </div>
-                            <Input id="manuscript" name="manuscript" type="file" className="hidden" required disabled={isPending} />
+                            <Input id="manuscript" name="manuscript" type="file" accept=".docx" className="hidden" required disabled={isPending} />
                         </label>
                     </div>
 

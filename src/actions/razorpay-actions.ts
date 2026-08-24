@@ -6,7 +6,8 @@ import crypto from "crypto";
 import { db } from "@/lib/db";
 import { payments, submissions, settings, userProfiles, users, submissionVersions } from "@/db/schema";
 import { eq, desc, and } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { invalidateAuthorActionsCount, createNotification } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { getServerSession } from "next-auth/next";
@@ -201,8 +202,14 @@ export async function verifyRazorpayPayment(data: {
             console.error("Failed to send payment verification email:", emailErr);
         }
 
+        if (submissionId) {
+            updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        }
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/track');
         revalidatePath('/admin');
+        revalidatePath('/admin/submissions');
+        revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/reviewer');
         revalidatePath('/editor');
 

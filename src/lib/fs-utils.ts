@@ -185,6 +185,7 @@ export interface BrandingMetadata {
     startPage?: number | null;
     endPage?: number | null;
     doi?: string | null;
+    license?: string | null;
 }
 
 /**

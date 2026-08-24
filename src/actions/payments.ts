@@ -4,7 +4,8 @@ import "server-only"
 import { db } from "@/lib/db";
 import { payments, submissions, submissionVersions, userProfiles, users } from "@/db/schema";
 import { eq, desc, and, isNull, sql } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { invalidateAuthorActionsCount, createNotification } from "./notifications";
 import { type ActionResponse, type PaymentRow, type UnpaidPaperRow, type PaymentStatus, serverError } from "@/db/types";
 import { getServerSession } from "next-auth/next";
@@ -126,7 +127,18 @@ export async function updatePaymentStatus(paymentId: number, status: PaymentStat
                 }
             }
         }
+
+        const [payRecord] = await db.select({ submissionId: payments.submissionId })
+            .from(payments)
+            .where(eq(payments.id, paymentId))
+            .limit(1);
+
+        if (payRecord?.submissionId) {
+            updateTag(CACHE_TAGS.SUBMISSION(payRecord.submissionId));
+        }
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/admin/payments');
+        revalidatePath('/admin/submissions');
         return { success: true };
     } catch (error) {
         console.error("Update Payment Error:", error);
@@ -266,8 +278,12 @@ export async function waivePayment(submissionId: number): Promise<ActionResponse
                 });
             }
         }
+        if (submissionId) {
+            updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        }
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/admin/submissions');
-        revalidatePath('/admin/submissions/[id]');
+        revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/payments');
         return { success: true };
     } catch (error) {

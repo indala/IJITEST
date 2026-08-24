@@ -36,7 +36,7 @@ function AimAndScope() {
                     <div className="p-4 bg-primary/5 rounded-4xl text-primary border border-primary/10 shadow-vip" aria-hidden="true">
                         <BookOpen className="w-7 h-7" />
                     </div>
-                    <h2>Call for Papers</h2>
+                    <h2 className="text-2xl sm:text-3xl font-serif font-bold text-primary m-0">Call for Papers</h2>
                 </div>
 
                 <div className="space-y-10">

@@ -14,6 +14,7 @@ import { emailTemplates, sendEmail } from "@/lib/mail";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import { inArray } from "drizzle-orm";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { revalidatePath } from "next/cache";
 
 // Local schema extension for application type
 const applicationSchema = insertApplicationSchema.extend({
@@ -133,6 +134,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
             html: applicantTemplate.html
         });
 
+        revalidatePath('/admin/applications');
         return actionSuccess();
     } catch (error) {
         console.error("Application Error:", error);

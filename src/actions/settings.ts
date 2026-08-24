@@ -36,7 +36,7 @@ const ALLOWED_SETTING_KEYS = new Set([
 const DEFAULT_SETTINGS: Record<string, string> = {
     journalName: 'International Journal of Innovative Trends in Engineering, Science and Technology',
     journalShortName: 'IJITEST',
-    issnNumber: 'XXXX-XXXX',
+    issnNumber: '3139-6887',
     apcInr: '2500',
     apcUsd: '50',
     supportEmail: 'support@ijitest.org',

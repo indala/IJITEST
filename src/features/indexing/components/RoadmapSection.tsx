@@ -1,10 +1,11 @@
 import { memo } from 'react';
-import { CheckCircle2, Clock, Shield, Globe, Award, Zap } from 'lucide-react';
+import { CheckCircle2, Clock, Shield, Globe, Award, Zap, ExternalLink } from 'lucide-react';
 
 interface RoadmapSubItem {
     title: string;
     status: 'Completed' | 'In Progress' | 'Pending';
     badgeText?: string;
+    linkUrl?: string;
 }
 
 interface RoadmapPhase {
@@ -33,12 +34,40 @@ const roadmapPhases: RoadmapPhase[] = [
     },
     {
         phase: "Phase 2",
-        title: "Scholarly Identity",
+        title: "Scholarly Identity & Indexing",
         status: "In Progress",
         items: [
-            { title: "ISSN Registration", status: "Completed", badgeText: "Completed - E-ISSN: 3139-6887" },
-            { title: "DOI Assignment (CrossRef)", status: "In Progress" },
-            { title: "ROAD Directory Indexing", status: "In Progress" }
+            { 
+                title: "ISSN Registration", 
+                status: "Completed", 
+                badgeText: "E-ISSN: 3139-6887" 
+            },
+            { 
+                title: "OpenAIRE Indexing", 
+                status: "Completed", 
+                badgeText: "Indexed (Verified)",
+                linkUrl: "https://explore.openaire.eu/search/result?pid=10.5281%2Fzenodo.22016453"
+            },
+            { 
+                title: "Zenodo Digital Repository", 
+                status: "Completed", 
+                badgeText: "DOI: 10.5281/zenodo.22016453",
+                linkUrl: "https://doi.org/10.5281/zenodo.22016453"
+            },
+            { 
+                title: "CiteFactor Indexing", 
+                status: "In Progress", 
+                badgeText: "Registered" 
+            },
+            { 
+                title: "OpenAlex Indexing", 
+                status: "In Progress", 
+                badgeText: "Registered" 
+            },
+            { 
+                title: "ROAD Directory Indexing", 
+                status: "In Progress" 
+            }
         ],
         icon: Zap,
         color: "text-blue-600",
@@ -49,9 +78,10 @@ const roadmapPhases: RoadmapPhase[] = [
         title: "Global Visibility",
         status: "In Progress",
         items: [
-            { title: "Google Scholar Discovery", status: "In Progress", badgeText: "In Progress (Papers Discovered)" },
+            { title: "Google Scholar Discovery", status: "In Progress", badgeText: "Papers Discovered" },
             { title: "SJIF Impact Factor Evaluation", status: "In Progress" },
-            { title: "Directory of Research Indexing", status: "Pending" }
+            { title: "Crossref DOI Continuous Sync", status: "In Progress" },
+            { title: "Directory of Research Journal Indexing", status: "Pending" }
         ],
         icon: Globe,
         color: "text-blue-600",
@@ -78,7 +108,7 @@ function RoadmapSection() {
             <div className="space-y-4">
                 <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-semibold text-primary flex items-center gap-3">
                     <span className="text-xs xl:text-sm 2xl:text-base text-muted-foreground font-mono">01.</span>
-                    Strategic Growth Roadmap
+                    Strategic Growth & Indexing Roadmap
                 </h2>
                 <p className="text-xs xl:text-sm 2xl:text-lg text-muted-foreground max-w-2xl leading-relaxed">
                     IJITEST follows a rigorous path toward global scientific recognition. Our growth is structured into distinct phases, ensuring every published paper adheres to international scholarly standards.
@@ -127,10 +157,23 @@ function RoadmapSection() {
                                     </div>
 
                                     {sub.status === "Completed" && (
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] xl:text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm">
-                                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                                            {sub.badgeText || "Completed"}
-                                        </span>
+                                        sub.linkUrl ? (
+                                            <a 
+                                                href={sub.linkUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] xl:text-xs font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-300 shadow-sm transition-colors"
+                                            >
+                                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                                {sub.badgeText || "Completed"}
+                                                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                                            </a>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] xl:text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm">
+                                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                                {sub.badgeText || "Completed"}
+                                            </span>
+                                        )
                                     )}
 
                                     {sub.status === "In Progress" && sub.badgeText && (
@@ -148,8 +191,8 @@ function RoadmapSection() {
 
             <div className="p-6 xl:p-8 2xl:p-10 bg-[#000066]/5 rounded-xl border border-[#000066]/10 flex flex-col sm:flex-row items-center gap-6">
                 <div className="w-12 h-12 shrink-0 bg-[#000066] text-white rounded-full flex items-center justify-center font-bold italic shadow-inner">i</div>
-                <p className="text-[11px] xl:text-sm 2xl:text-lg text-primary/70 leading-relaxed m-0 text-center sm:text-left">
-                    <strong className="text-primary 2xl:text-xl">Note to Authors:</strong> Articles published in IJITEST are assigned active metadata including E-ISSN: 3139-6887. DOI assignments and expanded indexing cross-linking are continuously updated as registrations progress.
+                <p className="text-[11px] xl:text-sm 2xl:text-lg text-primary/80 leading-relaxed m-0 text-center sm:text-left">
+                    <strong className="text-primary 2xl:text-xl">Active Scholarly Credentials:</strong> Articles published in IJITEST are assigned formal metadata including <strong className="text-primary">E-ISSN: 3139-6887</strong> and are indexed with verified digital repositories including <strong className="text-primary">OpenAIRE</strong> & <strong className="text-primary">Zenodo</strong> (DOI: 10.5281/zenodo.22016453). Crossref and expanded indexing partners (CiteFactor, OpenAlex) are continuously synchronized.
                 </p>
             </div>
         </section>
