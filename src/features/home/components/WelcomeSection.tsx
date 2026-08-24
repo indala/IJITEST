@@ -18,7 +18,7 @@ function WelcomeSection() {
             className="relative group"
             aria-labelledby="welcome-heading"
         >
-            <h2 id="welcome-heading" className="text-3xl font-black mb-8 sm:mb-12">
+            <h2 id="welcome-heading" className="text-2xl sm:text-3xl xl:text-4xl font-serif font-bold text-primary mb-6 sm:mb-8">
                 Welcome to {shortName}
             </h2>
 

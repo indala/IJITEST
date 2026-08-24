@@ -15,8 +15,6 @@ import EthicsWidget from '@/features/shared/widgets/EthicsWidget';
 import AnnouncementBar from '@/features/home/components/AnnouncementBar';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
-import FaqSection from '@/features/home/components/FaqSection';
-import { JsonLd } from '@/components/shared/JsonLd';
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettingsData();
@@ -85,73 +83,6 @@ export default async function Home() {
       </Section>
 
       <PublisherSection />
-      <FaqSection />
-      
-      <JsonLd 
-        id="home-faq"
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "How long does the peer-review process take?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Our peer-review process is designed to balance speed with rigor. Standard reviews take 4–6 weeks, while groundbreaking submissions may be considered for fast-track publication to ensure timely visibility."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How do I track and manage my manuscript after submission?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Upon submission, you can access your dedicated Author Dashboard Panel (/login) using your registered email. Inside, you can track peer-review status in real-time, view generated PDF drafts, upload revisions, and make APC payments."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Is IJITEST indexed in major databases?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "As a new scholarly startup, IJITEST is currently in the process of being indexed with major databases like Google Scholar and Crossref. We are committed to ensuring maximum visibility for all published research as we grow."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Does the journal have an ISSN number?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We have initiated the application process for the International Standard Serial Number (ISSN). Authors will be updated as soon as the formal registration is completed, which will apply retrospectively to all published volumes."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "What are the submission guidelines for authors?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Authors should ensure their manuscripts follow our standard template, include an abstract, keywords, and properly formatted references. Detailed guidelines are available in our <a href=\"/guidelines\">Author Resource Desk</a>."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Do you provide Open Access publication?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes, IJITEST is a Gold Open Access journal. All published articles are immediately available to the global research community without any subscription barriers."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How can I join the Editorial Board or become a Reviewer?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We welcome experts from various engineering and science disciplines. You can apply through our <a href=\"/join-us\">Join Us</a> page by submitting your CV and area of expertise."
-              }
-            }
-          ]
-        }} 
-      />
     </main>
   );
 }

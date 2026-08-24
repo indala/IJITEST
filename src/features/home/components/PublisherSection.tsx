@@ -28,7 +28,7 @@ function PublisherSection() {
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="max-w-3xl"
                 >
-                    <h2>About the Publisher</h2>
+                    <h2 className="text-2xl sm:text-3xl font-serif font-bold text-primary mb-4">About the Publisher</h2>
                     <p className="opacity-80 border-l-4 border-secondary/30 pl-8 mb-12">
                         {settings['journalShortName'] || 'IJITEST'} is mentored by <span className="opacity-100">{publisherName}</span>, aiming to provide a high-quality bedrock for research sharing and academic excellence.
                     </p>
