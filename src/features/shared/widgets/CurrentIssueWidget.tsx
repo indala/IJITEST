@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { BookOpen, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -40,30 +40,30 @@ function CurrentIssueWidget() {
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
         >
-            <Card className="border border-border/70 bg-card rounded-xl p-3.5 sm:p-4 space-y-3 shadow-2xs">
+            <Card className="border border-border/70 bg-card rounded-xl p-3.5 sm:p-4 2xl:p-5 space-y-3 2xl:space-y-4 shadow-2xs">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary">
-                            <BookOpen className="w-4 h-4" />
+                        <div className="w-8 h-8 2xl:w-10 2xl:h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary">
+                            <BookOpen className="w-4 h-4 2xl:w-5 2xl:h-5" />
                         </div>
                         <div>
-                            <CardTitle className="text-xs sm:text-sm font-bold text-primary m-0">Current Issue</CardTitle>
-                            <p className="text-[10px] text-muted-foreground m-0">{currentStatus.date}</p>
+                            <CardTitle className="text-xs sm:text-sm 2xl:text-base font-bold text-primary m-0">Current Issue</CardTitle>
+                            <p className="text-[10px] 2xl:text-xs text-muted-foreground m-0">{currentStatus.date}</p>
                         </div>
                     </div>
-                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono font-bold text-[10px] uppercase">
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono font-bold text-[10px] 2xl:text-xs uppercase">
                         Vol {currentStatus.volume} · Iss {currentStatus.issue}
                     </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button asChild size="sm" className="h-7 px-3 text-xs bg-primary hover:bg-primary/90 rounded-md flex-1">
+                    <Button asChild size="sm" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm bg-primary hover:bg-primary/90 rounded-md flex-1">
                         <Link href="/current-issue" className="flex items-center justify-center gap-1">
                             <span>View Issue</span>
                             <ChevronRight className="w-3 h-3" />
                         </Link>
                     </Button>
-                    <Button asChild size="sm" variant="outline" className="h-7 px-3 text-xs border-primary/20 text-primary hover:bg-primary/5 rounded-md">
+                    <Button asChild size="sm" variant="outline" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm border-primary/20 text-primary hover:bg-primary/5 rounded-md">
                         <Link href="/archives">Archives</Link>
                     </Button>
                 </div>

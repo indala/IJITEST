@@ -97,7 +97,7 @@ function HomeCurrentIssue() {
                                 </div>
 
                                 {/* Authors & Page Info */}
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-foreground/80">
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs 2xl:text-sm text-foreground/80">
                                     <div className="flex items-center gap-1">
                                         <span className="font-semibold text-primary/70">Authors:</span>
                                         <span className="font-medium text-foreground/90">{authors}</span>
@@ -112,7 +112,7 @@ function HomeCurrentIssue() {
 
                                 {/* Abstract Snippet */}
                                 {paper.abstract && (
-                                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed m-0">
+                                    <p className="text-xs 2xl:text-sm text-muted-foreground line-clamp-2 leading-relaxed m-0">
                                         {paper.abstract}
                                     </p>
                                 )}
@@ -120,7 +120,7 @@ function HomeCurrentIssue() {
                                 {/* Action Buttons Strip */}
                                 <div className="pt-2 border-t border-border/40 flex flex-wrap items-center justify-between gap-2">
                                     <div className="flex items-center gap-2">
-                                        <Button asChild size="sm" variant="default" className="h-7 px-3 text-xs bg-primary hover:bg-primary/90 rounded-md">
+                                        <Button asChild size="sm" variant="default" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm bg-primary hover:bg-primary/90 rounded-md">
                                             <Link href={articleUrl} className="flex items-center gap-1.5">
                                                 <Eye className="w-3.5 h-3.5" />
                                                 <span>Read Article</span>
@@ -128,7 +128,7 @@ function HomeCurrentIssue() {
                                         </Button>
 
                                         {paper.filePath && (
-                                            <Button asChild size="sm" variant="outline" className="h-7 px-3 text-xs border-primary/20 text-primary hover:bg-primary/5 rounded-md">
+                                            <Button asChild size="sm" variant="outline" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm border-primary/20 text-primary hover:bg-primary/5 rounded-md">
                                                 <a href={paper.filePath} download target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
                                                     <Download className="w-3.5 h-3.5 text-emerald-600" />
                                                     <span>PDF</span>
@@ -142,7 +142,7 @@ function HomeCurrentIssue() {
                                         href="https://doi.org/10.5281/zenodo.22016453"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-[11px] font-mono text-muted-foreground hover:text-primary transition-colors"
+                                        className="inline-flex items-center gap-1 text-[11px] 2xl:text-xs font-mono text-muted-foreground hover:text-primary transition-colors"
                                     >
                                         <span>DOI: 10.5281/zenodo.22016453</span>
                                         <ExternalLink className="w-2.5 h-2.5 opacity-60" />
@@ -155,12 +155,12 @@ function HomeCurrentIssue() {
             </div>
 
             {/* Bottom Repository Link */}
-            <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="p-3.5 2xl:p-5 rounded-xl bg-primary/5 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs 2xl:text-sm">
                 <div className="flex items-center gap-2 text-primary font-medium text-center sm:text-left">
                     <Sparkles className="w-4 h-4 text-secondary shrink-0" />
                     <span>All articles are deposited into the CERN Zenodo Open Science Repository & OpenAIRE discovery hub.</span>
                 </div>
-                <Button asChild size="sm" variant="outline" className="h-7 px-3 text-xs border-primary/20 text-primary hover:bg-primary/5 shrink-0">
+                <Button asChild size="sm" variant="outline" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm border-primary/20 text-primary hover:bg-primary/5 shrink-0">
                     <Link href="/archives">Browse All Volumes ({year})</Link>
                 </Button>
             </div>

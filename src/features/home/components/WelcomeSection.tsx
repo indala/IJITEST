@@ -26,7 +26,7 @@ function WelcomeSection() {
                 <p title='welcome description' className='text-justify text-muted-foreground m-0'>
                     {name} ({shortName}) is an international, peer-reviewed scholarly journal dedicated to the dissemination of high-quality research in Engineering, Science, Technology, and Management. The journal encourages fundamental, interdisciplinary, theoretical, and applied research that advances innovation, industrial development, and sustainable practices across emerging and established domains. {shortName} follows a rigorous double-blind peer-review process and adheres strictly to global ethical publishing standards.
                 </p>
-                <div className="flex flex-wrap items-center gap-3 font-semibold text-primary/90 text-xs sm:text-sm border-t border-primary/10 pt-2.5">
+                <div className="flex flex-wrap items-center gap-3 font-semibold text-primary/90 text-xs sm:text-sm 2xl:text-base border-t border-primary/10 pt-2.5 2xl:pt-3.5">
                     <span>Subject: <strong className="text-primary">{settings['journalSubject'] || 'Multidisciplinary Engineering & Technology'}</strong></span>
                     <span>•</span>
                     <span>Language: <strong className="text-primary">English</strong></span>

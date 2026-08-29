@@ -24,6 +24,7 @@ import crypto from 'crypto';
 import { emailTemplates, sendEmail, sendEmailWithRetry } from '@/lib/mail';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { hash } from "bcryptjs";
 
 export async function getEditorialBoard(): Promise<ActionResponse<SafeUserWithProfile[]>> {
     'use cache'

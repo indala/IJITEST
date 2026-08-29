@@ -28,7 +28,7 @@ function TrackManuscriptWidget() {
     return (
         <Card className="border-border/50 bg-card rounded-xl shadow-xs transition-all group">
             <CardHeader className="p-3.5 pb-1">
-                <CardTitle className="text-primary m-0">Track Manuscript</CardTitle>
+                <CardTitle className="text-xs sm:text-sm 2xl:text-base font-bold text-primary m-0">Track Manuscript</CardTitle>
             </CardHeader>
             <CardContent className="p-3.5 pt-2">
                 <form action={formAction} className="space-y-3">
@@ -39,10 +39,10 @@ function TrackManuscriptWidget() {
                             placeholder="Manuscript ID"
                             value={paperId}
                             onChange={(e) => setPaperId(e.target.value)}
-                            className="h-10 bg-muted/20 border-border/50 text-xs focus-visible:ring-1 focus-visible:ring-primary/20 transition-all"
+                            className="h-10 2xl:h-11 bg-muted/20 border-border/50 text-xs 2xl:text-sm focus-visible:ring-1 focus-visible:ring-primary/20 transition-all"
                         />
                         {state && !state.success && (
-                            <p className="text-[10px] text-destructive pl-1 font-semibold">{state.error}</p>
+                            <p className="text-[10px] 2xl:text-xs text-destructive pl-1 font-semibold">{state.error}</p>
                         )}
                     </div>
                     <TrackButton />
@@ -58,7 +58,7 @@ function TrackButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full h-10 bg-[#000066] hover:bg-[#000088] text-white font-bold text-[10px] 2xl:text-xl tracking-wider rounded-lg transition-all shadow-sm uppercase gap-2"
+            className="w-full h-10 2xl:h-11 bg-[#000066] hover:bg-[#000088] text-white font-bold text-[10px] 2xl:text-xs tracking-wider rounded-lg transition-all shadow-sm uppercase gap-2"
         >
             {pending ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />

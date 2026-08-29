@@ -52,7 +52,7 @@ function HomeStats() {
         : "grid-cols-1 sm:grid-cols-3";
 
     return (
-        <div className={`grid ${gridCols} gap-2.5 sm:gap-3`}>
+        <div className={`grid ${gridCols} gap-2.5 sm:gap-3 2xl:gap-4`}>
             {stats.map((stat, i) => (
                 <motion.div
                     key={i}
@@ -63,12 +63,12 @@ function HomeStats() {
                     className="h-full"
                 >
                     <Card className="h-full border border-border/60 bg-card hover:border-primary/30 transition-all group overflow-hidden">
-                        <CardContent className="p-3 sm:p-4 flex flex-col justify-between h-full">
+                        <CardContent className="p-3 sm:p-4 2xl:p-5 flex flex-col justify-between h-full">
                             <div>
-                                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1 m-0">
+                                <p className="text-[11px] 2xl:text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1 m-0">
                                     {stat.label}
                                 </p>
-                                <h3 className="text-xs sm:text-sm font-bold text-primary m-0">
+                                <h3 className="text-xs sm:text-sm 2xl:text-base font-bold text-primary m-0">
                                     {stat.value}
                                 </h3>
                             </div>

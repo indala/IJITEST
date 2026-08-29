@@ -13,12 +13,12 @@ function EthicsWidget() {
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
         >
-            <div className="bg-primary p-3.5 sm:p-4 rounded-xl text-white shadow-md space-y-2 group">
-                <h3 className="text-xs sm:text-sm font-bold text-white m-0">Publication Ethics</h3>
-                <p className="text-xs text-white/80 leading-relaxed m-0">
+            <div className="bg-primary p-3.5 sm:p-4 2xl:p-5 rounded-xl text-white shadow-md space-y-2 2xl:space-y-3 group">
+                <h3 className="text-xs sm:text-sm 2xl:text-base font-bold text-white m-0">Publication Ethics</h3>
+                <p className="text-xs 2xl:text-sm text-white/80 leading-relaxed m-0">
                     IJITEST adheres strictly to COPE (Committee on Publication Ethics) international standards.
                 </p>
-                <Link href="/ethics" className="text-xs font-bold text-secondary hover:text-white transition-colors inline-flex items-center gap-1 pt-1">
+                <Link href="/ethics" className="text-xs 2xl:text-sm font-bold text-secondary hover:text-white transition-colors inline-flex items-center gap-1 pt-1">
                     <span>Read Policy & Guidelines</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                 </Link>

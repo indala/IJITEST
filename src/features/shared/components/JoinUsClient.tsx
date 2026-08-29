@@ -1,5 +1,5 @@
 import ReviewerApplicationForm from "@/features/reviewer/components/ReviewerApplicationForm";
-import { CheckCircle2, Globe, Users, Award, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, Globe, Users, Award } from 'lucide-react';
 
 import type { JournalSettings } from '@/db/types';
 
@@ -35,9 +35,7 @@ interface JoinUsClientProps {
     settings: JournalSettings;
 }
 
-export default function JoinUsClient({ settings }: JoinUsClientProps) {
-    const journalShortName = settings.journalShortName || '';
-
+export default function JoinUsClient({ settings: _settings }: JoinUsClientProps) {
     return (
         <section className="container-responsive py-6 sm:py-8" aria-labelledby="join-us-heading">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">

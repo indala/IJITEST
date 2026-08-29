@@ -26,23 +26,23 @@ function PublisherSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="max-w-3xl space-y-2.5"
+                    className="max-w-3xl 2xl:max-w-5xl space-y-2.5 2xl:space-y-4"
                 >
                     <h2 className="m-0">About the Publisher</h2>
                     <p className="border-l-4 border-secondary/30 pl-3.5 text-muted-foreground m-0">
                         {settings['journalShortName'] || 'IJITEST'} is published by <span className="font-semibold text-primary">{publisherName}</span>, dedicated to providing a high-quality global bedrock for research sharing and open scientific excellence.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
-                        <div className="p-2.5 bg-card border border-border/70 rounded-xl flex items-center gap-3 shadow-2xs">
-                            <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center text-primary shrink-0">
-                                <Mail className="w-4 h-4" />
+                        <div className="p-2.5 2xl:p-3.5 bg-card border border-border/70 rounded-xl flex items-center gap-3 shadow-2xs">
+                            <div className="w-8 h-8 2xl:w-10 2xl:h-10 bg-primary/5 rounded-lg flex items-center justify-center text-primary shrink-0">
+                                <Mail className="w-4 h-4 2xl:w-5 2xl:h-5" />
                             </div>
-                            <div className="text-left text-xs">
-                                <p className="font-bold text-muted-foreground uppercase tracking-wider mb-0.5 m-0 text-[10px]">Support Desk</p>
-                                <p className="text-primary font-semibold m-0 text-xs">{supportEmail}</p>
+                            <div className="text-left text-xs 2xl:text-sm">
+                                <p className="font-bold text-muted-foreground uppercase tracking-wider mb-0.5 m-0 text-[10px] 2xl:text-xs">Support Desk</p>
+                                <p className="text-primary font-semibold m-0 text-xs 2xl:text-sm">{supportEmail}</p>
                             </div>
                         </div>
-                        <Link href="/guidelines" className="text-xs font-semibold text-primary hover:text-secondary flex items-center gap-2 transition-all">
+                        <Link href="/guidelines" className="text-xs 2xl:text-sm font-semibold text-primary hover:text-secondary flex items-center gap-2 transition-all">
                             <span className="h-[2px] w-5 bg-secondary" />
                             Author Submission Guidelines
                         </Link>

@@ -67,7 +67,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                         href={item.href}
                         aria-haspopup={item.children ? "true" : undefined}
                         aria-expanded={item.children ? isMenuOpen : undefined}
-                        className={`transition-all duration-200 flex items-center gap-1 relative px-2 text-xs font-semibold whitespace-nowrap lg:px-2.5 lg:text-xs xl:px-3 xl:text-xs ${isActive ? 'text-primary' : 'text-black hover:text-primary'}`}
+                        className={`transition-all duration-200 flex items-center gap-1 relative px-2 text-xs font-semibold whitespace-nowrap lg:px-2.5 lg:text-xs xl:px-3 xl:text-xs 2xl:px-4 2xl:text-sm ${isActive ? 'text-primary' : 'text-black hover:text-primary'}`}
                     >
                         <span className="relative z-10 py-0.5">
                             {item.name}
@@ -94,7 +94,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 4, scale: 0.98 }}
                                 transition={{ duration: 0.15, ease: "easeOut" }}
-                                className="absolute top-[calc(100%-2px)] left-[-10px] w-64 bg-white/95 backdrop-blur-2xl border border-primary/10 rounded-2xl shadow-xl py-2 z-50 overflow-hidden"
+                                className="absolute top-[calc(100%-2px)] left-[-10px] w-64 2xl:w-72 bg-white/95 backdrop-blur-2xl border border-primary/10 rounded-2xl shadow-xl py-2 z-50 overflow-hidden"
                             >
                                 <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-secondary via-secondary/50 to-transparent" />
                                 <ul className="space-y-0.5 list-none p-0 m-0">
@@ -104,7 +104,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                             <li key={child.name}>
                                                 <Link
                                                     href={child.href}
-                                                    className={`block px-5 py-2 text-xs font-semibold tracking-wide transition-all relative group/child ${isChildActive ? 'text-primary bg-primary/5' : 'text-black hover:text-primary'}`}
+                                                    className={`block px-5 py-2 2xl:py-2.5 text-xs 2xl:text-sm font-semibold tracking-wide transition-all relative group/child ${isChildActive ? 'text-primary bg-primary/5' : 'text-black hover:text-primary'}`}
                                                 >
                                                     <span className="relative z-10 flex items-center gap-2">
                                                         <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isChildActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'}`} />

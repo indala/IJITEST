@@ -156,7 +156,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    @apply font-sans antialiased bg-background text-foreground tracking-tight text-[13px] sm:text-[14px] lg:text-[15px];
+    @apply font-sans antialiased bg-background text-foreground tracking-tight text-[13px] sm:text-[14px] lg:text-[15px] 2xl:text-[16px];
   }
 
   /* --------------------------------------------------------------------------
@@ -165,37 +165,37 @@
   h1 {
     color: #000066;
     @apply font-serif font-bold text-[#000066] leading-tight tracking-tight mb-2.5;
-    @apply text-xl sm:text-2xl md:text-3xl xl:text-4xl;
+    @apply text-xl sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl;
   }
 
   h2 {
     color: #000066;
     @apply font-serif font-bold text-[#000066] leading-snug tracking-tight mb-2;
-    @apply text-base sm:text-lg md:text-xl xl:text-2xl;
+    @apply text-base sm:text-lg md:text-xl xl:text-2xl 2xl:text-3xl;
   }
 
   h3 {
     color: #000066;
     @apply font-serif font-bold text-[#000066] leading-snug tracking-tight mb-1.5;
-    @apply text-sm sm:text-base md:text-lg xl:text-xl;
+    @apply text-sm sm:text-base md:text-lg xl:text-xl 2xl:text-2xl;
   }
 
   h4 {
     color: #000066;
     @apply font-sans font-semibold text-[#000066] leading-normal mb-1;
-    @apply text-xs sm:text-sm md:text-base;
+    @apply text-xs sm:text-sm md:text-base xl:text-lg 2xl:text-xl;
   }
 
   h5 {
     color: #000066;
     @apply font-sans font-semibold text-[#000066] leading-normal mb-1;
-    @apply text-xs sm:text-xs md:text-sm;
+    @apply text-xs sm:text-xs md:text-sm xl:text-base 2xl:text-lg;
   }
 
   h6 {
     color: #000066;
     @apply font-sans font-bold text-[#000066] uppercase tracking-wider mb-0.5;
-    @apply text-[10px] sm:text-[11px] md:text-xs;
+    @apply text-[10px] sm:text-[11px] md:text-xs xl:text-sm 2xl:text-sm;
   }
 
   /* --------------------------------------------------------------------------
@@ -203,7 +203,7 @@
      -------------------------------------------------------------------------- */
   p {
     @apply text-foreground/80 font-normal leading-relaxed mb-2.5;
-    @apply text-xs sm:text-sm lg:text-[15px];
+    @apply text-xs sm:text-sm lg:text-[15px] xl:text-base 2xl:text-[16px];
   }
 
   ul, ol {
@@ -215,7 +215,7 @@
   }
 
   code, pre, kbd {
-    @apply font-mono text-[11px] sm:text-xs;
+    @apply font-mono text-[11px] sm:text-xs xl:text-[13px] 2xl:text-sm;
   }
 
   * {
@@ -226,23 +226,23 @@
 @layer components {
   /* Semantic Typography Utilities */
   .text-lead {
-    @apply font-normal leading-relaxed text-foreground/85 text-sm sm:text-base md:text-lg;
+    @apply font-normal leading-relaxed text-foreground/85 text-sm sm:text-base md:text-lg xl:text-xl 2xl:text-2xl;
   }
 
   .text-body {
-    @apply font-normal leading-relaxed text-foreground/80 text-xs sm:text-sm lg:text-[15px];
+    @apply font-normal leading-relaxed text-foreground/80 text-xs sm:text-sm lg:text-[15px] xl:text-base 2xl:text-[16px];
   }
 
   .text-body-sm {
-    @apply font-normal leading-normal text-muted-foreground text-xs sm:text-xs md:text-sm;
+    @apply font-normal leading-normal text-muted-foreground text-xs sm:text-xs md:text-sm xl:text-sm 2xl:text-base;
   }
 
   .text-meta {
-    @apply font-mono font-medium tracking-normal text-muted-foreground text-[10px] sm:text-[11px] md:text-xs;
+    @apply font-mono font-medium tracking-normal text-muted-foreground text-[10px] sm:text-[11px] md:text-xs xl:text-xs 2xl:text-[13px];
   }
 
   .text-label {
-    @apply font-sans font-bold uppercase tracking-wider text-[10px] sm:text-[11px] md:text-xs;
+    @apply font-sans font-bold uppercase tracking-wider text-[10px] sm:text-[11px] md:text-xs xl:text-xs 2xl:text-sm;
   }
 
   .btn-primary {
@@ -262,7 +262,7 @@
   }
 
   .container-responsive {
-    @apply px-4 md:px-6 xl:px-8 2xl:px-10;
+    @apply px-4 md:px-6 xl:px-8 2xl:px-12 2xl:max-w-[1680px] 2xl:mx-auto;
   }
 }
 

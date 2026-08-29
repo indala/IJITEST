@@ -2,9 +2,8 @@
 
 import { memo } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, ExternalLink, CheckCircle2, Globe, Sparkles } from 'lucide-react';
+import { ExternalLink, CheckCircle2, Globe, Sparkles } from 'lucide-react';
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 const indexingAgencies = [
     {
@@ -77,11 +76,11 @@ function HomeIndexingStrip() {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 2xl:gap-3.5">
                 {indexingAgencies.map((agency, i) => (
                     <Card
                         key={i}
-                        className="p-3 rounded-xl border border-border/60 bg-card hover:border-primary/30 transition-all flex flex-col justify-between group"
+                        className="p-3 2xl:p-4 rounded-xl border border-border/60 bg-card hover:border-primary/30 transition-all flex flex-col justify-between group 2xl:space-y-2"
                     >
                         <div className="space-y-1">
                             <div className="flex items-center justify-between gap-1">
@@ -92,12 +91,12 @@ function HomeIndexingStrip() {
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                                 )}
                             </div>
-                            <p className="text-[10px] text-muted-foreground m-0 truncate">
+                            <p className="text-[10px] 2xl:text-xs text-muted-foreground m-0 truncate">
                                 {agency.role}
                             </p>
                         </div>
 
-                        <div className="mt-2 pt-2 border-t border-border/40 flex items-center justify-between text-[10px]">
+                        <div className="mt-2 pt-2 2xl:pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] 2xl:text-xs">
                             <span className={`font-medium ${agency.isVerified ? 'text-emerald-700 font-semibold' : 'text-muted-foreground'}`}>
                                 {agency.status}
                             </span>

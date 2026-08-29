@@ -4,7 +4,6 @@ import { Mail, MapPin, ShieldAlert, ChevronRight, Clock, MessageSquare } from 'l
 import Link from 'next/link';
 import ContactForm from '@/features/contact/components/ContactForm';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
-import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';
 
 import { useSettingsContext } from '@/components/providers/SettingsContext';

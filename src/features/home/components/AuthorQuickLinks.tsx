@@ -40,23 +40,23 @@ function AuthorQuickLinks() {
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
         >
-            <div className="bg-card p-3.5 sm:p-4 rounded-xl border border-border/70 shadow-2xs space-y-3">
-                <h3 className="text-xs sm:text-sm font-bold text-primary m-0">Author Resources</h3>
+            <div className="bg-card p-3.5 sm:p-4 2xl:p-5 rounded-xl border border-border/70 shadow-2xs space-y-3 2xl:space-y-4">
+                <h3 className="text-xs sm:text-sm 2xl:text-base font-bold text-primary m-0">Author Resources</h3>
                 <div className="space-y-2">
                     {links.map((link, i) => (
                         <Link
                             key={i}
                             href={link.href}
-                            className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/40 hover:bg-muted/70 transition-all border border-border/40 group"
+                            className="flex items-center gap-3 p-2.5 2xl:p-3 rounded-lg bg-muted/40 hover:bg-muted/70 transition-all border border-border/40 group"
                         >
-                            <div className={`p-2 rounded-md ${link.bgColor} ${link.color} shrink-0`}>
-                                <link.icon className="w-4 h-4" />
+                            <div className={`p-2 2xl:p-2.5 rounded-md ${link.bgColor} ${link.color} shrink-0`}>
+                                <link.icon className="w-4 h-4 2xl:w-5 2xl:h-5" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-bold text-primary group-hover:text-secondary transition-colors m-0 truncate">
+                                <p className="text-xs 2xl:text-sm font-bold text-primary group-hover:text-secondary transition-colors m-0 truncate">
                                     {link.label}
                                 </p>
-                                <p className="text-[11px] text-muted-foreground line-clamp-1 m-0">
+                                <p className="text-[11px] 2xl:text-xs text-muted-foreground line-clamp-1 m-0">
                                     {link.description}
                                 </p>
                             </div>

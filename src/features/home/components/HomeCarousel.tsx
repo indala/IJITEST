@@ -27,7 +27,7 @@ export default function HomeCarousel() {
     }, [nextSlide]);
 
     return (
-        <section className="relative h-[220px] sm:h-[260px] lg:h-[300px] xl:h-[340px] bg-slate-950 overflow-hidden">
+        <section className="relative h-[220px] sm:h-[260px] lg:h-[300px] xl:h-[340px] 2xl:h-[400px] bg-slate-950 overflow-hidden">
             {/* Background Images Layer */}
             <div className="absolute inset-0">
                 {slides.map((slide, index) => (
@@ -69,7 +69,7 @@ export default function HomeCarousel() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 1, ease: "easeInOut" }}
-                        className="max-w-4xl space-y-3"
+                        className="max-w-4xl 2xl:max-w-5xl space-y-3 2xl:space-y-4"
                     >
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -96,14 +96,14 @@ export default function HomeCarousel() {
                             >
                                 <Link
                                     href="/submit"
-                                    className="btn-secondary text-xs sm:text-sm py-2 px-4"
+                                    className="btn-secondary text-xs sm:text-sm 2xl:text-base py-2 px-4 2xl:py-2.5 2xl:px-6"
                                 >
                                     Submit Manuscript
                                 </Link>
                             </motion.div>
                             <Link
                                 href="/archives"
-                                className="btn-outline border-white/20 text-white hover:bg-white/10 text-xs sm:text-sm py-2 px-4"
+                                className="btn-outline border-white/20 text-white hover:bg-white/10 text-xs sm:text-sm 2xl:text-base py-2 px-4 2xl:py-2.5 2xl:px-6"
                             >
                                 Explore Archives
                             </Link>

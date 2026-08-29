@@ -36,7 +36,7 @@ export default function Navbar() {
                 ? 'bg-background/95 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.05)] py-0.5'
                 : 'bg-background/95 backdrop-blur-xl border-b border-primary/5 py-0'}`}>
             <div className="container-responsive">
-                <div className={`flex justify-between items-center transition-all duration-500 ${isScrolled ? 'h-12 lg:h-13' : 'h-14 lg:h-15'}`}>
+                <div className={`flex justify-between items-center transition-all duration-500 ${isScrolled ? 'h-12 lg:h-13 2xl:h-16' : 'h-14 lg:h-15 2xl:h-18'}`}>
 
                     {/* Brand */}
                     <NavbarBrand shortName={shortName || ""} isScrolled={isScrolled} />
