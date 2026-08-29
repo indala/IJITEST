@@ -26,39 +26,39 @@ export default function TermsClient({ settings }: TermsClientProps) {
     ];
 
     return (
-        <section className="container-responsive section-padding">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
+        <section className="container-responsive py-6 sm:py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
                 {/* Main Content */}
-                <div className="lg:col-span-2 space-y-20">
-                    <section className="space-y-4">
-                        <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-serif font-semibold text-primary leading-tight">
+                <div className="lg:col-span-2 space-y-6">
+                    <section className="space-y-2">
+                        <h2 className="font-semibold m-0">
                             &quot;The {journalName} legal framework ensures a transparent, ethical, and professional ecosystem for engineering excellence.&quot;
                         </h2>
                     </section>
 
-                    <div className="space-y-12">
+                    <div className="space-y-5">
                         {framework.map((item, idx) => (
-                            <section key={idx} className="space-y-4">
-                                <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-                                    <span className="text-xs text-muted-foreground font-mono">0{idx + 1}.</span>
+                            <section key={idx} className="space-y-2">
+                                <h3 className="flex items-center gap-2 m-0">
+                                    <span className="text-meta">0{idx + 1}.</span>
                                     {item.title}
-                                </h2>
-                                <div className="text-sm text-muted-foreground leading-relaxed border-l-2 border-border pl-6">
+                                </h3>
+                                <div className="text-muted-foreground border-l-2 border-border pl-3.5">
                                     <p className="m-0">{item.content}</p>
                                 </div>
                             </section>
                         ))}
                     </div>
 
-                    <Card className="bg-[#000066] p-8 sm:p-12 rounded-2xl text-white relative overflow-hidden">
-                        <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-                            <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center shrink-0 border border-white/10">
-                                <Gavel className="w-8 h-8 text-primary-foreground/50" />
+                    <Card className="bg-[#000066] p-4 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-xs">
+                        <div className="relative z-10 flex flex-col md:flex-row gap-4 items-center">
+                            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0 border border-white/20">
+                                <Gavel className="w-5 h-5 text-white" />
                             </div>
-                            <div className="space-y-3">
-                                <h3 className="text-lg font-semibold text-white">Framework Evolution</h3>
-                                <p className="text-sm text-white/70 border-l-2 border-white/10 pl-6 m-0 leading-relaxed">
-                                    Felix Academic Publications reserves the right to evolve this legal framework. Continued platform usage implies absolute acceptance of these standards.
+                            <div className="space-y-1">
+                                <h3 className="text-sm font-semibold text-white m-0">Framework Evolution</h3>
+                                <p className="text-xs text-white/75 border-l-2 border-white/20 pl-3.5 m-0 leading-relaxed">
+                                    Felix Academic Publications reserves the right to update this legal framework in accordance with international publishing guidelines. Continued platform usage implies acceptance of these terms.
                                 </p>
                             </div>
                         </div>
@@ -66,19 +66,19 @@ export default function TermsClient({ settings }: TermsClientProps) {
                 </div>
 
                 {/* Sidebar */}
-                <aside className="space-y-12">
-                    <section className="space-y-4">
+                <aside className="space-y-4 sm:space-y-5 lg:sticky lg:top-24">
+                    <section className="space-y-2">
                         <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                             <p className="text-xs sm:text-sm font-bold tracking-wider text-muted-foreground uppercase m-0">Legal Nexus</p>
+                             <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase m-0">Legal Nexus</p>
                         </div>
-                        <div className="space-y-3">
-                            <Link href="/privacy" className="flex items-center justify-between p-4 bg-card border border-border/50 rounded-xl hover:border-primary/20 transition-all group shadow-sm">
-                                <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Privacy Protocol</span>
-                                <ChevronRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                        <div className="space-y-2">
+                            <Link href="/privacy" className="flex items-center justify-between p-3 bg-card border border-border/70 rounded-xl hover:border-primary/30 transition-all group shadow-2xs">
+                                <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">Privacy Protocol</span>
+                                <ChevronRight className="w-3.5 h-3.5 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                             </Link>
-                            <Link href="/ethics" className="flex items-center justify-between p-4 bg-card border border-border/50 rounded-xl hover:border-primary/20 transition-all group shadow-sm">
-                                <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Publication Ethics</span>
-                                <ChevronRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                            <Link href="/ethics" className="flex items-center justify-between p-3 bg-card border border-border/70 rounded-xl hover:border-primary/30 transition-all group shadow-2xs">
+                                <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">Publication Ethics</span>
+                                <ChevronRight className="w-3.5 h-3.5 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                             </Link>
                         </div>
                     </section>

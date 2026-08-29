@@ -120,7 +120,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
     const allAuthors = paper.authorsList || [];
 
     return (
-        <div className="bg-white min-h-screen pb-20">
+        <div className="bg-white min-h-screen pb-8">
             <PageHeader
                 disableBreadcrumbJsonLd
                 title="Current Issue Article"

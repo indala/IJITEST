@@ -83,19 +83,19 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
     ];
 
     return (
-        <section className="container-responsive py-12 sm:py-24 2xl:py-32">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20 2xl:gap-24">
+        <section className="container-responsive py-6 sm:py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                 {/* Main Content Area */}
-                <div className="lg:col-span-2 space-y-16 xl:space-y-20">
+                <div className="lg:col-span-2 space-y-6 sm:space-y-8">
                     {/* Vision Statement */}
-                    <Card className="bg-[#000066] p-8 sm:p-12 2xl:p-16 rounded-2xl text-white relative overflow-hidden shadow-vip">
-                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-                            <div className="w-16 h-16 xl:w-20 xl:h-20 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 shrink-0">
-                                <Search className="w-8 h-8 xl:w-10 xl:h-10 text-white" />
+                    <Card className="bg-[#000066] p-5 sm:p-6 rounded-2xl text-white relative overflow-hidden shadow-vip">
+                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-5">
+                            <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/20 shrink-0">
+                                <Search className="w-6 h-6 text-white" />
                             </div>
-                            <div className="space-y-3">
-                                <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-semibold text-white">Global Indexing & Research Visibility</h2>
-                                <p className="text-sm xl:text-base 2xl:text-lg text-white/80 border-l-2 border-white/20 pl-6 m-0 leading-relaxed">
+                            <div className="space-y-1.5">
+                                <h2 className="font-semibold text-white m-0">Global Indexing & Research Visibility</h2>
+                                <p className="text-white/80 border-l-2 border-white/20 pl-4 m-0 leading-relaxed">
                                     &quot;Our strategic mandate is to ensure that every validated innovation published in {journalShortName} reaches the global scientific community through premier indexing hubs and open-access databases.&quot;
                                 </p>
                             </div>
@@ -103,52 +103,52 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                     </Card>
 
                     {/* Verified Indexing & Partner Agencies */}
-                    <section className="space-y-6">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-l-4 border-secondary pl-3">
+                    <section className="space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-l-4 border-secondary pl-3">
                             <div>
-                                <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-serif font-bold text-primary m-0 flex items-center gap-2">
-                                    <Sparkles className="size-6 text-secondary" />
+                                <h2 className="m-0 flex items-center gap-2">
+                                    <Sparkles className="size-5 text-secondary" />
                                     Indexing & Digital Repositories
                                 </h2>
-                                <p className="text-xs xl:text-sm text-muted-foreground mt-1 mb-0">
+                                <p className="text-xs text-muted-foreground mt-0.5 mb-0">
                                     Verified scholarly indexing databases, repositories, and academic identifiers.
                                 </p>
                             </div>
-                            <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200 self-start sm:self-auto flex items-center gap-1.5 px-3 py-1 font-semibold">
-                                <ShieldCheck className="size-4 text-emerald-600" />
+                            <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200 self-start sm:self-auto flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold">
+                                <ShieldCheck className="size-3.5 text-emerald-600" />
                                 Verified Open Access
                             </Badge>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                             {activeAgencies.map((agency, idx) => (
                                 <Card 
                                     key={idx} 
-                                    className="p-6 rounded-2xl border border-border/70 bg-card hover:border-primary/30 hover:shadow-vip-hover transition-all duration-300 flex flex-col justify-between group"
+                                    className="p-4 rounded-xl border border-border/70 bg-card hover:border-primary/30 transition-all duration-200 flex flex-col justify-between group"
                                 >
-                                    <div className="space-y-3">
+                                    <div className="space-y-2">
                                         <div className="flex items-start justify-between gap-2">
                                             <div>
-                                                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground block mb-1">
+                                                <span className="text-meta uppercase block mb-0.5">
                                                     {agency.category}
                                                 </span>
-                                                <h3 className="text-lg xl:text-xl font-serif font-bold text-primary group-hover:text-secondary transition-colors m-0">
+                                                <h3 className="group-hover:text-secondary transition-colors m-0">
                                                     {agency.name}
                                                 </h3>
                                             </div>
-                                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shadow-xs ${agency.badgeColor}`}>
+                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-label border shadow-2xs ${agency.badgeColor}`}>
                                                 {agency.isCompleted && <CheckCircle2 className="w-3 h-3 text-emerald-600" />}
                                                 {agency.status}
                                             </span>
                                         </div>
 
-                                        <p className="text-xs xl:text-sm text-muted-foreground leading-relaxed m-0">
+                                        <p className="text-muted-foreground m-0">
                                             {agency.desc}
                                         </p>
                                     </div>
 
-                                    <div className="mt-5 pt-3 border-t border-border/40 flex items-center justify-between">
-                                        <span className="text-[11px] font-mono text-primary/70 font-semibold truncate max-w-[180px]">
+                                    <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between">
+                                        <span className="text-meta text-primary/70 font-semibold truncate max-w-[180px]">
                                             {agency.identifier}
                                         </span>
                                         {agency.link ? (
@@ -159,10 +159,10 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                                                 className="inline-flex items-center gap-1 text-xs font-bold text-[#000066] hover:text-secondary transition-colors"
                                             >
                                                 <span>Verify Record</span>
-                                                <ExternalLink className="w-3.5 h-3.5" />
+                                                <ExternalLink className="w-3 h-3" />
                                             </a>
                                         ) : (
-                                            <span className="text-[11px] text-muted-foreground/60 italic">In Process</span>
+                                            <span className="text-[10px] text-muted-foreground/60 italic">In Process</span>
                                         )}
                                     </div>
                                 </Card>
@@ -174,22 +174,22 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                     <RoadmapSection />
 
                     {/* Technical Standards */}
-                    <section className="space-y-6">
-                        <div className="flex items-center gap-3 border-l-4 border-secondary pl-3">
-                            <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-serif font-bold text-primary m-0 flex items-center gap-2">
-                                <BookCheck className="size-6 text-primary" />
+                    <section className="space-y-4">
+                        <div className="flex items-center gap-2 border-l-4 border-secondary pl-3">
+                            <h2 className="m-0 flex items-center gap-2">
+                                <BookCheck className="size-5 text-primary" />
                                 Technical Protocols & Interoperability
                             </h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 2xl:gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {techSpecs.map((spec, idx) => (
-                                <Card key={idx} className="p-6 xl:p-8 border-border/50 bg-card rounded-xl hover:border-primary/20 transition-all">
-                                    <div className="w-10 h-10 xl:w-12 xl:h-12 bg-primary/5 rounded-lg flex items-center justify-center text-primary mb-4">
-                                        <spec.icon className="w-5 h-5 xl:w-6 xl:h-6" />
+                                <Card key={idx} className="p-4 border-border/50 bg-card rounded-xl hover:border-primary/20 transition-all">
+                                    <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center text-primary mb-2.5">
+                                        <spec.icon className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-base xl:text-lg font-semibold text-primary mb-2">{spec.title}</h3>
-                                    <p className="text-xs xl:text-sm text-muted-foreground leading-relaxed m-0">
+                                    <h3 className="text-sm font-semibold text-primary mb-1">{spec.title}</h3>
+                                    <p className="text-xs text-muted-foreground leading-relaxed m-0">
                                         {spec.desc}
                                     </p>
                                 </Card>
@@ -199,42 +199,38 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                 </div>
 
                 {/* Sidebar Utilities */}
-                <aside className="space-y-10 lg:sticky lg:top-24">
-                    <div className="group/widget transition-transform duration-500 hover:-translate-y-1">
-                        <div className="bg-white/50 backdrop-blur-sm p-2 rounded-3xl border border-primary/10 shadow-sm">
+                <aside className="space-y-4 sm:space-y-5 lg:sticky lg:top-24">
+                    <div>
+                        <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
                             <TrackManuscriptWidget />
                         </div>
                     </div>
 
-                    <section className="space-y-4">
-                         <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                              <p className="text-xs sm:text-sm font-bold tracking-wider text-muted-foreground uppercase m-0">Call For Papers</p>
-                         </div>
-                        <Card className="p-6 xl:p-8 border-border/50 bg-card rounded-xl hover:border-primary/20 transition-all space-y-4">
-                            <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center text-primary">
-                                <Database className="w-5 h-5" />
+                    <Card className="p-4 border-border/70 bg-card rounded-xl space-y-3 shadow-2xs">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center text-primary">
+                                <Database className="w-4 h-4" />
                             </div>
-                            <h3 className="text-base xl:text-lg font-semibold text-primary m-0">Inaugural 2026 Volume</h3>
-                            <p className="text-xs xl:text-sm text-muted-foreground leading-relaxed m-0">
-                                Submissions for our 2026 volume are open. All accepted manuscripts receive rapid double-blind peer review, DOI assignment, and international repository indexing.
-                            </p>
-                            <Button asChild className="w-full h-11 bg-[#000066] hover:bg-[#000088] text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-all shadow-sm">
-                                <Link href="/submit">Submit Manuscript</Link>
-                            </Button>
-                        </Card>
-                    </section>
+                            <h3 className="text-xs sm:text-sm font-bold text-primary m-0">Inaugural 2026 Volume</h3>
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                            Submissions are open. All accepted manuscripts receive rapid double-blind peer review, permanent Zenodo DOI, and international repository indexing.
+                        </p>
+                        <Button asChild size="sm" className="w-full h-8 bg-[#000066] hover:bg-[#000088] text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-all shadow-xs">
+                            <Link href="/submit">Submit Manuscript</Link>
+                        </Button>
+                    </Card>
 
-                    <Card className="p-6 xl:p-8 bg-[#000066] rounded-xl text-white relative overflow-hidden shadow-md">
-                        <div className="relative z-10 space-y-3">
-                            <h3 className="text-base xl:text-lg font-semibold text-white m-0">COPE Publication Ethics</h3>
-                            <p className="text-white/70 text-xs xl:text-sm leading-relaxed m-0">
-                                Our editorial process adheres strictly to the Committee on Publication Ethics (COPE) standards to safeguard research integrity.
-                            </p>
-                            <div className="pt-2">
-                                <Link href="/ethics" className="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-secondary transition-colors uppercase tracking-wider">
-                                    View Ethics Guide <ChevronRight className="w-3.5 h-3.5" />
-                                </Link>
-                            </div>
+                    <Card className="p-4 bg-[#000066] rounded-xl text-white space-y-2 shadow-md">
+                        <h3 className="text-xs sm:text-sm font-semibold text-white m-0">COPE Publication Ethics</h3>
+                        <p className="text-white/80 text-xs leading-relaxed m-0">
+                            Our editorial process adheres strictly to the Committee on Publication Ethics (COPE) standards to safeguard research integrity.
+                        </p>
+                        <div className="pt-1">
+                            <Link href="/ethics" className="inline-flex items-center gap-1 text-xs font-bold text-secondary hover:text-white transition-colors">
+                                <span>View Ethics Guide</span>
+                                <ChevronRight className="w-3.5 h-3.5" />
+                            </Link>
                         </div>
                     </Card>
                 </aside>

@@ -67,7 +67,7 @@ export function PanelShell({ children, session }: PanelShellProps) {
 
     return (
         <SidebarProvider defaultOpen={true}>
-            <div className="flex min-h-screen bg-muted/30 w-full transition-colors duration-500">
+            <div className="panel-shell flex min-h-screen bg-muted/30 w-full transition-colors duration-500">
                 <PanelSidebar
                     pathname={pathname}
                     user={user}

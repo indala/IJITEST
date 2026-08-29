@@ -48,36 +48,32 @@ export default async function About() {
                         <>
                             <JournalParticulars settings={settings} />
 
-                            <div className="p-1 rounded-[2.5rem] bg-linear-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip animate-float">
-                                <div className="bg-white/50 backdrop-blur-sm p-3 rounded-[2.3rem]">
-                                    <TrackManuscriptWidget />
-                                </div>
+                            <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
+                                <TrackManuscriptWidget />
                             </div>
 
-                            <Card className="bg-white border-none text-primary shadow-vip-hover rounded-lg overflow-hidden relative group">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl animate-blob pointer-events-none" />
-                                <CardContent className="px-8 mt-2 relative z-10">
-
-                                    <CardTitle className="mb-2 text-primary">Ethics Policy</CardTitle>
-                                    <p className="opacity-70 mb-2 leading-relaxed ">IJITEST follows COPE guidelines for scientific integrity and global best practices.</p>
-                                    <Link href="/ethics" className="group/link inline-flex items-center gap-2 text-primary cursor-pointer">
-                                        <span className="border-b border-white/30 group-hover/link:border-white transition-all pb-1">View Policy</span>
-                                        <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-                                    </Link>
+                            <Card className="bg-card border border-border/70 text-primary shadow-2xs rounded-xl overflow-hidden relative group">
+                                <CardContent className="p-4 sm:p-5 relative z-10 space-y-2">
+                                    <CardTitle className="m-0 text-primary">Ethics Policy</CardTitle>
+                                    <p className="text-muted-foreground m-0 text-xs">IJITEST follows COPE guidelines for scientific integrity and global best practices.</p>
+                                    <div className="pt-1">
+                                        <Link href="/ethics" className="inline-flex items-center gap-1 text-xs font-bold text-secondary hover:underline cursor-pointer">
+                                            <span>View Policy</span>
+                                            <ChevronRight className="w-3.5 h-3.5" />
+                                        </Link>
+                                    </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="bg-white border border-primary/5 shadow-vip rounded-lg group overflow-hidden relative">
-                                <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary/5 rounded-full translate-y-1/2 translate-x-1/2 blur-2xl animate-blob pointer-events-none delay-1000" />
-                                <CardContent className="px-8 relative z-10">
-                                    <h2 className="text-primary mb-2">Call for Papers</h2>
-                                    <p className="opacity-50 mb-8 leading-relaxed">Submit your breakthrough research for our upcoming 2026 Monthly edition.</p>
-                                    <div className="animate-float">
-                                        <Button asChild className="w-full h-14 2xl:h-20 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 rounded-2xl group/btn transition-all duration-500 overflow-hidden relative cursor-pointer">
-                                            <Link href="/submit" className="flex items-center justify-center relative z-10 cursor-pointer">
-                                                <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.2),transparent)] animate-shine" />
-                                                <span className="relative z-10">Submit Manuscript</span>
-                                                <ChevronRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform relative z-10" />
+                            <Card className="bg-[#000066] border-none text-white shadow-md rounded-xl group overflow-hidden relative">
+                                <CardContent className="p-4 sm:p-5 relative z-10 space-y-2">
+                                    <h2 className="text-white m-0">Call for Papers</h2>
+                                    <p className="text-white/70 m-0 text-xs">Submit your breakthrough research for our upcoming 2026 Monthly edition.</p>
+                                    <div className="pt-2">
+                                        <Button asChild size="sm" className="w-full h-9 bg-white text-[#000066] hover:bg-white/90 font-bold text-xs rounded-lg shadow-xs transition-all cursor-pointer">
+                                            <Link href="/submit" className="flex items-center justify-center gap-1.5">
+                                                <span>Submit Manuscript</span>
+                                                <ChevronRight className="w-3.5 h-3.5" />
                                             </Link>
                                         </Button>
                                     </div>

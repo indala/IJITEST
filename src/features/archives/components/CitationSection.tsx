@@ -54,29 +54,28 @@ export default function CitationSection({ paper }: CitationSectionProps) {
     };
 
     return (
-        <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-blue-900/5 space-y-6 sticky top-24">
-            <div className="flex items-center gap-3 text-primary">
-                <Quote className="w-6 h-6 rotate-180" />
-                <h3 className="font-serif font-black ">Cite this Article</h3>
+        <div className="bg-white p-4 sm:p-5 rounded-xl border border-border/70 shadow-2xs space-y-4 sticky top-24">
+            <div className="flex items-center gap-2 text-primary">
+                <Quote className="w-4 h-4 rotate-180" />
+                <h3 className="m-0">Cite this Article</h3>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4 relative group">
-                <p className="text-sm 2xl:text-base text-gray-600 leading-relaxed font-medium ">
-                    {authors} <span className="italic">&quot;{paper.title}&quot;</span>.
+            <div className="bg-muted/30 p-3.5 rounded-xl border border-border/60 space-y-2.5 relative group">
+                <p className="text-muted-foreground m-0">
+                    {authors} <span className="italic font-medium text-foreground">&quot;{paper.title}&quot;</span>.
                     <br />
-                    <span className="">{settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings['journalShortName'] || 'IJITEST'})</span>,
+                    <span>{settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings['journalShortName'] || 'IJITEST'})</span>,
                     Vol. {paper.volumeNumber || 'X'}, Issue {paper.issueNumber || 'X'}, {paper.publicationYear || new Date().getFullYear()}.
-                    <br />
                 </p>
                 <button
                     onClick={handleCopy}
-                    className="w-full flex items-center justify-center gap-2 bg-white text-gray-400 py-3 rounded-xl text-xs 2xl:text-sm font-black  tracking-widest border border-gray-100 hover:text-primary hover:border-primary/20 transition-all font-sans"
+                    className="w-full flex items-center justify-center gap-1.5 bg-white text-primary py-2 rounded-lg text-xs font-bold border border-border/70 hover:bg-primary/5 transition-all cursor-pointer shadow-2xs"
                 >
                     Copy Citation
                 </button>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div>
                 <button
                     onClick={() => {
                         if (navigator.share) {
@@ -96,19 +95,17 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                                 });
                         }
                     }}
-                    className="w-full flex items-center justify-center gap-3 bg-gray-50 text-gray-500 py-4 rounded-2xl font-black text-xs 2xl:text-sm tracking-[0.2em] border border-gray-100 hover:bg-gray-100 transition-all font-sans"
+                    className="w-full flex items-center justify-center gap-2 bg-muted/40 text-foreground py-2 rounded-lg text-xs font-bold border border-border/60 hover:bg-muted/70 transition-all cursor-pointer"
                 >
-                    <Share2 className="w-4 h-4" /> Share Research
+                    <Share2 className="w-3.5 h-3.5" /> Share Research
                 </button>
             </div>
 
-            <div className="pt-6 border-t border-gray-100 space-y-4">
-                <h4 className="text-xs 2xl:text-sm font-black text-gray-400 tracking-widest text-center uppercase">Journal Metadata</h4>
-                <div className="grid grid-cols-1 gap-4">
-                    <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 text-center group/meta">
-                        <p className="text-[10px] 2xl:text-xs font-black text-gray-400 tracking-[0.2em] uppercase mb-1 group-hover/meta:text-primary transition-colors">ISSN (Online)</p>
-                        <p className="text-sm 2xl:text-base font-black text-gray-900 ">{settings['issnNumber'] || 'XXXX-XXXX'}</p>
-                    </div>
+            <div className="pt-3 border-t border-border/50 space-y-2">
+                <h4 className="text-label text-center text-muted-foreground m-0">Journal Metadata</h4>
+                <div className="bg-muted/20 p-2.5 rounded-lg border border-border/60 text-center">
+                    <p className="text-label text-muted-foreground mb-0.5 m-0">ISSN (Online)</p>
+                    <p className="text-meta font-bold text-foreground m-0">{settings['issnNumber'] || '3139-6887'}</p>
                 </div>
             </div>
         </div>

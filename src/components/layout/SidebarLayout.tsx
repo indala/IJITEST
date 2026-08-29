@@ -25,10 +25,10 @@ export function SidebarLayout({
     const sideSpan = cols === 3 ? "lg:col-span-1" : "lg:col-span-1"; // Both are 1 span in their respective grids
 
     return (
-        <div className={cn("grid grid-cols-1 gap-12 lg:gap-20 2xl:gap-32", gridCols, className)}>
+        <div className={cn("grid grid-cols-1 gap-6 lg:gap-8 xl:gap-10", gridCols, className)}>
             <div className={cn(
                 mainSpan,
-                "space-y-16 sm:space-y-24",
+                "space-y-6 sm:space-y-8",
                 reverse && "lg:order-2",
                 mainClassName
             )}>
@@ -36,7 +36,7 @@ export function SidebarLayout({
             </div>
             <aside className={cn(
                 sideSpan,
-                "space-y-10 sm:space-y-12",
+                "space-y-4 sm:space-y-6",
                 reverse && "lg:order-1",
                 sidebarClassName
             )}>

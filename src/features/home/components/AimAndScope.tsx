@@ -22,30 +22,30 @@ function AimAndScope() {
     const shortName = settings['journalShortName'] || '';
 
     return (
-        <div className="space-y-12">
+        <div className="space-y-6 sm:space-y-8">
             {/* Aim & Scope */}
             <motion.section
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="space-y-8"
+                transition={{ duration: 0.6 }}
+                className="space-y-4"
                 aria-labelledby="aim-scope-heading"
             >
-                <div className="flex items-center gap-5">
-                    <div className="p-4 bg-primary/5 rounded-4xl text-primary border border-primary/10 shadow-vip" aria-hidden="true">
-                        <BookOpen className="w-7 h-7" />
+                <div className="flex items-center gap-2.5">
+                    <div className="p-2 bg-primary/5 rounded-lg text-primary border border-primary/10" aria-hidden="true">
+                        <BookOpen className="w-4 h-4" />
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-serif font-bold text-primary m-0">Call for Papers</h2>
+                    <h2 id="aim-scope-heading" className="m-0">Aims & Research Scope</h2>
                 </div>
 
-                <div className="space-y-10">
-                    <p className="opacity-80 max-w-3xl">
-                        {shortName} covers all major fields of Engineering Disciplines and Modern Technology. Our scope includes, but is not limited to:
+                <div className="space-y-3">
+                    <p className="text-muted-foreground m-0">
+                        {shortName} covers all major domains of Engineering, Applied Sciences, and Modern Technology, including:
                     </p>
 
                     <motion.ul
-                        className="grid grid-cols-1 md:grid-cols-2 gap-4 list-none p-0"
+                        className="grid grid-cols-1 md:grid-cols-2 gap-2 list-none p-0"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, margin: "-50px" }}
@@ -53,7 +53,7 @@ function AimAndScope() {
                             hidden: {},
                             visible: {
                                 transition: {
-                                    staggerChildren: 0.1
+                                    staggerChildren: 0.05
                                 }
                             }
                         }}
@@ -62,57 +62,38 @@ function AimAndScope() {
                             <motion.li
                                 key={i}
                                 variants={{
-                                    hidden: { opacity: 0, x: -20, scale: 0.95 },
-                                    visible: { opacity: 1, x: 0, scale: 1, transition: { type: "spring", stiffness: 100 } }
+                                    hidden: { opacity: 0, x: -10 },
+                                    visible: { opacity: 1, x: 0, transition: { duration: 0.3 } }
                                 }}
-                                whileHover={{ scale: 1.02 }}
-                                className="flex items-center justify-between p-4 bg-white rounded-2xl border border-primary/5 shadow-sm hover:shadow-vip-hover hover:border-secondary/20 transition-all duration-300 group"
+                                className="flex items-center justify-between p-2 px-3 bg-card rounded-lg border border-border/60 hover:border-primary/30 transition-all group"
                             >
-                                <div className="flex items-center gap-4 text-left">
-                                    <div className="w-2 h-2 rounded-full bg-secondary group-hover:scale-150 transition-transform group-hover:bg-primary" aria-hidden="true" />
-                                    <span className="text-primary/90 group-hover:text-primary transition-colors cursor-pointer">{item}</span>
+                                <div className="flex items-center gap-2 text-left">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-secondary group-hover:bg-primary transition-colors" aria-hidden="true" />
+                                    <span className="text-xs font-medium text-foreground/90 group-hover:text-primary transition-colors">{item}</span>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-primary/20 group-hover:text-secondary group-hover:translate-x-1 transition-all" aria-hidden="true" />
+                                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all" aria-hidden="true" />
                             </motion.li>
                         ))}
                     </motion.ul>
-
-                    <div className="grid grid-cols-1 gap-4">
-                        <article className="p-6 bg-linear-to-br from-primary/5 to-transparent border border-primary/10 rounded-4xl shadow-vip hover:shadow-vip-hover hover:border-secondary/20 hover:border-2 cursor-pointer transition-all duration-300 group">
-                            <h3 className="text-primary mb-3 flex items-center gap-2">
-                                <span className="w-2 h-2 bg-secondary rounded-full" aria-hidden="true" />
-                                Mission Priority
-                            </h3>
-                            <p className="opacity-70">
-                                &quot;Interdisciplinary research merging engineering with sustainability and data-driven innovation is highly prioritized.&quot;
-                            </p>
-                        </article>
-
-                        <article className="p-6 bg-linear-to-br from-secondary/5 to-transparent border border-secondary/10 rounded-4xl shadow-vip hover:shadow-vip-hover hover:border-secondary/20 hover:border-2 cursor-pointer transition-all duration-300 group">
-                            <p className="opacity-70 leading-relaxed">
-                                We particularly welcome interdisciplinary work combining engineering with sustainability and data-driven innovation, especially with direct industrial or societal impact.
-                            </p>
-                        </article>
-                    </div>
                 </div>
             </motion.section>
 
             {/* Publication Process */}
-            <section className="bg-primary p-10 rounded-[3rem] text-white overflow-hidden relative shadow-vip border border-white/5 group/proc" aria-labelledby="publication-heading">
-                <div className="absolute top-0 right-0 w-80 h-80 bg-secondary opacity-20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 animate-blob pointer-events-none" />
-                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-accent opacity-20 rounded-full blur-[80px] animate-blob pointer-events-none [--delay:2s]" />
+            <section className="bg-primary p-4 sm:p-5 rounded-xl text-white overflow-hidden relative shadow-md border border-white/5 group/proc" aria-labelledby="publication-heading">
+                <div className="absolute top-0 right-0 w-60 h-60 bg-secondary opacity-20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 animate-blob pointer-events-none" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-accent opacity-20 rounded-full blur-[60px] animate-blob pointer-events-none [--delay:2s]" />
 
-                <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-                    <div className="w-28 h-28 bg-white/10 backdrop-blur-md rounded-4xl flex items-center justify-center shrink-0 border border-white/20 group-hover/proc:rotate-6 group-hover/proc:animate-bounce transition-all duration-500" aria-hidden="true">
-                        <History className="w-14 h-14 text-secondary" />
+                <div className="relative z-10 flex flex-col md:flex-row items-center gap-4">
+                    <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center shrink-0 border border-white/20 group-hover/proc:rotate-6 transition-all duration-300" aria-hidden="true">
+                        <History className="w-5 h-5 text-secondary" />
                     </div>
-                    <div className="space-y-6">
-                        <h2 id="publication-heading" className="text-white">Publication Process</h2>
-                        <p className="text-white opacity-80 m-0">
+                    <div className="space-y-1.5">
+                        <h2 id="publication-heading" className="text-white m-0">Publication Process</h2>
+                        <p className="text-white/80 m-0">
                             Accepted papers will be published online, upon receiving the final version from the authors in the recent upcoming issue. Our streamlined workflow minimizes time-to-publication while maintaining elite peer-review standards.
                         </p>
-                        <div className="flex items-center gap-3 text-secondary ">
-                            <span className="w-8 h-[2px] bg-secondary" aria-hidden="true" />
+                        <div className="flex items-center gap-2 text-secondary text-xs font-bold pt-0.5">
+                            <span className="w-6 h-[2px] bg-secondary" aria-hidden="true" />
                             Excellence in Motion
                         </div>
                     </div>

@@ -35,32 +35,32 @@ function AuthorQuickLinks() {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
         >
-            <div className="bg-white p-8 2xl:p-14 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-gray-200/60 transition-all duration-300">
-                <h3 className="mb-6 text-gray-900 m-0">For Authors</h3>
-                <div className="space-y-4 2xl:space-y-8">
+            <div className="bg-card p-3.5 sm:p-4 rounded-xl border border-border/70 shadow-2xs space-y-3">
+                <h3 className="text-xs sm:text-sm font-bold text-primary m-0">Author Resources</h3>
+                <div className="space-y-2">
                     {links.map((link, i) => (
                         <Link
                             key={i}
                             href={link.href}
-                            className="flex items-center gap-4 p-4 2xl:p-8 rounded-2xl bg-gray-50/50 hover:bg-white hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 hover:shadow-md group"
+                            className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/40 hover:bg-muted/70 transition-all border border-border/40 group"
                         >
-                            <div className={`p-3 2xl:p-5 rounded-xl ${link.bgColor} ${link.color} shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                                <link.icon className="w-5 h-5 2xl:w-8 2xl:h-8" />
+                            <div className={`p-2 rounded-md ${link.bgColor} ${link.color} shrink-0`}>
+                                <link.icon className="w-4 h-4" />
                             </div>
-                            <div className="flex-1">
-                                <p className="m-0 group-hover:text-primary transition-colors">
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold text-primary group-hover:text-secondary transition-colors m-0 truncate">
                                     {link.label}
                                 </p>
-                                <p className="opacity-60 line-clamp-1 m-0">
+                                <p className="text-[11px] text-muted-foreground line-clamp-1 m-0">
                                     {link.description}
                                 </p>
                             </div>
-                            <ChevronRight className="w-4 h-4 2xl:w-6 2xl:h-6 text-gray-300 group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
+                            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
                         </Link>
                     ))}
                 </div>

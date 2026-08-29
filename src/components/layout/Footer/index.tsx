@@ -45,12 +45,12 @@ export default async function Footer() {
             <div className="absolute top-1/4 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="container-responsive">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-6">
 
-                    <div className="lg:col-span-1 space-y-8">
+                    <div className="lg:col-span-1 space-y-3">
                         <div>
-                            <p className="mb-4 text-white m-0 text-xl font-bold">IJITEST</p>
-                            <p className="text-white/70 m-0">
+                            <p className="mb-2 text-white m-0 font-bold">IJITEST</p>
+                            <p className="text-white/70 m-0 text-xs leading-relaxed">
                                 International Journal of Innovative Trends in Engineering Science and Technology (IJITEST) is a peer-reviewed scholarly journal dedicated to elite research dissemination.
                             </p>
                         </div>
@@ -58,8 +58,8 @@ export default async function Footer() {
 
                     {/* Journal Portals — static, zero JS */}
                     <div className="lg:col-span-2">
-                        <h3 className="text-white mb-10 border-b border-white/10 pb-4 inline-block m-0">Journal Portals</h3>
-                        <ul className="grid grid-cols-2 gap-x-12 gap-y-4 text-white/70 list-none p-0">
+                        <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Journal Portals</h3>
+                        <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-white/70 list-none p-0 text-xs m-0">
                             <li><Link href="/about" className="hover:text-secondary transition-colors">About Journal</Link></li>
                             <li><Link href="/editorial-board" className="hover:text-secondary transition-colors">Editorial Board</Link></li>
                             <li><Link href="/guidelines" className="hover:text-secondary transition-colors">Author Guidelines</Link></li>
@@ -76,43 +76,40 @@ export default async function Footer() {
                     </div>
 
                     {/* Contact & Support — dynamic values from client island */}
-                    <div className="space-y-10">
+                    <div className="space-y-4">
                         <div>
-                            <h3 className="text-white mb-10 border-b border-white/10 pb-4 inline-block m-0">Support HQ</h3>
-                            <div className="space-y-6 2xl:space-y-12">
+                            <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Support HQ</h3>
+                            <div className="space-y-2.5">
                                 {/* Static — COPE compliance badge */}
-                                <div className="flex items-center gap-4 group/support">
-                                    <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:scale-110 group-hover/support:bg-white/10 transition-all duration-500 overflow-hidden relative">
-                                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
-                                        <ShieldCheck className="w-4 h-4 2xl:w-8 2xl:h-8 text-secondary" />
+                                <div className="flex items-center gap-3 group/support">
+                                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:bg-white/10 transition-all">
+                                        <ShieldCheck className="w-4 h-4 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-white/80 mb-1 m-0 text-sm 2xl:text-lg">COPE Compliant</p>
-                                        <p className="text-white m-0 font-semibold">Institutional Standards</p>
+                                        <p className="text-white/70 m-0 text-[10px] uppercase font-semibold">COPE Compliant</p>
+                                        <p className="text-white m-0 text-xs font-bold">Institutional Standards</p>
                                     </div>
                                 </div>
 
                                 {/* Dynamic — phone from Zustand island */}
-                                <div className="flex items-center gap-4 group/support">
-                                    <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:scale-110 group-hover/support:bg-white/10 transition-all duration-500 overflow-hidden relative">
-                                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
-                                        <Phone className="w-4 h-4 2xl:w-8 2xl:h-8 text-secondary" />
+                                <div className="flex items-center gap-3 group/support">
+                                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:bg-white/10 transition-all">
+                                        <Phone className="w-4 h-4 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-white/80 mb-1 m-0 text-sm 2xl:text-lg">Direct Line</p>
+                                        <p className="text-white/70 m-0 text-[10px] uppercase font-semibold">Direct Line</p>
                                         <Suspense><FooterDynamic field="supportPhone" settings={settings} /></Suspense>
                                     </div>
                                 </div>
 
                                 {/* Dynamic — address from Zustand island */}
-                                <div className="flex items-center gap-4 group/support">
-                                    <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:scale-110 group-hover/support:bg-white/10 transition-all duration-500 overflow-hidden relative">
-                                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/support:animate-shine pointer-events-none" />
-                                        <MapPin className="w-4 h-4 2xl:w-8 2xl:h-8 text-secondary" />
+                                <div className="flex items-center gap-3 group/support">
+                                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:bg-white/10 transition-all">
+                                        <MapPin className="w-4 h-4 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-white/80 mb-1 m-0 text-sm 2xl:text-lg">Office Location</p>
-                                        <Suspense><FooterDynamic field="officeAddress" className="text-white/70 m-0 text-base 2xl:text-xl italic" settings={settings} /></Suspense>
+                                        <p className="text-white/70 m-0 text-[10px] uppercase font-semibold">Office Location</p>
+                                        <Suspense><FooterDynamic field="officeAddress" className="text-white/70 m-0 text-xs italic" settings={settings} /></Suspense>
                                     </div>
                                 </div>
                             </div>
@@ -121,15 +118,28 @@ export default async function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-10 border-t border-white/5 flex flex-col lg:flex-row justify-between items-center gap-8">
-                    <div className="flex flex-col items-center lg:items-start gap-2">
+                <div className="pt-4 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-4">
+                    <div className="flex flex-col items-center lg:items-start gap-0.5">
                         {/* Dynamic — publisher name + year */}
                         <Suspense><FooterDynamic field="copyright" settings={settings} /></Suspense>
-                        <p className="opacity-40 m-0">All Rights Reserved</p>
+                        <p className="opacity-50 text-[11px] m-0">All Rights Reserved • E-ISSN: 3139-6887</p>
+                    </div>
+
+                    {/* Creative Commons Attribution Notice */}
+                    <div className="text-center lg:text-left text-xs text-white/70 space-y-0.5">
+                        <p className="m-0">
+                            Articles licensed under{' '}
+                            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 font-semibold underline">
+                                Creative Commons Attribution 4.0 International (CC BY 4.0)
+                            </a>
+                        </p>
+                        <p className="m-0 text-[10px] text-white/50">
+                            Gold Open Access • Permanent CERN Zenodo DOI Archiving
+                        </p>
                     </div>
 
                     {/* Social links — static, zero JS */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2.5">
                         {socialLinks.map((social) => (
                             <Link
                                 key={social.label}
@@ -137,9 +147,9 @@ export default async function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label={social.label}
-                                className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
+                                className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
                             >
-                                <social.icon className="w-4 h-4 2xl:w-8 2xl:h-8" />
+                                <social.icon className="w-3.5 h-3.5" />
                             </Link>
                         ))}
                     </div>

@@ -18,67 +18,66 @@ const REQUIREMENTS = [
 export default function SubmitClient() {
 
     return (
-        <section className="container-responsive section-padding">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
+        <section className="container-responsive py-6 sm:py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
                 {/* Main Submission Form */}
-                <div className="lg:col-span-2 space-y-10">
-                    <section className="bg-card border border-border/50 rounded-xl overflow-hidden shadow-sm">
-                        <div className="bg-[#000066] p-8 sm:p-12 text-white relative overflow-hidden">
-                            <div className="relative z-10 space-y-3">
-                                <h2 className="text-xl font-semibold m-0 text-white">Submit Research</h2>
-                                <p className="text-white/60 text-sm m-0 leading-relaxed border-l-2 border-white/20 pl-6">
-                                    Fill in the details below to submit your manuscript for peer review.
+                <div className="lg:col-span-2 space-y-6">
+                    <section className="bg-card border border-border/70 rounded-xl overflow-hidden shadow-2xs">
+                        <div className="bg-[#000066] p-4 sm:p-6 text-white relative overflow-hidden">
+                            <div className="relative z-10 space-y-1.5">
+                                <h2 className="m-0 text-white">Submit Research Manuscript</h2>
+                                <p className="text-white/70 m-0 border-l-2 border-white/30 pl-3.5">
+                                    Fill in the manuscript details below to submit your research for double-blind peer review.
                                 </p>
                             </div>
                         </div>
-                        <div className="p-6 sm:p-10">
+                        <div className="p-4 sm:p-6">
                             <SubmissionForm />
                         </div>
                     </section>
                 </div>
 
                 {/* Sidebar */}
-                <aside className="space-y-10">
-                    <div className="bg-muted/20 p-2 rounded-2xl border border-border/50">
+                <aside className="space-y-4 sm:space-y-5 lg:sticky lg:top-24">
+                    <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
                         <TrackManuscriptWidget />
                     </div>
 
-                    <section className="space-y-6">
-                        <h3 className="text-base 2xl:text-lg font-semibold text-primary m-0">Quick Checklist</h3>
-                        <div className="p-8 bg-card border border-border/50 rounded-xl shadow-sm border-l-4 border-l-secondary/10 transition-all hover:border-l-secondary">
-                            <div className="space-y-6 mb-10">
-                                {REQUIREMENTS.map((item, idx) => (
-                                    <div key={idx} className="flex gap-4">
-                                        <div className="w-5 h-5 rounded-lg bg-secondary/5 border border-secondary/10 flex items-center justify-center shrink-0">
-                                            <CheckCircle2 className="w-3.5 h-3.5 text-secondary" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-base 2xl:text-lg font-semibold text-primary mb-1 m-0">{item.title}</h3>
-                                            <p className="text-muted-foreground m-0 text-sm 2xl:text-base leading-relaxed">{item.desc}</p>
-                                        </div>
+                    <div className="p-4 bg-card border border-border/70 rounded-xl shadow-2xs space-y-3">
+                        <h3 className="m-0">Submission Checklist</h3>
+                        <div className="space-y-2.5">
+                            {REQUIREMENTS.map((item, idx) => (
+                                <div key={idx} className="flex gap-2.5 items-start">
+                                    <div className="w-4 h-4 rounded-md bg-secondary/10 flex items-center justify-center shrink-0 mt-0.5">
+                                        <CheckCircle2 className="w-3 h-3 text-secondary" />
                                     </div>
-                                ))}
-                            </div>
-                            <Button asChild className="w-full h-10 bg-[#000066] hover:bg-[#000088] text-white font-bold text-sm 2xl:text-base tracking-wider rounded-lg shadow-sm transition-all uppercase">
-                                <Link href="/guidelines">View Guidelines</Link>
-                            </Button>
+                                    <div>
+                                        <h4 className="text-xs font-bold text-primary m-0">{item.title}</h4>
+                                        <p className="text-muted-foreground m-0 text-xs leading-snug">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </section>
+                        <Button asChild size="sm" className="w-full h-8 bg-[#000066] hover:bg-[#000088] text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-xs transition-all">
+                            <Link href="/guidelines">View Author Guidelines</Link>
+                        </Button>
+                    </div>
 
-                    <section className="p-8 bg-[#000066] rounded-xl shadow-sm relative overflow-hidden text-white">
-                        <div className="relative z-10 space-y-4">
-                            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-white border border-white/10">
-                                <HelpCircle className="w-5 h-5" />
+                    <div className="p-4 bg-[#000066] rounded-xl shadow-md text-white space-y-2">
+                        <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center text-white">
+                                <HelpCircle className="w-4 h-4" />
                             </div>
-                            <h3 className="text-lg font-semibold m-0 text-white">Need Support?</h3>
-                            <p className="text-white/60 text-sm 2xl:text-base font-medium leading-relaxed m-0">
-                                Encountering technical issues? Our board is available to assist you.
-                            </p>
-                            <Link href="/contact" className="text-xs sm:text-sm 2xl:text-base font-bold tracking-widest text-white hover:text-secondary inline-flex items-center gap-2 m-0 uppercase transition-colors">
-                                Contact Support <ChevronRight className="w-3.5 h-3.5" />
-                            </Link>
+                            <h3 className="text-xs sm:text-sm font-semibold m-0 text-white">Need Support?</h3>
                         </div>
-                    </section>
+                        <p className="text-white/70 text-xs leading-relaxed m-0">
+                            Encountering technical issues? Our editorial desk is available to assist you.
+                        </p>
+                        <Link href="/contact" className="text-xs font-bold text-secondary hover:text-white inline-flex items-center gap-1 m-0 transition-colors pt-1">
+                            <span>Contact Support</span>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                        </Link>
+                    </div>
                 </aside>
             </div>
         </section>

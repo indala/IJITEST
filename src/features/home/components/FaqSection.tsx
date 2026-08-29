@@ -73,36 +73,36 @@ const FAQS: FAQ[] = [
 
 export default function FaqSection() {
   return (
-    <section className="py-16 md:py-24 bg-card/30" id="faqs">
+    <section className="py-6 sm:py-8 bg-card/30" id="faqs">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-3xl mx-auto space-y-12">
+        <div className="max-w-3xl mx-auto space-y-6">
           
-          <div className="text-center space-y-4">
-            <Badge variant="outline" className="bg-[#000066]/5 text-[#000066] border-[#000066]/10 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+          <div className="text-center space-y-1.5">
+            <Badge variant="outline" className="bg-[#000066]/5 text-[#000066] border-[#000066]/10 px-2.5 py-0.5 rounded-full text-label">
               Common Questions
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#000066] tracking-tight">
+            <h2 className="m-0">
               Frequently Asked Questions
             </h2>
-            <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto">
+            <p className="text-muted-foreground max-w-xl mx-auto m-0">
               Everything you need to know about the publication process, indexing, and joining our scientific community.
             </p>
           </div>
 
-          <Accordion type="single" collapsible className="w-full space-y-4">
+          <Accordion type="single" collapsible className="w-full space-y-2">
             {FAQS.map((faq, index) => (
               <AccordionItem 
                 key={faq.question} 
                 value={`item-${index}`}
-                className="border border-border/50 rounded-xl bg-card px-4 md:px-6 transition-all hover:border-[#000066]/20 shadow-sm"
+                className="border border-border/50 rounded-xl bg-card px-3.5 sm:px-4 transition-all hover:border-[#000066]/20 shadow-2xs"
               >
-                <AccordionTrigger className="text-left py-5 text-sm md:text-base font-semibold text-foreground hover:no-underline hover:text-[#000066] transition-colors">
-                  <div className="flex items-center gap-3">
+                <AccordionTrigger className="text-left py-3 font-semibold text-foreground hover:no-underline hover:text-[#000066] transition-colors">
+                  <div className="flex items-center gap-2.5">
                     <HelpCircle className="w-4 h-4 text-[#000066]/60 shrink-0" />
                     {faq.question}
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-5 pt-0">
+                <AccordionContent className="text-muted-foreground pb-4 pt-0">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

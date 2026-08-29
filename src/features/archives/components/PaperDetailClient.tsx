@@ -74,65 +74,61 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                 {/* Main Article Content */}
-                <div className="lg:col-span-2 space-y-12">
+                <div className="lg:col-span-2 space-y-5 sm:space-y-6">
                     {/* Title & Core Meta */}
-                    <div className="bg-white p-10 md:p-14 rounded-[3rem] border border-gray-100 shadow-xl shadow-blue-900/5 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
-
-                        <div className="relative z-10 space-y-8">
-                            <div className="flex flex-wrap items-center gap-3">
-                                <span className="bg-primary/5 text-primary text-md px-4 py-2 rounded-full  border border-primary/10">Research Article</span>
+                    <div className="bg-card p-5 sm:p-7 rounded-2xl border border-border/70 shadow-2xs relative overflow-hidden">
+                        <div className="relative z-10 space-y-4">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="bg-primary/5 text-primary text-xs px-2.5 py-1 rounded-lg font-semibold border border-primary/10">Research Article</span>
                                 {paper.volumeNumber && (
-                                    <span className="flex items-center gap-2 bg-primary/5 text-primary text-md px-4 py-2 rounded-full   border border-secondary/10">
-                                        <BookOpen className="w-3 h-3" /> Volume {paper.volumeNumber}, Issue {paper.issueNumber}
+                                    <span className="flex items-center gap-1.5 bg-primary/5 text-primary text-xs px-2.5 py-1 rounded-lg font-semibold border border-secondary/10">
+                                        <BookOpen className="w-3.5 h-3.5" /> Volume {paper.volumeNumber}, Issue {paper.issueNumber}
                                     </span>
                                 )}
-                                <span className="bg-primary/5 text-primary text-md px-4 py-2 rounded-full  border border-gray-200">
+                                <span className="bg-muted/50 text-muted-foreground text-xs px-2.5 py-1 rounded-lg font-medium border border-border/50">
                                     Published: {new Date((paper.publishedAt || paper.updatedAt || new Date()) as string | number | Date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                                 </span>
                             </div>
 
                             {/* Metrics Section */}
-                            <div className="flex flex-wrap items-center gap-6 py-4 px-6 bg-muted/30 rounded-2xl border border-border/50 w-fit">
-                                <div className="flex items-center gap-2">
-                                    <Eye className="w-4 h-4 text-primary/60" />
+                            <div className="flex flex-wrap items-center gap-4 py-2 px-3.5 bg-muted/40 rounded-xl border border-border/50 w-fit">
+                                <div className="flex items-center gap-1.5">
+                                    <Eye className="w-3.5 h-3.5 text-primary/60" />
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Views</span>
-                                        <span className="text-sm font-black text-primary tabular-nums">{(paper.views || 0).toLocaleString()}</span>
+                                        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Views</span>
+                                        <span className="text-xs font-bold text-primary tabular-nums">{(paper.views || 0).toLocaleString()}</span>
                                     </div>
                                 </div>
-                                <div className="w-px h-8 bg-border/50" />
-                                <div className="flex items-center gap-2">
-                                    <Download className="w-4 h-4 text-emerald-600/60" />
+                                <div className="w-px h-6 bg-border/50" />
+                                <div className="flex items-center gap-1.5">
+                                    <Download className="w-3.5 h-3.5 text-emerald-600/60" />
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Downloads</span>
-                                        <span className="text-sm font-black text-emerald-700 tabular-nums">{(paper.downloads || 0).toLocaleString()}</span>
+                                        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Downloads</span>
+                                        <span className="text-xs font-bold text-emerald-700 tabular-nums">{(paper.downloads || 0).toLocaleString()}</span>
                                     </div>
                                 </div>
-                                <div className="w-px h-8 bg-border/50" />
-                                <div className="flex items-center gap-2">
-                                    <Quote className="w-4 h-4 text-amber-600/60" />
+                                <div className="w-px h-6 bg-border/50" />
+                                <div className="flex items-center gap-1.5">
+                                    <Quote className="w-3.5 h-3.5 text-amber-600/60" />
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Citations</span>
-                                        <span className="text-sm font-black text-amber-700 tabular-nums">{(paper.citations || 0).toLocaleString()}</span>
+                                        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Citations</span>
+                                        <span className="text-xs font-bold text-amber-700 tabular-nums">{(paper.citations || 0).toLocaleString()}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <h1 className=" font-serif font-black text-gray-900 leading-[1.15]">
+                            <h1 className="m-0">
                                 {paper.title}
                             </h1>
 
-                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-3 gap-y-4 pt-6 border-t border-gray-100">
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                                    <span className="-black  tracking-widest  shrink-0">Authors <span className="text-red-600 font-bold">:</span></span>
-                                    <div className="flex flex-wrap items-center gap-x-2">
-                                        <span className="font-normal leading-tight">
-                                            {Array.isArray(paper.authorsList) ? paper.authorsList.join(', ') : ''}
-                                        </span>
-                                    </div>
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-3 gap-y-3 pt-3 border-t border-border/40">
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                    <span className="font-bold text-primary text-xs shrink-0">Authors:</span>
+                                    <span className="font-medium text-foreground/90 text-sm">
+                                        {Array.isArray(paper.authorsList) ? paper.authorsList.join(', ') : ''}
+                                    </span>
                                 </div>
 
                                 <a
@@ -141,35 +137,66 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                     onClick={handleDownload}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="hidden md:flex items-center justify-center gap-3 bg-primary text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-[0.2em] shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-1 whitespace-nowrap"
+                                    className="hidden md:flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-xs transition-all shrink-0"
                                 >
-                                    <Download className="w-4 h-4" /> DOWNLOAD FULL PAPER
+                                    <Download className="w-3.5 h-3.5" /> <span>Download PDF</span>
                                 </a>
                             </div>
 
-                            
+                            {/* DOI & Digital Repository Badges */}
+                            <div className="flex flex-wrap items-center gap-2 pt-1">
+                                {paper.doi ? (
+                                    <a
+                                        href={`https://doi.org/${paper.doi}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary/5 hover:bg-primary/10 border border-primary/15 text-xs font-mono font-bold text-primary transition-colors"
+                                    >
+                                        <span className="text-[9px] uppercase tracking-wider px-1 py-0.5 rounded bg-primary text-white font-sans">DOI</span>
+                                        <span>{paper.doi}</span>
+                                    </a>
+                                ) : (
+                                    <a
+                                        href="https://doi.org/10.5281/zenodo.22016453"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-xs font-mono font-bold text-emerald-800 transition-colors"
+                                    >
+                                        <span className="text-[9px] uppercase tracking-wider px-1 py-0.5 rounded bg-emerald-700 text-white font-sans">Zenodo DOI</span>
+                                        <span>10.5281/zenodo.22016453</span>
+                                    </a>
+                                )}
+                                <a
+                                    href="https://zenodo.org/communities/ijitest/records?q=&l=list&p=1&s=10&sort=newest"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 hover:bg-blue-100 border border-blue-200 text-xs font-semibold text-blue-800 transition-colors"
+                                >
+                                    <span>Zenodo Community</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
 
                     {/* Abstract Section */}
-                    <div className="bg-gray-50/50 p-10 md:p-14 rounded-[3rem] border border-gray-100 relative group space-y-8">
+                    <div className="bg-card p-5 sm:p-7 rounded-2xl border border-border/70 relative group space-y-4">
                         <div>
-                            <h2 className=" font-serif font-black text-gray-900 mb-8 flex items-center gap-3">
-                                <FileText className="w-6 h-6 text-primary opacity-50" /> Abstract
+                            <h2 className="mb-2 flex items-center gap-2 m-0">
+                                <FileText className="w-4 h-4 text-secondary" /> Abstract
                             </h2>
-                            <p className="text-gray-800 leading-[1.8] text-justify font-medium indent-8">
+                            <p className="text-foreground/90 text-justify m-0">
                                 {paper.abstract}
                             </p>
                         </div>
 
                         {paper.keywords && (
-                            <div className="pt-8 border-t border-gray-200/50">
-                                <div className="flex items-center gap-2 text-[10px] font-black text-gray-600 tracking-widest mb-4">
-                                    <Hash className="w-3 h-3" /> Keywords
+                            <div className="pt-3 border-t border-border/40">
+                                <div className="flex items-center gap-1.5 text-xs font-bold text-primary uppercase tracking-wider mb-2">
+                                    <Hash className="w-3 h-3 text-secondary" /> Keywords
                                 </div>
-                                <div className="flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-1.5">
                                     {paper.keywords.split(',').map((kw: string, i: number) => (
-                                        <span key={i} className="bg-white px-4 py-2 rounded-xl text-[10px] font-bold text-gray-700 border border-gray-300 tracking-widest shadow-sm">
+                                        <span key={i} className="bg-muted/50 px-2.5 py-1 rounded-md text-xs font-medium text-foreground/80 border border-border/50">
                                             {kw.trim()}
                                         </span>
                                     ))}
@@ -178,14 +205,18 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                         )}
 
                         {/* Open Access & Creative Commons License */}
-                        <div className="p-6 rounded-2xl bg-white border border-primary/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-                            <div className="space-y-1">
-                                <p className="text-xs font-black text-primary uppercase tracking-widest">Open Access License</p>
-                                <p className="text-xs text-muted-foreground leading-relaxed">
-                                    Copyright © {new Date((paper.publishedAt || paper.updatedAt || new Date()) as string | number | Date).getFullYear()} The Author(s). 
-                                    This article is distributed under the terms of the{' '}
-                                    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-primary font-bold underline hover:opacity-80">
-                                        Creative Commons Attribution 4.0 International License (CC BY 4.0)
+                        <div className="p-3.5 sm:p-4 rounded-xl bg-primary/5 border border-primary/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
+                            <div className="space-y-0.5">
+                                <div className="flex items-center gap-2">
+                                    <span className="px-1.5 py-0.5 rounded bg-[#000066] text-white font-mono font-bold text-[10px]">
+                                        CC BY 4.0
+                                    </span>
+                                    <p className="text-xs font-bold text-primary m-0">Open Access Attribution License</p>
+                                </div>
+                                <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                                    Distributed under the terms of the{' '}
+                                    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-primary font-bold underline hover:text-secondary">
+                                        Creative Commons Attribution 4.0 International (CC BY 4.0)
                                     </a>.
                                 </p>
                             </div>
@@ -193,27 +224,27 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                 href="https://creativecommons.org/licenses/by/4.0/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="px-4 py-2 bg-primary/5 hover:bg-primary/10 border border-primary/20 text-primary text-[10px] font-black tracking-widest rounded-xl transition-colors shrink-0"
+                                className="px-3 py-1.5 bg-white hover:bg-primary/5 border border-primary/20 text-[#000066] text-xs font-bold rounded-lg transition-colors shrink-0"
                             >
-                                CC BY 4.0
+                                Verify License
                             </a>
                         </div>
                     </div>
                 </div>
 
                 {/* Sidebar Utilities */}
-                <div className="space-y-8">
+                <div className="space-y-4 sm:space-y-5">
                     {/* Download Button (Mobile Only) */}
-                    <div className="flex flex-col gap-4 px-4 md:hidden">
+                    <div className="flex flex-col gap-2 md:hidden">
                         <a
                             href={paper.filePath}
                             download
                             onClick={handleDownload}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full flex items-center justify-center gap-3 bg-primary text-white py-5 rounded-2xl font-black text-[10px] sm:text-xs tracking-[0.2em] shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-1 z-10"
+                            className="w-full flex items-center justify-center gap-2 bg-primary text-white py-2.5 rounded-lg font-bold text-xs shadow-xs hover:bg-primary/90 transition-all"
                         >
-                            <Download className="w-4 h-4" /> DOWNLOAD FULL PAPER
+                            <Download className="w-4 h-4" /> Download Full Paper
                         </a>
                     </div>
                     

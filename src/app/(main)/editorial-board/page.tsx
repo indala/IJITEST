@@ -41,30 +41,30 @@ export default async function EditorialBoard() {
                 scrollOnComplete={true}
             />
 
-            <section className="container-responsive py-10 sm:py-16 2xl:py-24 flex justify-center">
-                <div className="space-y-20">
+            <section className="container-responsive py-6 sm:py-8 flex justify-center">
+                <div className="space-y-6 w-full max-w-6xl">
                     {/* Main Content */}
                     <EditorialBoardClient settings={settings} initialMembers={initialMembers} />
 
                     {/* Ethics Policy Banner */}
-                    <Card className="bg-primary border-none text-white shadow-xl rounded-[2.5rem] overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-white/20 transition-colors duration-1000 pointer-events-none" />
-                        <CardContent className="p-8 sm:p-12 relative z-10">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-10">
-                                <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-                                    <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 group-hover:rotate-12 transition-transform duration-500">
-                                        <ShieldAlert className="w-8 h-8 text-white" />
+                    <Card className="bg-primary border-none text-white shadow-md rounded-xl overflow-hidden relative group">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-white/20 transition-colors duration-500 pointer-events-none" />
+                        <CardContent className="p-4 sm:p-5 relative z-10">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div className="flex flex-col md:flex-row items-center gap-3 text-center md:text-left">
+                                    <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20 shrink-0">
+                                        <ShieldAlert className="w-5 h-5 text-white" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <CardTitle className="text-2xl 2xl:text-4xl font-black text-white tracking-wider">Ethics Policy</CardTitle>
-                                        <p className="text-sm 2xl:text-lg text-white/70 font-medium leading-relaxed max-w-xl 2xl:max-w-3xl">
+                                    <div className="space-y-0.5">
+                                        <CardTitle className="text-white tracking-wide m-0">Ethics Policy</CardTitle>
+                                        <p className="text-white/80 max-w-xl m-0">
                                             IJITEST follows COPE guidelines for scientific integrity and global best practices.
                                         </p>
                                     </div>
                                 </div>
-                                <Button asChild className="h-12 2xl:h-16 px-8 2xl:px-12 bg-white hover:bg-white/90 text-primary font-black text-xs 2xl:text-sm tracking-[0.2em] rounded-xl shadow-lg transition-all hover:scale-105 cursor-pointer">
-                                    <Link href="/ethics" className="flex items-center cursor-pointer">
-                                        View Policy <ChevronRight className="w-4 h-4 2xl:w-6 2xl:h-6 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                                <Button asChild size="sm" className="h-8 px-4 bg-white hover:bg-white/90 text-primary font-bold text-xs rounded-lg shadow-xs transition-all shrink-0">
+                                    <Link href="/ethics" className="flex items-center">
+                                        View Policy <ChevronRight className="w-3.5 h-3.5 ml-1" />
                                     </Link>
                                 </Button>
                             </div>

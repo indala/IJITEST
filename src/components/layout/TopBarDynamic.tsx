@@ -6,56 +6,39 @@ interface TopBarDynamicProps {
 
 export function TopBarDynamic({ settings }: TopBarDynamicProps) {
     const { journalName, issnNumber, publisherName } = settings;
-    const formattedIssn = issnNumber || '3139-6887';
-    const issnDisplay = formattedIssn.toLowerCase().includes('(online)') 
-        ? formattedIssn 
-        : `${formattedIssn} (Online)`;
+    const cleanIssn = (issnNumber || '3139-6887').replace(/\s*\(online\)/i, '').trim();
 
     return (
         <div className="container-responsive max-w-7xl mx-auto py-1">
-            {/* Top Bar Layout: Title in Center, ISSN pinned to Top-Most Right */}
-            <div className="relative flex flex-col md:flex-row items-center justify-between gap-3">
-                {/* Left placeholder for symmetric balance on desktop */}
-                <div className="hidden lg:flex items-center gap-2 text-xs xl:text-sm font-semibold tracking-wider text-white/80">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-2 sm:gap-4">
+                {/* Left: Scholarly Status */}
+                <div className="hidden lg:flex items-center gap-2 text-xs font-medium text-white/80 shrink-0">
                     <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Open Access Journal</span>
+                    <span>Peer-Reviewed Open Access</span>
                 </div>
 
-                {/* Center: Journal Name */}
+                {/* Center: Journal Full Title & Publisher Attribution */}
                 <div className="text-center flex-1 px-2">
-                    <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-2xl font-serif font-bold text-white tracking-wide leading-snug drop-shadow-sm m-0">
+                    <h1 className="text-white text-xs sm:text-sm md:text-base m-0 tracking-wide">
                         {journalName}
                     </h1>
+                    {publisherName && (
+                        <p className="text-[11px] sm:text-xs text-white/70 font-medium tracking-wide m-0 mt-0.5">
+                            Published by <span className="text-white font-semibold">{publisherName}</span>
+                        </p>
+                    )}
                 </div>
 
-                {/* Top-Most Right: ISSN Badge (as required by ISSN standard & letter) */}
+                {/* Top-Most Right: Official E-ISSN Badge */}
                 <div className="shrink-0 flex items-center justify-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-4 sm:py-1.5 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 shadow-sm backdrop-blur-sm transition-all">
-                        <span className="text-[10px] sm:text-xs font-black tracking-widest text-secondary uppercase bg-white px-1.5 py-0.5 rounded font-mono">
-                            ISSN
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 border border-white/20 shadow-xs backdrop-blur-xs">
+                        <span className="text-[10px] font-black tracking-widest text-secondary uppercase bg-white px-1.5 py-0.5 rounded font-mono">
+                            E-ISSN
                         </span>
                         <span className="text-xs sm:text-sm font-mono font-bold text-white tracking-wider">
-                            {issnDisplay}
+                            {cleanIssn} (Online)
                         </span>
                     </div>
-                </div>
-            </div>
-
-            {/* Sub-strip Metadata (Publisher & Access Model) */}
-            <div className="mt-2 pt-2 border-t border-white/10 flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-[11px] sm:text-xs font-medium tracking-wider text-white/80">
-                <div className="flex items-center gap-2">
-                    <span className="text-white/60 uppercase font-semibold">Published By:</span>
-                    <span className="text-white font-bold">{publisherName}</span>
-                </div>
-                <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-secondary/80" />
-                <div className="flex items-center gap-2">
-                    <span className="text-white/60 uppercase font-semibold">E-ISSN:</span>
-                    <span className="text-white font-mono font-bold">{formattedIssn.replace(/\s*\(online\)/i, '')}</span>
-                </div>
-                <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-secondary/80" />
-                <div className="flex items-center gap-1.5 text-white/90">
-                    <span className="text-emerald-300 font-semibold">Gold Open Access</span>
-                    <span>• Rapid Peer Review</span>
                 </div>
             </div>
         </div>

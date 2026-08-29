@@ -104,51 +104,51 @@ const roadmapPhases: RoadmapPhase[] = [
 
 function RoadmapSection() {
     return (
-        <section className="space-y-12 2xl:space-y-16">
-            <div className="space-y-4">
-                <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-semibold text-primary flex items-center gap-3">
-                    <span className="text-xs xl:text-sm 2xl:text-base text-muted-foreground font-mono">01.</span>
+        <section className="space-y-6">
+            <div className="space-y-1.5">
+                <h2 className="flex items-center gap-2 m-0">
+                    <span className="text-meta">01.</span>
                     Strategic Growth & Indexing Roadmap
                 </h2>
-                <p className="text-xs xl:text-sm 2xl:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+                <p className="text-muted-foreground max-w-2xl m-0">
                     IJITEST follows a rigorous path toward global scientific recognition. Our growth is structured into distinct phases, ensuring every published paper adheres to international scholarly standards.
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 2xl:gap-8 relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
                 {roadmapPhases.map((item, idx) => (
                     <div
                         key={idx}
-                        className={`group p-8 xl:p-10 2xl:p-12 rounded-2xl border transition-all duration-300 hover:shadow-lg ${
-                            item.status === "Completed" ? "bg-white border-green-100" : 
-                            item.status === "In Progress" ? "bg-white border-blue-100 shadow-sm ring-1 ring-blue-50" : 
-                            "bg-slate-50/50 border-slate-100 opacity-80"
+                        className={`group p-4 sm:p-5 rounded-xl border transition-all duration-200 hover:shadow-2xs ${
+                            item.status === "Completed" ? "bg-white border-green-200" : 
+                            item.status === "In Progress" ? "bg-white border-blue-200 shadow-2xs" : 
+                            "bg-slate-50/50 border-slate-200 opacity-80"
                         }`}
                     >
-                        <div className="flex justify-between items-start mb-6">
-                            <div className={`p-3 xl:p-4 rounded-xl ${item.bgColor} ${item.color}`}>
-                                <item.icon className="w-6 h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8" />
+                        <div className="flex justify-between items-start mb-3">
+                            <div className={`p-2 rounded-lg ${item.bgColor} ${item.color}`}>
+                                <item.icon className="w-4 h-4" />
                             </div>
                             <div className="text-right">
-                                <span className="text-[10px] xl:text-xs 2xl:text-sm font-mono text-muted-foreground block mb-1 uppercase tracking-tighter">{item.phase}</span>
-                                <div className={`flex items-center gap-1.5 justify-end px-2.5 py-1 rounded-full text-[10px] xl:text-xs 2xl:text-sm font-bold uppercase tracking-wider ${
+                                <span className="text-meta block mb-0.5 uppercase tracking-tighter">{item.phase}</span>
+                                <div className={`flex items-center gap-1 justify-end px-2 py-0.5 rounded-full text-label ${
                                     item.status === "Completed" ? "bg-green-100 text-green-700" :
                                     item.status === "In Progress" ? "bg-blue-100 text-blue-700" :
                                     "bg-slate-200 text-slate-600"
                                 }`}>
-                                    {item.status === "Completed" ? <CheckCircle2 className="w-3.5 h-3.5 xl:w-4 xl:h-4 2xl:w-4.5 2xl:h-4.5" /> : <Clock className="w-3.5 h-3.5 xl:w-4 xl:h-4 2xl:w-4.5 2xl:h-4.5" />}
+                                    {item.status === "Completed" ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
                                     {item.status}
                                 </div>
                             </div>
                         </div>
 
-                        <h3 className="text-lg xl:text-xl 2xl:text-2xl font-bold text-primary mb-4">{item.title}</h3>
+                        <h3 className="mb-2 m-0">{item.title}</h3>
                         
-                        <ul className="space-y-3.5">
+                        <ul className="space-y-1.5 list-none p-0 m-0">
                             {item.items.map((sub, sIdx) => (
-                                <li key={sIdx} className="flex flex-wrap items-center justify-between gap-2 text-xs xl:text-sm 2xl:text-base text-muted-foreground group-hover:text-primary/80 transition-colors">
-                                    <div className="flex items-center gap-2.5">
-                                        <div className={`w-2 h-2 rounded-full shrink-0 ${
+                                <li key={sIdx} className="flex flex-wrap items-center justify-between gap-1.5 text-xs text-muted-foreground group-hover:text-primary/80 transition-colors">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                                             sub.status === "Completed" ? "bg-emerald-500" : 
                                             sub.status === "In Progress" ? "bg-blue-500" : 
                                             "bg-slate-300"
@@ -162,23 +162,23 @@ function RoadmapSection() {
                                                 href={sub.linkUrl} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] xl:text-xs font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-300 shadow-sm transition-colors"
+                                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-300 shadow-2xs transition-colors"
                                             >
-                                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
                                                 {sub.badgeText || "Completed"}
                                                 <ExternalLink className="w-2.5 h-2.5 opacity-70" />
                                             </a>
                                         ) : (
-                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] xl:text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm">
-                                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">
+                                                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
                                                 {sub.badgeText || "Completed"}
                                             </span>
                                         )
                                     )}
 
                                     {sub.status === "In Progress" && sub.badgeText && (
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] xl:text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                                            <Clock className="w-3 h-3 text-blue-600" />
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                            <Clock className="w-2.5 h-2.5 text-blue-600" />
                                             {sub.badgeText}
                                         </span>
                                     )}
@@ -189,10 +189,10 @@ function RoadmapSection() {
                 ))}
             </div>
 
-            <div className="p-6 xl:p-8 2xl:p-10 bg-[#000066]/5 rounded-xl border border-[#000066]/10 flex flex-col sm:flex-row items-center gap-6">
-                <div className="w-12 h-12 shrink-0 bg-[#000066] text-white rounded-full flex items-center justify-center font-bold italic shadow-inner">i</div>
-                <p className="text-[11px] xl:text-sm 2xl:text-lg text-primary/80 leading-relaxed m-0 text-center sm:text-left">
-                    <strong className="text-primary 2xl:text-xl">Active Scholarly Credentials:</strong> Articles published in IJITEST are assigned formal metadata including <strong className="text-primary">E-ISSN: 3139-6887</strong> and are indexed with verified digital repositories including <strong className="text-primary">OpenAIRE</strong> & <strong className="text-primary">Zenodo</strong> (DOI: 10.5281/zenodo.22016453). Crossref and expanded indexing partners (CiteFactor, OpenAlex) are continuously synchronized.
+            <div className="p-3.5 sm:p-4 bg-[#000066]/5 rounded-xl border border-[#000066]/10 flex flex-col sm:flex-row items-center gap-3">
+                <div className="w-8 h-8 shrink-0 bg-[#000066] text-white rounded-full flex items-center justify-center font-bold text-xs shadow-inner">i</div>
+                <p className="text-xs text-primary/80 leading-relaxed m-0 text-center sm:text-left">
+                    <strong className="text-primary">Active Scholarly Credentials:</strong> Articles published in IJITEST are assigned formal metadata including <strong className="text-primary">E-ISSN: 3139-6887</strong> and are indexed with verified digital repositories including <strong className="text-primary">OpenAIRE</strong> & <strong className="text-primary">Zenodo</strong> (DOI: 10.5281/zenodo.22016453). Crossref and expanded indexing partners (CiteFactor, OpenAlex) are continuously synchronized.
                 </p>
             </div>
         </section>

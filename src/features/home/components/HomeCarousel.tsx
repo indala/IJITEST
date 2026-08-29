@@ -27,7 +27,7 @@ export default function HomeCarousel() {
     }, [nextSlide]);
 
     return (
-        <section className="relative h-[300px] sm:h-[350px] lg:h-[400px] xl:h-[480px] 2xl:h-[600px] bg-slate-950 overflow-hidden">
+        <section className="relative h-[220px] sm:h-[260px] lg:h-[300px] xl:h-[340px] bg-slate-950 overflow-hidden">
             {/* Background Images Layer */}
             <div className="absolute inset-0">
                 {slides.map((slide, index) => (
@@ -69,14 +69,14 @@ export default function HomeCarousel() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 1, ease: "easeInOut" }}
-                        className="max-w-5xl space-y-6 md:space-y-8"
+                        className="max-w-4xl space-y-3"
                     >
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3, duration: 0.8 }}
                         >
-                            <h1 className=" leading-[1.1] mb-6 drop-shadow-2xl xl:text-4xl  text-white">
+                            <h1 className="drop-shadow-md text-white m-0">
                                 {TOP_TITLE}<br />{BOTTOM_TITLE}
                             </h1>
                         </motion.div>
@@ -85,25 +85,25 @@ export default function HomeCarousel() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
-                            className="flex flex-wrap items-center gap-6"
+                            className="flex flex-wrap items-center gap-3 pt-1"
                         >
                             <motion.div
                                 animate={{
                                     boxShadow: ["0px 0px 0px rgba(220,103,38,0)", "0px 10px 30px rgba(220,103,38,0.5)", "0px 0px 0px rgba(220,103,38,0)"]
                                 }}
                                 transition={{ duration: 3, repeat: Infinity }}
-                                className="rounded-xl overflow-hidden"
+                                className="rounded-lg overflow-hidden"
                             >
                                 <Link
                                     href="/submit"
-                                    className="btn-secondary"
+                                    className="btn-secondary text-xs sm:text-sm py-2 px-4"
                                 >
                                     Submit Manuscript
                                 </Link>
                             </motion.div>
                             <Link
                                 href="/archives"
-                                className="btn-outline border-white/20 text-white hover:bg-white/10"
+                                className="btn-outline border-white/20 text-white hover:bg-white/10 text-xs sm:text-sm py-2 px-4"
                             >
                                 Explore Archives
                             </Link>
@@ -113,7 +113,7 @@ export default function HomeCarousel() {
             </div>
 
             {/* Slide Indicators */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3" role="tablist" aria-label="Carousel slides">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex gap-2" role="tablist" aria-label="Carousel slides">
                 {slides.map((_, idx) => (
                     <button
                         type="button"

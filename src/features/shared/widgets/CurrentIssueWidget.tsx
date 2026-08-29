@@ -35,39 +35,38 @@ function CurrentIssueWidget() {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
         >
-            <Card className="border border-primary/10 shadow-xl shadow-primary/5 overflow-hidden bg-primary/5 group rounded-[2.5rem]">
-                <CardHeader className="p-6 pb-2 ">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:bg-secondary group-hover:text-white transition-colors duration-500">
-                            <BookOpen className="w-5 h-5 2xl:w-8 2xl:h-8" />
+            <Card className="border border-border/70 bg-card rounded-xl p-3.5 sm:p-4 space-y-3 shadow-2xs">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary">
+                            <BookOpen className="w-4 h-4" />
                         </div>
-                        <CardTitle className="text-sm 2xl:text-xl text-primary m-0">Current Issue</CardTitle>
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-6 2xl:space-y-10">
-                    <div className="space-y-1.5 2xl:space-y-3 pl-2 sm:pl-4 border-l-4 border-secondary/30">
-                        <div className="flex items-center gap-2">
-                            <p className="text-secondary m-0 text-xs 2xl:text-xl">Volume {currentStatus.volume}</p>
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
-                            <p className="text-secondary m-0 text-xs 2xl:text-xl">Issue {currentStatus.issue}</p>
+                        <div>
+                            <CardTitle className="text-xs sm:text-sm font-bold text-primary m-0">Current Issue</CardTitle>
+                            <p className="text-[10px] text-muted-foreground m-0">{currentStatus.date}</p>
                         </div>
-                        <p className="font-bold text-foreground/70 m-0 text-xs 2xl:text-xl">{currentStatus.date}</p>
                     </div>
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono font-bold text-[10px] uppercase">
+                        Vol {currentStatus.volume} · Iss {currentStatus.issue}
+                    </span>
+                </div>
 
-                    <div className="">
-                        <Button asChild className="btn-primary w-full text-sm 2xl:text-xl">
-                            <Link href="/archives" className="flex items-center justify-center gap-2">
-                                <span>Open Articles</span>
-                                <ChevronRight className="w-4 h-4 2xl:w-6 2xl:h-6 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                        </Button>
-                    </div>
-                </CardContent>
+                <div className="flex items-center gap-2">
+                    <Button asChild size="sm" className="h-7 px-3 text-xs bg-primary hover:bg-primary/90 rounded-md flex-1">
+                        <Link href="/current-issue" className="flex items-center justify-center gap-1">
+                            <span>View Issue</span>
+                            <ChevronRight className="w-3 h-3" />
+                        </Link>
+                    </Button>
+                    <Button asChild size="sm" variant="outline" className="h-7 px-3 text-xs border-primary/20 text-primary hover:bg-primary/5 rounded-md">
+                        <Link href="/archives">Archives</Link>
+                    </Button>
+                </div>
             </Card>
         </motion.div>
     );

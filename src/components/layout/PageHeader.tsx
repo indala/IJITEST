@@ -100,24 +100,24 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
             {!disableBreadcrumbJsonLd && (
                 <BreadcrumbJsonLd items={breadcrumbs} baseUrl={baseUrl.replace(/\/$/, '')} />
             )}
-            <section ref={sectionRef} className="relative py-12 bg-[#000066] border-b border-white/5 overflow-hidden">
-            <div className="container-responsive relative z-10">
+            <section ref={sectionRef} className="relative py-5 sm:py-7 bg-[#000066] border-b border-white/10 overflow-hidden">
+            <div className="container-responsive relative z-10 space-y-2">
                 <nav aria-label="Breadcrumb">
-                    <ol className="flex items-center gap-2 list-none p-0">
+                    <ol className="flex items-center gap-1.5 list-none p-0 m-0">
                         {breadcrumbs.map((crumb, idx) => {
                             const isLast = idx === breadcrumbs.length - 1;
                             return (
                                 <motion.li
                                     key={crumb.href + idx}
-                                    initial={{ opacity: 0, x: -20 }}
+                                    initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.6, delay: idx * 0.1, ease: "easeOut" }}
-                                    className="flex items-center gap-2"
+                                    transition={{ duration: 0.4, delay: idx * 0.05, ease: "easeOut" }}
+                                    className="flex items-center gap-1.5"
                                 >
                                     <Link
                                         href={crumb.href}
                                         aria-current={isLast ? "page" : undefined}
-                                        className={`text-xs xl:text-sm 2xl:text-base font-medium tracking-tight transition-all duration-300 ${isLast ? "text-white" : "text-white/50 hover:text-white"}`}
+                                        className={`text-[11px] sm:text-xs font-medium tracking-tight transition-all duration-200 ${isLast ? "text-white font-semibold" : "text-white/60 hover:text-white"}`}
                                     >
                                         {crumb.name}
                                     </Link>
@@ -130,36 +130,26 @@ export default function PageHeader({ title, description, breadcrumbs, scrollOnCo
                     </ol>
                 </nav>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end">
+                <div className="grid grid-cols-1 gap-4 items-end">
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                         onAnimationComplete={handleAnimationComplete}
                     >
-                        <h1 className="font-serif font-semibold text-white mb-4 text-2xl xl:text-3xl 2xl:text-4xl">
+                        <h1 className="text-white m-0">
                             {title}
                         </h1>
                         {description && (
                             <motion.p
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 0.9 }}
-                                transition={{ delay: 0.6, duration: 1 }}
-                                className="max-w-2xl text-sm sm:text-base 2xl:text-lg text-white/80 leading-relaxed border-l-2 border-primary-foreground/30 pl-4"
+                                transition={{ delay: 0.2, duration: 0.6 }}
+                                className="max-w-3xl text-white/80 border-l-2 border-white/30 pl-3.5 m-0 mt-1"
                             >
                                 {description}
                             </motion.p>
                         )}
-                    </motion.div>
-
-                    {/* VIP Decorative Card or Metric (Optional, adds to the "eye catching" feel) */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.4, duration: 0.8 }}
-                        className="hidden lg:flex justify-end"
-                    >
-
                     </motion.div>
                 </div>
             </div>

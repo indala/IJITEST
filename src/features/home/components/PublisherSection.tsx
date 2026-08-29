@@ -13,7 +13,7 @@ function PublisherSection() {
     const supportEmail = settings['supportEmail'] || "support@ijitest.org";
 
     return (
-        <section className="section-padding bg-background relative overflow-hidden border-t border-primary/5  my-5">
+        <section className="section-padding bg-background relative overflow-hidden border-t border-primary/5 my-2">
             <motion.div
                 animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -26,27 +26,25 @@ function PublisherSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="max-w-3xl"
+                    className="max-w-3xl space-y-2.5"
                 >
-                    <h2 className="text-2xl sm:text-3xl font-serif font-bold text-primary mb-4">About the Publisher</h2>
-                    <p className="opacity-80 border-l-4 border-secondary/30 pl-8 mb-12">
-                        {settings['journalShortName'] || 'IJITEST'} is mentored by <span className="opacity-100">{publisherName}</span>, aiming to provide a high-quality bedrock for research sharing and academic excellence.
+                    <h2 className="m-0">About the Publisher</h2>
+                    <p className="border-l-4 border-secondary/30 pl-3.5 text-muted-foreground m-0">
+                        {settings['journalShortName'] || 'IJITEST'} is published by <span className="font-semibold text-primary">{publisherName}</span>, dedicated to providing a high-quality global bedrock for research sharing and open scientific excellence.
                     </p>
-                    <div className="flex flex-col sm:flex-row items-center gap-8">
-                        <div className="p-1 rounded-4xl bg-linear-to-br from-primary/10 to-transparent border border-primary/5 shadow-vip group">
-                            <div className="bg-white p-5 rounded-[1.8rem] flex items-center gap-5 transition-transform group-hover:scale-[1.02] duration-500">
-                                <div className="w-14 h-14 bg-linear-to-br from-secondary to-secondary/80 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-secondary/20 group-hover:-rotate-12 transition-transform duration-500">
-                                    <Mail className="w-7 h-7" />
-                                </div>
-                                <div className="text-left">
-                                    <p className="mb-1 opacity-30 m-0">Support Desk</p>
-                                    <p className="opacity-80 m-0">{supportEmail}</p>
-                                </div>
+                    <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
+                        <div className="p-2.5 bg-card border border-border/70 rounded-xl flex items-center gap-3 shadow-2xs">
+                            <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center text-primary shrink-0">
+                                <Mail className="w-4 h-4" />
+                            </div>
+                            <div className="text-left text-xs">
+                                <p className="font-bold text-muted-foreground uppercase tracking-wider mb-0.5 m-0 text-[10px]">Support Desk</p>
+                                <p className="text-primary font-semibold m-0 text-xs">{supportEmail}</p>
                             </div>
                         </div>
-                        <Link href="/guidelines" className="group flex items-center gap-3 opacity-80 hover:opacity-100 transition-all">
-                            <span className="h-[2px] w-8 bg-secondary transition-all group-hover:w-16 group-hover:bg-primary" />
-                            View Formatting Guidelines
+                        <Link href="/guidelines" className="text-xs font-semibold text-primary hover:text-secondary flex items-center gap-2 transition-all">
+                            <span className="h-[2px] w-5 bg-secondary" />
+                            Author Submission Guidelines
                         </Link>
                     </div>
                 </motion.div>

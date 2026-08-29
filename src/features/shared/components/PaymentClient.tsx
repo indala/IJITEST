@@ -107,50 +107,50 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <Badge className="bg-[#000066]/5 text-[#000066] border-[#000066]/20 px-3 h-6 text-xs sm:text-sm font-bold tracking-wider uppercase">Official Invoice</Badge>
                                     <span className="text-xs sm:text-sm font-bold text-muted-foreground tracking-wider uppercase">Date: {new Date().toLocaleDateString()}</span>
                                 </div>
-                                <h3 className="text-xl font-semibold text-primary m-0 leading-tight">{manuscript.title}</h3>
-                                <div className="flex items-center gap-3 text-muted-foreground pt-4">
-                                    <TrendingUp className="w-4 h-4 text-secondary/60" />
-                                    <span className="text-sm font-medium">Manuscript ID: {manuscript.paperId}</span>
+                                <h3 className="m-0 leading-tight">{manuscript.title}</h3>
+                                <div className="flex items-center gap-2 text-muted-foreground pt-2 text-xs">
+                                    <TrendingUp className="w-3.5 h-3.5 text-secondary" />
+                                    <span className="text-meta">Manuscript ID: {manuscript.paperId}</span>
                                 </div>
                             </div>
 
-                            <div className="p-8 sm:p-10 space-y-8">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                                    <div className="space-y-1">
-                                        <p className="text-xs sm:text-sm font-bold text-muted-foreground tracking-widest uppercase">Beneficiary</p>
-                                        <p className="text-base font-semibold text-primary m-0">{manuscript.authorName}</p>
+                            <div className="p-4 sm:p-5 space-y-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-0.5">
+                                        <p className="text-label text-muted-foreground m-0">Beneficiary</p>
+                                        <p className="font-semibold text-primary m-0 text-sm">{manuscript.authorName}</p>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-xs sm:text-sm font-bold text-muted-foreground tracking-widest uppercase">Currency Profile</p>
-                                        <p className="text-base font-semibold text-primary m-0">INR (₹) - Unified Settlement</p>
+                                    <div className="space-y-0.5">
+                                        <p className="text-label text-muted-foreground m-0">Currency Profile</p>
+                                        <p className="font-semibold text-primary m-0 text-sm">INR (₹) - Unified Settlement</p>
                                     </div>
                                 </div>
 
-                                <div className="space-y-4 pt-8 border-t border-border/50">
-                                    <div className="flex justify-between items-center text-sm">
+                                <div className="space-y-2 pt-3 border-t border-border/50">
+                                    <div className="flex justify-between items-center text-xs">
                                         <span className="text-muted-foreground">Article Processing Fee (85%)</span>
                                         <span className="font-semibold text-primary">₹ {apcFee.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-sm">
+                                    <div className="flex justify-between items-center text-xs">
                                         <span className="text-muted-foreground">Global Indexing Fee (15%)</span>
                                         <span className="font-semibold text-primary">₹ {apcIndexing.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
-                                    <div className="flex justify-between items-center pt-8 mt-4 border-t border-dashed border-border/50">
-                                        <span className="text-base font-bold text-primary tracking-widest uppercase">Total Due</span>
-                                        <span className="text-3xl font-bold text-[#000066]">₹ {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                    <div className="flex justify-between items-center pt-3 mt-2 border-t border-dashed border-border/50">
+                                        <span className="text-xs sm:text-sm font-bold text-primary uppercase">Total Due</span>
+                                        <span className="text-xl sm:text-2xl font-bold text-[#000066]">₹ {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
                                 </div>
                             </div>
                         </section>
 
-                        <section className="p-8 bg-[#000066] rounded-xl text-white relative overflow-hidden shadow-sm">
-                            <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-                                <div className="w-14 h-14 bg-white/5 rounded-xl flex items-center justify-center shrink-0 border border-white/10 text-white">
-                                    <ShieldAlert className="w-7 h-7" />
+                        <section className="p-4 sm:p-5 bg-[#000066] rounded-xl text-white relative overflow-hidden shadow-md">
+                            <div className="relative z-10 flex flex-col md:flex-row gap-3 items-center">
+                                <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center shrink-0 border border-white/20 text-white">
+                                    <ShieldAlert className="w-4 h-4" />
                                 </div>
-                                <div className="space-y-2">
-                                    <h4 className="text-base font-semibold m-0">No Refund Policy</h4>
-                                    <p className="text-white/60 text-sm leading-relaxed border-l-2 border-white/20 pl-6">
+                                <div className="space-y-1">
+                                    <h4 className="text-xs sm:text-sm font-bold m-0 text-white">No Refund Policy</h4>
+                                    <p className="text-white/70 text-xs leading-relaxed border-l-2 border-white/20 pl-3.5 m-0">
                                         Submission of payment constitutes final agreement. Transactions are non-reversible according to ethics standards.
                                     </p>
                                 </div>

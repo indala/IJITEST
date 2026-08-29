@@ -54,64 +54,63 @@ export default function PromotionPopup() {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="border-black  border-2 relative max-w-lg w-full bg-white rounded-[3rem] overflow-hidden shadow-vip max-h-[92vh] flex flex-col"
+                        className="border border-border/80 relative max-w-md w-full bg-card rounded-2xl overflow-hidden shadow-2xl max-h-[92vh] flex flex-col"
                     >
                         {/* Decorative Background */}
-                        <div className="absolute top-0 right-0 w-80 h-80 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
                         {/* Close Button */}
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={handleSnooze}
-                            className="absolute top-6 right-6 p-2 text-primary/40 hover:text-secondary hover:bg-secondary/10 transition-all z-20 rounded-2xl shadow-inner border border-primary/5"
-                            aria-label="Close protocol"
+                            className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-primary hover:bg-muted transition-all z-20 rounded-lg border border-border/40 cursor-pointer"
+                            aria-label="Close promotion"
                         >
-                            <X className="w-5 h-5 animate-pulse" />
+                            <X className="w-4 h-4" />
                         </Button>
 
-                        <div className="relative z-10 p-6 sm:p-10 text-center flex flex-col h-full overflow-y-auto custom-scrollbar">
-                            <div className="shrink-0 mb-4">
-                                <div className=" inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-primary/5 rounded-3xl sm:rounded-4xl text-primary shadow-inner border border-primary/5 mx-auto">
-                                    <Sparkles className=" size-7 sm:size-8 " />
+                        <div className="relative z-10 p-6 text-center flex flex-col h-full overflow-y-auto custom-scrollbar">
+                            <div className="shrink-0 mb-3">
+                                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/5 rounded-xl text-primary border border-primary/10 mx-auto">
+                                    <Sparkles className="size-6 text-secondary" />
                                 </div>
                             </div>
 
-                            <div className="space-y-2 mb-2 shrink-0 ">
-
-                                <h2 className="pb-2 text-primary">
+                            <div className="space-y-1.5 mb-3 shrink-0">
+                                <h2 className="text-primary m-0">
                                     Publish Your Research
                                 </h2>
-                                <p className="opacity-60 leading-relaxed border-l-4 border-secondary/50 pl-6 text-left max-w-sm mx-auto sm:max-w-none">
+                                <p className="text-muted-foreground border-l-2 border-secondary pl-3 text-left m-0 text-xs leading-relaxed">
                                     In our commitment to supporting the next generation of innovators, the Primary Investigator will receive a 100% APC Waiver for our inaugural 2026 volume.
                                 </p>
                             </div>
 
-                            <div className="bg-primary/5 p-4 rounded-3xl sm:rounded-4xl border border-primary/5 flex items-center gap-4 text-left shadow-inner shrink-0 mb-6">
-                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-primary/5">
-                                    <Gift className="animate-shine w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
+                            <div className="bg-primary/5 p-3.5 rounded-xl border border-primary/10 flex items-center gap-3 text-left shrink-0 mb-4">
+                                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-xs shrink-0 border border-primary/10">
+                                    <Gift className="w-5 h-5 text-secondary" />
                                 </div>
-                                <p className="opacity-70 text-left">
+                                <p className="text-muted-foreground text-xs m-0">
                                     Limited engagement window. Applicable for high-fidelity technical submissions validated this session.
                                 </p>
                             </div>
 
-                            <div className="flex flex-col  gap-2 sm:gap-3 mt-auto shrink-0">
-                                <Link href="/submit">
+                            <div className="flex flex-col gap-2 mt-auto shrink-0">
+                                <Link href="/submit" className="w-full">
                                     <Button
                                         onClick={handlePermanentClose}
-                                        className="w-full h-12 sm:h-14 bg-linear-to-r from-primary via-purple/80 from-32% hover:from-60% to-secondary text-white rounded-xl sm:rounded-2xl cursor-pointer shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all group/btn"
+                                        className="w-full h-10 bg-primary hover:bg-primary/90 text-white rounded-lg cursor-pointer shadow-xs transition-all font-bold text-xs group/btn"
                                     >
                                         <span className="flex items-center justify-center gap-2">
-                                            Submit Paper <Send className="size-4 group-hover:translate-x-1  hover:-translate-y-1 transition-transform" />
+                                            Submit Paper <Send className="size-3.5 group-hover:translate-x-1 transition-transform" />
                                         </span>
                                     </Button>
                                 </Link>
                                 <Button
-                                    variant="link"
+                                    variant="ghost"
                                     onClick={handleSnooze}
-                                    className="opacity-100 text-black transition-all h-10 hover:text-primary cursor-pointer"
+                                    className="text-muted-foreground hover:text-foreground transition-all h-8 text-xs cursor-pointer font-medium"
                                 >
                                     Ask me later
                                 </Button>

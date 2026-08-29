@@ -1,64 +1,76 @@
-"use client";
+'use client';
 
 import { motion } from 'framer-motion';
-import { memo } from 'react';
-
-const stats = [
-    { label: "Review Model", value: "Double-Blind ", color: "text-emerald-600", dotColor: "bg-emerald-600", delay: 0 },
-    { label: "Publication", value: "Monthly", color: "text-blue-600", dotColor: "bg-blue-600", delay: 0.1 },
-    { label: "Open Access", value: "100%", color: "text-amber-600", dotColor: "bg-amber-600", delay: 0.2 }
-];
-
-
+import { memo, useMemo } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-
-
-
-
+import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 function HomeStats() {
+    const settings = useSettingsContext();
+
+    const stats = useMemo(() => {
+        const list = [
+            { 
+                label: "Peer Review", 
+                value: "Double-Blind (2-3 Wks)" 
+            },
+            { 
+                label: "Publication", 
+                value: settings?.publicationFrequency ? `${settings.publicationFrequency} Issues` : "Monthly Issues" 
+            },
+            { 
+                label: "Open Access", 
+                value: "100% Gold Access" 
+            },
+        ];
+
+        const rawInr = settings?.apcInr?.trim();
+        const rawUsd = settings?.apcUsd?.trim();
+
+        const numInr = rawInr ? parseFloat(rawInr) : null;
+        const numUsd = rawUsd ? parseFloat(rawUsd) : null;
+
+        // If APC is set and greater than 0
+        if (numInr !== null && numInr > 0) {
+            const usdPart = numUsd && numUsd > 0 ? ` / $${numUsd}` : '';
+            list.push({
+                label: "Article Charges",
+                value: `APC: ₹${numInr}${usdPart}`
+            });
+        } else if (numInr === 0 || rawInr === '0') {
+            list.push({
+                label: "Article Charges",
+                value: "₹0 / Free Waiver"
+            });
+        }
+
+        return list;
+    }, [settings]);
+
+    const gridCols = stats.length === 4 
+        ? "grid-cols-2 sm:grid-cols-4" 
+        : "grid-cols-1 sm:grid-cols-3";
+
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+        <div className={`grid ${gridCols} gap-2.5 sm:gap-3`}>
             {stats.map((stat, i) => (
                 <motion.div
                     key={i}
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1, duration: 0.5 }}
-                    whileHover={{ y: -6, transition: { duration: 0.3 } }}
+                    transition={{ delay: i * 0.05, duration: 0.4 }}
                     className="h-full"
                 >
-                    <Card className="h-full border border-primary/5 bg-white shadow-vip hover:shadow-vip-hover transition-all duration-500 group overflow-hidden relative">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-primary/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-500" />
-
-                        <CardContent className="p-6 flex flex-col justify-between h-full relative z-10">
-                            <div className="group-hover:-translate-y-1 transition-transform duration-500">
-                                <p className="mb-3 opacity-60 group-hover:text-secondary transition-colors duration-500">
+                    <Card className="h-full border border-border/60 bg-card hover:border-primary/30 transition-all group overflow-hidden">
+                        <CardContent className="p-3 sm:p-4 flex flex-col justify-between h-full">
+                            <div>
+                                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1 m-0">
                                     {stat.label}
                                 </p>
-                                <h3 className="text-primary">
+                                <h3 className="text-xs sm:text-sm font-bold text-primary m-0">
                                     {stat.value}
                                 </h3>
-                            </div>
-
-                            <div className="mt-6 flex items-center gap-3">
-                                <div className="h-1.5 w-12 bg-primary/10 rounded-full overflow-hidden">
-                                    <motion.div
-                                        animate={{ x: ["-100%", "100%"] }}
-                                        transition={{
-                                            duration: 2.5,
-                                            repeat: Infinity,
-                                            ease: "easeInOut"
-                                        }}
-                                        className="h-full w-full bg-linear-to-r from-secondary to-secondary/50"
-                                    />
-                                </div>
-                                <motion.div
-                                    animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 }}
-                                    className="w-1.5 h-1.5 rounded-full bg-secondary"
-                                />
                             </div>
                         </CardContent>
                     </Card>
@@ -68,4 +80,4 @@ function HomeStats() {
     );
 }
 
-export default memo(HomeStats);
+export default memo(HomeStats);

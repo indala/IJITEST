@@ -39,57 +39,49 @@ export default function JoinUsClient({ settings }: JoinUsClientProps) {
     const journalShortName = settings.journalShortName || '';
 
     return (
-        <section className="container-responsive py-12 sm:py-24" aria-labelledby="join-us-heading">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+        <section className="container-responsive py-6 sm:py-8" aria-labelledby="join-us-heading">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
                 {/* Left Column: Benefits & Requirements */}
-                <div className="lg:col-span-12 xl:col-span-12 2xl:col-span-5 space-y-10">
-                    <header className="space-y-3">
-                        <h2 id="join-us-heading" className="text-xl font-semibold text-[#000066]">
-                            Join as Reviewer
+                <div className="lg:col-span-12 xl:col-span-5 space-y-4 sm:space-y-5">
+                    <header className="space-y-1">
+                        <h2 id="join-us-heading" className="m-0">
+                            Join Editorial & Reviewer Board
                         </h2>
-                        <p className="text-sm text-muted-foreground max-w-lg">
-                            Become a reviewer and help advance scientific research.
+                        <p className="text-muted-foreground m-0">
+                            Contribute your technical expertise and help evaluate breakthrough research.
                         </p>
                     </header>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-1 gap-4" role="list" aria-label="Benefits of joining">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-2.5" role="list" aria-label="Benefits of joining">
                         {BENEFITS.map((benefit, i) => (
-                            <article key={i} role="listitem" className="p-5 bg-card border border-border/50 rounded-xl transition-all group hover:bg-muted/20">
-                                <div className="flex gap-5 items-center">
-                                    <div className="w-10 h-10 bg-[#000066]/5 rounded-lg flex items-center justify-center shrink-0 text-[#000066]" aria-hidden="true">
-                                        <benefit.icon className="w-5 h-5" />
+                            <article key={i} role="listitem" className="p-3 bg-card border border-border/70 rounded-xl transition-all group hover:bg-muted/20">
+                                <div className="flex gap-3 items-center">
+                                    <div className="w-8 h-8 bg-[#000066]/5 rounded-lg flex items-center justify-center shrink-0 text-[#000066]" aria-hidden="true">
+                                        <benefit.icon className="w-4 h-4" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <h3 className="text-base 2xl:text-lg font-semibold text-foreground">{benefit.title}</h3>
-                                        <p className="text-sm 2xl:text-base text-muted-foreground leading-relaxed">{benefit.desc}</p>
+                                        <h3 className="text-foreground m-0">{benefit.title}</h3>
+                                        <p className="text-muted-foreground m-0">{benefit.desc}</p>
                                     </div>
                                 </div>
                             </article>
                         ))}
                     </div>
-                    <section className="p-6 rounded-lg bg-muted/20 border border-border/50" aria-labelledby="eligibility-heading">
-                        <div className="space-y-5">
-                             <h3 id="eligibility-heading" className="text-base 2xl:text-lg font-semibold text-[#000066]">Eligibility</h3>
-                            <ul className="space-y-3">
-                                {REQUIREMENTS.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                                        <span className="text-sm 2xl:text-base text-muted-foreground">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                    <section className="p-4 rounded-xl bg-muted/20 border border-border/70 space-y-2.5" aria-labelledby="eligibility-heading">
+                        <h3 id="eligibility-heading" className="m-0">Eligibility Criteria</h3>
+                        <ul className="space-y-2 list-none p-0 m-0">
+                            {REQUIREMENTS.map((item, i) => (
+                                <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </section>
-                     <aside className="p-4 bg-background border border-border/50 rounded-lg flex items-center gap-3">
-                        <ShieldCheck className="w-4 h-4 text-[#000066] shrink-0" />
-                        <p className="text-xs sm:text-sm 2xl:text-base text-muted-foreground leading-relaxed">
-                            {journalShortName} maintains rigorous ethical standards. Applications are subject to peer audit.
-                        </p>
-                    </aside>
                 </div>
 
                 {/* Right Column: Application Form */}
-                <div className="lg:col-span-12 xl:col-span-12 2xl:col-span-7">
-                    <div className="bg-card p-6 sm:p-10 rounded-xl border border-border/50 shadow-sm overflow-hidden">
+                <div className="lg:col-span-12 xl:col-span-7">
+                    <div className="bg-card p-4 sm:p-6 rounded-xl border border-border/70 shadow-2xs overflow-hidden">
                         <ReviewerApplicationForm />
                     </div>
                 </div>

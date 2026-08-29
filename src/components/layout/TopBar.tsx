@@ -5,7 +5,7 @@ import { getSettingsData } from '@/actions/settings';
 export default async function TopBar() {
     const settings = await getSettingsData();
     return (
-        <div className="bg-primary text-white py-2 sm:py-4 px-1 lg:px-1 border-b border-white/5 relative overflow-hidden">
+        <div className="bg-primary text-white py-2 sm:py-3 px-2 lg:px-4 border-b border-white/10 relative overflow-hidden">
             {/* Subtle background glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-linear-to-b from-primary/10 to-transparent pointer-events-none" />
 

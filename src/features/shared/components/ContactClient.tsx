@@ -34,29 +34,29 @@ export default function ContactClient() {
     ];
 
     return (
-        <section className="container-responsive section-padding">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
+        <section className="container-responsive py-6 sm:py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
                 {/* Main Contact Section */}
-                <div className="lg:col-span-2 space-y-16">
+                <div className="lg:col-span-2 space-y-6">
                     {/* Contact Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                         {contactMethods.map((method, idx) => (
-                            <Card key={idx} className="p-6 border-border/50 bg-card rounded-xl hover:border-primary/20 transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-lg bg-primary/5 text-primary flex items-center justify-center shrink-0">
-                                        <method.icon className="w-5 h-5" />
+                            <Card key={idx} className="p-4 border-border/70 bg-card rounded-xl hover:border-primary/20 transition-all shadow-2xs">
+                                <div className="flex items-center gap-3.5">
+                                    <div className="w-9 h-9 rounded-lg bg-primary/5 text-primary flex items-center justify-center shrink-0">
+                                        <method.icon className="w-4 h-4" />
                                     </div>
-                                    <div className="space-y-1 min-w-0">
-                                        <p className="text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">{method.title}</p>
+                                    <div className="space-y-0.5 min-w-0">
+                                        <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase m-0">{method.title}</p>
                                         <a
                                             href={method.href}
-                                            className="text-sm xl:text-base 2xl:text-lg font-semibold text-primary hover:underline transition-all block wrap-break-word"
+                                            className="text-sm font-semibold text-primary hover:underline transition-all block truncate"
                                         >
                                             {method.value}
                                         </a>
-                                        <div className="flex items-center gap-1.5 text-xs sm:text-sm 2xl:text-base text-muted-foreground">
+                                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                             <Clock className="w-3 h-3 opacity-50" />
-                                            {method.subtext}
+                                            <span>{method.subtext}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -65,27 +65,27 @@ export default function ContactClient() {
                     </div>
 
                     {/* Contact Form Section */}
-                    <section className="space-y-4">
-                        <Card className="p-6 border-border/50 bg-card rounded-xl">
+                    <section className="space-y-3">
+                        <Card className="p-4 sm:p-6 border-border/70 bg-card rounded-xl shadow-2xs">
                             <ContactForm />
                         </Card>
                     </section>
                 </div>
 
                 {/* Sidebar Utilities */}
-                <aside className="space-y-12">
+                <aside className="space-y-4 sm:space-y-5 lg:sticky lg:top-24">
                     {/* Office Address Card */}
-                    <section className="space-y-3">
+                    <section className="space-y-2">
                         <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                             <p className="text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Editorial Headquarters</p>
+                             <p className="text-label text-muted-foreground m-0">Editorial Headquarters</p>
                         </div>
-                        <Card className="p-6 border-border/50 bg-card rounded-xl hover:border-primary/20 transition-all">
-                            <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center shrink-0 text-primary">
-                                    <MapPin className="w-5 h-5" />
+                        <Card className="p-4 border-border/70 bg-card rounded-xl shadow-2xs">
+                            <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center shrink-0 text-primary mt-0.5">
+                                    <MapPin className="w-4 h-4" />
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm 2xl:text-base text-muted-foreground m-0 leading-relaxed font-medium whitespace-pre-line">
+                                <div className="space-y-0.5">
+                                    <p className="text-foreground/90 m-0 font-medium whitespace-pre-line text-xs sm:text-sm">
                                         {(settings['officeAddress'] || '')}
                                     </p>
                                 </div>
@@ -94,27 +94,24 @@ export default function ContactClient() {
                     </section>
 
                     {/* Integrated Widgets */}
-                    <div className="space-y-6">
-                        <Card className="p-1 border-border/50 bg-muted/20 rounded-2xl">
-                            <div className="bg-card p-4 rounded-xl shadow-sm border border-border/50">
-                                <TrackManuscriptWidget />
-                            </div>
-                        </Card>
+                    <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
+                        <TrackManuscriptWidget />
+                    </div>
 
-                        <section className="bg-[#000066] p-8 rounded-2xl text-white relative overflow-hidden">
-                            <div className="relative z-10 space-y-4">
-                                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/10">
-                                    <ShieldAlert className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="text-lg 2xl:text-xl font-semibold text-white m-0">Publication Ethics</h3>
-                                <p className="text-sm 2xl:text-base text-white/60 m-0 leading-relaxed">IJITEST strictly adheres to COPE guidelines for scientific integrity and peer-review ethics.</p>
-                                <Button asChild variant="link" className="text-white p-0 h-auto hover:text-white transition-colors m-0 text-sm 2xl:text-base">
-                                    <Link href="/ethics" className="flex items-center">
-                                        View Policy <ChevronRight className="w-3.5 h-3.5 ml-2" />
-                                    </Link>
-                                </Button>
+                    <div className="bg-[#000066] p-4 rounded-xl text-white space-y-2 shadow-md">
+                        <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center text-white">
+                                <ShieldAlert className="w-4 h-4" />
                             </div>
-                        </section>
+                            <h3 className="text-white m-0">Publication Ethics</h3>
+                        </div>
+                        <p className="text-xs text-white/70 m-0 leading-relaxed">IJITEST strictly adheres to COPE guidelines for scientific integrity and peer-review ethics.</p>
+                        <div className="pt-1">
+                            <Link href="/ethics" className="inline-flex items-center gap-1 text-xs font-bold text-secondary hover:text-white transition-colors">
+                                <span>View Policy</span>
+                                <ChevronRight className="w-3.5 h-3.5" />
+                            </Link>
+                        </div>
                     </div>
                 </aside>
             </div>

@@ -161,22 +161,22 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
   }, [faqs, activeTab, searchQuery]);
 
   return (
-    <div className="w-full max-w-4xl space-y-10">
+    <div className="w-full max-w-4xl space-y-6">
       {/* Search Bar */}
-      <div className="relative max-w-lg mx-auto">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
+      <div className="relative max-w-md mx-auto">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
         <Input
           type="text"
           placeholder="Search questions or keywords..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           aria-label="Search FAQs"
-          className="pl-11 h-12 bg-white rounded-xl border border-border/50 shadow-sm focus-visible:ring-[#000066]/20 focus-visible:border-[#000066]"
+          className="pl-10 h-10 bg-white rounded-lg border border-border/70 shadow-2xs text-xs focus-visible:ring-[#000066]/20 focus-visible:border-[#000066]"
         />
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap items-center justify-center gap-2 border-b border-border/40 pb-4">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 border-b border-border/40 pb-3">
         {categories.map((cat) => {
           const Icon = cat.icon;
           return (
@@ -185,9 +185,9 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
               variant={activeTab === cat.id ? 'default' : 'ghost'}
               onClick={() => setActiveTab(cat.id)}
               className={cn(
-                "h-10 px-4 rounded-xl text-xs font-semibold uppercase tracking-wider gap-2 cursor-pointer transition-all",
+                "h-8 px-3 rounded-lg text-xs font-semibold tracking-wider gap-1.5 cursor-pointer transition-all",
                 activeTab === cat.id 
-                  ? "bg-[#000066] text-white shadow-md shadow-[#000066]/10" 
+                  ? "bg-[#000066] text-white shadow-xs" 
                   : "text-muted-foreground hover:text-[#000066] hover:bg-muted/40"
               )}
             >
@@ -200,39 +200,39 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
 
       {/* FAQ Accordion */}
       {filteredFaqs.length > 0 ? (
-        <Accordion type="single" collapsible className="w-full space-y-4">
+        <Accordion type="single" collapsible className="w-full space-y-2.5">
           {filteredFaqs.map((faq, index) => (
             <AccordionItem
               key={faq.question}
               value={`item-${index}`}
-              className="border border-border/50 rounded-2xl bg-card px-6 md:px-8 transition-all hover:border-[#000066]/20 shadow-sm overflow-hidden"
+              className="border border-border/70 rounded-xl bg-card px-4 md:px-5 transition-all hover:border-[#000066]/30 shadow-2xs overflow-hidden"
             >
-              <AccordionTrigger className="text-left py-6 text-sm md:text-base font-semibold text-foreground hover:no-underline hover:text-[#000066] transition-colors">
-                <div className="flex items-center gap-3">
-                  <HelpCircle className="w-4 h-4 text-[#000066]/60 shrink-0" />
+              <AccordionTrigger className="text-left py-3.5 font-semibold text-foreground hover:no-underline hover:text-[#000066] transition-colors">
+                <div className="flex items-center gap-2.5">
+                  <HelpCircle className="w-4 h-4 text-[#000066]/70 shrink-0" />
                   {highlightText(faq.question, searchQuery)}
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground/90 text-sm leading-relaxed pb-6 border-t border-border/10 mt-1 pt-4">
+              <AccordionContent className="text-muted-foreground pb-3.5 border-t border-border/20 mt-0.5 pt-2.5">
                 {typeof faq.answer === 'string' ? highlightText(faq.answer, searchQuery) : faq.answer}
               </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
       ) : (
-        <div className="text-center py-20 bg-card/30 border border-dashed border-border/60 rounded-3xl">
-          <HelpCircle className="w-10 h-10 text-muted-foreground/40 mx-auto mb-4" />
-          <p className="text-sm font-semibold text-muted-foreground">No questions found matching your criteria.</p>
+        <div className="text-center py-12 bg-card/30 border border-dashed border-border/60 rounded-2xl">
+          <HelpCircle className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+          <p className="text-xs font-semibold text-muted-foreground">No questions found matching your criteria.</p>
         </div>
       )}
 
       {/* Support Box */}
-      <div className="bg-slate-200/50 p-6 md:p-8 rounded-3xl border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-6 mt-12 text-center sm:text-left">
-        <div className="space-y-1">
-          <h4 className="text-base font-bold text-[#000066] m-0">Still have questions?</h4>
+      <div className="bg-slate-200/50 p-4 sm:p-5 rounded-2xl border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 text-center sm:text-left">
+        <div className="space-y-0.5">
+          <h4 className="m-0 text-primary">Still have questions?</h4>
           <p className="text-xs text-muted-foreground m-0">If you couldn&apos;t find an answer to your query, please reach out to our editorial desk.</p>
         </div>
-        <Button asChild className="h-11 px-6 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-md cursor-pointer transition-all">
+        <Button asChild size="sm" className="h-8 px-4 bg-[#000066] hover:bg-[#000088] text-white rounded-lg shadow-xs cursor-pointer transition-all shrink-0 font-bold text-xs">
           <Link href="/contact">Contact Support</Link>
         </Button>
       </div>

@@ -17,8 +17,7 @@ import {
     serverError,
 } from "@/db/types";
 import { eq, and, sql, inArray, isNotNull, not } from "drizzle-orm";
-import { hash } from "bcryptjs";
-import { revalidatePath, updateTag } from "next/cache";
+import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import crypto from 'crypto';
@@ -27,6 +26,10 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
 export async function getEditorialBoard(): Promise<ActionResponse<SafeUserWithProfile[]>> {
+    'use cache'
+    cacheLife('hours')
+    cacheTag(CACHE_TAGS.PUBLIC_DATA)
+
     try {
         const rows = await db.select({
             user: {

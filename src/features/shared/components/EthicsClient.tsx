@@ -39,15 +39,31 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
             title: "Open Access Policy",
             content: (
                 <div className="space-y-4">
-                    <p>
-                        In order to ensure maximum reach of the papers published by {journalName}, Open Access Policy is adopted; meaning that:
+                    <p className="leading-relaxed">
+                        International Journal of Innovative Trends in Engineering Science and Technology ({journalName || 'IJITEST'}) is a fully Open Access journal. All published articles are immediately and permanently available online to readers free of charge, without subscription, registration, or payment. The journal does not restrict access to its published research based on institutional membership or subscription status.
                     </p>
-                    <ul className="space-y-2 list-none pl-0">
-                        <li className="flex items-start gap-4">
-                            <div className="mt-2 w-1.5 h-1.5 bg-secondary rounded-full shrink-0" />
-                            <span>All the papers published by {journalName} are made freely accessible online immediately after they are published in an easily readable format, without any subscription or any type of registration.</span>
-                        </li>
-                    </ul>
+                    <p className="leading-relaxed">
+                        Readers may access, read, download, copy, distribute, print, search, and link to the full text of published articles, subject to the terms of the applicable Creative Commons Licence. All articles are published under the <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> licence, unless otherwise stated on the individual article.
+                    </p>
+                    <p className="leading-relaxed">
+                        The journal may charge authors an Article Processing Charge (APC) after acceptance. Such charges do not affect the editorial decision or peer-review process. No submission fee or editorial processing fee is charged. The journal is committed to providing immediate and unrestricted access to scholarly research and follows the principles of Open Access publishing.
+                    </p>
+                    <div className="p-4 rounded-xl bg-primary/5 border border-primary/15 flex items-center justify-between gap-4 mt-2">
+                        <div className="flex items-center gap-2.5">
+                            <span className="px-2 py-0.5 rounded bg-[#000066] text-white font-mono font-bold text-xs tracking-wider">
+                                CC BY 4.0
+                            </span>
+                            <span className="text-xs text-foreground/80 font-medium">Licensed under Creative Commons Attribution 4.0 International</span>
+                        </div>
+                        <a
+                            href="https://creativecommons.org/licenses/by/4.0/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-bold text-primary hover:text-secondary underline"
+                        >
+                            License Terms
+                        </a>
+                    </div>
                 </div>
             )
         },
@@ -295,13 +311,13 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
                     sidebarClassName="hidden lg:block sticky top-32 h-fit"
                     sidebar={
                         <>
-                            <h3 className="text-base 2xl:text-lg font-semibold text-primary opacity-60 mb-6">Quick Navigation</h3>
-                            <nav className="space-y-4 border-l border-primary/10 pl-4">
+                            <h3 className="text-primary/60 mb-4">Quick Navigation</h3>
+                            <nav className="space-y-3 border-l border-primary/10 pl-3.5">
                                 {sections.map((section, idx) => (
                                     <a
                                         key={idx}
                                         href={`#section-${idx}`}
-                                        className="text-primary/60 hover:text-primary block py-1 m-0 text-sm transition-colors"
+                                        className="text-primary/60 hover:text-primary block py-0.5 m-0 text-xs transition-colors"
                                     >
                                         {section.title}
                                     </a>
@@ -310,13 +326,13 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
                         </>
                     }
                 >
-                    <div className="space-y-12">
+                    <div className="space-y-6 sm:space-y-8">
                         {sections.map((section, idx) => (
-                            <section key={idx} id={`section-${idx}`} className="scroll-mt-32 space-y-4">
-                                <h2 className="text-lg font-semibold text-primary">
+                            <section key={idx} id={`section-${idx}`} className="scroll-mt-24 space-y-2">
+                                <h2 className="m-0">
                                     {section.title}
                                 </h2>
-                                <div className="text-sm text-muted-foreground leading-relaxed border-l-2 border-border pl-6">
+                                <div className="text-muted-foreground border-l-2 border-border pl-3.5">
                                     {section.content}
                                 </div>
                             </section>
@@ -326,17 +342,19 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
             </Section>
 
             {/* Report Section - Separated for Emphasis */}
-            <Section background="gradient" padding={false} className="pb-24">
-                <div className="bg-[#000066] p-10 sm:p-14 rounded-2xl text-white relative overflow-hidden">
-                    <div className="relative z-10 space-y-6 text-center">
-                        <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-serif font-semibold text-white">Ethics Committee</h2>
-                        <p className="text-white/60 max-w-xl mx-auto text-sm">Report any ethics concerns or plagiarism sightings directly to our board for immediate evaluation and action.</p>
-                        <a
-                            href={`mailto:${supportEmail}`}
-                            className="text-white hover:underline transition-all font-semibold text-xl lg:text-2xl"
-                        >
-                            {supportEmail}
-                        </a>
+            <Section background="gradient" padding={false} className="pb-8 sm:pb-12">
+                <div className="bg-[#000066] p-5 sm:p-7 rounded-xl text-white relative overflow-hidden shadow-md">
+                    <div className="relative z-10 space-y-2.5 text-center">
+                        <h2 className="text-white m-0">Ethics Committee</h2>
+                        <p className="text-white/70 max-w-xl mx-auto m-0">Report any ethics concerns or plagiarism sightings directly to our board for immediate evaluation and action.</p>
+                        <div className="pt-1">
+                            <a
+                                href={`mailto:${supportEmail}`}
+                                className="text-secondary hover:text-white hover:underline transition-all font-bold inline-block"
+                            >
+                                {supportEmail}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </Section>

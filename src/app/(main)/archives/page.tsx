@@ -62,7 +62,7 @@ export default async function Archives() {
         }));
 
     return (
-        <main className="bg-background min-h-screen pb-20">
+        <main className="bg-background min-h-screen pb-8">
             <PageHeader
                 title="Journal Archives"
                 description="Digital repository of peer-reviewed research and technical reports."
@@ -74,22 +74,17 @@ export default async function Archives() {
                 scrollOnComplete={true}
             />
 
-            <section className="px-5 mx-auto section-padding max-w-7xl">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-16 items-start">
+            <section className="px-4 sm:px-6 mx-auto py-6 sm:py-8 max-w-7xl">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
                     {/* Main Content: Autocomplete search + Volumes Grid */}
                     <div className="lg:col-span-8">
                         <ArchivesSearch papers={papers} volumes={volumes} />
                     </div>
 
                     {/* Sidebar widgets */}
-                    <aside className="lg:col-span-4 space-y-8 lg:sticky lg:top-24">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 pl-3 border-l-2 border-primary/20">
-                                <p className="text-sm font-bold tracking-wider text-muted-foreground uppercase m-0">Support</p>
-                            </div>
-                            <div className="p-5 bg-card border border-border/50 rounded-2xl shadow-sm">
-                                <TrackManuscriptWidget />
-                            </div>
+                    <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
+                        <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
+                            <TrackManuscriptWidget />
                         </div>
                     </aside>
                 </div>

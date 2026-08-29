@@ -19,42 +19,42 @@ const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: Pap
         : '#';
 
     return (
-        <Card className="font-serif border-primary/10 shadow-sm hover:shadow-md transition-shadow group relative rounded-lg border-t-2 border-t-transparent hover:border-t-secondary/40">
-            <CardContent className="p-4 xl:p-6 2xl:p-8">
-                <div className="flex flex-col gap-6">
-                    <div className="space-y-4">
-                        <Link href={paperUrl}>
-                            <h3 className="font-serif font-semibold tracking-wide text-[#000066] cursor-pointer m-0 leading-tight text-xl xl:text-2xl 2xl:text-3xl">
+        <Card className="font-sans border-border/70 shadow-2xs hover:border-primary/30 transition-all rounded-xl relative">
+            <CardContent className="p-4 sm:p-5">
+                <div className="flex flex-col gap-3">
+                    <div className="space-y-2">
+                        <Link href={paperUrl} className="group-hover:text-secondary transition-colors">
+                            <h3 className="cursor-pointer m-0 leading-snug hover:text-secondary transition-colors">
                                 {paper.title}
                             </h3>
                         </Link>
-                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2">
-                            <div className="flex items-center gap-2 text-xs xl:text-lg text-muted-foreground font-medium">
-                                <span className="uppercase tracking-widest text-[#000066]/60">Publication:</span>
+
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1.5 font-medium">
+                                <span className="font-bold text-[#000066]">Publication:</span>
                                 <span>Volume {paper.volumeNumber}, Issue {paper.issueNumber} {paper.monthRange ? `(${paper.monthRange} ${paper.publicationYear})` : `(${paper.publicationYear})`}</span>
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-6 pt-1">
-                            <div className="flex items-center gap-2">
-                                <span className="border-b text-base xl:text-lg 2xl:text-xl border-red-600">Authors</span>
-                                <span className="text-red-500 font-bold">:</span>
-                                <div className="space-y-1">
-                                    <p className="text-primary text-base xl:text-lg 2xl:text-xl m-0 tracking-wide">
-                                        {paper.authorsList && paper.authorsList.length > 0 
-                                            ? paper.authorsList.join(', ') 
-                                            : paper.authorName}
-                                    </p>
-                                </div>
-                            </div>
+                        <div className="flex flex-wrap items-center gap-2 text-xs">
+                            <span className="font-bold text-[#000066]">Authors:</span>
+                            <p className="text-foreground/90 font-medium m-0">
+                                {paper.authorsList && paper.authorsList.length > 0 
+                                    ? paper.authorsList.join(', ') 
+                                    : paper.authorName}
+                            </p>
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-4">
-                        <Button asChild variant="default" className="bg-primary shadow-sm rounded-md transition-all w-full sm:w-auto h-10 xl:h-12">
-                            <Link href={paperUrl} className="flex items-center gap-2 px-6">
-                                <Eye className="size-5 xl:size-6 text-white" />
-                                <span className="text-base xl:text-lg">View Article</span>
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/40">
+                        <span className="text-meta font-semibold">
+                            ID: {paper.paperId}
+                        </span>
+
+                        <Button asChild size="sm" className="bg-[#000066] hover:bg-[#000088] text-white shadow-xs rounded-lg transition-all h-7 px-3 text-xs font-bold">
+                            <Link href={paperUrl} className="flex items-center gap-1.5">
+                                <Eye className="size-3.5" />
+                                <span>View Article</span>
                             </Link>
                         </Button>
                     </div>

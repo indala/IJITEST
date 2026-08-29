@@ -55,7 +55,7 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
     const year = activeIssue.publicationYear || "";
 
     return (
-        <main className="bg-background min-h-screen pb-20">
+        <main className="bg-background min-h-screen pb-8">
             <PageHeader
                 title={`Volume ${volNumber}, Issue ${issueNumber}`}
                 description={`Research articles published in ${monthRange} ${year}`}
@@ -68,15 +68,15 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
                 scrollOnComplete={true}
             />
 
-            <section className="px-5 mx-auto section-padding max-w-7xl">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-16 items-start">
+            <section className="px-4 sm:px-6 mx-auto py-6 sm:py-8 max-w-7xl">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
                     {/* Main Content: Papers List */}
-                    <div className="lg:col-span-8 space-y-8">
-                        <div className="flex items-center gap-3 border-l-4 border-secondary pl-3">
-                            <h2 className="text-2xl font-serif font-black text-primary m-0">Table of Contents</h2>
+                    <div className="lg:col-span-8 space-y-4">
+                        <div className="flex items-center gap-2 border-l-4 border-secondary pl-3">
+                            <h2 className="m-0">Table of Contents</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="grid grid-cols-1 gap-3.5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             {issuePapers.map((paper) => (
                                 <PaperCard key={paper.paperId} paper={paper} basePath="/archives" />
                             ))}
@@ -84,14 +84,9 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
                     </div>
 
                     {/* Sidebar widgets */}
-                    <aside className="lg:col-span-4 space-y-8 lg:sticky lg:top-24">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 pl-3 border-l-2 border-primary/20">
-                                <p className="text-sm font-bold tracking-wider text-muted-foreground uppercase m-0">Support</p>
-                            </div>
-                            <div className="p-5 bg-card border border-border/50 rounded-2xl shadow-sm">
-                                <TrackManuscriptWidget />
-                            </div>
+                    <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
+                        <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
+                            <TrackManuscriptWidget />
                         </div>
                     </aside>
                 </div>

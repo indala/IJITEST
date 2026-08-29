@@ -27,13 +27,13 @@ export const JournalParticulars = ({ settings }: JournalParticularsProps) => {
         <Card className="bg-white border border-primary/5 shadow-vip rounded-xl overflow-hidden group">
             <div className="bg-[#000066] p-4 flex items-center gap-2">
                 <Info className="w-4 h-4 text-white/70" />
-                <CardTitle className="text-white text-sm font-serif tracking-wide m-0">Journal Particulars</CardTitle>
+                <CardTitle className="text-white tracking-wide m-0">Journal Particulars</CardTitle>
             </div>
             <CardContent className="p-0">
                 <div className="divide-y divide-primary/5">
                     {particulars.map((item, idx) => (
-                        <div key={idx} className="grid grid-cols-3 p-3 text-[10px] xl:text-xs group/item hover:bg-primary/5 transition-colors">
-                            <span className="font-bold text-primary opacity-60 uppercase tracking-tighter">{item.label}</span>
+                        <div key={idx} className="grid grid-cols-3 p-2.5 text-xs group/item hover:bg-primary/5 transition-colors">
+                            <span className="text-label text-primary/60">{item.label}</span>
                             <span className="col-span-2 text-primary font-medium pl-2 border-l border-primary/5">{item.value}</span>
                         </div>
                     ))}

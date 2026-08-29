@@ -117,7 +117,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
     const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl.replace(/\/$/, '') : `https://${rawBaseUrl.replace(/\/$/, '')}`;
 
     return (
-        <div className="bg-white min-h-screen pb-20">
+        <div className="bg-white min-h-screen pb-8">
             <PageHeader
                 disableBreadcrumbJsonLd
                 title="Research Article"

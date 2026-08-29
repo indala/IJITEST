@@ -45,38 +45,37 @@ function AnnouncementsWidget() {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
         >
-            <Card className="border-border/50 shadow-md overflow-hidden">
-                <CardHeader className="p-5 pb-0 2xl:p-10 2xl:pb-0">
+            <Card className="border border-border/70 bg-card rounded-xl p-3.5 sm:p-4 space-y-2.5 shadow-2xs">
+                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Newspaper className="w-6 h-6 2xl:w-8 2xl:h-8 text-secondary" />
-                        <CardTitle className="m-0 2xl:text-xl">Announcements</CardTitle>
-                    </div>
-                </CardHeader>
-                <CardContent className="  ">
-                    <div className="p-3 2xl:p-6 bg-slate-50 rounded-xl 2xl:rounded-2xl border border-slate-100 group hover:border-primary/20 transition-colors">
-                        <Badge variant="outline" className="h-auto py-1 text-primary border-primary/20 bg-primary/5 mb-4 flex items-center gap-1.5 w-fit">
-                            <span className="relative flex h-1.5 w-1.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
-                            </span>
-                            Current Issue
-                        </Badge>
-                        <div className="space-y-2">
-                            <p className="text-slate-700 m-0">
-                                Volume {currentStatus.volume}, Issue {currentStatus.issue} ({currentStatus.date}) is now open for submissions.
-                            </p>
-                            <Link href="/submit" className="text-secondary flex items-center gap-1 hover:text-primary transition-colors group/link no-underline">
-                                Submit Manuscript
-                                <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-                            </Link>
+                        <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+                            <Newspaper className="w-4 h-4" />
                         </div>
+                        <CardTitle className="text-xs sm:text-sm font-bold text-primary m-0">Call for Submissions</CardTitle>
                     </div>
-                </CardContent>
+                    <Badge variant="outline" className="h-5 px-1.5 py-0 text-primary border-primary/20 bg-primary/5 flex items-center gap-1 text-[10px]">
+                        <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                        </span>
+                        <span>Open</span>
+                    </Badge>
+                </div>
+
+                <div className="p-2.5 bg-muted/40 rounded-lg border border-border/50 space-y-1.5">
+                    <p className="text-xs text-foreground/80 leading-snug m-0">
+                        Volume {currentStatus.volume}, Issue {currentStatus.issue} ({currentStatus.date}) is currently accepting submissions.
+                    </p>
+                    <Link href="/submit" className="text-xs font-bold text-secondary flex items-center gap-1 hover:text-primary transition-colors no-underline">
+                        <span>Submit Online</span>
+                        <ChevronRight className="w-3 h-3" />
+                    </Link>
+                </div>
             </Card>
         </motion.div>
     );

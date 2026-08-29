@@ -138,27 +138,27 @@ export default function TrackClient() {
     };
 
     return (
-        <section className="container-responsive py-12 sm:py-24">
+        <section className="container-responsive py-6 sm:py-8">
             {/* Tracking Form */}
-            <div className="bg-card border border-border/50 rounded-xl overflow-hidden shadow-sm max-w-3xl mx-auto w-full group">
-                <div className="bg-[#000066] p-8 sm:p-12 text-white relative overflow-hidden">
-                    <div className="relative z-10 flex flex-col sm:flex-row items-center gap-8">
-                        <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center text-white border border-white/10 group-hover:scale-105 transition-transform duration-500">
-                            <Search className="w-8 h-8 group-hover:rotate-12 transition-transform duration-500" />
+            <div className="bg-card border border-border/70 rounded-xl overflow-hidden shadow-2xs max-w-3xl mx-auto w-full group">
+                <div className="bg-[#000066] p-4 sm:p-6 text-white relative overflow-hidden">
+                    <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
+                        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-white border border-white/20 shrink-0">
+                            <Search className="w-6 h-6" />
                         </div>
-                        <div className="text-center sm:text-left space-y-1">
-                            <h2 className="text-xl 2xl:text-2xl font-semibold m-0 text-white">Track Manuscript</h2>
-                            <p className="text-white/60 text-sm 2xl:text-base m-0 flex items-center justify-center sm:justify-start gap-2">
-                                <ShieldAlert className="w-4 h-4 text-white/50" /> Secure Access
+                        <div className="text-center sm:text-left space-y-0.5">
+                            <h2 className="m-0 text-white">Track Manuscript Status</h2>
+                            <p className="text-white/70 m-0 flex items-center justify-center sm:justify-start gap-1.5">
+                                <ShieldAlert className="w-3.5 h-3.5 text-white/50" /> Secure Double-Blind Tracking
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="p-8 sm:p-12">
-                    <form action={formAction} className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-sm 2xl:text-base font-semibold text-muted-foreground uppercase tracking-wider ml-1">Manuscript ID</label>
+                <div className="p-4 sm:p-6">
+                    <form action={formAction} className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-0.5">Manuscript ID</label>
                             <div className="relative">
                                 <Input
                                     name="paperId"
@@ -168,16 +168,16 @@ export default function TrackClient() {
                                         setLocalState(null);
                                     }}
                                     required
-                                    className="h-12 2xl:h-14 rounded-xl bg-muted/20 border-border/50 hover:bg-muted/30 focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:border-primary/50 text-primary px-5 transition-all duration-300 text-sm 2xl:text-base"
+                                    className="h-10 rounded-lg bg-muted/20 border-border/70 text-primary px-3 text-xs"
                                     placeholder={`${journalShortName}-2026-XXX`}
                                 />
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/30">
-                                    <FileText className="w-5 h-5 animate-pulse-slow" />
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40">
+                                    <FileText className="w-4 h-4" />
                                 </div>
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm 2xl:text-base font-semibold text-muted-foreground uppercase tracking-wider ml-1">Email Address</label>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-0.5">Corresponding Author Email</label>
                             <div className="relative">
                                 <Input
                                     type="email"
@@ -188,18 +188,18 @@ export default function TrackClient() {
                                         setLocalState(null);
                                     }}
                                     required
-                                    className="h-12 2xl:h-14 rounded-xl bg-muted/20 border-border/50 hover:bg-muted/30 focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:border-primary/50 text-primary px-5 text-sm 2xl:text-base transition-all duration-300"
+                                    className="h-10 rounded-lg bg-muted/20 border-border/70 text-primary px-3 text-xs"
                                     placeholder="author@institution.edu"
                                 />
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/30">
-                                    <User className="w-5 h-5" />
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40">
+                                    <User className="w-4 h-4" />
                                 </div>
                             </div>
                         </div>
-                        <div className="sm:col-span-2 pt-4">
+                        <div className="sm:col-span-2 pt-2">
                             <TrackButton />
-                            <p className="text-center mt-6 text-xs sm:text-sm 2xl:text-base text-muted-foreground uppercase tracking-widest font-bold">
-                                Global Publication Protocol • v4.0
+                            <p className="text-center mt-3 text-[11px] text-muted-foreground tracking-wider font-semibold m-0">
+                                Real-Time Editorial Workflow Pipeline
                             </p>
                         </div>
                     </form>
@@ -207,46 +207,46 @@ export default function TrackClient() {
             </div>
 
             {/* Results Section */}
-            <div id="tracking-results" ref={resultsRef} className="mt-16 sm:mt-24 scroll-mt-32 max-w-3xl mx-auto w-full">
+            <div id="tracking-results" ref={resultsRef} className="mt-6 sm:mt-8 scroll-mt-24 max-w-3xl mx-auto w-full">
                 {isSuccess && manuscript && (
-                    <div className="space-y-12">
-                        <div className="p-8 sm:p-12 bg-card border border-border/50 rounded-xl shadow-sm relative overflow-hidden border-t-4 border-t-secondary/40">
-                            <section className="mb-12 space-y-8 relative z-10">
+                    <div className="space-y-6">
+                        <div className="p-4 sm:p-6 bg-card border border-border/70 rounded-xl shadow-2xs relative overflow-hidden border-t-4 border-t-secondary">
+                            <section className="mb-6 space-y-4 relative z-10">
                                 <div className="flex flex-wrap items-center justify-between gap-6">
                                     <div className="flex items-center gap-3">
                                         <Badge className="bg-primary/5 text-primary border-primary/20 px-4 h-8 2xl:h-9 2xl:px-5 2xl:text-base rounded-lg">
                                             Status: {manuscript.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                                         </Badge>
-                                        <span className="text-xs sm:text-sm 2xl:text-base font-mono text-muted-foreground bg-muted/50 px-3 py-1 2xl:px-4 2xl:py-1.5 rounded border border-border/50">
+                                        <span className="text-meta bg-muted/50 px-2.5 py-0.5 rounded border border-border/50">
                                             ID: {manuscript.paperId}
                                         </span>
                                     </div>
-                                    <div className="text-sm 2xl:text-base text-muted-foreground flex items-center gap-2">
+                                    <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                                         <Calendar className="w-3.5 h-3.5" /> {manuscript.submittedAt ? new Date(manuscript.submittedAt).getFullYear() : 'N/A'}
                                     </div>
                                 </div>
 
-                                <h2 className="text-xl xl:text-2xl 2xl:text-3xl font-serif font-semibold text-primary leading-tight max-w-4xl border-l-4 border-secondary/20 pl-6">
+                                <h2 className="max-w-4xl border-l-3 border-secondary/30 pl-3.5 m-0">
                                     {manuscript.title}
                                 </h2>
 
-                                <div className="flex items-center gap-4 text-primary pt-2">
-                                    <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10">
-                                        <User className="w-6 h-6 text-primary" />
+                                <div className="flex items-center gap-3 text-primary pt-1">
+                                    <div className="w-9 h-9 rounded-lg bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0">
+                                        <User className="w-4 h-4 text-primary" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <p className="text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Corresponding Author</p>
-                                        <p className="text-sm 2xl:text-base font-semibold">{manuscript.authorName}</p>
+                                        <p className="text-label text-muted-foreground m-0">Corresponding Author</p>
+                                        <p className="font-semibold text-foreground m-0 text-sm">{manuscript.authorName}</p>
                                     </div>
                                 </div>
                             </section>
 
-                            <section className="space-y-10 pt-12 border-t border-border/50 max-w-3xl">
-                                <div className="flex items-center gap-3 mb-8">
-                                    <p className="text-xs sm:text-sm 2xl:text-base font-bold tracking-wider text-muted-foreground uppercase m-0">Manuscript Timeline</p>
+                            <section className="space-y-4 pt-4 border-t border-border/50 max-w-3xl">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase m-0">Manuscript Timeline</p>
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-3">
                                     <Milestone
                                         title="Manuscript Received"
                                         {...(manuscript.submittedAt ? { date: new Date(manuscript.submittedAt).toISOString() } : {})}
@@ -278,24 +278,24 @@ export default function TrackClient() {
                             </section>
 
                             {/* Action Cards */}
-                            <div className="mt-12 pt-12 border-t border-border/50">
+                            <div className="mt-4 pt-4 border-t border-border/50">
                                 {manuscript.status === 'accepted' && (
-                                    <div className="bg-[#000066] p-8 sm:p-12 rounded-xl text-white relative overflow-hidden">
-                                        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-                                            <div className="space-y-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-white">
-                                                        <CreditCard className="w-5 h-5" />
+                                    <div className="bg-[#000066] p-4 sm:p-5 rounded-xl text-white relative overflow-hidden shadow-md">
+                                        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                            <div className="space-y-1.5">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white shrink-0">
+                                                        <CreditCard className="w-4 h-4" />
                                                     </div>
-                                                    <h3 className="text-xl 2xl:text-2xl font-semibold m-0 leading-none">Access Fees Required</h3>
+                                                    <h3 className="text-sm sm:text-base font-bold m-0 leading-none text-white">Access Fees Required</h3>
                                                 </div>
-                                                <p className="text-white/60 text-sm 2xl:text-base leading-relaxed max-w-2xl border-l-2 border-white/20 pl-6">
+                                                <p className="text-white/70 text-xs sm:text-sm leading-relaxed max-w-2xl border-l-2 border-white/20 pl-3.5 m-0">
                                                     Your manuscript has been approved. Please finalize the Article Processing Charge (APC) to proceed with publication.
                                                 </p>
                                             </div>
-                                            <Button asChild size="lg" className="h-12 2xl:h-14 px-8 2xl:px-10 bg-white text-primary hover:bg-white/90 rounded-lg shadow-sm transition-all shrink-0 font-bold text-sm 2xl:text-base tracking-wider uppercase">
-                                                <Link href={`/payment/${manuscript.paperId}`} className="flex items-center gap-2">
-                                                    Process Payment <CreditCard className="w-4 h-4" />
+                                            <Button asChild size="sm" className="h-8 px-4 bg-white text-primary hover:bg-white/90 rounded-lg shadow-xs transition-all shrink-0 font-bold text-xs tracking-wider uppercase">
+                                                <Link href={`/payment/${manuscript.paperId}`} className="flex items-center gap-1.5">
+                                                    Process Payment <CreditCard className="w-3.5 h-3.5" />
                                                 </Link>
                                             </Button>
                                         </div>
@@ -303,38 +303,38 @@ export default function TrackClient() {
                                 )}
 
                                 {manuscript.status === 'published' && (
-                                    <div className="bg-emerald-50 p-8 sm:p-12 rounded-xl border border-emerald-100 flex flex-col md:flex-row items-center justify-between gap-8">
-                                        <div className="space-y-3 text-center md:text-left">
-                                            <div className="flex items-center justify-center md:justify-start gap-3">
-                                                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600">
-                                                    <CheckCircle2 className="w-5 h-5" />
+                                    <div className="bg-emerald-50 p-4 sm:p-5 rounded-xl border border-emerald-200 flex flex-col md:flex-row items-center justify-between gap-4">
+                                        <div className="space-y-1 text-center md:text-left">
+                                            <div className="flex items-center justify-center md:justify-start gap-2.5">
+                                                <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 shrink-0">
+                                                    <CheckCircle2 className="w-4 h-4" />
                                                 </div>
-                                                <h3 className="text-xl 2xl:text-2xl font-semibold text-emerald-800 m-0">Fully Indexed</h3>
+                                                <h3 className="font-bold text-emerald-800 m-0">Fully Indexed</h3>
                                             </div>
-                                            <p className="text-emerald-700/70 text-sm 2xl:text-base max-w-2xl">
+                                            <p className="text-emerald-700/80 text-xs sm:text-sm max-w-2xl m-0">
                                                 Your research is now live in the global scientific archives.
                                             </p>
                                         </div>
-                                        <Button asChild size="lg" className="h-12 2xl:h-14 px-8 2xl:px-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm transition-all shrink-0 font-bold text-sm 2xl:text-base tracking-wider uppercase">
-                                            <Link href={`/archive`} className="flex items-center gap-2">
-                                                View in Archive <ArrowRight className="w-4 h-4" />
+                                        <Button asChild size="sm" className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-xs transition-all shrink-0 font-bold text-xs tracking-wider uppercase">
+                                            <Link href={`/archives`} className="flex items-center gap-1.5">
+                                                View in Archive <ArrowRight className="w-3.5 h-3.5" />
                                             </Link>
                                         </Button>
                                     </div>
                                 )}
 
                                 {manuscript.status === 'rejected' && (
-                                    <div className="p-8 sm:p-12 bg-destructive/5 border border-destructive/10 rounded-xl space-y-8">
-                                        <div className="space-y-2">
-                                            <h3 className="text-xl 2xl:text-2xl font-semibold text-destructive">Editorial Decision</h3>
-                                            <p className="text-muted-foreground text-sm 2xl:text-base max-w-3xl leading-relaxed">
+                                    <div className="p-4 sm:p-5 bg-destructive/5 border border-destructive/10 rounded-xl space-y-3">
+                                        <div className="space-y-1">
+                                            <h3 className="font-bold text-destructive m-0">Editorial Decision</h3>
+                                            <p className="text-muted-foreground max-w-3xl leading-relaxed m-0">
                                                 The committee has concluded its review. While the current version does not meet publication criteria, please see the feedback below.
                                             </p>
                                         </div>
                                         {manuscript.reviewerFeedback && manuscript.reviewerFeedback.length > 0 && (
-                                            <div className="grid grid-cols-1 gap-4">
+                                            <div className="grid grid-cols-1 gap-2.5">
                                                 {manuscript.reviewerFeedback.filter((f): f is string => f !== null).map((feedback, i) => (
-                                                    <div key={i} className="p-6 bg-card border border-border/50 rounded-xl text-sm 2xl:text-base leading-relaxed flex gap-4">
+                                                    <div key={i} className="p-3.5 bg-card border border-border/50 rounded-lg text-xs sm:text-sm leading-relaxed flex gap-3">
                                                         <div className="w-1 h-auto bg-destructive/20 rounded-full shrink-0" />
                                                         <div className="italic">&quot;{feedback}&quot;</div>
                                                     </div>
@@ -354,7 +354,7 @@ export default function TrackClient() {
                             <ShieldAlert className="w-8 h-8" />
                         </div>
                         <div className="space-y-2">
-                            <h2 className="text-xl font-semibold m-0">Access Denied</h2>
+                            <h2 className="font-semibold m-0">Access Denied</h2>
                             <p className="text-muted-foreground text-sm m-0">
                                 Manuscript not found or credentials mismatched.
                             </p>

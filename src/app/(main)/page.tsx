@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 import HomeCarousel from '@/features/home/components/HomeCarousel';
 import WelcomeSection from '@/features/home/components/WelcomeSection';
 import HomeStats from '@/features/home/components/HomeStats';
+import HomeCurrentIssue from '@/features/home/components/HomeCurrentIssue';
 import AimAndScope from '@/features/home/components/AimAndScope';
+import HomeIndexingStrip from '@/features/home/components/HomeIndexingStrip';
 import AnnouncementsWidget from '@/features/shared/widgets/AnnouncementsWidget';
 import CurrentIssueWidget from '@/features/shared/widgets/CurrentIssueWidget';
 import PublisherSection from '@/features/home/components/PublisherSection';
@@ -48,24 +50,24 @@ export default async function Home() {
       <AnnouncementBar />
       
       {/* Background Decorative Blob */}
-      <div className="absolute top-[20%] right-0 w-[800px] h-[800px] bg-primary/2 rounded-full blur-[150px] -z-10 group-hover:bg-primary/5 transition-colors duration-1000" />
-      <div className="absolute bottom-[10%] left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px] -z-10 group-hover:bg-secondary/10 transition-colors duration-1000" />
+      <div className="absolute top-[20%] right-0 w-[800px] h-[800px] bg-primary/2 rounded-full blur-[150px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-[10%] left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
       <HomeCarousel />
 
       {/* Institutional Core Section */}
-      <Section className="relative z-10">
+      <Section className="relative z-10" padding={false}>
         <SidebarLayout
-          className="my-20"
+          className="my-6 sm:my-8"
           sidebar={
             <>
-              <div className="p-1 rounded-4xl bg-linear-to-br from-primary/10 to-transparent border border-primary/10 shadow-vip hover:shadow-vip-hover transition-shadow duration-500">
-                <div className="bg-primary/5 backdrop-blur-sm p-2 rounded-[1.8rem]">
+              <div className="p-1 rounded-2xl bg-linear-to-br from-primary/10 to-transparent border border-primary/10 shadow-2xs">
+                <div className="bg-primary/5 backdrop-blur-xs p-1.5 rounded-xl">
                   <TrackManuscriptWidget />
                 </div>
               </div>
 
-              <div className="space-y-8">
+              <div className="space-y-4 sm:space-y-5">
                 <CurrentIssueWidget />
                 <AnnouncementsWidget />
                 <AuthorQuickLinks />
@@ -78,7 +80,9 @@ export default async function Home() {
         >
           <WelcomeSection />
           <HomeStats />
+          <HomeCurrentIssue />
           <AimAndScope />
+          <HomeIndexingStrip />
         </SidebarLayout>
       </Section>
 

@@ -44,25 +44,103 @@ export default function GuidelinesContent() {
             )
         },
         {
-            title: "Indexing in Database",
+            title: "Open Access Policy & Licensing",
             content: (
-                <div className="space-y-4">
-                    <p>
-                        The entire process of inclusion of any article (s) in the indexing and abstracting for bibliographic database (Scopus, WOS, etc..) is done by bibliographic database team only ( Scopus, WOS, etc.,).
+                <div className="space-y-6">
+                    <p className="leading-relaxed">
+                        International Journal of Innovative Trends in Engineering Science and Technology ({settings['journalShortName'] || 'IJITEST'}) is a fully Open Access journal. All published articles are immediately and permanently available online to readers free of charge, without subscription, registration, or payment. The journal does not restrict access to its published research based on institutional membership or subscription status.
                     </p>
-                    <p>
-                        Neither Journal nor the publisher &lsquo;The World Academy of Research in Science and Engineering&rdquo; does not have any involvement in the decision whether to accept or reject an article from indexing and abstracting services for any bibliographic database ( Scopus, WOS, etc..) and also force the processing time of the article for indexing and abstracting in the bibliographic database.
+                    <p className="leading-relaxed">
+                        Readers may access, read, download, copy, distribute, print, search, and link to the full text of published articles, subject to the terms of the applicable Creative Commons Licence. All articles are published under the <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> licence, unless otherwise stated on the individual article.
                     </p>
+                    
+                    {/* Creative Commons Attribution 4.0 Card */}
+                    <div className="p-5 rounded-2xl bg-primary/5 border border-primary/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="space-y-1.5">
+                            <div className="flex items-center gap-2">
+                                <span className="px-2.5 py-1 rounded bg-[#000066] text-white font-mono font-bold text-xs tracking-wider">
+                                    CC BY 4.0
+                                </span>
+                                <span className="font-bold text-primary text-sm">Creative Commons Attribution 4.0 International</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                                Permits anyone to copy, redistribute, remix, transform, and build upon the work in any medium or format, provided appropriate credit is given to the original authors and journal.
+                            </p>
+                        </div>
+                        <a
+                            href="https://creativecommons.org/licenses/by/4.0/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-primary/20 text-[#000066] hover:text-secondary text-xs font-bold shadow-xs hover:shadow-sm transition-all shrink-0"
+                        >
+                            <span>Verify License</span>
+                            <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                        </a>
+                    </div>
                 </div>
             )
         },
         {
-            title: "Publication Fee",
+            title: "Author Charges & Fee Transparency",
             content: (
-                <div className="space-y-4">
-                    <p>
-                        Publication fee for Indian Authors is <span className="text-secondary">Rs. {settings['apcInr']}</span> and <span className="text-secondary">USD {settings['apcUsd']}</span> for Foreign Authors for maximum of 5 authors upto 8 pages.
+                <div className="space-y-6">
+                    <p className="leading-relaxed">
+                        To maintain sustainable open-access publishing, rapid peer review, permanent DOI assignment, and digital repository archiving, {settings['journalShortName'] || 'IJITEST'} operates on a transparent, low-cost Article Processing Charge (APC) model. APCs are billed only after formal editorial acceptance. <strong>Charges do not affect editorial decisions or the double-blind peer-review process.</strong>
                     </p>
+
+                    {/* Transparent Fee Table */}
+                    <div className="overflow-x-auto rounded-2xl border border-border/80 bg-card shadow-xs">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-primary/5 text-primary border-b border-border font-serif text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th className="py-3.5 px-4 font-bold">Fee Category</th>
+                                    <th className="py-3.5 px-4 font-bold text-center">Indian Authors (INR)</th>
+                                    <th className="py-3.5 px-4 font-bold text-center">Foreign Authors (USD)</th>
+                                    <th className="py-3.5 px-4 font-bold">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-border/60">
+                                <tr className="hover:bg-muted/30 transition-colors">
+                                    <td className="py-3 px-4 font-semibold text-foreground">Submission Fee</td>
+                                    <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">₹0 (Free / Nil)</td>
+                                    <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">$0 (Free / Nil)</td>
+                                    <td className="py-3 px-4 text-xs text-muted-foreground">No fee for manuscript submission</td>
+                                </tr>
+                                <tr className="hover:bg-muted/30 transition-colors">
+                                    <td className="py-3 px-4 font-semibold text-foreground">Editorial Processing Charge</td>
+                                    <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">₹0 (Free / Nil)</td>
+                                    <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">$0 (Free / Nil)</td>
+                                    <td className="py-3 px-4 text-xs text-muted-foreground">No fee for desk review or referee handling</td>
+                                </tr>
+                                <tr className="bg-primary/[0.02] hover:bg-primary/[0.05] transition-colors">
+                                    <td className="py-3 px-4 font-bold text-primary">Article Processing Charge (APC)</td>
+                                    <td className="py-3 px-4 text-center font-bold text-secondary font-mono">
+                                        {settings['apcInr'] === '0' ? '₹0 (100% Waiver)' : settings['apcInr'] ? `INR ₹${settings['apcInr']}` : '₹0 (Full Waiver)'}
+                                    </td>
+                                    <td className="py-3 px-4 text-center font-bold text-secondary font-mono">
+                                        {settings['apcUsd'] === '0' ? '$0 (100% Waiver)' : settings['apcUsd'] ? `USD $${settings['apcUsd']}` : '$0 (Full Waiver)'}
+                                    </td>
+                                    <td className="py-3 px-4 text-xs text-muted-foreground">Covers up to 5 authors & standard 8 pages</td>
+                                </tr>
+                                <tr className="hover:bg-muted/30 transition-colors">
+                                    <td className="py-3 px-4 font-semibold text-foreground">Excess Page Charges</td>
+                                    <td className="py-3 px-4 text-center font-mono font-semibold text-foreground/80">INR ₹500 / page</td>
+                                    <td className="py-3 px-4 text-center font-mono font-semibold text-foreground/80">USD $10 / page</td>
+                                    <td className="py-3 px-4 text-xs text-muted-foreground">Applicable only for pages exceeding 8 pages</td>
+                                </tr>
+                                <tr className="hover:bg-muted/30 transition-colors">
+                                    <td className="py-3 px-4 font-semibold text-foreground">Colour & Graphic Charges</td>
+                                    <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">₹0 (Free / Nil)</td>
+                                    <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">$0 (Free / Nil)</td>
+                                    <td className="py-3 px-4 text-xs text-muted-foreground">No extra charges for color figures or diagrams</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )
         },
@@ -104,10 +182,10 @@ export default function GuidelinesContent() {
                     </div>
 
                     <div>
-                        <h3 className="text-secondary  mb-4">6. References</h3>
-                        <p className="mb-4">References text type should be 10 point (Times Roman) at the end of the paper. Format as follows:</p>
-                        <div className="space-y-4 bg-primary/5 p-6 rounded-2xl border border-primary/10 font-mono text-xs 2xl:text-sm overflow-x-auto">
-                            <p>[1] Jesmin Nahar and Tasadduq Imam et al,&rdquo; Association rule mining to detect factors which contribute to heart disease in males and females&rdquo;, Journal of Expert Systems with Applications Vol.40, PP.1086&ndash;1093, 2013</p>
+                        <h3 className="text-secondary mb-2 text-sm sm:text-base font-bold">6. References</h3>
+                        <p className="mb-2">References text type should be 10 point (Times Roman) at the end of the paper. Format as follows:</p>
+                        <div className="space-y-2 bg-primary/5 p-3.5 rounded-xl border border-primary/10 font-mono text-xs overflow-x-auto">
+                            <p className="m-0">[1] Jesmin Nahar and Tasadduq Imam et al,&rdquo; Association rule mining to detect factors which contribute to heart disease in males and females&rdquo;, Journal of Expert Systems with Applications Vol.40, PP.1086&ndash;1093, 2013</p>
                         </div>
                     </div>
                 </div>
@@ -221,13 +299,13 @@ export default function GuidelinesContent() {
                         </>
                     }
                 >
-                    <div className="space-y-12">
+                    <div className="space-y-6 sm:space-y-8">
                         {sections.map((section, idx) => (
-                            <section key={idx} id={`guideline-${idx}`} className="scroll-mt-32">
-                                <h2 className="text-secondary tracking-wider mb-3 flex items-baseline gap-4 ">
+                            <section key={idx} id={`guideline-${idx}`} className="scroll-mt-24">
+                                <h2 className="text-secondary mb-1.5 flex items-baseline gap-2 m-0">
                                     {section.title}
                                 </h2>
-                                <div className="text-justify text-primary/80 space-y-3 2xl:space-y-6 font-medium leading-relaxed border-l-[3px] border-secondary/20 pl-8 2xl:pl-12">
+                                <div className="text-justify text-primary/80 space-y-2 border-l-2 border-secondary/20 pl-3.5">
                                     {section.content}
                                 </div>
                             </section>
@@ -237,18 +315,19 @@ export default function GuidelinesContent() {
             </Section>
 
             {/* Support Card - Separated for Emphasis */}
-            <Section background="gradient" padding={false} className="pb-24">
-                <div className="bg-primary p-10 sm:p-14 2xl:p-24 rounded-[2.5rem] 2xl:rounded-[5rem] text-white relative overflow-hidden shadow-2xl">
-                    <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-secondary/10 rounded-full blur-[100px] pointer-events-none" />
-                    <div className="relative z-10 space-y-6 text-center">
-                        <h2 className=" text-white m-0">Need Assistance?</h2>
-                        <p className="text-white/60 max-w-xl mx-auto font-medium m-0">For any queries regarding paper submission or formatting, contact our editorial team.</p>
-                        <a
-                            href={`mailto:${supportEmail}`}
-                            className="text-secondary hover:text-white transition-colors border-b-2 border-secondary/30 hover:border-white pb-2 inline-block font-bold text-xl lg:text-3xl"
-                        >
-                            {supportEmail}
-                        </a>
+            <Section background="gradient" padding={false} className="pb-8 sm:pb-12">
+                <div className="bg-[#000066] p-5 sm:p-7 rounded-xl text-white relative overflow-hidden shadow-md">
+                    <div className="relative z-10 space-y-2 text-center">
+                        <h2 className="text-white m-0">Need Assistance?</h2>
+                        <p className="text-white/70 max-w-xl mx-auto m-0">For any queries regarding paper submission or formatting, contact our editorial team.</p>
+                        <div className="pt-1">
+                            <a
+                                href={`mailto:${supportEmail}`}
+                                className="text-secondary hover:text-white transition-colors font-bold inline-block"
+                            >
+                                {supportEmail}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </Section>

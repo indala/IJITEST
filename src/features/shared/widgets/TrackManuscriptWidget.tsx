@@ -26,11 +26,11 @@ function TrackManuscriptWidget() {
     );
 
     return (
-        <Card className="border-border/50 bg-card rounded-xl shadow-sm transition-all group">
-            <CardHeader className="p-5 pb-0">
-                <CardTitle className="text-sm 2xl:text-xl font-semibold text-primary">Track Manuscript</CardTitle>
+        <Card className="border-border/50 bg-card rounded-xl shadow-xs transition-all group">
+            <CardHeader className="p-3.5 pb-1">
+                <CardTitle className="text-primary m-0">Track Manuscript</CardTitle>
             </CardHeader>
-            <CardContent className="p-5 pt-4">
+            <CardContent className="p-3.5 pt-2">
                 <form action={formAction} className="space-y-3">
                     <div className="space-y-1">
                         <Input
