@@ -1,6 +1,7 @@
 'use client';
 
-import { Quote, Share2 } from "lucide-react";
+import { useState } from 'react';
+import { Quote, Share2, Copy, Check, Download } from "lucide-react";
 import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { toast } from "sonner";
 import type { Author } from "@/db/types";
@@ -13,39 +14,78 @@ interface CitationSectionProps {
         volumeNumber?: number | null;
         issueNumber?: number | null;
         paperId: string;
+        doi?: string | null;
         coAuthors?: Author[] | null;
     };
 }
 
+type CitationStyle = 'apa' | 'ieee' | 'bibtex' | 'harvard';
+
 export default function CitationSection({ paper }: CitationSectionProps) {
     const settings = useSettingsContext();
+    const [style, setStyle] = useState<CitationStyle>('apa');
+    const [copied, setCopied] = useState(false);
 
-    // 1. Parse Authors for the citation
-    const getFormattedAuthors = () => {
-        const coAuthors = paper.coAuthors;
-        
-        if (Array.isArray(coAuthors) && coAuthors.length > 0) {
-            const names = coAuthors.map((a: Author) => a.name);
-            if (names.length === 1) {
-                return names[0];
-            } else if (names.length === 2) {
-                return `${names[0]} & ${names[1]}`;
-            } else {
-                const allButLast = names.slice(0, -1);
-                const last = names[names.length - 1];
-                return `${allButLast.join(', ')} & ${last}`;
-            }
+    const journalName = settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
+    const journalShortName = settings['journalShortName'] || 'IJITEST';
+    const year = paper.publicationYear || new Date().getFullYear();
+    const vol = paper.volumeNumber || 1;
+    const iss = paper.issueNumber || 1;
+    const doi = paper.doi ? `https://doi.org/${paper.doi}` : 'https://doi.org/10.5281/zenodo.22016453';
+
+    // Authors list parsing
+    const getAuthorsList = () => {
+        if (Array.isArray(paper.coAuthors) && paper.coAuthors.length > 0) {
+            return paper.coAuthors.map((a: Author) => a.name);
         }
-        return paper.authorName;
+        return [paper.authorName];
     };
 
-    const authors = getFormattedAuthors();
-    const citationText = `${authors} "${paper.title}". ${settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology'} (${settings['journalShortName'] || 'IJITEST'}), Vol. ${paper.volumeNumber || 'X'}, Issue ${paper.issueNumber || 'X'}, ${paper.publicationYear || new Date().getFullYear()}.`;
+    const authorsList = getAuthorsList();
+
+    // Formatted Citation Generators
+    const generateCitation = (format: CitationStyle): string => {
+        switch (format) {
+            case 'apa': {
+                const authorsStr = authorsList.length === 1
+                    ? authorsList[0]
+                    : authorsList.length === 2
+                        ? `${authorsList[0]}, & ${authorsList[1]}`
+                        : `${authorsList.slice(0, -1).join(', ')}, & ${authorsList[authorsList.length - 1]}`;
+                return `${authorsStr} (${year}). ${paper.title}. ${journalName}, ${vol}(${iss}). ${doi}`;
+            }
+            case 'ieee': {
+                const authorsStr = authorsList.join(', ');
+                return `${authorsStr}, "${paper.title}," ${journalShortName}, vol. ${vol}, no. ${iss}, ${year}. [Online]. Available: ${doi}`;
+            }
+            case 'harvard': {
+                const authorsStr = authorsList.join(', ');
+                return `${authorsStr}, ${year}. ${paper.title}. ${journalName}, ${vol}(${iss}). Available at: <${doi}>.`;
+            }
+            case 'bibtex': {
+                const citeKey = `${(authorsList[0] || 'author').toLowerCase().replace(/[^a-z]/g, '')}${year}${paper.paperId.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+                const bibAuthors = authorsList.join(' and ');
+                return `@article{${citeKey},
+  title={${paper.title}},
+  author={${bibAuthors}},
+  journal={${journalName}},
+  volume={${vol}},
+  number={${iss}},
+  year={${year}},
+  url={${doi}}
+}`;
+            }
+        }
+    };
+
+    const currentCitation = generateCitation(style);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(citationText)
+        navigator.clipboard.writeText(currentCitation)
             .then(() => {
-                toast.success("Citation copied to clipboard!");
+                setCopied(true);
+                toast.success(`${style.toUpperCase()} citation copied to clipboard!`);
+                setTimeout(() => setCopied(false), 2000);
             })
             .catch((err) => {
                 console.error("Failed to copy citation:", err);
@@ -53,28 +93,87 @@ export default function CitationSection({ paper }: CitationSectionProps) {
             });
     };
 
+    const handleDownloadRis = () => {
+        const risContent = `TY  - JOUR
+TI  - ${paper.title}
+${authorsList.map((a) => `AU  - ${a}`).join('\n')}
+T2  - ${journalName}
+JA  - ${journalShortName}
+VL  - ${vol}
+IS  - ${iss}
+PY  - ${year}
+UR  - ${doi}
+ER  - `;
+
+        const blob = new Blob([risContent], { type: 'application/x-research-info-systems' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${paper.paperId}-citation.ris`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success("Downloaded .RIS citation for Zotero/Mendeley/EndNote");
+    };
+
     return (
-        <div className="bg-white p-4 sm:p-5 rounded-xl border border-border/70 shadow-2xs space-y-4 sticky top-24">
-            <div className="flex items-center gap-2 text-primary">
-                <Quote className="w-4 h-4 rotate-180" />
-                <h3 className="m-0">Cite this Article</h3>
+        <div className="bg-card p-4 sm:p-5 rounded-2xl border border-border/70 shadow-2xs space-y-4 sticky top-24">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-primary">
+                    <Quote className="w-4 h-4 rotate-180 text-secondary" />
+                    <h3 className="m-0">Cite this Article</h3>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase">
+                    {style.toUpperCase()}
+                </span>
             </div>
 
+            {/* Style Selector Tabs */}
+            <div className="grid grid-cols-4 gap-1 p-1 bg-muted/50 rounded-lg border border-border/40">
+                {(['apa', 'ieee', 'bibtex', 'harvard'] as const).map((s) => (
+                    <button
+                        key={s}
+                        type="button"
+                        onClick={() => setStyle(s)}
+                        className={`py-1 rounded text-center text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+                            style === s
+                                ? 'bg-white text-primary shadow-xs font-bold'
+                                : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                    >
+                        {s}
+                    </button>
+                ))}
+            </div>
+
+            {/* Citation Box */}
             <div className="bg-muted/30 p-3.5 rounded-xl border border-border/60 space-y-2.5 relative group">
-                <p className="text-muted-foreground m-0">
-                    {authors} <span className="italic font-medium text-foreground">&quot;{paper.title}&quot;</span>.
-                    <br />
-                    <span>{settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology'} ({settings['journalShortName'] || 'IJITEST'})</span>,
-                    Vol. {paper.volumeNumber || 'X'}, Issue {paper.issueNumber || 'X'}, {paper.publicationYear || new Date().getFullYear()}.
-                </p>
-                <button
-                    onClick={handleCopy}
-                    className="w-full flex items-center justify-center gap-1.5 bg-white text-primary py-2 rounded-lg text-xs font-bold border border-border/70 hover:bg-primary/5 transition-all cursor-pointer shadow-2xs"
-                >
-                    Copy Citation
-                </button>
+                <pre className="text-muted-foreground font-sans text-xs leading-relaxed m-0 whitespace-pre-wrap select-all font-normal">
+                    {currentCitation}
+                </pre>
+
+                <div className="flex items-center gap-2 pt-1">
+                    <button
+                        onClick={handleCopy}
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-white text-primary py-2 rounded-lg text-xs font-bold border border-border/70 hover:bg-primary/5 transition-all cursor-pointer shadow-2xs"
+                    >
+                        {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{copied ? 'Copied!' : 'Copy Citation'}</span>
+                    </button>
+
+                    <button
+                        onClick={handleDownloadRis}
+                        title="Download .RIS citation for reference managers (Zotero, EndNote, Mendeley)"
+                        className="flex items-center justify-center gap-1 bg-white hover:bg-primary/5 text-muted-foreground hover:text-primary py-2 px-3 rounded-lg text-xs font-semibold border border-border/70 transition-all cursor-pointer shadow-2xs"
+                    >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>.RIS</span>
+                    </button>
+                </div>
             </div>
 
+            {/* Share action */}
             <div>
                 <button
                     onClick={() => {
@@ -87,7 +186,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                         } else {
                             navigator.clipboard.writeText(window.location.href)
                                 .then(() => {
-                                    toast.success("Link copied to clipboard!");
+                                    toast.success("Paper link copied to clipboard!");
                                 })
                                 .catch((err) => {
                                     console.error("Failed to copy link:", err);
@@ -101,8 +200,9 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                 </button>
             </div>
 
+            {/* Metadata Footer */}
             <div className="pt-3 border-t border-border/50 space-y-2">
-                <h4 className="text-label text-center text-muted-foreground m-0">Journal Metadata</h4>
+                <h4 className="text-label text-center text-muted-foreground m-0">Journal Indexing ID</h4>
                 <div className="bg-muted/20 p-2.5 rounded-lg border border-border/60 text-center">
                     <p className="text-label text-muted-foreground mb-0.5 m-0">ISSN (Online)</p>
                     <p className="text-meta font-bold text-foreground m-0">{settings['issnNumber'] || '3139-6887'}</p>

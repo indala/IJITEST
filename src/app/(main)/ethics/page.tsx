@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function PublicationEthics() {
     const settings = await getSettingsData();
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Publication Ethics"
                 description="Our commitment to scientific integrity and scholarly standards."
@@ -32,6 +32,6 @@ export default async function PublicationEthics() {
                 ]}
             />
             <EthicsClient settings={settings} />
-        </main>
+        </div>
     );
 }

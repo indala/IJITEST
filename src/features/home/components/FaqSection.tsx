@@ -110,7 +110,7 @@ export default function FaqSection() {
           </Accordion>
 
           <div className="pt-8 flex flex-col items-center gap-4 border-t border-border/50">
-            <p className="text-xs 2xl:text-sm text-muted-foreground italic">
+            <p className="text-muted-foreground italic m-0">
               Can&apos;t find what you&apos;re looking for? <a href="/contact" className="text-[#000066] font-semibold underline-offset-4 hover:underline">Contact our support team</a> directly.
             </p>
             <Button asChild variant="outline" className="h-10 px-5 rounded-xl text-xs font-semibold uppercase tracking-wider text-[#000066] border-[#000066]/20 hover:bg-[#000066]/5 cursor-pointer">

@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function TrackManuscript() {
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Track Manuscript"
                 description="Real-time transparency for your research submission."
@@ -40,6 +40,6 @@ export default async function TrackManuscript() {
             }>
                 <TrackClient />
             </Suspense>
-        </main>
+        </div>
     );
 }

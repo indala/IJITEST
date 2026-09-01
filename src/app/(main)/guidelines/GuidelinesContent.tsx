@@ -63,7 +63,7 @@ export default function GuidelinesContent() {
                                 </span>
                                 <span className="font-bold text-primary text-sm">Creative Commons Attribution 4.0 International</span>
                             </div>
-                            <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                            <p className="text-muted-foreground leading-relaxed m-0">
                                 Permits anyone to copy, redistribute, remix, transform, and build upon the work in any medium or format, provided appropriate credit is given to the original authors and journal.
                             </p>
                         </div>
@@ -163,7 +163,7 @@ export default function GuidelinesContent() {
                             <li>• <b>Head :</b> BOLD CAPITAL LETTERS. 10 point type (Times Roman)</li>
                             <li>• <b>Sub Head :</b> Lower case, 10 point (Times Roman)</li>
                         </ul>
-                        <p className="mt-4 text-sm text-primary/60 ">Note: Leave two line spaces between title and author names/affiliation. Leave 3 lines spaces between author/affiliation and abstract.</p>
+                        <p className="mt-4 text-primary/60">Note: Leave two line spaces between title and author names/affiliation. Leave 3 lines spaces between author/affiliation and abstract.</p>
                     </div>
 
                     <div>
@@ -182,7 +182,7 @@ export default function GuidelinesContent() {
                     </div>
 
                     <div>
-                        <h3 className="text-secondary mb-2 text-sm sm:text-base font-bold">6. References</h3>
+                        <h3 className="text-secondary mb-2">6. References</h3>
                         <p className="mb-2">References text type should be 10 point (Times Roman) at the end of the paper. Format as follows:</p>
                         <div className="space-y-2 bg-primary/5 p-3.5 rounded-xl border border-primary/10 font-mono text-xs overflow-x-auto">
                             <p className="m-0">[1] Jesmin Nahar and Tasadduq Imam et al,&rdquo; Association rule mining to detect factors which contribute to heart disease in males and females&rdquo;, Journal of Expert Systems with Applications Vol.40, PP.1086&ndash;1093, 2013</p>
@@ -268,7 +268,7 @@ export default function GuidelinesContent() {
     ];
 
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Author Guidelines"
                 description={`Comprehensive protocol for submitting manuscripts to ${settings['journalShortName'] || 'IJITEST'}.`}
@@ -331,7 +331,7 @@ export default function GuidelinesContent() {
                     </div>
                 </div>
             </Section>
-        </main>
+        </div>
     );
 }
 

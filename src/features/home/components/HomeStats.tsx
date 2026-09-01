@@ -65,10 +65,10 @@ function HomeStats() {
                     <Card className="h-full border border-border/60 bg-card hover:border-primary/30 transition-all group overflow-hidden">
                         <CardContent className="p-3 sm:p-4 2xl:p-5 flex flex-col justify-between h-full">
                             <div>
-                                <p className="text-[11px] 2xl:text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1 m-0">
+                                <p className="text-label text-muted-foreground mb-1 m-0">
                                     {stat.label}
                                 </p>
-                                <h3 className="text-xs sm:text-sm 2xl:text-base font-bold text-primary m-0">
+                                <h3 className="text-primary m-0">
                                     {stat.value}
                                 </h3>
                             </div>

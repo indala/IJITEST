@@ -124,7 +124,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                                                 <h4 className="group-hover:text-secondary transition-colors m-0 line-clamp-2 leading-snug">
                                                     {paper.title}
                                                 </h4>
-                                                <p className="text-[11px] text-muted-foreground m-0 truncate font-medium">
+                                                <p className="text-meta text-muted-foreground m-0 truncate">
                                                     {paper.authorsList && paper.authorsList.length > 0
                                                         ? paper.authorsList.join(', ')
                                                         : paper.authorName}
@@ -173,7 +173,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                                                 <h3 className="group-hover:text-secondary transition-colors m-0">
                                                     Volume {vol.volumeNumber}
                                                 </h3>
-                                                <p className="text-xs text-muted-foreground m-0">
+                                                <p className="text-muted-foreground m-0">
                                                     Digital publications for the year {vol.year}.
                                                 </p>
                                             </div>
@@ -207,7 +207,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                             </div>
                             <div className="space-y-1">
                                 <h3 className="text-foreground m-0">No Volumes Found</h3>
-                                <p className="text-xs text-muted-foreground px-4 m-0">
+                                <p className="text-muted-foreground px-4 m-0">
                                     There are no published volumes available in the repository at this time.
                                 </p>
                             </div>

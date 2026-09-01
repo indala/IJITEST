@@ -62,8 +62,8 @@ export default function LoginClient() {
                     <div className="bg-[#000066]/5 w-16 h-16 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl flex items-center justify-center mx-auto mb-4 2xl:mb-6 border border-[#000066]/10">
                         <Lock className="w-8 h-8 2xl:w-10 2xl:h-10 text-[#000066]" />
                     </div>
-                    <h1 className="text-xl font-semibold text-gray-900 mb-1 2xl:text-2xl 2xl:mb-2">Portal Access</h1>
-                    <p className="text-sm text-[#000066] font-medium leading-relaxed 2xl:text-base">
+                    <h1 className="mb-1 2xl:mb-2">Portal Access</h1>
+                    <p className="font-medium leading-relaxed">
                         International Journal of Innovative Trends in Science, Engineering and Technology
                     </p>
                 </section>

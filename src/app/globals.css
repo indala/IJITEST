@@ -264,6 +264,43 @@
   .container-responsive {
     @apply px-4 md:px-6 xl:px-8 2xl:px-12 2xl:max-w-[1680px] 2xl:mx-auto;
   }
+
+  /* --------------------------------------------------------------------------
+     Navigation Component System (Single Source of Truth)
+     -------------------------------------------------------------------------- */
+  
+  /* Desktop Top-level Nav Link */
+  .nav-link {
+    @apply font-sans font-semibold tracking-normal whitespace-nowrap transition-all duration-200;
+    @apply flex items-center gap-1 relative;
+    @apply text-xs lg:text-[13px] xl:text-sm 2xl:text-[15px];
+    @apply px-2 lg:px-2.5 xl:px-3 2xl:px-4;
+  }
+
+  /* Desktop Submenu / Dropdown Item */
+  .nav-dropdown-item {
+    @apply font-sans font-semibold tracking-normal transition-all duration-200 relative;
+    @apply block py-2 2xl:py-2.5 px-4 2xl:px-5;
+    @apply text-xs xl:text-[13px] 2xl:text-sm;
+  }
+
+  /* Navbar Action Button (Submit Manuscript) */
+  .nav-btn-action {
+    @apply bg-primary text-white rounded-lg hover:bg-primary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-xs whitespace-nowrap duration-300;
+    @apply text-xs sm:text-sm lg:text-xs xl:text-sm 2xl:text-base;
+    @apply px-3 py-1.5 sm:px-4 sm:py-2 lg:px-3 lg:py-1.5 xl:px-4 xl:py-2 2xl:px-6 2xl:py-2.5;
+  }
+
+  /* Mobile Drawer Menu Links */
+  .nav-mobile-link {
+    @apply flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-all duration-300;
+    @apply text-xs sm:text-sm font-bold tracking-wide;
+  }
+
+  .nav-mobile-sublink {
+    @apply flex items-center gap-2.5 py-1.5 transition-all;
+    @apply text-[11px] sm:text-xs font-semibold tracking-wide;
+  }
 }
 
 :root {

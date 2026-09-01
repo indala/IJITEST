@@ -150,10 +150,10 @@ export default function SystemSettings() {
                             <Badge variant="outline" className="px-3 py-1 rounded-full border-primary/20 text-primary bg-primary/5 text-[9px] font-bold tracking-wider uppercase">
                                 Root Administrator Console
                             </Badge>
-                            <h1 className="text-slate-900 text-3xl font-black">
+                            <h1 className="m-0">
                                 System <span className="text-primary underline decoration-primary/10 underline-offset-8">Settings</span>
                             </h1>
-                            <p className="text-slate-600 text-sm font-medium">
+                            <p className="text-muted-foreground m-0">
                                 Configure the bedrock parameters of your journal environment.
                             </p>
                         </div>
@@ -425,7 +425,7 @@ export default function SystemSettings() {
                                                 <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-bold text-[8px] tracking-wider uppercase rounded-lg px-2 py-0.5">
                                                     MS-DOCX / PDF
                                                 </Badge>
-                                                <h4 className="text-sm font-bold text-slate-900">Upload Template</h4>
+                                                <h4 className="m-0">Upload Template</h4>
                                             </div>
                                             <div className="w-10 h-10 rounded-lg bg-white shadow-sm border border-slate-100 flex items-center justify-center text-blue-600">
                                                 <FileText className="w-5 h-5" />
@@ -491,7 +491,7 @@ export default function SystemSettings() {
                                                 <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 border-none font-bold text-[8px] tracking-wider uppercase rounded-lg px-2 py-0.5">
                                                     Legal Covenant
                                                 </Badge>
-                                                <h4 className="text-sm font-bold text-slate-900">Upload Copyright Form</h4>
+                                                <h4 className="m-0">Upload Copyright Form</h4>
                                             </div>
                                             <div className="w-10 h-10 rounded-lg bg-white shadow-sm border border-slate-100 flex items-center justify-center text-indigo-600">
                                                 <Shield className="w-5 h-5" />

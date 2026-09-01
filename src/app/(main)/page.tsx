@@ -6,6 +6,8 @@ import HomeStats from '@/features/home/components/HomeStats';
 import HomeCurrentIssue from '@/features/home/components/HomeCurrentIssue';
 import AimAndScope from '@/features/home/components/AimAndScope';
 import HomeIndexingStrip from '@/features/home/components/HomeIndexingStrip';
+import PublicationWorkflow from '@/features/home/components/PublicationWorkflow';
+import DisciplineTaxonomyGrid from '@/features/home/components/DisciplineTaxonomyGrid';
 import AnnouncementsWidget from '@/features/shared/widgets/AnnouncementsWidget';
 import CurrentIssueWidget from '@/features/shared/widgets/CurrentIssueWidget';
 import PublisherSection from '@/features/home/components/PublisherSection';
@@ -14,6 +16,8 @@ import AuthorQuickLinks from '@/features/home/components/AuthorQuickLinks';
 import CallForPapersWidget from '@/features/shared/widgets/CallForPapersWidget';
 import ResourceDeskWidget from '@/features/shared/widgets/ResourceDeskWidget';
 import EthicsWidget from '@/features/shared/widgets/EthicsWidget';
+import JournalMetricsWidget from '@/features/shared/widgets/JournalMetricsWidget';
+import ApcFeeWidget from '@/features/shared/widgets/ApcFeeWidget';
 import AnnouncementBar from '@/features/home/components/AnnouncementBar';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
@@ -46,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const settings = await getSettingsData();
   return (
-    <main className="flex flex-col overflow-hidden bg-background relative">
+    <div className="flex flex-col overflow-hidden bg-background relative">
       <AnnouncementBar />
       
       {/* Background Decorative Blob */}
@@ -72,6 +76,8 @@ export default async function Home() {
                 <AnnouncementsWidget />
                 <AuthorQuickLinks />
                 <CallForPapersWidget />
+                <ApcFeeWidget />
+                <JournalMetricsWidget />
                 <ResourceDeskWidget settings={settings} />
                 <EthicsWidget />
               </div>
@@ -81,12 +87,14 @@ export default async function Home() {
           <WelcomeSection />
           <HomeStats />
           <HomeCurrentIssue />
+          <PublicationWorkflow />
+          <DisciplineTaxonomyGrid />
           <AimAndScope />
           <HomeIndexingStrip />
         </SidebarLayout>
       </Section>
 
       <PublisherSection />
-    </main>
+    </div>
   );
 }

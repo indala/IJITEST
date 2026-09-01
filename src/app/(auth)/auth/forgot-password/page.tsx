@@ -44,8 +44,8 @@ export default function ForgotPassword() {
                     <div className="bg-primary/10 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary/10">
                         <ShieldCheck className="w-10 h-10 text-primary" />
                     </div>
-                    <h1 className=" font-serif font-black text-gray-900 mb-2">Password Recovery</h1>
-                    <p className="text-gray-500 font-medium ">Enter your email to receive a reset link</p>
+                    <h1 className="mb-2">Password Recovery</h1>
+                    <p className="text-muted-foreground font-medium">Enter your email to receive a reset link</p>
                 </div>
 
                 <div className="bg-white p-10 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden relative">
@@ -60,8 +60,8 @@ export default function ForgotPassword() {
                                 <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <MailCheck className="w-10 h-10 text-emerald-500" />
                                 </div>
-                                <h3 className=" font-serif font-black text-gray-900 mb-3">Check Your Email</h3>
-                                <p className="text-slate-600 font-medium mb-8">
+                                <h3 className="mb-3">Check Your Email</h3>
+                                <p className="text-muted-foreground font-medium mb-8">
                                     We&apos;ve sent a secure password reset link to your email address if it&apos;s registered with us.
                                 </p>
                                 <Link

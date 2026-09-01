@@ -91,7 +91,7 @@ function HomeIndexingStrip() {
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                                 )}
                             </div>
-                            <p className="text-[10px] 2xl:text-xs text-muted-foreground m-0 truncate">
+                            <p className="text-meta text-muted-foreground m-0 truncate">
                                 {agency.role}
                             </p>
                         </div>

@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SubmitPaper() {
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Manuscript Submission"
                 description="Submit your technical research for peer review and global indexing."
@@ -31,7 +31,7 @@ export default async function SubmitPaper() {
                 ]}
             />
             <SubmitClient />
-        </main>
+        </div>
     );
 }
 

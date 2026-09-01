@@ -25,7 +25,7 @@ export default function AboutClient({ settings }: AboutClientProps) {
                     <p className="m-0">
                         {journalName} ({journalShortName}) is an international, peer-reviewed journal that publishes original research articles, review papers, and survey articles.
                     </p>
-                    <p className="font-medium text-foreground italic bg-primary/5 p-2.5 rounded-lg border-l-4 border-primary m-0 text-xs">
+                    <p className="font-medium text-foreground italic bg-primary/5 p-2.5 rounded-lg border-l-4 border-primary m-0">
                         Subject: {settings.journalSubject || 'Multidisciplinary'} • Language: English
                     </p>
                     <p className="m-0">
@@ -175,10 +175,10 @@ export default function AboutClient({ settings }: AboutClientProps) {
                         </div>
                         <div>
                             <h2 className="text-white m-0">Journal Publisher</h2>
-                            <p className="text-white/70 text-xs m-0">{publisherName}</p>
+                            <p className="text-white/70 m-0">{publisherName}</p>
                         </div>
                     </div>
-                    <div className="text-xs text-white/80 space-y-2 border-l-2 border-white/20 pl-4">
+                    <div className="text-white/80 space-y-2 border-l-2 border-white/20 pl-4">
                         <p className="m-0 leading-relaxed">
                             {publisherName} is dedicated to bridging the gap between theoretical research and industrial application on a global scale.
                         </p>

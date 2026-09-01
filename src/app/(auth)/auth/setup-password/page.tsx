@@ -81,8 +81,8 @@ function SetupContent() {
                 <div className="w-16 h-16 bg-destructive/5 rounded-xl flex items-center justify-center mx-auto mb-6 border border-destructive/10">
                     <ShieldCheck className="w-8 h-8 text-destructive" />
                 </div>
-                <h1 className="text-xl font-semibold text-gray-900 mb-2">Invalid or Expired Link</h1>
-                <p className="text-sm text-muted-foreground mb-8 leading-relaxed font-medium">This invitation link is either incorrect or has expired. Please contact the administrator for a new one.</p>
+                <h1 className="mb-2">Invalid or Expired Link</h1>
+                <p className="text-muted-foreground mb-8 leading-relaxed font-medium">This invitation link is either incorrect or has expired. Please contact the administrator for a new one.</p>
                 <Button asChild className="w-full h-11 bg-[#000066] hover:bg-[#000088] text-white">
                     <Link href="/">Back to Home</Link>
                 </Button>
@@ -96,8 +96,8 @@ function SetupContent() {
                 <div className="w-16 h-16 bg-emerald-500/5 rounded-xl flex items-center justify-center mx-auto mb-6 border border-emerald-500/10">
                     <CheckCircle2 className="w-8 h-8 text-emerald-500" />
                 </div>
-                <h1 className="text-xl font-semibold text-gray-900 mb-2">{ctx === 'reset' ? 'Password Reset!' : 'Account Ready!'}</h1>
-                <p className="text-sm text-muted-foreground mb-8 leading-relaxed font-medium">
+                <h1 className="mb-2">{ctx === 'reset' ? 'Password Reset!' : 'Account Ready!'}</h1>
+                <p className="text-muted-foreground mb-8 leading-relaxed font-medium">
                     {ctx === 'reset'
                         ? 'Your password has been reset successfully. You can now log in with your new credentials.'
                         : 'Your password has been set successfully. You are now being redirected to the login portal.'}
@@ -116,10 +116,10 @@ function SetupContent() {
                     <div className="bg-[#000066]/5 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 border border-[#000066]/10">
                         <Lock className="w-8 h-8 text-[#000066]" />
                     </div>
-                    <h1 className="text-xl font-semibold text-gray-900 mb-1">
+                    <h1 className="mb-1">
                         {ctx === 'reset' ? 'Password Recovery' : 'Secure Your Account'}
                     </h1>
-                    <p className="text-[10px] font-bold text-[#000066] uppercase tracking-widest leading-relaxed">
+                    <p className="text-[10px] 2xl:text-xs font-bold text-primary uppercase tracking-widest leading-relaxed">
                         International Journal of Innovative Trends
                     </p>
                 </section>

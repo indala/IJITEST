@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Contact() {
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Contact Us"
                 description="Our editorial team is available to assist you with technical support and general inquiries."
@@ -31,6 +31,6 @@ export default async function Contact() {
                 ]}
             />
             <ContactClient />
-        </main>
+        </div>
     );
 }

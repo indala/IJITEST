@@ -280,7 +280,7 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
                     </div>
                     <div className="p-6 bg-red-50 border border-red-100 rounded-2xl">
                         <h4 className="font-bold text-red-900 mb-3">Prohibited Uses:</h4>
-                        <p className="text-red-800 text-sm mb-4">GenAI tools must not be used for:</p>
+                        <p className="text-red-800 mb-4 font-semibold">GenAI tools must not be used for:</p>
                         <ul className="space-y-2 list-none pl-0 text-red-800">
                             {[
                                 "Data generation, data collection, data analysis, or interpretation.",

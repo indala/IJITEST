@@ -30,7 +30,7 @@ export default async function EditorialBoard() {
     const initialMembers = res.success ? res.data || [] : [];
 
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Editorial Board"
                 description="Our esteemed panel of global academic experts and researchers committed to scientific excellence."
@@ -72,7 +72,7 @@ export default async function EditorialBoard() {
                     </Card>
                 </div>
             </section>
-        </main>
+        </div>
     );
 }
 

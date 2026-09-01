@@ -77,7 +77,7 @@ export default async function FaqsPage() {
     };
 
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <JsonLd id="faqs-page-schema" data={faqSchema} />
             <PageHeader
                 title="Frequently Asked Questions"
@@ -91,6 +91,6 @@ export default async function FaqsPage() {
             <section className="container-responsive py-6 sm:py-8 flex justify-center">
                 <FaqsClient apcInr={apcInr} apcUsd={apcUsd} />
             </section>
-        </main>
+        </div>
     );
 }

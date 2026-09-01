@@ -62,7 +62,7 @@ export default async function Archives() {
         }));
 
     return (
-        <main className="bg-background min-h-screen pb-8">
+        <div className="bg-background min-h-screen pb-8">
             <PageHeader
                 title="Journal Archives"
                 description="Digital repository of peer-reviewed research and technical reports."
@@ -89,6 +89,6 @@ export default async function Archives() {
                     </aside>
                 </div>
             </section>
-        </main>
+        </div>
     );
 }

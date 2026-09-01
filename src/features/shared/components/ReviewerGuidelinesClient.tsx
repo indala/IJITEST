@@ -71,7 +71,7 @@ export default function ReviewerGuidelinesClient({ settings }: ReviewerGuideline
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="space-y-1">
                                     <h3 className="text-white m-0">Join Our Reviewer Network</h3>
-                                    <p className="text-white/70 text-xs max-w-xl m-0">
+                                    <p className="text-white/70 max-w-xl m-0">
                                         Contribute your expertise to {journalShortName} and help maintain the standards of engineering research.
                                     </p>
                                 </div>
@@ -102,9 +102,9 @@ export default function ReviewerGuidelinesClient({ settings }: ReviewerGuideline
                             <div className="w-7 h-7 bg-primary/5 rounded-lg flex items-center justify-center text-primary">
                                 <CheckCircle2 className="w-4 h-4" />
                             </div>
-                            <h3 className="text-xs sm:text-sm font-bold text-primary m-0">Ethics Matrix</h3>
+                            <h3 className="text-primary m-0">Ethics Matrix</h3>
                         </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                        <p className="text-muted-foreground leading-relaxed m-0">
                             All reviewers are expected to follow COPE guidelines for ethical evaluation and disclosure.
                         </p>
                         <div className="pt-1">

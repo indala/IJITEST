@@ -80,7 +80,8 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
         return actionSuccess(result);
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.SETTINGS, error);
-        return serverError(error, "fetch settings");
+        // Graceful fallback to default settings so layout/SSR does not fail
+        return actionSuccess({ ...DEFAULT_SETTINGS });
     }
 }
 

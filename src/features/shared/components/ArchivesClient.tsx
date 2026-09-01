@@ -122,7 +122,7 @@ export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps
                                 </span>
                                 <span className="font-bold text-primary text-xs">Official Digital Repository Community</span>
                             </div>
-                            <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                            <p className="text-muted-foreground leading-relaxed m-0">
                                 All publications are deposited and preserved with persistent DOIs (10.5281/zenodo.22016453) in the CERN Zenodo repository.
                             </p>
                         </div>
@@ -179,7 +179,7 @@ export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps
 
                                 {hierarchy.length === 0 && !isLoading && (
                                     <div className="p-6 text-center border-2 border-dashed rounded-xl border-border bg-muted/10 opacity-60">
-                                        <p className="text-xs font-medium text-muted-foreground">No archives matching search.</p>
+                                        <p className="font-medium text-muted-foreground m-0">No archives matching search.</p>
                                     </div>
                                 )}
                             </div>
@@ -199,8 +199,8 @@ export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps
                         <div className="py-16 flex flex-col items-center justify-center gap-4 text-center">
                             <div className="w-10 h-10 border-3 border-primary/10 border-t-primary rounded-full animate-spin" />
                             <div className="space-y-0.5">
-                                <p className="text-xs font-bold text-foreground">Loading Repository</p>
-                                <p className="text-xs text-muted-foreground">Synchronizing digital archives...</p>
+                                <p className="font-bold text-foreground m-0">Loading Repository</p>
+                                <p className="text-muted-foreground m-0">Synchronizing digital archives...</p>
                             </div>
                         </div>
                     ) : activeIssue ? (
@@ -217,7 +217,7 @@ export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps
                                     <h2 className="m-0">
                                         Volume {activeIssue.volume} Issue {activeIssue.issue}
                                     </h2>
-                                    <p className="text-xs text-muted-foreground font-medium italic m-0">
+                                    <p className="text-muted-foreground font-medium italic m-0">
                                         {activeIssue.monthRange} {activeIssue.year}
                                     </p>
                                 </div>
@@ -237,7 +237,7 @@ export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps
                                 </div>
                                 <div className="space-y-1">
                                     <h2 className="text-foreground m-0">Archive Empty</h2>
-                                    <p className="text-xs text-muted-foreground px-6 leading-relaxed m-0">
+                                    <p className="text-muted-foreground px-6 leading-relaxed m-0">
                                         No papers have been archived for the selected criteria yet. Start by exploring our current issue or submitting your manuscript.
                                     </p>
                                 </div>

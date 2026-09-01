@@ -28,7 +28,7 @@ function TrackManuscriptWidget() {
     return (
         <Card className="border-border/50 bg-card rounded-xl shadow-xs transition-all group">
             <CardHeader className="p-3.5 pb-1">
-                <CardTitle className="text-xs sm:text-sm 2xl:text-base font-bold text-primary m-0">Track Manuscript</CardTitle>
+                <CardTitle className="text-primary m-0">Track Manuscript</CardTitle>
             </CardHeader>
             <CardContent className="p-3.5 pt-2">
                 <form action={formAction} className="space-y-3">
@@ -42,7 +42,7 @@ function TrackManuscriptWidget() {
                             className="h-10 2xl:h-11 bg-muted/20 border-border/50 text-xs 2xl:text-sm focus-visible:ring-1 focus-visible:ring-primary/20 transition-all"
                         />
                         {state && !state.success && (
-                            <p className="text-[10px] 2xl:text-xs text-destructive pl-1 font-semibold">{state.error}</p>
+                            <p className="text-meta text-destructive pl-1 font-semibold m-0">{state.error}</p>
                         )}
                     </div>
                     <TrackButton />

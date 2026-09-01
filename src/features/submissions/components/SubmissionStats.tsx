@@ -69,10 +69,10 @@ export default function SubmissionStats({ stats }: SubmissionStatsProps) {
                         <CardContent className="p-3 2xl:p-4">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="space-y-0.5">
-                                    <p className="text-[10px] 2xl:text-xs font-medium text-muted-foreground">
+                                    <p className="text-label text-muted-foreground m-0">
                                         {item.label}
                                     </p>
-                                    <h3 className="text-base 2xl:text-lg font-bold text-foreground">
+                                    <h3 className="m-0 text-foreground">
                                         {item.value}
                                     </h3>
                                 </div>

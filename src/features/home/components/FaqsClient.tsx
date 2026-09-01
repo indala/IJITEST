@@ -222,7 +222,7 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
       ) : (
         <div className="text-center py-12 bg-card/30 border border-dashed border-border/60 rounded-2xl">
           <HelpCircle className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
-          <p className="text-xs font-semibold text-muted-foreground">No questions found matching your criteria.</p>
+          <p className="font-semibold text-muted-foreground m-0">No questions found matching your criteria.</p>
         </div>
       )}
 
@@ -230,7 +230,7 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
       <div className="bg-slate-200/50 p-4 sm:p-5 rounded-2xl border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 text-center sm:text-left">
         <div className="space-y-0.5">
           <h4 className="m-0 text-primary">Still have questions?</h4>
-          <p className="text-xs text-muted-foreground m-0">If you couldn&apos;t find an answer to your query, please reach out to our editorial desk.</p>
+          <p className="text-muted-foreground m-0">If you couldn&apos;t find an answer to your query, please reach out to our editorial desk.</p>
         </div>
         <Button asChild size="sm" className="h-8 px-4 bg-[#000066] hover:bg-[#000088] text-white rounded-lg shadow-xs cursor-pointer transition-all shrink-0 font-bold text-xs">
           <Link href="/contact">Contact Support</Link>

@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function PeerReview() {
     const settings = await getSettingsData();
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Peer Review Process"
                 description="Technical accuracy, originality, and scientific impact evaluation system."
@@ -32,6 +32,6 @@ export default async function PeerReview() {
                 ]}
             />
             <PeerReviewClient settings={settings} />
-        </main>
+        </div>
     );
 }

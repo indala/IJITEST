@@ -82,7 +82,7 @@ export default function PromotionPopup() {
                                 <h2 className="text-primary m-0">
                                     Publish Your Research
                                 </h2>
-                                <p className="text-muted-foreground border-l-2 border-secondary pl-3 text-left m-0 text-xs leading-relaxed">
+                                <p className="text-muted-foreground border-l-2 border-secondary pl-3 text-left m-0 leading-relaxed">
                                     In our commitment to supporting the next generation of innovators, the Primary Investigator will receive a 100% APC Waiver for our inaugural 2026 volume.
                                 </p>
                             </div>
@@ -91,7 +91,7 @@ export default function PromotionPopup() {
                                 <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-xs shrink-0 border border-primary/10">
                                     <Gift className="w-5 h-5 text-secondary" />
                                 </div>
-                                <p className="text-muted-foreground text-xs m-0">
+                                <p className="text-muted-foreground m-0">
                                     Limited engagement window. Applicable for high-fidelity technical submissions validated this session.
                                 </p>
                             </div>

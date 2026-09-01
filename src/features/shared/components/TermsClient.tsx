@@ -56,8 +56,8 @@ export default function TermsClient({ settings }: TermsClientProps) {
                                 <Gavel className="w-5 h-5 text-white" />
                             </div>
                             <div className="space-y-1">
-                                <h3 className="text-sm font-semibold text-white m-0">Framework Evolution</h3>
-                                <p className="text-xs text-white/75 border-l-2 border-white/20 pl-3.5 m-0 leading-relaxed">
+                                <h3 className="m-0 text-white">Framework Evolution</h3>
+                                <p className="text-white/75 border-l-2 border-white/20 pl-3.5 m-0 leading-relaxed">
                                     Felix Academic Publications reserves the right to update this legal framework in accordance with international publishing guidelines. Continued platform usage implies acceptance of these terms.
                                 </p>
                             </div>
@@ -69,7 +69,7 @@ export default function TermsClient({ settings }: TermsClientProps) {
                 <aside className="space-y-4 sm:space-y-5 lg:sticky lg:top-24">
                     <section className="space-y-2">
                         <div className="flex items-center gap-2 pl-3 border-l-2 border-primary">
-                             <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase m-0">Legal Nexus</p>
+                             <p className="text-label text-muted-foreground m-0">Legal Nexus</p>
                         </div>
                         <div className="space-y-2">
                             <Link href="/privacy" className="flex items-center justify-between p-3 bg-card border border-border/70 rounded-xl hover:border-primary/30 transition-all group shadow-2xs">

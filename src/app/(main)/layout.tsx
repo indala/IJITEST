@@ -19,7 +19,7 @@ export default async function MainLayout({
             <Suspense fallback={null}>
                 <Navbar />
             </Suspense>
-            <main className="min-h-screen">
+            <main id="main-content" className="min-h-screen">
                 <Suspense fallback={null}>
                     {children}
                 </Suspense>

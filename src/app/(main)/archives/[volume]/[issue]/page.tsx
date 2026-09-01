@@ -55,7 +55,7 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
     const year = activeIssue.publicationYear || "";
 
     return (
-        <main className="bg-background min-h-screen pb-8">
+        <div className="bg-background min-h-screen pb-8">
             <PageHeader
                 title={`Volume ${volNumber}, Issue ${issueNumber}`}
                 description={`Research articles published in ${monthRange} ${year}`}
@@ -91,6 +91,6 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
                     </aside>
                 </div>
             </section>
-        </main>
+        </div>
     );
 }

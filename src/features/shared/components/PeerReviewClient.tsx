@@ -86,7 +86,7 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                             </div>
                             <div className="space-y-0.5">
                                 <h3 className="m-0">Rapid Verdict</h3>
-                                <p className="text-muted-foreground text-xs leading-relaxed m-0 italic">
+                                <p className="text-muted-foreground leading-relaxed m-0 italic">
                                     &quot;Our peer-review process is designed to balance speed with rigor. Standard reviews take 2–4 weeks, while groundbreaking submissions may be considered for fast-track publication to ensure timely visibility.&quot;
                                 </p>
                             </div>
@@ -101,8 +101,8 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                     </div>
 
                     <div className="p-4 bg-card border border-border/70 rounded-xl shadow-2xs border-l-4 border-l-primary/20 space-y-2">
-                        <h3 className="text-xs sm:text-sm font-bold text-primary m-0">COPE Standards</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                        <h3 className="text-primary m-0">COPE Standards</h3>
+                        <p className="text-muted-foreground leading-relaxed m-0">
                             Adherence to the Committee on Publication Ethics (COPE) guidelines for transparency and scientific rigor.
                         </p>
                         <div className="pt-1">
@@ -114,8 +114,8 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                     </div>
 
                     <div className="p-4 bg-[#000066] rounded-xl shadow-md text-white space-y-2.5">
-                        <h3 className="text-xs sm:text-sm font-semibold m-0 text-white">Join as Reviewer</h3>
-                        <p className="text-white/70 text-xs leading-relaxed m-0">Interested in joining our global panel? Share your technical profile with our board.</p>
+                        <h3 className="m-0 text-white">Join as Reviewer</h3>
+                        <p className="text-white/70 leading-relaxed m-0">Interested in joining our global panel? Share your technical profile with our board.</p>
                         <Button asChild size="sm" className="w-full h-8 bg-white text-primary border-none hover:bg-white/90 font-bold text-xs rounded-lg transition-all">
                             <Link href="/join-us" className="w-full h-full flex items-center justify-center">Submit Profile</Link>
                         </Button>

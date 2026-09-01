@@ -33,7 +33,7 @@ export default function PaymentClient({ id }: { id: string }) {
         <div className="min-h-screen flex items-center justify-center bg-background">
             <div className="flex flex-col items-center gap-4">
                 <Loader2 className="w-10 h-10 text-primary animate-spin" />
-                <p className="text-xs sm:text-sm font-bold tracking-widest text-muted-foreground uppercase opacity-50">Secure Session Initializing</p>
+                <p className="text-label text-muted-foreground opacity-50 m-0">Secure Session Initializing</p>
             </div>
         </div>
     );
@@ -45,8 +45,8 @@ export default function PaymentClient({ id }: { id: string }) {
                     <AlertCircle className="w-8 h-8" />
                 </div>
                 <div className="space-y-2">
-                    <h2 className="text-xl font-semibold m-0">Access Denied</h2>
-                    <p className="text-sm text-muted-foreground leading-relaxed m-0">
+                    <h2 className="m-0 text-destructive">Access Denied</h2>
+                    <p className="text-muted-foreground leading-relaxed m-0">
                         Credentials could not be verified for active payment processing.
                     </p>
                 </div>
@@ -64,8 +64,8 @@ export default function PaymentClient({ id }: { id: string }) {
                     <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div className="space-y-2">
-                    <h2 className="text-xl font-semibold m-0">Grant Secured</h2>
-                    <p className="text-sm text-muted-foreground leading-relaxed m-0">
+                    <h2 className="m-0 text-primary">Grant Secured</h2>
+                    <p className="text-muted-foreground leading-relaxed m-0">
                         Payment processed successfully. Your research is now queued for global indexing.
                     </p>
                 </div>
@@ -118,11 +118,11 @@ export default function PaymentClient({ id }: { id: string }) {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-0.5">
                                         <p className="text-label text-muted-foreground m-0">Beneficiary</p>
-                                        <p className="font-semibold text-primary m-0 text-sm">{manuscript.authorName}</p>
+                                        <p className="font-semibold text-primary m-0">{manuscript.authorName}</p>
                                     </div>
                                     <div className="space-y-0.5">
                                         <p className="text-label text-muted-foreground m-0">Currency Profile</p>
-                                        <p className="font-semibold text-primary m-0 text-sm">INR (₹) - Unified Settlement</p>
+                                        <p className="font-semibold text-primary m-0">INR (₹) - Unified Settlement</p>
                                     </div>
                                 </div>
 
@@ -149,8 +149,8 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <ShieldAlert className="w-4 h-4" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-xs sm:text-sm font-bold m-0 text-white">No Refund Policy</h4>
-                                    <p className="text-white/70 text-xs leading-relaxed border-l-2 border-white/20 pl-3.5 m-0">
+                                    <h4 className="m-0 text-white">No Refund Policy</h4>
+                                    <p className="text-white/70 leading-relaxed border-l-2 border-white/20 pl-3.5 m-0">
                                         Submission of payment constitutes final agreement. Transactions are non-reversible according to ethics standards.
                                     </p>
                                 </div>
@@ -166,8 +166,8 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <CreditCard className="w-8 h-8" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-lg font-semibold text-primary m-0">Secure Settlement</h3>
-                                    <p className="text-xs sm:text-sm font-bold tracking-widest text-muted-foreground uppercase opacity-50">256-Bit SSL Active</p>
+                                    <h3 className="text-primary m-0">Secure Settlement</h3>
+                                    <p className="text-label text-muted-foreground opacity-50 m-0">256-Bit SSL Active</p>
                                 </div>
 
                                 {apcTotal > 0 ? (
@@ -177,7 +177,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                         onSuccess={() => setPaid(true)}
                                     />
                                 ) : (
-                                    <p className="text-sm font-semibold text-muted-foreground">No payment required.</p>
+                                    <p className="font-semibold text-muted-foreground m-0">No payment required.</p>
                                 )}
 
                                 <div className="flex items-center justify-center gap-4 pt-2 opacity-30">
@@ -192,8 +192,8 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <Handshake className="w-5 h-5" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-xs sm:text-sm font-bold text-muted-foreground tracking-widest uppercase">Support Desk</h4>
-                                    <p className="text-sm text-muted-foreground/60 leading-relaxed font-medium m-0">
+                                    <h4 className="text-label text-muted-foreground m-0">Support Desk</h4>
+                                    <p className="text-muted-foreground/60 leading-relaxed font-medium m-0">
                                         For disputes or bulk requests, contact <span className="text-secondary font-semibold">{settings['supportEmail']}</span>.
                                     </p>
                                 </div>

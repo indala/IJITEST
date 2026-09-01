@@ -38,8 +38,8 @@ function PublisherSection() {
                                 <Mail className="w-4 h-4 2xl:w-5 2xl:h-5" />
                             </div>
                             <div className="text-left text-xs 2xl:text-sm">
-                                <p className="font-bold text-muted-foreground uppercase tracking-wider mb-0.5 m-0 text-[10px] 2xl:text-xs">Support Desk</p>
-                                <p className="text-primary font-semibold m-0 text-xs 2xl:text-sm">{supportEmail}</p>
+                                <p className="text-label text-muted-foreground mb-0.5 m-0">Support Desk</p>
+                                <p className="text-primary font-semibold m-0">{supportEmail}</p>
                             </div>
                         </div>
                         <Link href="/guidelines" className="text-xs 2xl:text-sm font-semibold text-primary hover:text-secondary flex items-center gap-2 transition-all">

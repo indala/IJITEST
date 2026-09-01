@@ -46,7 +46,7 @@ export default function ContactClient() {
                                         <method.icon className="w-4 h-4" />
                                     </div>
                                     <div className="space-y-0.5 min-w-0">
-                                        <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase m-0">{method.title}</p>
+                                        <p className="text-label text-muted-foreground m-0">{method.title}</p>
                                         <a
                                             href={method.href}
                                             className="text-sm font-semibold text-primary hover:underline transition-all block truncate"
@@ -84,7 +84,7 @@ export default function ContactClient() {
                                     <MapPin className="w-4 h-4" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <p className="text-foreground/90 m-0 font-medium whitespace-pre-line text-xs sm:text-sm">
+                                    <p className="text-foreground/90 m-0 font-medium whitespace-pre-line">
                                         {(settings['officeAddress'] || '')}
                                     </p>
                                 </div>
@@ -104,7 +104,7 @@ export default function ContactClient() {
                             </div>
                             <h3 className="text-white m-0">Publication Ethics</h3>
                         </div>
-                        <p className="text-xs text-white/70 m-0 leading-relaxed">IJITEST strictly adheres to COPE guidelines for scientific integrity and peer-review ethics.</p>
+                        <p className="text-white/70 m-0 leading-relaxed">IJITEST strictly adheres to COPE guidelines for scientific integrity and peer-review ethics.</p>
                         <div className="pt-1">
                             <Link href="/ethics" className="inline-flex items-center gap-1 text-xs font-bold text-secondary hover:text-white transition-colors">
                                 <span>View Policy</span>

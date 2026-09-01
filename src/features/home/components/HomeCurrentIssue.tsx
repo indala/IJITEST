@@ -50,7 +50,7 @@ function HomeCurrentIssue() {
                             Current Issue — Volume {vol}, Issue {iss}
                         </h2>
                     </div>
-                    <p className="text-xs text-muted-foreground m-0 font-medium">
+                    <p className="text-muted-foreground m-0 font-medium">
                         {month} {year} • Published Peer-Reviewed Research Articles
                     </p>
                 </div>
@@ -112,7 +112,7 @@ function HomeCurrentIssue() {
 
                                 {/* Abstract Snippet */}
                                 {paper.abstract && (
-                                    <p className="text-xs 2xl:text-sm text-muted-foreground line-clamp-2 leading-relaxed m-0">
+                                    <p className="text-muted-foreground line-clamp-2 leading-relaxed m-0">
                                         {paper.abstract}
                                     </p>
                                 )}

@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ReviewerGuidelines() {
     const settings = await getSettingsData();
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Reviewer Guidelines"
                 description="Expert standards and ethical responsibilities for technical evaluation."
@@ -32,7 +32,7 @@ export default async function ReviewerGuidelines() {
                 ]}
             />
             <ReviewerGuidelinesClient settings={settings} />
-        </main>
+        </div>
     );
 }
 

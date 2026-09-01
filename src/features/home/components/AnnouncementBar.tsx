@@ -28,7 +28,7 @@ export default function AnnouncementBar() {
                     <div className="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-white/10 flex items-center justify-center text-secondary border border-white/20 animate-pulse">
                         <Megaphone className="size-5 2xl:size-6" />
                     </div>
-                    <p className="text-white opacity-80 m-0 flex items-center gap-2 text-xs sm:text-sm 2xl:text-base">
+                    <p className="text-white/80 m-0 flex items-center gap-2">
                         Latest Publication <span className="text-orange-600 font-bold">:</span> <span className="text-white pl-1 sparkle-text">{monthYear} Issue Now Live</span>
                         <Sparkles className="size-6 text-red-600 animate-bounce" />
                     </p>

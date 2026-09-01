@@ -107,27 +107,24 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                                     href={item.href}
                                                     onClick={handleClose}
                                                     className={cn(
-                                                        "group flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-all duration-300 border border-transparent",
+                                                        "nav-mobile-link group",
                                                         isActive
-                                                            ? "bg-primary/4 border-primary/5"
-                                                            : "hover:bg-primary/2"
+                                                            ? "bg-primary/5 text-primary"
+                                                            : "text-foreground/80 hover:bg-primary/5 hover:text-primary"
                                                     )}
                                                 >
                                                     <div className="flex items-center gap-3.5">
                                                         <div className={cn(
                                                             "w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-500",
-                                                            isActive ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-primary/5 text-primary/40 group-hover:bg-primary/10 group-hover:text-primary"
+                                                            isActive ? "bg-primary text-white shadow-md shadow-primary/20" : "bg-primary/5 text-primary/40 group-hover:bg-primary/10 group-hover:text-primary"
                                                         )}>
                                                             {item.icon && <item.icon className="w-4 h-4" />}
                                                         </div>
-                                                        <span className={cn(
-                                                            "text-[12px] font-black tracking-wider transition-all duration-300",
-                                                            isActive ? "text-primary" : "text-primary/60 group-hover:text-primary"
-                                                        )}>{item.name}</span>
+                                                        <span>{item.name}</span>
                                                     </div>
                                                     <ChevronRight className={cn(
                                                         "w-3.5 h-3.5 transition-all duration-500",
-                                                        isActive ? "text-secondary translate-x-0" : "text-primary/10 -translate-x-1 group-hover:translate-x-0 group-hover:text-primary/30"
+                                                        isActive ? "text-secondary translate-x-0" : "text-primary/20 -translate-x-1 group-hover:translate-x-0 group-hover:text-primary/40"
                                                     )} />
                                                 </Link>
 
@@ -141,8 +138,8 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                                                         href={child.href}
                                                                         onClick={handleClose}
                                                                         className={cn(
-                                                                            "flex items-center gap-2.5 py-1.5 text-[10px] font-bold tracking-wider transition-all",
-                                                                            isSubActive ? "text-secondary" : "text-primary/40 hover:text-primary"
+                                                                            "nav-mobile-sublink",
+                                                                            isSubActive ? "text-secondary font-bold" : "text-muted-foreground hover:text-primary"
                                                                         )}
                                                                     >
                                                                         <div className={cn(

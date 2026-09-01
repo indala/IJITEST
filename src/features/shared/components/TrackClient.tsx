@@ -198,7 +198,7 @@ export default function TrackClient() {
                         </div>
                         <div className="sm:col-span-2 pt-2">
                             <TrackButton />
-                            <p className="text-center mt-3 text-[11px] text-muted-foreground tracking-wider font-semibold m-0">
+                            <p className="text-label text-muted-foreground text-center mt-3 m-0">
                                 Real-Time Editorial Workflow Pipeline
                             </p>
                         </div>
@@ -236,14 +236,14 @@ export default function TrackClient() {
                                     </div>
                                     <div className="space-y-0.5">
                                         <p className="text-label text-muted-foreground m-0">Corresponding Author</p>
-                                        <p className="font-semibold text-foreground m-0 text-sm">{manuscript.authorName}</p>
+                                        <p className="font-semibold text-foreground m-0">{manuscript.authorName}</p>
                                     </div>
                                 </div>
                             </section>
 
                             <section className="space-y-4 pt-4 border-t border-border/50 max-w-3xl">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase m-0">Manuscript Timeline</p>
+                                    <p className="text-label text-muted-foreground m-0">Manuscript Timeline</p>
                                 </div>
 
                                 <div className="space-y-3">
@@ -287,9 +287,9 @@ export default function TrackClient() {
                                                     <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white shrink-0">
                                                         <CreditCard className="w-4 h-4" />
                                                     </div>
-                                                    <h3 className="text-sm sm:text-base font-bold m-0 leading-none text-white">Access Fees Required</h3>
+                                                    <h3 className="m-0 leading-none text-white">Access Fees Required</h3>
                                                 </div>
-                                                <p className="text-white/70 text-xs sm:text-sm leading-relaxed max-w-2xl border-l-2 border-white/20 pl-3.5 m-0">
+                                                <p className="text-white/70 leading-relaxed max-w-2xl border-l-2 border-white/20 pl-3.5 m-0">
                                                     Your manuscript has been approved. Please finalize the Article Processing Charge (APC) to proceed with publication.
                                                 </p>
                                             </div>
@@ -311,7 +311,7 @@ export default function TrackClient() {
                                                 </div>
                                                 <h3 className="font-bold text-emerald-800 m-0">Fully Indexed</h3>
                                             </div>
-                                            <p className="text-emerald-700/80 text-xs sm:text-sm max-w-2xl m-0">
+                                            <p className="text-emerald-700/80 max-w-2xl m-0">
                                                 Your research is now live in the global scientific archives.
                                             </p>
                                         </div>
@@ -355,10 +355,10 @@ export default function TrackClient() {
                         </div>
                         <div className="space-y-2">
                             <h2 className="font-semibold m-0">Access Denied</h2>
-                            <p className="text-muted-foreground text-sm m-0">
+                            <p className="text-muted-foreground m-0">
                                 Manuscript not found or credentials mismatched.
                             </p>
-                            <p className="text-destructive/60 text-sm italic">&quot;{errorMessage}&quot;</p>
+                            <p className="text-destructive/60 italic m-0">&quot;{errorMessage}&quot;</p>
                         </div>
                         <Button
                             onClick={() => setLocalState(null)}

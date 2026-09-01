@@ -15,7 +15,7 @@ function ResourceDeskWidget({ settings }: ResourceDeskWidgetProps) {
 
     return (
         <div className="bg-card p-3.5 sm:p-4 2xl:p-5 rounded-xl border border-border/70 shadow-2xs space-y-3 2xl:space-y-4">
-            <h3 className="text-xs sm:text-sm 2xl:text-base font-bold text-primary m-0">Resource Downloads</h3>
+            <h3 className="text-primary m-0">Resource Downloads</h3>
             <div className="grid gap-2">
                 {resources.map((doc, i) => (
                     <a 
@@ -26,7 +26,7 @@ function ResourceDeskWidget({ settings }: ResourceDeskWidgetProps) {
                     >
                         <div className="min-w-0">
                             <span className="text-[10px] 2xl:text-xs font-mono font-bold text-secondary uppercase block">{doc.type} Format</span>
-                            <p className="font-bold text-xs 2xl:text-sm text-primary group-hover:text-secondary transition-colors m-0 truncate">{doc.label}</p>
+                            <p className="font-bold text-primary group-hover:text-secondary transition-colors m-0 truncate">{doc.label}</p>
                         </div>
                         <Download className="w-3.5 h-3.5 2xl:w-4 2xl:h-4 text-primary group-hover:text-secondary transition-colors shrink-0" />
                     </a>

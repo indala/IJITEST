@@ -48,7 +48,7 @@ export default function Navbar() {
                     <div className="flex items-center gap-2 lg:gap-3 xl:gap-4 2xl:gap-6">
                         <Link
                             href="/submit"
-                            className="btn-primary btn-fill-secondary text-xs px-3 py-1.5 whitespace-nowrap sm:text-sm sm:px-4 sm:py-2 lg:text-xs lg:px-3 lg:py-1.5 xl:text-sm xl:px-4 xl:py-2 2xl:text-base 2xl:px-6 2xl:py-3"
+                            className="nav-btn-action"
                         >
                             <span className="relative z-20 hidden sm:inline lg:hidden xl:inline">Submit Paper</span>
                             <span className="relative z-20 sm:hidden lg:inline xl:hidden">Submit</span>

@@ -110,7 +110,7 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                                     <Sparkles className="size-5 text-secondary" />
                                     Indexing & Digital Repositories
                                 </h2>
-                                <p className="text-xs text-muted-foreground mt-0.5 mb-0">
+                                <p className="text-muted-foreground mt-0.5 mb-0">
                                     Verified scholarly indexing databases, repositories, and academic identifiers.
                                 </p>
                             </div>
@@ -188,8 +188,8 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                                     <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center text-primary mb-2.5">
                                         <spec.icon className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-sm font-semibold text-primary mb-1">{spec.title}</h3>
-                                    <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                                    <h3 className="text-primary mb-1 m-0">{spec.title}</h3>
+                                    <p className="text-muted-foreground leading-relaxed m-0">
                                         {spec.desc}
                                     </p>
                                 </Card>
@@ -211,9 +211,9 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                             <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center text-primary">
                                 <Database className="w-4 h-4" />
                             </div>
-                            <h3 className="text-xs sm:text-sm font-bold text-primary m-0">Inaugural 2026 Volume</h3>
+                            <h3 className="text-primary m-0">Inaugural 2026 Volume</h3>
                         </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                        <p className="text-muted-foreground leading-relaxed m-0">
                             Submissions are open. All accepted manuscripts receive rapid double-blind peer review, permanent Zenodo DOI, and international repository indexing.
                         </p>
                         <Button asChild size="sm" className="w-full h-8 bg-[#000066] hover:bg-[#000088] text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-all shadow-xs">
@@ -222,8 +222,8 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                     </Card>
 
                     <Card className="p-4 bg-[#000066] rounded-xl text-white space-y-2 shadow-md">
-                        <h3 className="text-xs sm:text-sm font-semibold text-white m-0">COPE Publication Ethics</h3>
-                        <p className="text-white/80 text-xs leading-relaxed m-0">
+                        <h3 className="text-white m-0">COPE Publication Ethics</h3>
+                        <p className="text-white/80 leading-relaxed m-0">
                             Our editorial process adheres strictly to the Committee on Publication Ethics (COPE) standards to safeguard research integrity.
                         </p>
                         <div className="pt-1">

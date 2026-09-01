@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function TermsAndConditions() {
     const settings = await getSettingsData();
     return (
-        <main className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen">
             <PageHeader
                 title="Terms & Conditions"
                 description="The legal framework governing your academic interactions and submissions."
@@ -32,6 +32,6 @@ export default async function TermsAndConditions() {
                 ]}
             />
             <TermsClient settings={settings} />
-        </main>
+        </div>
     );
 }

@@ -67,7 +67,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                         href={item.href}
                         aria-haspopup={item.children ? "true" : undefined}
                         aria-expanded={item.children ? isMenuOpen : undefined}
-                        className={`transition-all duration-200 flex items-center gap-1 relative px-2 text-xs font-semibold whitespace-nowrap lg:px-2.5 lg:text-xs xl:px-3 xl:text-xs 2xl:px-4 2xl:text-sm ${isActive ? 'text-primary' : 'text-black hover:text-primary'}`}
+                        className={`nav-link ${isActive ? 'text-primary' : 'text-foreground/90 hover:text-primary'}`}
                     >
                         <span className="relative z-10 py-0.5">
                             {item.name}
@@ -104,7 +104,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                             <li key={child.name}>
                                                 <Link
                                                     href={child.href}
-                                                    className={`block px-5 py-2 2xl:py-2.5 text-xs 2xl:text-sm font-semibold tracking-wide transition-all relative group/child ${isChildActive ? 'text-primary bg-primary/5' : 'text-black hover:text-primary'}`}
+                                                    className={`nav-dropdown-item group/child ${isChildActive ? 'text-primary bg-primary/5' : 'text-foreground/90 hover:text-primary'}`}
                                                 >
                                                     <span className="relative z-10 flex items-center gap-2">
                                                         <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isChildActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'}`} />

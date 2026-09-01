@@ -52,8 +52,8 @@ export default function SubmitClient() {
                                         <CheckCircle2 className="w-3 h-3 text-secondary" />
                                     </div>
                                     <div>
-                                        <h4 className="text-xs font-bold text-primary m-0">{item.title}</h4>
-                                        <p className="text-muted-foreground m-0 text-xs leading-snug">{item.desc}</p>
+                                        <h4 className="text-primary m-0">{item.title}</h4>
+                                        <p className="text-muted-foreground m-0 leading-snug">{item.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -68,9 +68,9 @@ export default function SubmitClient() {
                             <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center text-white">
                                 <HelpCircle className="w-4 h-4" />
                             </div>
-                            <h3 className="text-xs sm:text-sm font-semibold m-0 text-white">Need Support?</h3>
+                            <h3 className="m-0 text-white">Need Support?</h3>
                         </div>
-                        <p className="text-white/70 text-xs leading-relaxed m-0">
+                        <p className="text-white/70 leading-relaxed m-0">
                             Encountering technical issues? Our editorial desk is available to assist you.
                         </p>
                         <Link href="/contact" className="text-xs font-bold text-secondary hover:text-white inline-flex items-center gap-1 m-0 transition-colors pt-1">

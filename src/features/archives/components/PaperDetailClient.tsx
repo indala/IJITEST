@@ -55,8 +55,8 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                         <FileText className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1 text-center md:text-left">
-                        <h3 className="font-serif font-black text-red-900 text-xl md:text-2xl mb-1 uppercase tracking-tighter">Manuscript Retracted</h3>
-                        <p className="text-red-700 font-bold text-sm leading-relaxed max-w-2xl">
+                        <h3 className="text-red-900 mb-1 uppercase tracking-tighter m-0">Manuscript Retracted</h3>
+                        <p className="text-red-700 font-bold leading-relaxed max-w-2xl m-0">
                             This article has been formally retracted due to editorial policy violations or significant technical inaccuracies. 
                             Please refer to the official retraction notice for detailed reasoning.
                         </p>
@@ -211,9 +211,9 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                     <span className="px-1.5 py-0.5 rounded bg-[#000066] text-white font-mono font-bold text-[10px]">
                                         CC BY 4.0
                                     </span>
-                                    <p className="text-xs font-bold text-primary m-0">Open Access Attribution License</p>
+                                    <p className="font-bold text-primary m-0">Open Access Attribution License</p>
                                 </div>
-                                <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                                <p className="text-muted-foreground leading-relaxed m-0">
                                     Distributed under the terms of the{' '}
                                     <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-primary font-bold underline hover:text-secondary">
                                         Creative Commons Attribution 4.0 International (CC BY 4.0)

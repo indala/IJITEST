@@ -150,8 +150,8 @@ export default function SubmissionForm() {
                     <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div className="space-y-2 text-center">
-                    <h2 className="text-xl font-semibold text-gray-900">Submission Successful</h2>
-                    <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    <h2 className="m-0">Submission Successful</h2>
+                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
                         Your paper has been successfully submitted. We have sent a confirmation email to the primary author.
                     </p>
                     <p className="text-xs font-bold text-[#000066] mt-4">
@@ -364,7 +364,7 @@ export default function SubmissionForm() {
                             <div className="w-10 h-10 rounded-xl bg-[#000066]/5 text-[#000066] flex items-center justify-center border border-[#000066]/10">
                                 <Users className="w-5 h-5" />
                             </div>
-                            <h3 className="text-lg font-semibold text-gray-900">Co-Authors</h3>
+                            <h3 className="m-0">Co-Authors</h3>
                         </div>
                         <Button
                             type="button"
@@ -406,7 +406,7 @@ export default function SubmissionForm() {
                                                     {index + 1}
                                                 </div>
                                                 <div className="space-y-0.5">
-                                                    <h4 className="text-sm font-semibold text-gray-900">Author Details</h4>
+                                                    <h4 className="m-0">Author Details</h4>
                                                     <p className="text-[10px] font-bold text-muted-foreground uppercase">Affiliated contributor</p>
                                                 </div>
                                             </div>
@@ -488,7 +488,7 @@ export default function SubmissionForm() {
                              <div className="w-12 h-12 bg-card border border-border/50 rounded-xl flex items-center justify-center text-muted-foreground/30 mb-4 shadow-sm">
                                 <Users className="w-6 h-6" />
                             </div>
-                            <h4 className="text-sm font-semibold text-gray-900">Single Author Submission</h4>
+                            <h4 className="m-0">Single Author Submission</h4>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase max-w-xs mt-1">
                                 No co-authors listed. Up to 5 allowed.
                             </p>

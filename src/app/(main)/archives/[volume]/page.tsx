@@ -82,7 +82,7 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
     const volumeYear = volumePapers[0]?.publicationYear || "";
 
     return (
-        <main className="bg-background min-h-screen pb-8">
+        <div className="bg-background min-h-screen pb-8">
             <PageHeader
                 title={`Volume ${volNumber}`}
                 description={`Issues published in Volume ${volNumber} (${volumeYear})`}
@@ -127,7 +127,7 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                                                         <h3 className="group-hover:text-secondary transition-colors m-0">
                                                             Issue {iss.issueNumber}
                                                         </h3>
-                                                        <p className="text-xs text-muted-foreground m-0">
+                                                        <p className="text-muted-foreground m-0">
                                                             Published in {iss.monthRange} {iss.year}.
                                                         </p>
                                                     </div>
@@ -155,7 +155,7 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                                     </div>
                                     <div className="space-y-1">
                                         <h3 className="text-foreground m-0">No Issues Found</h3>
-                                        <p className="text-xs text-muted-foreground px-4 m-0">
+                                        <p className="text-muted-foreground px-4 m-0">
                                             There are no published issues available in Volume {volNumber} at this time.
                                         </p>
                                     </div>
@@ -172,6 +172,6 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                     </aside>
                 </div>
             </section>
-        </main>
+        </div>
     );
 }
