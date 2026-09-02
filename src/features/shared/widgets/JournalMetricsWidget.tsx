@@ -27,7 +27,7 @@ function JournalMetricsWidget() {
 
                 <div className="flex items-center justify-between p-2 rounded-lg bg-muted/40 border border-border/40">
                     <span className="font-semibold text-foreground/80">Digital Archiving</span>
-                    <span className="font-mono text-secondary font-bold text-[11px]">Zenodo (CERN)</span>
+                    <span className="font-mono text-secondary font-bold text-[11px]">Open Science Repository</span>
                 </div>
 
                 <div className="flex items-center justify-between p-2 rounded-lg bg-muted/40 border border-border/40">

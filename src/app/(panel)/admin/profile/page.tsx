@@ -9,13 +9,26 @@ export const metadata = {
     title: "Account Profile | Admin Panel",
 };
 
-export default async function AdminProfilePage() {
+function ProfileDossierSkeleton() {
+    return (
+        <div className="h-96 flex flex-col items-center justify-center gap-4 text-muted-foreground">
+            <Loader2 className="w-8 h-8 animate-spin opacity-20" />
+            <p className="font-mono text-[10px] uppercase tracking-widest animate-pulse">Initializing Identity Dossier...</p>
+        </div>
+    );
+}
+
+async function AdminProfileContent() {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
         redirect("/login");
     }
 
+    return <ProfileDossier role="admin" userId={session.user.id} />;
+}
+
+export default function AdminProfilePage() {
     return (
         <section className="space-y-10">
             <header className="space-y-1 2xl:space-y-2 border-b border-white/5 pb-8">
@@ -23,13 +36,8 @@ export default async function AdminProfilePage() {
                 <p className="text-[9px] xl:text-xs 2xl:text-sm font-medium text-muted-foreground capitalize tracking-widest opacity-60">Manage your core credentials and architectural clearance.</p>
             </header>
 
-            <Suspense fallback={
-                <div className="h-96 flex flex-col items-center justify-center gap-4 text-muted-foreground">
-                    <Loader2 className="w-8 h-8 animate-spin opacity-20" />
-                    <p className="font-mono text-[10px] uppercase tracking-widest animate-pulse">Initializing Identity Dossier...</p>
-                </div>
-            }>
-                <ProfileDossier role="admin" userId={session.user.id} />
+            <Suspense fallback={<ProfileDossierSkeleton />}>
+                <AdminProfileContent />
             </Suspense>
         </section>
     );

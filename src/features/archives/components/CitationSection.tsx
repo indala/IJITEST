@@ -31,7 +31,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
     const year = paper.publicationYear || new Date().getFullYear();
     const vol = paper.volumeNumber || 1;
     const iss = paper.issueNumber || 1;
-    const doi = paper.doi ? `https://doi.org/${paper.doi}` : 'https://doi.org/10.5281/zenodo.22016453';
+    const doi = paper.doi ? `https://doi.org/${paper.doi}` : `https://ijitest.org/archives/${paper.paperId}`;
 
     // Authors list parsing
     const getAuthorsList = () => {

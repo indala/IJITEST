@@ -45,19 +45,14 @@ const roadmapPhases: RoadmapPhase[] = [
             { 
                 title: "OpenAIRE Indexing", 
                 status: "Completed", 
-                badgeText: "Indexed (Verified)",
+                badgeText: "Indexed & Disclosed",
                 linkUrl: "https://explore.openaire.eu/search/result?pid=10.5281%2Fzenodo.22016453"
             },
             { 
-                title: "Zenodo Digital Repository", 
+                title: "Zenodo Open Science Repository", 
                 status: "Completed", 
-                badgeText: "DOI: 10.5281/zenodo.22016453",
-                linkUrl: "https://doi.org/10.5281/zenodo.22016453"
-            },
-            { 
-                title: "CiteFactor Indexing", 
-                status: "In Progress", 
-                badgeText: "Registered" 
+                badgeText: "Community Archive",
+                linkUrl: "https://zenodo.org/communities/ijitest/records?q=&l=list&p=1&s=10&sort=newest"
             },
             { 
                 title: "OpenAlex Indexing", 
@@ -65,8 +60,14 @@ const roadmapPhases: RoadmapPhase[] = [
                 badgeText: "Registered" 
             },
             { 
-                title: "ROAD Directory Indexing", 
-                status: "In Progress" 
+                title: "CiteFactor Indexing", 
+                status: "In Progress", 
+                badgeText: "Registered" 
+            },
+            { 
+                title: "ROAD Directory Listing", 
+                status: "Completed",
+                badgeText: "UNESCO Partner"
             }
         ],
         icon: Zap,
@@ -75,13 +76,13 @@ const roadmapPhases: RoadmapPhase[] = [
     },
     {
         phase: "Phase 3",
-        title: "Global Visibility",
+        title: "Global Visibility & Crossref",
         status: "In Progress",
         items: [
-            { title: "Google Scholar Discovery", status: "In Progress", badgeText: "Papers Discovered" },
+            { title: "Crossref Publisher DOI Prefix", status: "In Progress", badgeText: "Onboarding" },
+            { title: "Google Scholar Discovery", status: "In Progress", badgeText: "Automated Metadata" },
             { title: "SJIF Impact Factor Evaluation", status: "In Progress" },
-            { title: "Crossref DOI Continuous Sync", status: "In Progress" },
-            { title: "Directory of Research Journal Indexing", status: "Pending" }
+            { title: "Directory of Research Journals Indexing", status: "Pending" }
         ],
         icon: Globe,
         color: "text-blue-600",
@@ -192,7 +193,7 @@ function RoadmapSection() {
             <div className="p-3.5 sm:p-4 bg-[#000066]/5 rounded-xl border border-[#000066]/10 flex flex-col sm:flex-row items-center gap-3">
                 <div className="w-8 h-8 shrink-0 bg-[#000066] text-white rounded-full flex items-center justify-center font-bold text-xs shadow-inner">i</div>
                 <p className="text-xs text-primary/80 leading-relaxed m-0 text-center sm:text-left">
-                    <strong className="text-primary">Active Scholarly Credentials:</strong> Articles published in IJITEST are assigned formal metadata including <strong className="text-primary">E-ISSN: 3139-6887</strong> and are indexed with verified digital repositories including <strong className="text-primary">OpenAIRE</strong> & <strong className="text-primary">Zenodo</strong> (DOI: 10.5281/zenodo.22016453). Crossref and expanded indexing partners (CiteFactor, OpenAlex) are continuously synchronized.
+                    <strong className="text-primary">Active Scholarly Credentials:</strong> Articles published in IJITEST are assigned formal metadata including <strong className="text-primary">E-ISSN: 3139-6887</strong>, permanent digital object identifiers (DataCite / Crossref), and are indexed with verified digital repositories including <strong className="text-primary">OpenAIRE</strong> & <strong className="text-primary">Zenodo</strong>. Expanded indexing partners (CiteFactor, OpenAlex, Crossref) are actively integrated.
                 </p>
             </div>
         </section>

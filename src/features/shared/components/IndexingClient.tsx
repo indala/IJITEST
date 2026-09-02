@@ -17,29 +17,9 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
 
     const activeAgencies = [
         {
-            name: "OpenAIRE",
-            category: "European Scholarly Hub",
-            status: "Indexed & Disclosed",
-            isCompleted: true,
-            desc: "European open-access research infrastructure connecting publication metadata and scholarly outputs globally.",
-            link: "https://explore.openaire.eu/search/result?pid=10.5281%2Fzenodo.22016453",
-            identifier: "PID: 10.5281/zenodo.22016453",
-            badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
-        },
-        {
-            name: "Zenodo (CERN / OpenAIRE)",
-            category: "Digital Repository",
-            status: "Deposited & Persistent",
-            isCompleted: true,
-            desc: "Global open science repository hosted by CERN providing permanent digital object identifiers (DOIs) and preservation.",
-            link: "https://doi.org/10.5281/zenodo.22016453",
-            identifier: "DOI: 10.5281/zenodo.22016453",
-            badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
-        },
-        {
             name: "ISSN International Centre (ROAD)",
             category: "Scholarly Serial Directory",
-            status: "E-ISSN: 3139-6887",
+            status: "Registered",
             isCompleted: true,
             desc: "Official international standard serial registration recognized by UNESCO for open access scientific resources.",
             link: "https://road.issn.org",
@@ -47,13 +27,24 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
             badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
         },
         {
-            name: "CiteFactor",
-            category: "Academic Journal Indexing",
-            status: "Registered Partner",
-            isCompleted: false,
-            desc: "Indexing service providing access to quality scholarly publications to expand international citations.",
-            identifier: "Evaluation in Progress",
-            badgeColor: "bg-blue-100 text-blue-800 border-blue-200"
+            name: "OpenAIRE",
+            category: "European Scholarly Hub",
+            status: "Indexed & Disclosed",
+            isCompleted: true,
+            desc: "European open-access research infrastructure connecting publication metadata and scholarly outputs globally.",
+            link: "https://explore.openaire.eu/search/result?pid=10.5281%2Fzenodo.22016453",
+            identifier: "OpenAIRE Verified",
+            badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
+        },
+        {
+            name: "Zenodo (CERN / OpenAIRE)",
+            category: "Open Science Repository",
+            status: "Deposited & Persistent",
+            isCompleted: true,
+            desc: "Global open science repository hosted by CERN providing permanent digital object identifiers (DOIs) and preservation.",
+            link: "https://zenodo.org/communities/ijitest/records?q=&l=list&p=1&s=10&sort=newest",
+            identifier: "Community Repository",
+            badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
         },
         {
             name: "OpenAlex",
@@ -61,6 +52,15 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
             status: "Registered Partner",
             isCompleted: false,
             desc: "Next-generation, fully open global index of millions of scholarly publications, authors, and citation networks.",
+            identifier: "Evaluation in Progress",
+            badgeColor: "bg-blue-100 text-blue-800 border-blue-200"
+        },
+        {
+            name: "CiteFactor",
+            category: "Academic Journal Indexing",
+            status: "Registered Partner",
+            isCompleted: false,
+            desc: "Indexing service providing access to quality scholarly publications to expand international citations.",
             identifier: "Evaluation in Progress",
             badgeColor: "bg-blue-100 text-blue-800 border-blue-200"
         },
@@ -214,7 +214,7 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                             <h3 className="text-primary m-0">Inaugural 2026 Volume</h3>
                         </div>
                         <p className="text-muted-foreground leading-relaxed m-0">
-                            Submissions are open. All accepted manuscripts receive rapid double-blind peer review, permanent Zenodo DOI, and international repository indexing.
+                            Submissions are open. All accepted manuscripts receive rapid double-blind peer review, permanent digital DOI assignment, and international repository indexing.
                         </p>
                         <Button asChild size="sm" className="w-full h-8 bg-[#000066] hover:bg-[#000088] text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-all shadow-xs">
                             <Link href="/submit">Submit Manuscript</Link>

@@ -156,15 +156,10 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                         <span>{paper.doi}</span>
                                     </a>
                                 ) : (
-                                    <a
-                                        href="https://doi.org/10.5281/zenodo.22016453"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-meta font-bold text-emerald-800 transition-colors"
-                                    >
-                                        <span className="text-label px-1 py-0.5 rounded bg-emerald-700 text-white font-sans">Zenodo DOI</span>
-                                        <span>10.5281/zenodo.22016453</span>
-                                    </a>
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted/40 border border-border/60 text-meta font-medium text-muted-foreground">
+                                        <span className="text-label px-1 py-0.5 rounded bg-muted text-muted-foreground font-sans">DOI</span>
+                                        <span>Assignment in Progress</span>
+                                    </span>
                                 )}
                                 <a
                                     href="https://zenodo.org/communities/ijitest/records?q=&l=list&p=1&s=10&sort=newest"
@@ -172,7 +167,7 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 hover:bg-blue-100 border border-blue-200 text-label text-blue-800 transition-colors"
                                 >
-                                    <span>Zenodo Community</span>
+                                    <span>Repository Record</span>
                                 </a>
                             </div>
                         </div>

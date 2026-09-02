@@ -7,22 +7,6 @@ import { Card } from "@/components/ui/card";
 
 const indexingAgencies = [
     {
-        name: "OpenAIRE",
-        role: "European Scholarly Hub",
-        status: "Indexed (Verified)",
-        isVerified: true,
-        link: "https://explore.openaire.eu/search/result?pid=10.5281%2Fzenodo.22016453",
-        identifier: "PID: 10.5281/zenodo.22016453",
-    },
-    {
-        name: "Zenodo (CERN)",
-        role: "Open Science Repository",
-        status: "Deposited (Verified)",
-        isVerified: true,
-        link: "https://doi.org/10.5281/zenodo.22016453",
-        identifier: "DOI: 10.5281/zenodo.22016453",
-    },
-    {
         name: "ISSN Centre (ROAD)",
         role: "International Serial Directory",
         status: "E-ISSN: 3139-6887",
@@ -31,12 +15,20 @@ const indexingAgencies = [
         identifier: "E-ISSN: 3139-6887",
     },
     {
-        name: "CiteFactor",
-        role: "Academic Journal Indexing",
-        status: "Registered Partner",
-        isVerified: false,
-        link: "https://www.citefactor.org",
-        identifier: "Under Evaluation",
+        name: "OpenAIRE",
+        role: "European Scholarly Hub",
+        status: "Indexed & Disclosed",
+        isVerified: true,
+        link: "https://explore.openaire.eu/search/result?pid=10.5281%2Fzenodo.22016453",
+        identifier: "OpenAIRE Record",
+    },
+    {
+        name: "Zenodo (CERN)",
+        role: "Open Science Repository",
+        status: "Deposited & Persistent",
+        isVerified: true,
+        link: "https://zenodo.org/communities/ijitest/records?q=&l=list&p=1&s=10&sort=newest",
+        identifier: "Community Archive",
     },
     {
         name: "OpenAlex",
@@ -44,6 +36,14 @@ const indexingAgencies = [
         status: "Registered Partner",
         isVerified: false,
         link: "https://openalex.org",
+        identifier: "Under Evaluation",
+    },
+    {
+        name: "CiteFactor",
+        role: "Academic Journal Indexing",
+        status: "Registered Partner",
+        isVerified: false,
+        link: "https://www.citefactor.org",
         identifier: "Under Evaluation",
     },
     {

@@ -51,7 +51,7 @@ export default async function Footer() {
                         <div>
                             <p className="mb-2 text-white m-0 font-bold">IJITEST</p>
                             <p className="text-white/80 m-0 text-xs leading-relaxed">
-                                International Journal of Innovative Trends in Engineering Science and Technology (IJITEST) is a peer-reviewed scholarly journal dedicated to elite research dissemination.
+                                International Journal of Innovative Trends in Engineering Science and Technology (IJITEST) is a peer-reviewed open-access scholarly journal dedicated to engineering and technological innovations.
                             </p>
                         </div>
                     </div>
@@ -134,7 +134,7 @@ export default async function Footer() {
                             </a>
                         </p>
                         <p className="m-0 text-[11px] text-white/70 font-medium">
-                            Gold Open Access • Permanent CERN Zenodo DOI Archiving
+                            Gold Open Access • Digital Preservation & Repository Archiving
                         </p>
                     </div>
 

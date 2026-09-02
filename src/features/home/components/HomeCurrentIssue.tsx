@@ -139,12 +139,12 @@ function HomeCurrentIssue() {
 
                                     {/* Digital Preservation Badge */}
                                     <a
-                                        href="https://doi.org/10.5281/zenodo.22016453"
+                                        href={paper.doi ? `https://doi.org/${paper.doi}` : "https://doi.org/10.5281/zenodo.22016453"}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-1 text-[11px] 2xl:text-xs font-mono text-muted-foreground hover:text-primary transition-colors"
                                     >
-                                        <span>DOI: 10.5281/zenodo.22016453</span>
+                                        <span>DOI: {paper.doi || "10.5281/zenodo.22016453"}</span>
                                         <ExternalLink className="w-2.5 h-2.5 opacity-60" />
                                     </a>
                                 </div>
@@ -158,7 +158,7 @@ function HomeCurrentIssue() {
             <div className="p-3.5 2xl:p-5 rounded-xl bg-primary/5 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs 2xl:text-sm">
                 <div className="flex items-center gap-2 text-primary font-medium text-center sm:text-left">
                     <Sparkles className="w-4 h-4 text-secondary shrink-0" />
-                    <span>All articles are deposited into the CERN Zenodo Open Science Repository & OpenAIRE discovery hub.</span>
+                    <span>All published articles are preserved with permanent DOIs across Open Science Repositories & OpenAIRE discovery hub.</span>
                 </div>
                 <Button asChild size="sm" variant="outline" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm border-primary/20 text-primary hover:bg-primary/5 shrink-0">
                     <Link href="/archives">Browse All Volumes ({year})</Link>

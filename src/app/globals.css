@@ -453,3 +453,9 @@ html {
   font-weight: 600;
   color: var(--color-foreground);
 }
+
+/* Hide native browser password reveal icon (Edge / Chromium) to avoid duplicate toggle icons */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}

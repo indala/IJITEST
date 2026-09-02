@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { TrendingUp, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { db } from '@/lib/db';
@@ -27,7 +28,6 @@ import os from 'os';
 import { redirect } from 'next/navigation';
 import { getStorageSizeFromService } from '@/lib/fs-utils';
 
-
 export const metadata = {
     title: "Admin Dashboard | IJITEST",
 };
@@ -46,7 +46,23 @@ async function getHealthMetrics() {
     return { dbLatency, storageMB, uptimeHours };
 }
 
-export default async function AdminDashboard() {
+function AdminDashboardSkeleton() {
+    return (
+        <div className="space-y-6 animate-pulse p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-28 rounded-xl bg-muted/50 border border-border/50" />
+                ))}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 h-72 rounded-xl bg-muted/40 border border-border/50" />
+                <div className="h-72 rounded-xl bg-muted/40 border border-border/50" />
+            </div>
+        </div>
+    );
+}
+
+async function AdminDashboardContent() {
     const session = await getServerSession(authOptions);
     if (!session?.user || session.user.role !== 'admin') {
         redirect("/login");
@@ -159,5 +175,13 @@ export default async function AdminDashboard() {
                 <InviteEditorModal />
             </div>
         </DashboardRegistry>
+    );
+}
+
+export default function AdminDashboard() {
+    return (
+        <Suspense fallback={<AdminDashboardSkeleton />}>
+            <AdminDashboardContent />
+        </Suspense>
     );
 }

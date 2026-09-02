@@ -56,7 +56,7 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
         number: "05",
         title: "Production, DOI & Archiving",
         timeframe: "Immediate",
-        description: "Galley proof generation, permanent Zenodo/CERN DOI assignment, and global digital repository indexing.",
+        description: "Galley proof generation, permanent DOI assignment (DataCite / Crossref), and global digital repository indexing.",
         icon: Globe2
     }
 ];

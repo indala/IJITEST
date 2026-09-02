@@ -113,17 +113,17 @@ export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps
                         />
                     </InputGroup>
 
-                    {/* Zenodo Open Science Repository Banner */}
+                    {/* Open Science Repository & Digital Preservation Banner */}
                     <div className="p-3 sm:p-3.5 rounded-xl bg-primary/5 border border-primary/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
                         <div className="space-y-0.5">
                             <div className="flex items-center gap-2">
                                 <span className="px-1.5 py-0.5 rounded bg-emerald-700 text-white font-mono font-bold text-[10px] uppercase tracking-wider">
-                                    Zenodo / CERN
+                                    Open Access Archive
                                 </span>
-                                <span className="font-bold text-primary text-xs">Official Digital Repository Community</span>
+                                <span className="font-bold text-primary text-xs">Official Digital Repository & Preservation</span>
                             </div>
-                            <p className="text-muted-foreground leading-relaxed m-0">
-                                All publications are deposited and preserved with persistent DOIs (10.5281/zenodo.22016453) in the CERN Zenodo repository.
+                            <p className="text-muted-foreground leading-relaxed m-0 text-xs">
+                                All published issues and research papers are permanently preserved under persistent digital identifiers (DOI: 10.5281/zenodo.22016453) and open-science repositories.
                             </p>
                         </div>
                         <a
@@ -132,7 +132,7 @@ export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-primary/20 text-[#000066] hover:text-secondary text-xs font-bold shadow-2xs transition-all shrink-0"
                         >
-                            <span>Explore Community</span>
+                            <span>Repository Community</span>
                             <ExternalLink className="w-3 h-3" />
                         </a>
                     </div>
