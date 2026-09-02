@@ -142,32 +142,31 @@ export default function AboutClient({ settings }: AboutClientProps) {
             </section>
 
             {/* Open Access & Creative Commons Model */}
-            <section className="p-4 sm:p-5 rounded-xl bg-primary/5 border border-primary/15 space-y-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="px-1.5 py-0.5 rounded bg-[#000066] text-white font-mono font-bold text-[10px]">
-                                CC BY 4.0
-                            </span>
-                            <h2 className="m-0">Open Access Publishing Model</h2>
-                        </div>
-                        <p className="text-muted-foreground m-0">
-                            {journalShortName} is a fully Open Access journal. All articles are published under the Creative Commons Attribution 4.0 International License (CC BY 4.0), ensuring free, immediate, and permanent global access.
-                        </p>
+            <section className="p-4 sm:p-5 rounded-xl bg-primary/5 border border-primary/15 space-y-2 shadow-2xs">
+                <div>
+                    <div className="flex items-center gap-2 mb-1.5">
+                        <span className="px-2 py-0.5 rounded bg-primary text-white text-meta font-bold">
+                            CC BY 4.0
+                        </span>
+                        <h2 className="m-0">Open Access Publishing Model</h2>
                     </div>
-                    <a
-                        href="https://creativecommons.org/licenses/by/4.0/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-primary/20 text-[#000066] hover:text-secondary text-xs font-bold shadow-2xs transition-all shrink-0"
-                    >
-                        <span>License Terms</span>
-                    </a>
+                    <p className="text-muted-foreground m-0 leading-relaxed">
+                        {journalShortName} is a fully Open Access journal. All articles are published under the{' '}
+                        <a
+                            href="https://creativecommons.org/licenses/by/4.0/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary font-bold underline hover:text-secondary"
+                        >
+                            Creative Commons Attribution 4.0 International License (CC BY 4.0)
+                        </a>
+                        , ensuring free, immediate, and permanent global access.
+                    </p>
                 </div>
             </section>
 
             {/* Publisher Info */}
-            <section className="bg-[#000066] p-4 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-md">
+            <section className="bg-primary p-4 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-md">
                 <div className="relative z-10 space-y-3">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center border border-white/20 shrink-0">
@@ -175,14 +174,14 @@ export default function AboutClient({ settings }: AboutClientProps) {
                         </div>
                         <div>
                             <h2 className="text-white m-0">Journal Publisher</h2>
-                            <p className="text-white/70 m-0">{publisherName}</p>
+                            <p className="text-white/80 m-0 font-medium">{publisherName}</p>
                         </div>
                     </div>
-                    <div className="text-white/80 space-y-2 border-l-2 border-white/20 pl-4">
-                        <p className="m-0 leading-relaxed">
+                    <div className="space-y-2 border-l-2 border-white/20 pl-4">
+                        <p className="m-0 leading-relaxed text-white/90">
                             {publisherName} is dedicated to bridging the gap between theoretical research and industrial application on a global scale.
                         </p>
-                        <p className="m-0 leading-relaxed">
+                        <p className="m-0 leading-relaxed text-white/90">
                             Support for {journalShortName} ensures a stable, high-impact platform for researchers, backed by professional editorial handling and world-class indexing infrastructure.
                         </p>
                     </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { Award, ShieldCheck, CheckCircle2, Globe2 } from 'lucide-react';
+import { Award, CheckCircle2 } from 'lucide-react';
 
 function JournalMetricsWidget() {
     return (

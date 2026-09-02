@@ -8,6 +8,7 @@ import PageHeader from "@/components/layout/PageHeader";
 import Link from 'next/link';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
+import { ScrollSpyNav } from '@/components/common/ScrollSpyNav';
 
 import { useSettingsContext } from '@/components/providers/SettingsContext';
 
@@ -55,31 +56,23 @@ export default function GuidelinesContent() {
                     </p>
                     
                     {/* Creative Commons Attribution 4.0 Card */}
-                    <div className="p-5 rounded-2xl bg-primary/5 border border-primary/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div className="space-y-1.5">
-                            <div className="flex items-center gap-2">
-                                <span className="px-2.5 py-1 rounded bg-[#000066] text-white font-mono font-bold text-xs tracking-wider">
-                                    CC BY 4.0
-                                </span>
-                                <span className="font-bold text-primary text-sm">Creative Commons Attribution 4.0 International</span>
-                            </div>
-                            <p className="text-muted-foreground leading-relaxed m-0">
-                                Permits anyone to copy, redistribute, remix, transform, and build upon the work in any medium or format, provided appropriate credit is given to the original authors and journal.
-                            </p>
+                    <div className="p-4 sm:p-5 rounded-2xl bg-primary/5 border border-primary/15 space-y-1.5 shadow-2xs">
+                        <div className="flex items-center gap-2">
+                            <span className="px-2.5 py-1 rounded bg-primary text-white text-meta font-bold tracking-wider">
+                                CC BY 4.0
+                            </span>
+                            <a
+                                href="https://creativecommons.org/licenses/by/4.0/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-bold text-primary hover:text-secondary underline decoration-primary/30 transition-colors"
+                            >
+                                Creative Commons Attribution 4.0 International
+                            </a>
                         </div>
-                        <a
-                            href="https://creativecommons.org/licenses/by/4.0/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-primary/20 text-[#000066] hover:text-secondary text-xs font-bold shadow-xs hover:shadow-sm transition-all shrink-0"
-                        >
-                            <span>Verify License</span>
-                            <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                <polyline points="15 3 21 3 21 9" />
-                                <line x1="10" y1="14" x2="21" y2="3" />
-                            </svg>
-                        </a>
+                        <p className="text-muted-foreground leading-relaxed m-0">
+                            Permits anyone to copy, redistribute, remix, transform, and build upon the work in any medium or format, provided appropriate credit is given to the original authors and journal.
+                        </p>
                     </div>
                 </div>
             )
@@ -94,8 +87,8 @@ export default function GuidelinesContent() {
 
                     {/* Transparent Fee Table */}
                     <div className="overflow-x-auto rounded-2xl border border-border/80 bg-card shadow-xs">
-                        <table className="w-full text-left text-sm">
-                            <thead className="bg-primary/5 text-primary border-b border-border font-serif text-xs uppercase tracking-wider">
+                        <table className="w-full text-left">
+                            <thead className="bg-primary/5 text-primary border-b border-border text-label">
                                 <tr>
                                     <th className="py-3.5 px-4 font-bold">Fee Category</th>
                                     <th className="py-3.5 px-4 font-bold text-center">Indian Authors (INR)</th>
@@ -108,13 +101,13 @@ export default function GuidelinesContent() {
                                     <td className="py-3 px-4 font-semibold text-foreground">Submission Fee</td>
                                     <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">₹0 (Free / Nil)</td>
                                     <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">$0 (Free / Nil)</td>
-                                    <td className="py-3 px-4 text-xs text-muted-foreground">No fee for manuscript submission</td>
+                                    <td className="py-3 px-4 text-muted-foreground text-body-sm">No fee for manuscript submission</td>
                                 </tr>
                                 <tr className="hover:bg-muted/30 transition-colors">
                                     <td className="py-3 px-4 font-semibold text-foreground">Editorial Processing Charge</td>
                                     <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">₹0 (Free / Nil)</td>
                                     <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">$0 (Free / Nil)</td>
-                                    <td className="py-3 px-4 text-xs text-muted-foreground">No fee for desk review or referee handling</td>
+                                    <td className="py-3 px-4 text-muted-foreground text-body-sm">No fee for desk review or referee handling</td>
                                 </tr>
                                 <tr className="bg-primary/[0.02] hover:bg-primary/[0.05] transition-colors">
                                     <td className="py-3 px-4 font-bold text-primary">Article Processing Charge (APC)</td>
@@ -124,19 +117,19 @@ export default function GuidelinesContent() {
                                     <td className="py-3 px-4 text-center font-bold text-secondary font-mono">
                                         {settings['apcUsd'] === '0' ? '$0 (100% Waiver)' : settings['apcUsd'] ? `USD $${settings['apcUsd']}` : '$0 (Full Waiver)'}
                                     </td>
-                                    <td className="py-3 px-4 text-xs text-muted-foreground">Covers up to 5 authors & standard 8 pages</td>
+                                    <td className="py-3 px-4 text-muted-foreground text-body-sm">Covers up to 5 authors & standard 8 pages</td>
                                 </tr>
                                 <tr className="hover:bg-muted/30 transition-colors">
                                     <td className="py-3 px-4 font-semibold text-foreground">Excess Page Charges</td>
                                     <td className="py-3 px-4 text-center font-mono font-semibold text-foreground/80">INR ₹500 / page</td>
                                     <td className="py-3 px-4 text-center font-mono font-semibold text-foreground/80">USD $10 / page</td>
-                                    <td className="py-3 px-4 text-xs text-muted-foreground">Applicable only for pages exceeding 8 pages</td>
+                                    <td className="py-3 px-4 text-muted-foreground text-body-sm">Applicable only for pages exceeding 8 pages</td>
                                 </tr>
                                 <tr className="hover:bg-muted/30 transition-colors">
                                     <td className="py-3 px-4 font-semibold text-foreground">Colour & Graphic Charges</td>
                                     <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">₹0 (Free / Nil)</td>
                                     <td className="py-3 px-4 text-center text-emerald-700 font-bold font-mono">$0 (Free / Nil)</td>
-                                    <td className="py-3 px-4 text-xs text-muted-foreground">No extra charges for color figures or diagrams</td>
+                                    <td className="py-3 px-4 text-muted-foreground text-body-sm">No extra charges for color figures or diagrams</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -281,22 +274,17 @@ export default function GuidelinesContent() {
             <Section>
                 <SidebarLayout
                     cols={4}
-                    sidebarClassName="hidden lg:block sticky top-32 h-fit"
+                    sidebarClassName="hidden lg:block sticky top-28 h-fit"
                     sidebar={
-                        <>
-                            <h3 className="text-primary mb-6 m-0  tracking-widest uppercase opacity-60">Quick Navigation</h3>
-                            <nav className="space-y-4 border-l border-primary/10 pl-4">
-                                {sections.map((section, idx) => (
-                                    <a
-                                        key={idx}
-                                        href={`#guideline-${idx}`}
-                                        className="text-primary/60 hover:text-secondary block py-1 m-0 text-sm font-medium transition-colors"
-                                    >
-                                        {section.title}
-                                    </a>
-                                ))}
-                            </nav>
-                        </>
+                        <div className="space-y-3">
+                            <h3 className="text-primary text-label m-0">Quick Navigation</h3>
+                            <ScrollSpyNav
+                                items={sections.map((s, idx) => ({
+                                    id: `guideline-${idx}`,
+                                    title: s.title
+                                }))}
+                            />
+                        </div>
                     }
                 >
                     <div className="space-y-6 sm:space-y-8">
@@ -316,7 +304,7 @@ export default function GuidelinesContent() {
 
             {/* Support Card - Separated for Emphasis */}
             <Section background="gradient" padding={false} className="pb-8 sm:pb-12">
-                <div className="bg-[#000066] p-5 sm:p-7 rounded-xl text-white relative overflow-hidden shadow-md">
+                <div className="bg-primary p-5 sm:p-7 rounded-xl text-white relative overflow-hidden shadow-md">
                     <div className="relative z-10 space-y-2 text-center">
                         <h2 className="text-white m-0">Need Assistance?</h2>
                         <p className="text-white/70 max-w-xl mx-auto m-0">For any queries regarding paper submission or formatting, contact our editorial team.</p>

@@ -31,11 +31,11 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
         if (!searchQuery.trim()) return staticEditorialBoardMembers;
         const q = searchQuery.toLowerCase().trim();
         return staticEditorialBoardMembers.filter((m) => 
-            m.full_name.toLowerCase().includes(q) ||
-            m.department.toLowerCase().includes(q) ||
-            m.institute.toLowerCase().includes(q) ||
-            m.designation.toLowerCase().includes(q) ||
-            m.officialAddress.toLowerCase().includes(q)
+            Boolean(m.full_name?.toLowerCase().includes(q)) ||
+            Boolean(m.department?.toLowerCase().includes(q)) ||
+            Boolean(m.institute?.toLowerCase().includes(q)) ||
+            Boolean(m.designation?.toLowerCase().includes(q)) ||
+            Boolean(m.officialAddress?.toLowerCase().includes(q))
         );
     }, [searchQuery]);
 

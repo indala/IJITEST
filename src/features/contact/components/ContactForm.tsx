@@ -79,7 +79,7 @@ export default function ContactForm() {
         <div className="space-y-4">
             <div>
                 <h3 className="m-0">Direct Enquiry Form</h3>
-                <p className="text-muted-foreground m-0 text-xs">Fill out the form below and we will get back to you shortly.</p>
+                <p className="text-body-sm text-muted-foreground m-0">Fill out the form below and we will get back to you shortly.</p>
             </div>
 
             <Form {...form}>
@@ -90,11 +90,11 @@ export default function ContactForm() {
                             name="name"
                             render={({ field }) => (
                                 <FormItem className="space-y-1.5 text-left">
-                                    <FormLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-0.5">Full Name</FormLabel>
+                                    <FormLabel className="text-label text-muted-foreground pl-0.5">Full Name</FormLabel>
                                     <FormControl>
-                                        <Input {...field} className="h-10 bg-white border-border/70 rounded-lg text-primary text-xs focus-visible:ring-primary/20 shadow-2xs px-3" placeholder="Author Name" />
+                                        <Input {...field} className="h-10 bg-white border-border/70 rounded-lg text-primary focus-visible:ring-primary/20 shadow-2xs px-3" placeholder="Author Name" />
                                     </FormControl>
-                                    <FormMessage className="text-xs font-bold text-rose-500 px-1" />
+                                    <FormMessage className="text-body-sm font-semibold text-rose-500 px-1" />
                                 </FormItem>
                             )}
                         />
@@ -103,11 +103,11 @@ export default function ContactForm() {
                             name="email"
                             render={({ field }) => (
                                 <FormItem className="space-y-1.5 text-left">
-                                    <FormLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-0.5">Email Address</FormLabel>
+                                    <FormLabel className="text-label text-muted-foreground pl-0.5">Email Address</FormLabel>
                                     <FormControl>
-                                        <Input type="email" {...field} className="h-10 bg-white border-border/70 rounded-lg text-primary text-xs focus-visible:ring-primary/20 shadow-2xs px-3" placeholder="researcher@university.edu" />
+                                        <Input type="email" {...field} className="h-10 bg-white border-border/70 rounded-lg text-primary focus-visible:ring-primary/20 shadow-2xs px-3" placeholder="researcher@university.edu" />
                                     </FormControl>
-                                    <FormMessage className="text-xs font-bold text-rose-500 px-1" />
+                                    <FormMessage className="text-body-sm font-semibold text-rose-500 px-1" />
                                 </FormItem>
                             )}
                         />
@@ -117,11 +117,11 @@ export default function ContactForm() {
                         name="subject"
                         render={({ field }) => (
                             <FormItem className="space-y-1.5 text-left">
-                                <FormLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-0.5">Subject</FormLabel>
+                                <FormLabel className="text-label text-muted-foreground pl-0.5">Subject</FormLabel>
                                 <FormControl>
-                                    <Input {...field} className="h-10 bg-white border-border/70 rounded-lg text-primary text-xs focus-visible:ring-primary/20 shadow-2xs px-3" placeholder="Status Inquiry for Paper ID: IJITEST-X" />
+                                    <Input {...field} className="h-10 bg-white border-border/70 rounded-lg text-primary focus-visible:ring-primary/20 shadow-2xs px-3" placeholder="Status Inquiry for Paper ID: IJITEST-X" />
                                 </FormControl>
-                                <FormMessage className="text-xs font-bold text-rose-500 px-1" />
+                                <FormMessage className="text-body-sm font-semibold text-rose-500 px-1" />
                             </FormItem>
                         )}
                     />
@@ -130,11 +130,11 @@ export default function ContactForm() {
                         name="message"
                         render={({ field }) => (
                             <FormItem className="space-y-1.5 text-left">
-                                <FormLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-0.5">Message Content</FormLabel>
+                                <FormLabel className="text-label text-muted-foreground pl-0.5">Message Content</FormLabel>
                                 <FormControl>
-                                    <Textarea {...field} rows={4} className="bg-white border-border/70 rounded-lg text-primary text-xs focus-visible:ring-primary/20 shadow-2xs p-3 resize-none" placeholder="Provide details of your inquiry here..." />
+                                    <Textarea {...field} rows={4} className="bg-white border-border/70 rounded-lg text-primary focus-visible:ring-primary/20 shadow-2xs p-3 resize-none" placeholder="Provide details of your inquiry here..." />
                                 </FormControl>
-                                <FormMessage className="text-xs font-bold text-rose-500 px-1" />
+                                <FormMessage className="text-body-sm font-semibold text-rose-500 px-1" />
                             </FormItem>
                         )}
                     />
@@ -142,7 +142,7 @@ export default function ContactForm() {
                     <Button
                         type="submit"
                         disabled={isPending}
-                        className="w-full h-10 bg-primary text-white rounded-lg font-bold text-xs shadow-xs hover:bg-primary/95 transition-all cursor-pointer"
+                        className="w-full h-10 bg-primary text-white rounded-lg text-label shadow-xs hover:bg-primary/95 transition-all cursor-pointer"
                     >
                         {isPending ? (
                             <div className="flex items-center justify-center gap-2">
@@ -156,7 +156,7 @@ export default function ContactForm() {
                     </Button>
 
                     {state && !state.success && (
-                        <p className="text-rose-500 text-center font-bold text-xs m-0">
+                        <p className="text-rose-500 text-center text-body-sm font-semibold m-0">
                             {state.error || "Failed to transmit. Please try again."}
                         </p>
                     )}

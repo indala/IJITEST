@@ -50,14 +50,14 @@ export default function TermsClient({ settings }: TermsClientProps) {
                         ))}
                     </div>
 
-                    <Card className="bg-[#000066] p-4 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-xs">
+                    <Card className="bg-primary p-4 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-xs">
                         <div className="relative z-10 flex flex-col md:flex-row gap-4 items-center">
                             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0 border border-white/20">
                                 <Gavel className="w-5 h-5 text-white" />
                             </div>
                             <div className="space-y-1">
                                 <h3 className="m-0 text-white">Framework Evolution</h3>
-                                <p className="text-white/75 border-l-2 border-white/20 pl-3.5 m-0 leading-relaxed">
+                                <p className="text-white/90 border-l-2 border-white/20 pl-3.5 m-0 leading-relaxed">
                                     Felix Academic Publications reserves the right to update this legal framework in accordance with international publishing guidelines. Continued platform usage implies acceptance of these terms.
                                 </p>
                             </div>

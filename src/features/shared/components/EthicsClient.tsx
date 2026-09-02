@@ -1,5 +1,8 @@
+'use client';
+
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
+import { ScrollSpyNav } from '@/components/common/ScrollSpyNav';
 
 import type { JournalSettings } from '@/db/types';
 
@@ -48,21 +51,21 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
                     <p className="leading-relaxed">
                         The journal may charge authors an Article Processing Charge (APC) after acceptance. Such charges do not affect the editorial decision or peer-review process. No submission fee or editorial processing fee is charged. The journal is committed to providing immediate and unrestricted access to scholarly research and follows the principles of Open Access publishing.
                     </p>
-                    <div className="p-4 rounded-xl bg-primary/5 border border-primary/15 flex items-center justify-between gap-4 mt-2">
-                        <div className="flex items-center gap-2.5">
-                            <span className="px-2 py-0.5 rounded bg-[#000066] text-white font-mono font-bold text-xs tracking-wider">
-                                CC BY 4.0
-                            </span>
-                            <span className="text-xs text-foreground/80 font-medium">Licensed under Creative Commons Attribution 4.0 International</span>
-                        </div>
-                        <a
-                            href="https://creativecommons.org/licenses/by/4.0/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs font-bold text-primary hover:text-secondary underline"
-                        >
-                            License Terms
-                        </a>
+                    <div className="p-3.5 sm:p-4 rounded-xl bg-primary/5 border border-primary/15 flex items-center gap-3 mt-2 shadow-2xs">
+                        <span className="px-2 py-0.5 rounded bg-primary text-white text-meta font-bold tracking-wider shrink-0">
+                            CC BY 4.0
+                        </span>
+                        <span className="text-xs text-foreground/80 font-medium">
+                            Licensed under{' '}
+                            <a
+                                href="https://creativecommons.org/licenses/by/4.0/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-bold text-primary hover:text-secondary underline decoration-primary/30 transition-colors"
+                            >
+                                Creative Commons Attribution 4.0 International
+                            </a>
+                        </span>
                     </div>
                 </div>
             )
@@ -308,22 +311,17 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
             <Section>
                 <SidebarLayout
                     cols={4}
-                    sidebarClassName="hidden lg:block sticky top-32 h-fit"
+                    sidebarClassName="hidden lg:block sticky top-28 h-fit"
                     sidebar={
-                        <>
-                            <h3 className="text-primary/60 mb-4">Quick Navigation</h3>
-                            <nav className="space-y-3 border-l border-primary/10 pl-3.5">
-                                {sections.map((section, idx) => (
-                                    <a
-                                        key={idx}
-                                        href={`#section-${idx}`}
-                                        className="text-primary/60 hover:text-primary block py-0.5 m-0 text-xs transition-colors"
-                                    >
-                                        {section.title}
-                                    </a>
-                                ))}
-                            </nav>
-                        </>
+                        <div className="space-y-3">
+                            <h3 className="text-primary text-label m-0">Quick Navigation</h3>
+                            <ScrollSpyNav
+                                items={sections.map((s, idx) => ({
+                                    id: `section-${idx}`,
+                                    title: s.title
+                                }))}
+                            />
+                        </div>
                     }
                 >
                     <div className="space-y-6 sm:space-y-8">
@@ -343,10 +341,10 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
 
             {/* Report Section - Separated for Emphasis */}
             <Section background="gradient" padding={false} className="pb-8 sm:pb-12">
-                <div className="bg-[#000066] p-5 sm:p-7 rounded-xl text-white relative overflow-hidden shadow-md">
+                <div className="bg-primary p-5 sm:p-7 rounded-xl text-white relative overflow-hidden shadow-md">
                     <div className="relative z-10 space-y-2.5 text-center">
                         <h2 className="text-white m-0">Ethics Committee</h2>
-                        <p className="text-white/70 max-w-xl mx-auto m-0">Report any ethics concerns or plagiarism sightings directly to our board for immediate evaluation and action.</p>
+                        <p className="text-white/80 max-w-xl mx-auto m-0">Report any ethics concerns or plagiarism sightings directly to our board for immediate evaluation and action.</p>
                         <div className="pt-1">
                             <a
                                 href={`mailto:${supportEmail}`}

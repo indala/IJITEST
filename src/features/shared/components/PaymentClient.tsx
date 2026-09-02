@@ -50,7 +50,7 @@ export default function PaymentClient({ id }: { id: string }) {
                         Credentials could not be verified for active payment processing.
                     </p>
                 </div>
-                <Button asChild className="h-10 mt-8 px-8 bg-[#000066] hover:bg-[#000088] text-white font-bold text-sm tracking-wider rounded-lg shadow-sm transition-all uppercase">
+                <Button asChild className="h-10 mt-8 px-8 bg-primary hover:bg-primary/90 text-white font-bold text-label rounded-lg shadow-sm transition-all">
                     <Link href="/track">Return home</Link>
                 </Button>
             </div>
@@ -70,7 +70,7 @@ export default function PaymentClient({ id }: { id: string }) {
                     </p>
                 </div>
                 <div className="pt-8 space-y-4">
-                    <Button asChild className="h-10 w-full bg-[#000066] hover:bg-[#000088] text-white font-bold text-sm tracking-wider rounded-lg shadow-sm transition-all uppercase">
+                    <Button asChild className="h-10 w-full bg-primary hover:bg-primary/90 text-white font-bold text-label rounded-lg shadow-sm transition-all">
                         <Link href="/">Return home</Link>
                     </Button>
                 </div>
@@ -104,11 +104,11 @@ export default function PaymentClient({ id }: { id: string }) {
                         <section className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
                             <div className="p-8 sm:p-10 border-b border-border/50 bg-muted/20">
                                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                                    <Badge className="bg-[#000066]/5 text-[#000066] border-[#000066]/20 px-3 h-6 text-xs sm:text-sm font-bold tracking-wider uppercase">Official Invoice</Badge>
-                                    <span className="text-xs sm:text-sm font-bold text-muted-foreground tracking-wider uppercase">Date: {new Date().toLocaleDateString()}</span>
+                                    <Badge className="bg-primary/5 text-primary border-primary/20 px-3 h-6 text-label">Official Invoice</Badge>
+                                    <span className="text-label text-muted-foreground">Date: {new Date().toLocaleDateString()}</span>
                                 </div>
                                 <h3 className="m-0 leading-tight">{manuscript.title}</h3>
-                                <div className="flex items-center gap-2 text-muted-foreground pt-2 text-xs">
+                                <div className="flex items-center gap-2 text-muted-foreground pt-2">
                                     <TrendingUp className="w-3.5 h-3.5 text-secondary" />
                                     <span className="text-meta">Manuscript ID: {manuscript.paperId}</span>
                                 </div>
@@ -127,23 +127,23 @@ export default function PaymentClient({ id }: { id: string }) {
                                 </div>
 
                                 <div className="space-y-2 pt-3 border-t border-border/50">
-                                    <div className="flex justify-between items-center text-xs">
+                                    <div className="flex justify-between items-center text-body-sm">
                                         <span className="text-muted-foreground">Article Processing Fee (85%)</span>
                                         <span className="font-semibold text-primary">₹ {apcFee.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-xs">
+                                    <div className="flex justify-between items-center text-body-sm">
                                         <span className="text-muted-foreground">Global Indexing Fee (15%)</span>
                                         <span className="font-semibold text-primary">₹ {apcIndexing.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
                                     <div className="flex justify-between items-center pt-3 mt-2 border-t border-dashed border-border/50">
-                                        <span className="text-xs sm:text-sm font-bold text-primary uppercase">Total Due</span>
-                                        <span className="text-xl sm:text-2xl font-bold text-[#000066]">₹ {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                        <span className="text-label text-primary">Total Due</span>
+                                        <span className="text-xl sm:text-2xl font-bold text-primary">₹ {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
                                 </div>
                             </div>
                         </section>
 
-                        <section className="p-4 sm:p-5 bg-[#000066] rounded-xl text-white relative overflow-hidden shadow-md">
+                        <section className="p-4 sm:p-5 bg-primary rounded-xl text-white relative overflow-hidden shadow-md">
                             <div className="relative z-10 flex flex-col md:flex-row gap-3 items-center">
                                 <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center shrink-0 border border-white/20 text-white">
                                     <ShieldAlert className="w-4 h-4" />
@@ -181,9 +181,9 @@ export default function PaymentClient({ id }: { id: string }) {
                                 )}
 
                                 <div className="flex items-center justify-center gap-4 pt-2 opacity-30">
-                                    <span className="text-xs sm:text-sm font-bold tracking-widest uppercase">VISA</span>
-                                    <span className="text-xs sm:text-sm font-bold tracking-widest uppercase">MC</span>
-                                    <span className="text-xs sm:text-sm font-bold tracking-widest uppercase">UPI</span>
+                                    <span className="text-label">VISA</span>
+                                    <span className="text-label">MC</span>
+                                    <span className="text-label">UPI</span>
                                 </div>
                             </section>
 

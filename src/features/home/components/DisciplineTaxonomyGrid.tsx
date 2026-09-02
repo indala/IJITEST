@@ -1,7 +1,6 @@
 'use client';
 
 import { memo } from 'react';
-import { motion } from 'framer-motion';
 import { 
     Cpu, 
     Code2, 
@@ -11,8 +10,7 @@ import {
     Zap, 
     Activity, 
     Layers, 
-    ChevronRight,
-    ArrowUpRight
+    ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 

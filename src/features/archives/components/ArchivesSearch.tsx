@@ -70,7 +70,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                             setIsDropdownOpen(true);
                         }}
                         onFocus={() => setIsDropdownOpen(true)}
-                        className="text-xs sm:text-sm placeholder:text-muted-foreground/40 border-none bg-transparent"
+                        className="text-body-sm placeholder:text-muted-foreground/40 border-none bg-transparent"
                     />
                     {searchQuery && (
                         <InputGroupAddon align="inline-end" className="pr-3.5">
@@ -79,7 +79,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                                     setSearchQuery('');
                                     setIsDropdownOpen(false);
                                 }}
-                                className="text-xs font-bold text-[#000066]/60 hover:text-[#000066] cursor-pointer"
+                                className="text-label text-primary/60 hover:text-primary cursor-pointer"
                             >
                                 Clear
                             </button>
@@ -93,7 +93,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                         data-lenis-prevent
                         className="absolute top-full left-0 right-0 z-50 mt-1.5 max-h-80 overflow-y-auto bg-card border border-border/80 shadow-xl rounded-xl p-3 space-y-2 scroll-smooth animate-in fade-in slide-in-from-top-1 duration-150"
                     >
-                        <div className="flex items-center justify-between pb-1.5 border-b border-border/40 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                        <div className="flex items-center justify-between pb-1.5 border-b border-border/40 text-label text-muted-foreground">
                             <span>Search Results</span>
                             <span>{filteredPapers.length} matching {filteredPapers.length === 1 ? 'article' : 'articles'}</span>
                         </div>
@@ -114,10 +114,10 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                                         >
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-bold text-secondary bg-secondary/5 px-2 py-0.5 rounded-full border border-secondary/10">
+                                                    <span className="text-label text-secondary bg-secondary/5 px-2 py-0.5 rounded-full border border-secondary/10">
                                                         Vol {paper.volumeNumber}, Issue {paper.issueNumber}
                                                     </span>
-                                                    <span className="text-[10px] font-mono font-medium text-muted-foreground">
+                                                    <span className="text-meta text-muted-foreground">
                                                         {paper.paperId}
                                                     </span>
                                                 </div>
@@ -135,7 +135,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                                 })}
                             </div>
                         ) : (
-                            <div className="py-6 text-center text-xs font-medium text-muted-foreground">
+                            <div className="py-6 text-center text-body-sm text-muted-foreground">
                                 No publications match your search query.
                             </div>
                         )}

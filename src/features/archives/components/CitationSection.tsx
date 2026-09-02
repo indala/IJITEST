@@ -124,7 +124,7 @@ ER  - `;
                     <Quote className="w-4 h-4 rotate-180 text-secondary" />
                     <h3 className="m-0">Cite this Article</h3>
                 </div>
-                <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase">
+                <span className="text-label text-muted-foreground">
                     {style.toUpperCase()}
                 </span>
             </div>
@@ -136,7 +136,7 @@ ER  - `;
                         key={s}
                         type="button"
                         onClick={() => setStyle(s)}
-                        className={`py-1 rounded text-center text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+                        className={`py-1 rounded text-center text-label transition-all cursor-pointer ${
                             style === s
                                 ? 'bg-white text-primary shadow-xs font-bold'
                                 : 'text-muted-foreground hover:text-foreground'
@@ -149,14 +149,14 @@ ER  - `;
 
             {/* Citation Box */}
             <div className="bg-muted/30 p-3.5 rounded-xl border border-border/60 space-y-2.5 relative group">
-                <pre className="text-muted-foreground font-sans text-xs leading-relaxed m-0 whitespace-pre-wrap select-all font-normal">
+                <pre className="text-muted-foreground text-body-sm leading-relaxed m-0 whitespace-pre-wrap select-all font-normal">
                     {currentCitation}
                 </pre>
 
                 <div className="flex items-center gap-2 pt-1">
                     <button
                         onClick={handleCopy}
-                        className="flex-1 flex items-center justify-center gap-1.5 bg-white text-primary py-2 rounded-lg text-xs font-bold border border-border/70 hover:bg-primary/5 transition-all cursor-pointer shadow-2xs"
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-white text-primary py-2 rounded-lg text-label border border-border/70 hover:bg-primary/5 transition-all cursor-pointer shadow-2xs"
                     >
                         {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                         <span>{copied ? 'Copied!' : 'Copy Citation'}</span>
@@ -165,7 +165,7 @@ ER  - `;
                     <button
                         onClick={handleDownloadRis}
                         title="Download .RIS citation for reference managers (Zotero, EndNote, Mendeley)"
-                        className="flex items-center justify-center gap-1 bg-white hover:bg-primary/5 text-muted-foreground hover:text-primary py-2 px-3 rounded-lg text-xs font-semibold border border-border/70 transition-all cursor-pointer shadow-2xs"
+                        className="flex items-center justify-center gap-1 bg-white hover:bg-primary/5 text-muted-foreground hover:text-primary py-2 px-3 rounded-lg text-label border border-border/70 transition-all cursor-pointer shadow-2xs"
                     >
                         <Download className="w-3.5 h-3.5" />
                         <span>.RIS</span>
@@ -194,7 +194,7 @@ ER  - `;
                                 });
                         }
                     }}
-                    className="w-full flex items-center justify-center gap-2 bg-muted/40 text-foreground py-2 rounded-lg text-xs font-bold border border-border/60 hover:bg-muted/70 transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 bg-muted/40 text-foreground py-2 rounded-lg text-label border border-border/60 hover:bg-muted/70 transition-all cursor-pointer"
                 >
                     <Share2 className="w-3.5 h-3.5" /> Share Research
                 </button>

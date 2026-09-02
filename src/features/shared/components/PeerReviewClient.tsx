@@ -36,14 +36,14 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6 sm:space-y-8">
                     {/* Hero Statement */}
-                    <section className="bg-[#000066] p-5 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-xs">
+                    <section className="bg-primary p-5 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-xs">
                         <div className="relative z-10 flex flex-col md:flex-row items-center gap-5">
                             <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 shrink-0">
                                 <ShieldCheck className="w-6 h-6 text-secondary" />
                             </div>
                             <div className="space-y-1.5">
                                 <h2 className="font-semibold m-0 text-white">Scientific Integrity</h2>
-                                <p className="text-white/70 border-l-2 border-secondary/50 pl-4 m-0">
+                                <p className="text-white/90 border-l-2 border-secondary/50 pl-4 m-0">
                                     Every manuscript submitted to {journalShortName} undergoes a rigorous double-blind peer review process to ensure technical accuracy and originality.
                                 </p>
                             </div>

@@ -40,14 +40,14 @@ function Milestone({ title, date, description, icon: Icon, active, last }: Miles
 
             <div className="pb-8 pt-1 flex-1">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                    <h3 className={`text-sm 2xl:text-base font-semibold m-0 transition-colors duration-300 ${active ? 'text-primary' : 'text-muted-foreground/50 group-hover/milestone:text-muted-foreground/80'}`}>{title}</h3>
+                    <h3 className={`m-0 transition-colors duration-300 ${active ? 'text-primary' : 'text-muted-foreground/50 group-hover/milestone:text-muted-foreground/80'}`}>{title}</h3>
                     {date && (
-                        <span className="text-xs sm:text-sm 2xl:text-base text-muted-foreground bg-muted/50 px-2 py-0.5 2xl:px-3 2xl:py-1 rounded border border-border/50 font-mono transition-colors duration-300 group-hover/milestone:border-muted-foreground/20">
+                        <span className="text-meta text-muted-foreground bg-muted/50 px-2 py-0.5 2xl:px-3 2xl:py-1 rounded border border-border/50 transition-colors duration-300 group-hover/milestone:border-muted-foreground/20">
                             {new Date(date).toLocaleDateString()}
                         </span>
                     )}
                 </div>
-                <p className={`text-sm 2xl:text-base leading-relaxed transition-colors duration-300 ${active ? 'text-muted-foreground' : 'text-muted-foreground/30 group-hover/milestone:text-muted-foreground/50'}`}>{description}</p>
+                <p className={`leading-relaxed transition-colors duration-300 ${active ? 'text-muted-foreground' : 'text-muted-foreground/30 group-hover/milestone:text-muted-foreground/50'}`}>{description}</p>
             </div>
         </div>
     );
@@ -59,7 +59,7 @@ function TrackButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full h-12 2xl:h-14 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all active:scale-[0.99] hover:shadow-md hover:-translate-y-0.5 cursor-pointer font-bold text-sm 2xl:text-base tracking-wider uppercase duration-300"
+            className="w-full h-12 2xl:h-14 bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm transition-all active:scale-[0.99] hover:shadow-md hover:-translate-y-0.5 cursor-pointer font-bold text-label duration-300"
         >
             {pending ? (
                 <div className="flex items-center gap-3">
@@ -141,7 +141,7 @@ export default function TrackClient() {
         <section className="container-responsive py-6 sm:py-8">
             {/* Tracking Form */}
             <div className="bg-card border border-border/70 rounded-xl overflow-hidden shadow-2xs max-w-3xl mx-auto w-full group">
-                <div className="bg-[#000066] p-4 sm:p-6 text-white relative overflow-hidden">
+                <div className="bg-primary p-4 sm:p-6 text-white relative overflow-hidden">
                     <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
                         <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-white border border-white/20 shrink-0">
                             <Search className="w-6 h-6" />
@@ -158,7 +158,7 @@ export default function TrackClient() {
                 <div className="p-4 sm:p-6">
                     <form action={formAction} className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-0.5">Manuscript ID</label>
+                            <label className="text-label text-muted-foreground ml-0.5">Manuscript ID</label>
                             <div className="relative">
                                 <Input
                                     name="paperId"
@@ -168,7 +168,7 @@ export default function TrackClient() {
                                         setLocalState(null);
                                     }}
                                     required
-                                    className="h-10 rounded-lg bg-muted/20 border-border/70 text-primary px-3 text-xs"
+                                    className="h-10 rounded-lg bg-muted/20 border-border/70 text-primary px-3 text-body-sm"
                                     placeholder={`${journalShortName}-2026-XXX`}
                                 />
                                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40">
@@ -177,7 +177,7 @@ export default function TrackClient() {
                             </div>
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-0.5">Corresponding Author Email</label>
+                            <label className="text-label text-muted-foreground ml-0.5">Corresponding Author Email</label>
                             <div className="relative">
                                 <Input
                                     type="email"
@@ -188,7 +188,7 @@ export default function TrackClient() {
                                         setLocalState(null);
                                     }}
                                     required
-                                    className="h-10 rounded-lg bg-muted/20 border-border/70 text-primary px-3 text-xs"
+                                    className="h-10 rounded-lg bg-muted/20 border-border/70 text-primary px-3 text-body-sm"
                                     placeholder="author@institution.edu"
                                 />
                                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40">
@@ -214,14 +214,14 @@ export default function TrackClient() {
                             <section className="mb-6 space-y-4 relative z-10">
                                 <div className="flex flex-wrap items-center justify-between gap-6">
                                     <div className="flex items-center gap-3">
-                                        <Badge className="bg-primary/5 text-primary border-primary/20 px-4 h-8 2xl:h-9 2xl:px-5 2xl:text-base rounded-lg">
+                                        <Badge className="bg-primary/5 text-primary border-primary/20 px-4 h-8 2xl:h-9 2xl:px-5 text-label rounded-lg">
                                             Status: {manuscript.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                                         </Badge>
                                         <span className="text-meta bg-muted/50 px-2.5 py-0.5 rounded border border-border/50">
                                             ID: {manuscript.paperId}
                                         </span>
                                     </div>
-                                    <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                    <div className="text-meta text-muted-foreground flex items-center gap-1.5">
                                         <Calendar className="w-3.5 h-3.5" /> {manuscript.submittedAt ? new Date(manuscript.submittedAt).getFullYear() : 'N/A'}
                                     </div>
                                 </div>
@@ -280,7 +280,7 @@ export default function TrackClient() {
                             {/* Action Cards */}
                             <div className="mt-4 pt-4 border-t border-border/50">
                                 {manuscript.status === 'accepted' && (
-                                    <div className="bg-[#000066] p-4 sm:p-5 rounded-xl text-white relative overflow-hidden shadow-md">
+                                    <div className="bg-primary p-4 sm:p-5 rounded-xl text-white relative overflow-hidden shadow-md">
                                         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                                             <div className="space-y-1.5">
                                                 <div className="flex items-center gap-2.5">
@@ -293,7 +293,7 @@ export default function TrackClient() {
                                                     Your manuscript has been approved. Please finalize the Article Processing Charge (APC) to proceed with publication.
                                                 </p>
                                             </div>
-                                            <Button asChild size="sm" className="h-8 px-4 bg-white text-primary hover:bg-white/90 rounded-lg shadow-xs transition-all shrink-0 font-bold text-xs tracking-wider uppercase">
+                                            <Button asChild size="sm" className="h-8 px-4 bg-white text-primary hover:bg-white/90 rounded-lg shadow-xs transition-all shrink-0 text-label">
                                                 <Link href={`/payment/${manuscript.paperId}`} className="flex items-center gap-1.5">
                                                     Process Payment <CreditCard className="w-3.5 h-3.5" />
                                                 </Link>
@@ -315,7 +315,7 @@ export default function TrackClient() {
                                                 Your research is now live in the global scientific archives.
                                             </p>
                                         </div>
-                                        <Button asChild size="sm" className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-xs transition-all shrink-0 font-bold text-xs tracking-wider uppercase">
+                                        <Button asChild size="sm" className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-xs transition-all shrink-0 text-label">
                                             <Link href={`/archives`} className="flex items-center gap-1.5">
                                                 View in Archive <ArrowRight className="w-3.5 h-3.5" />
                                             </Link>
@@ -334,7 +334,7 @@ export default function TrackClient() {
                                         {manuscript.reviewerFeedback && manuscript.reviewerFeedback.length > 0 && (
                                             <div className="grid grid-cols-1 gap-2.5">
                                                 {manuscript.reviewerFeedback.filter((f): f is string => f !== null).map((feedback, i) => (
-                                                    <div key={i} className="p-3.5 bg-card border border-border/50 rounded-lg text-xs sm:text-sm leading-relaxed flex gap-3">
+                                                    <div key={i} className="p-3.5 bg-card border border-border/50 rounded-lg text-body-sm leading-relaxed flex gap-3">
                                                         <div className="w-1 h-auto bg-destructive/20 rounded-full shrink-0" />
                                                         <div className="italic">&quot;{feedback}&quot;</div>
                                                     </div>
@@ -362,7 +362,7 @@ export default function TrackClient() {
                         </div>
                         <Button
                             onClick={() => setLocalState(null)}
-                            className="h-12 px-10 bg-[#000066] hover:bg-[#000088] text-white rounded-xl shadow-sm transition-all cursor-pointer active:scale-95 font-bold text-sm tracking-wider uppercase"
+                            className="h-12 px-10 bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm transition-all cursor-pointer active:scale-95 font-bold text-label"
                         >
                             Try Again
                         </Button>

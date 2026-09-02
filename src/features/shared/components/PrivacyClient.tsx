@@ -51,14 +51,14 @@ export default function PrivacyClient({ settings }: PrivacyClientProps) {
                         ))}
                     </div>
 
-                    <Card className="bg-[#000066] p-4 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-xs">
+                    <Card className="bg-primary p-4 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-xs">
                         <div className="relative z-10 flex flex-col md:flex-row gap-4 items-center">
                             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0 border border-white/20">
                                 <Lock className="w-5 h-5 text-white" />
                             </div>
                             <div className="space-y-1">
                                 <h3 className="m-0 text-white">Inquiries & Data Access</h3>
-                                <p className="text-white/75 border-l-2 border-white/20 pl-3.5 m-0 leading-relaxed">
+                                <p className="text-white/90 border-l-2 border-white/20 pl-3.5 m-0 leading-relaxed">
                                     For any privacy concerns or data access requests, please contact our verified Editorial Office at <span className="text-white font-semibold">{supportEmail}</span>.
                                 </p>
                             </div>

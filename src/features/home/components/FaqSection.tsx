@@ -78,7 +78,7 @@ export default function FaqSection() {
         <div className="max-w-3xl mx-auto space-y-6">
           
           <div className="text-center space-y-1.5">
-            <Badge variant="outline" className="bg-[#000066]/5 text-[#000066] border-[#000066]/10 px-2.5 py-0.5 rounded-full text-label">
+            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 px-2.5 py-0.5 rounded-full text-label">
               Common Questions
             </Badge>
             <h2 className="m-0">
@@ -94,11 +94,11 @@ export default function FaqSection() {
               <AccordionItem 
                 key={faq.question} 
                 value={`item-${index}`}
-                className="border border-border/50 rounded-xl bg-card px-3.5 sm:px-4 transition-all hover:border-[#000066]/20 shadow-2xs"
+                className="border border-border/50 rounded-xl bg-card px-3.5 sm:px-4 transition-all hover:border-primary/20 shadow-2xs"
               >
-                <AccordionTrigger className="text-left py-3 font-semibold text-foreground hover:no-underline hover:text-[#000066] transition-colors">
+                <AccordionTrigger className="text-left py-3 font-semibold text-foreground hover:no-underline hover:text-primary transition-colors">
                   <div className="flex items-center gap-2.5">
-                    <HelpCircle className="w-4 h-4 text-[#000066]/60 shrink-0" />
+                    <HelpCircle className="w-4 h-4 text-primary/60 shrink-0" />
                     {faq.question}
                   </div>
                 </AccordionTrigger>
@@ -111,9 +111,9 @@ export default function FaqSection() {
 
           <div className="pt-8 flex flex-col items-center gap-4 border-t border-border/50">
             <p className="text-muted-foreground italic m-0">
-              Can&apos;t find what you&apos;re looking for? <a href="/contact" className="text-[#000066] font-semibold underline-offset-4 hover:underline">Contact our support team</a> directly.
+              Can&apos;t find what you&apos;re looking for? <a href="/contact" className="text-primary font-semibold underline-offset-4 hover:underline">Contact our support team</a> directly.
             </p>
-            <Button asChild variant="outline" className="h-10 px-5 rounded-xl text-xs font-semibold uppercase tracking-wider text-[#000066] border-[#000066]/20 hover:bg-[#000066]/5 cursor-pointer">
+            <Button asChild variant="outline" className="h-10 px-5 rounded-xl text-label text-primary border-primary/20 hover:bg-primary/5 cursor-pointer">
               <Link href="/faqs">View Full FAQ Directory</Link>
             </Button>
           </div>

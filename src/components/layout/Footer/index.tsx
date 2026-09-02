@@ -50,7 +50,7 @@ export default async function Footer() {
                     <div className="lg:col-span-1 space-y-3">
                         <div>
                             <p className="mb-2 text-white m-0 font-bold">IJITEST</p>
-                            <p className="text-white/70 m-0 text-xs leading-relaxed">
+                            <p className="text-white/80 m-0 text-xs leading-relaxed">
                                 International Journal of Innovative Trends in Engineering Science and Technology (IJITEST) is a peer-reviewed scholarly journal dedicated to elite research dissemination.
                             </p>
                         </div>
@@ -59,7 +59,7 @@ export default async function Footer() {
                     {/* Journal Portals — static, zero JS */}
                     <div className="lg:col-span-2">
                         <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Journal Portals</h3>
-                        <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-white/70 list-none p-0 text-xs m-0">
+                        <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-white/80 list-none p-0 text-xs m-0">
                             <li><Link href="/about" className="hover:text-secondary transition-colors">About Journal</Link></li>
                             <li><Link href="/editorial-board" className="hover:text-secondary transition-colors">Editorial Board</Link></li>
                             <li><Link href="/guidelines" className="hover:text-secondary transition-colors">Author Guidelines</Link></li>
@@ -86,7 +86,7 @@ export default async function Footer() {
                                         <ShieldCheck className="w-4 h-4 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-white/70 m-0 text-[10px] uppercase font-semibold">COPE Compliant</p>
+                                        <p className="text-white/80 m-0 text-[10px] uppercase font-semibold">COPE Compliant</p>
                                         <p className="text-white m-0 text-xs font-bold">Institutional Standards</p>
                                     </div>
                                 </div>
@@ -97,7 +97,7 @@ export default async function Footer() {
                                         <Phone className="w-4 h-4 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-white/70 m-0 text-[10px] uppercase font-semibold">Direct Line</p>
+                                        <p className="text-white/80 m-0 text-[10px] uppercase font-semibold">Direct Line</p>
                                         <Suspense><FooterDynamic field="supportPhone" settings={settings} /></Suspense>
                                     </div>
                                 </div>
@@ -108,8 +108,8 @@ export default async function Footer() {
                                         <MapPin className="w-4 h-4 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-white/70 m-0 text-[10px] uppercase font-semibold">Office Location</p>
-                                        <Suspense><FooterDynamic field="officeAddress" className="text-white/70 m-0 text-xs italic" settings={settings} /></Suspense>
+                                        <p className="text-white/80 m-0 text-[10px] uppercase font-semibold">Office Location</p>
+                                        <Suspense><FooterDynamic field="officeAddress" className="text-white/80 m-0 text-xs italic" settings={settings} /></Suspense>
                                     </div>
                                 </div>
                             </div>
@@ -122,18 +122,18 @@ export default async function Footer() {
                     <div className="flex flex-col items-center lg:items-start gap-0.5">
                         {/* Dynamic — publisher name + year */}
                         <Suspense><FooterDynamic field="copyright" settings={settings} /></Suspense>
-                        <p className="opacity-50 text-[11px] m-0">All Rights Reserved • E-ISSN: 3139-6887</p>
+                        <p className="text-white/60 text-[11px] m-0">All Rights Reserved • E-ISSN: 3139-6887</p>
                     </div>
 
                     {/* Creative Commons Attribution Notice */}
-                    <div className="text-center lg:text-left text-xs text-white/70 space-y-0.5">
-                        <p className="m-0">
+                    <div className="text-center lg:text-left text-xs space-y-0.5">
+                        <p className="m-0 text-white/90">
                             Articles licensed under{' '}
                             <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 font-semibold underline">
                                 Creative Commons Attribution 4.0 International (CC BY 4.0)
                             </a>
                         </p>
-                        <p className="m-0 text-[10px] text-white/50">
+                        <p className="m-0 text-[11px] text-white/70 font-medium">
                             Gold Open Access • Permanent CERN Zenodo DOI Archiving
                         </p>
                     </div>
