@@ -705,7 +705,14 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
             }
         }
 
+        if (deletedCount > 0) {
+            updateTag(CACHE_TAGS.SUBMISSIONS);
+            updateTag(CACHE_TAGS.PUBLIC_DATA);
+            await invalidateSubmittedSubmissionsCount();
+        }
+
         revalidatePath('/admin/users');
+        revalidatePath('/admin/submissions');
         return actionSuccess({ deletedCount }, `Cleanup complete. Deleted ${deletedCount} inactive authors.`);
     } catch (error) {
         console.error("Cleanup Error:", error);

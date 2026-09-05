@@ -176,9 +176,13 @@ export async function initializePayment(submissionId: number, amount: number, cu
                 actionLink: `/author/submissions/${submissionId}`,
                 metadata: { submissionId, paperId: sub.paperId }
             });
+            await invalidateAuthorActionsCount(sub.correspondingAuthorId);
         }
 
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/admin/payments');
+        revalidatePath(`/admin/submissions/${submissionId}`);
         return { success: true };
     } catch (error) {
         console.error("Initialize Payment Error:", error);

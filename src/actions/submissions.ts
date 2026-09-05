@@ -364,6 +364,9 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
         revalidatePath(`/admin/submissions/${id}`);
         cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(id), "decideSubmission");
         updateTag(CACHE_TAGS.SUBMISSION(id));
+        if (submission.paperId) {
+            updateTag(CACHE_TAGS.PAPER(submission.paperId));
+        }
         updateTag(CACHE_TAGS.SUBMISSIONS);
         return { success: true };
     } catch (error) {
@@ -484,7 +487,11 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
         revalidatePath('/admin/submissions');
         cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(id), "deleteSubmission");
         updateTag(CACHE_TAGS.SUBMISSION(id));
+        if (subRes.data.paperId) {
+            updateTag(CACHE_TAGS.PAPER(subRes.data.paperId));
+        }
         updateTag(CACHE_TAGS.SUBMISSIONS);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return { success: true };
     } catch (error) {
         return serverError(error, "delete submission");

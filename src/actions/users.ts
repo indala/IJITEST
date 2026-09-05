@@ -14,6 +14,8 @@ import {
     type UserWithProfile,
     type SafeUserWithProfile,
     type ActionResponse,
+    actionSuccess,
+    actionError,
     serverError,
 } from "@/db/types";
 import { eq, and, sql, inArray, isNotNull, not } from "drizzle-orm";
@@ -160,7 +162,9 @@ export async function createUser(formData: FormData): Promise<ActionResponse> {
                 .catch(e => console.error("Invitation email failed:", e));
         }
 
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         revalidatePath('/admin/users');
+        revalidatePath('/editorial-board');
         return { success: true };
     } catch (error) {
         console.error("Create User Error:", error);
@@ -204,7 +208,7 @@ export async function setupPassword(formData: FormData): Promise<ActionResponse>
     try {
         const passwordHash = await hash(password, 10);
 
-        return await db.transaction(async (tx) => {
+        const result = await db.transaction(async (tx) => {
             const invitation = await tx.select()
                 .from(userInvitations)
                 .where(
@@ -216,7 +220,7 @@ export async function setupPassword(formData: FormData): Promise<ActionResponse>
                 .limit(1);
 
             if (!invitation[0]) {
-                return { success: false, error: "Link expired or invalid" };
+                return { success: false as const, error: "Link expired or invalid" };
             }
 
             await tx.update(users)
@@ -226,8 +230,18 @@ export async function setupPassword(formData: FormData): Promise<ActionResponse>
             await tx.delete(userInvitations)
                 .where(eq(userInvitations.token, token));
 
-            return { success: true };
+            return { success: true as const };
         });
+
+        if (!result.success) {
+            return actionError(result.error);
+        }
+
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        revalidatePath('/editorial-board');
+        revalidatePath('/admin/users');
+
+        return actionSuccess();
     } catch (error) {
         console.error("Setup Password Error:", error);
         return serverError(error, "setup password");

@@ -339,7 +339,10 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
         await invalidateSubmittedSubmissionsCount();
         updateTag(CACHE_TAGS.SUBMISSIONS);
+        updateTag(CACHE_TAGS.SUBMISSIONS_SUBMITTED_COUNT);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         revalidatePath('/admin/submissions');
+        revalidatePath('/editor/submissions');
         return { success: true, data: { paperId: result.paperId } };
 
     } catch (error) {

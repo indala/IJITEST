@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { BookOpen, Download, Eye, ExternalLink, ChevronRight, ShieldCheck, Sparkles } from 'lucide-react';
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PublishedPaperUI, Issue } from '@/db/types';

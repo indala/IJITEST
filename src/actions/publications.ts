@@ -24,7 +24,7 @@ import { cacheLogger } from "@/lib/cache-logger";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { downloadFileFromStorage, triggerPdfBranding } from "@/lib/fs-utils";
 import { getSubmissionById } from "./submissions";
-import { createNotification } from "./notifications";
+import { createNotification, invalidateAuthorActionsCount } from "./notifications";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -74,6 +74,8 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, "createVolumeIssue");
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        updateTag(CACHE_TAGS.LATEST_ISSUE);
         return actionSuccess();
     } catch (error) {
         console.error("Create Publication Error:", error);
@@ -275,6 +277,9 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         submitToIndexNow([paperUrl])
             .catch((e: unknown) => console.error("IndexNow submission failed:", e));
 
+        if (submission.correspondingAuthorId) {
+            await invalidateAuthorActionsCount(submission.correspondingAuthorId);
+        }
         revalidatePath('/admin/submissions');
         revalidatePath('/admin/publications');
         revalidatePath('/archives');
@@ -284,6 +289,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         if (submission?.paperId) {
             updateTag(CACHE_TAGS.PAPER(submission.paperId));
         }
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.PUBLIC_DATA);
@@ -496,6 +502,8 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
         revalidatePath('/admin/publications');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `updateVolumeIssue ${id}`);
         updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        updateTag(CACHE_TAGS.LATEST_ISSUE);
         updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {

@@ -204,7 +204,9 @@ export async function updateProfileField(userId: string, field: string, value: s
             .set(updateDoc)
             .where(eq(userProfiles.userId, userId));
 
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         revalidatePath("/(panel)", "layout");
+        revalidatePath("/editorial-board");
         return actionSuccess(trimmedValue);
     } catch (error) {
         console.error("updateProfileField error:", error);
