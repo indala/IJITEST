@@ -4,17 +4,16 @@ import { Search, Inbox, CheckCircle, Archive, LayoutGrid } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
+import type { ContactStatus } from "@/db/types"
+
+export type InboxFilterTab = "all" | ContactStatus
+
 interface InboxFiltersProps {
-    status: string
+    status: InboxFilterTab
     search: string
-    onStatusChange: (status: string) => void
+    onStatusChange: (status: InboxFilterTab) => void
     onSearchChange: (search: string) => void
-    counts: {
-        all: number
-        pending: number
-        resolved: number
-        archived: number
-    }
+    counts: Record<InboxFilterTab, number>
 }
 
 export function InboxFilters({
@@ -24,7 +23,7 @@ export function InboxFilters({
     onSearchChange,
     counts
 }: InboxFiltersProps) {
-    const tabs = [
+    const tabs: Array<{ id: InboxFilterTab; label: string; icon: typeof LayoutGrid; count: number; color?: string }> = [
         { id: "all", label: "all", icon: LayoutGrid, count: counts.all },
         { id: "pending", label: "pending", icon: Inbox, count: counts.pending, color: "bg-amber-500" },
         { id: "resolved", label: "resolved", icon: CheckCircle, count: counts.resolved, color: "bg-emerald-600" },

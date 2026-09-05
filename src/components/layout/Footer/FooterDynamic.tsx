@@ -1,5 +1,3 @@
-'use client';
-
 import type { JournalSettings } from '@/db/types';
 
 interface FooterDynamicProps {

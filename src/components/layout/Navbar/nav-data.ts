@@ -9,7 +9,8 @@ import {
     ShieldCheck,
     ScrollText,
     UserPlus,
-    Hash
+    Hash,
+    LockOpen
 } from 'lucide-react';
 
 export const navigation = [
@@ -20,6 +21,7 @@ export const navigation = [
         icon: Info,
         children: [
             { name: 'About the Journal', href: '/about', icon: Layout },
+            { name: 'Open Access Policy', href: '/open-access', icon: LockOpen },
             { name: 'Publication Ethics', href: '/ethics', icon: ShieldCheck },
             { name: 'Peer Review Process', href: '/peer-review', icon: ScrollText },
             { name: 'Join Us', href: '/join-us', icon: UserPlus },

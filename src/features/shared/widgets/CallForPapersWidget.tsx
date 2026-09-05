@@ -1,5 +1,3 @@
-"use client";
-
 import { MessageSquare, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { memo } from 'react';

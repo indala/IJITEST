@@ -4,6 +4,7 @@ import { getSettingsData } from '@/actions/settings';
 import { getPublishedPapers } from '@/actions/archives';
 import ArchivesSearch from '@/features/archives/components/ArchivesSearch';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import type { Issue } from '@/db/types';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
@@ -27,10 +28,10 @@ export default async function Archives() {
     const papers = papersRes.success ? papersRes.data : [];
 
     // Group papers by volumeNumber
-    const volumeMap = new Map<number, {
-        volumeNumber: number;
-        year: number;
-        issuesCount: Set<number>;
+    const volumeMap = new Map<Issue['volumeNumber'], {
+        volumeNumber: Issue['volumeNumber'];
+        year: Issue['year'];
+        issuesCount: Set<Issue['issueNumber']>;
         papersCount: number;
     }>();
 

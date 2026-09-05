@@ -1,5 +1,3 @@
-'use client';
-
 import { 
     Plus, 
     AlertTriangle 
@@ -11,17 +9,11 @@ import SubmissionContainer from '@/features/submissions/components/SubmissionCon
 import SubmissionTabs from '@/features/submissions/components/SubmissionTabs';
 import SubmissionStats from '@/features/submissions/components/SubmissionStats';
 
-import type { SubmissionUI } from '@/db/types';
+import type { SubmissionUI, SubmissionStats as SubmissionStatsData } from '@/db/types';
 
 interface SubmissionRegistryProps {
     submissions: SubmissionUI[];
-    stats: {
-        total: number;
-        submitted: number;
-        underReview: number;
-        published: number;
-        rejected: number;
-    };
+    stats: SubmissionStatsData;
     currentStatus: string;
     role: 'admin' | 'editor';
 }

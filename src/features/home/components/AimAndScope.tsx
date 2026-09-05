@@ -1,7 +1,5 @@
-"use client";
-import { motion } from 'framer-motion';
 import { BookOpen, History, ChevronRight } from 'lucide-react';
-import { memo } from 'react';
+import type { JournalSettings } from '@/db/types';
 
 const disciplines = [
     "All Engineering Disciplines",
@@ -15,20 +13,17 @@ const disciplines = [
     "Renewable Energy and Sustainable Technologies"
 ];
 
-import { useSettingsContext } from '@/components/providers/SettingsContext';
+interface AimAndScopeProps {
+    shortName?: JournalSettings['journalShortName'] | undefined;
+}
 
-function AimAndScope() {
-    const settings = useSettingsContext();
-    const shortName = settings['journalShortName'] || '';
+export default function AimAndScope({ shortName }: AimAndScopeProps) {
+    const displayShortName = shortName || '';
 
     return (
         <div className="space-y-6 sm:space-y-8">
             {/* Aim & Scope */}
-            <motion.section
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+            <section
                 className="space-y-4"
                 aria-labelledby="aim-scope-heading"
             >
@@ -41,30 +36,13 @@ function AimAndScope() {
 
                 <div className="space-y-3">
                     <p className="text-muted-foreground m-0">
-                        {shortName} covers all major domains of Engineering, Applied Sciences, and Modern Technology, including:
+                        {displayShortName} covers all major domains of Engineering, Applied Sciences, and Modern Technology, including:
                     </p>
 
-                    <motion.ul
-                        className="grid grid-cols-1 md:grid-cols-2 gap-2 list-none p-0"
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-50px" }}
-                        variants={{
-                            hidden: {},
-                            visible: {
-                                transition: {
-                                    staggerChildren: 0.05
-                                }
-                            }
-                        }}
-                    >
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 list-none p-0">
                         {disciplines.map((item, i) => (
-                            <motion.li
+                            <li
                                 key={i}
-                                variants={{
-                                    hidden: { opacity: 0, x: -10 },
-                                    visible: { opacity: 1, x: 0, transition: { duration: 0.3 } }
-                                }}
                                 className="flex items-center justify-between p-2 px-3 2xl:py-2.5 2xl:px-4 bg-card rounded-lg border border-border/60 hover:border-primary/30 transition-all group"
                             >
                                 <div className="flex items-center gap-2 text-left">
@@ -72,11 +50,11 @@ function AimAndScope() {
                                     <span className="text-xs 2xl:text-sm font-medium text-foreground/90 group-hover:text-primary transition-colors">{item}</span>
                                 </div>
                                 <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all" aria-hidden="true" />
-                            </motion.li>
+                            </li>
                         ))}
-                    </motion.ul>
+                    </ul>
                 </div>
-            </motion.section>
+            </section>
 
             {/* Publication Process */}
             <section className="bg-primary p-4 sm:p-5 2xl:p-7 rounded-xl text-white overflow-hidden relative shadow-md border border-white/5 group/proc" aria-labelledby="publication-heading">
@@ -102,5 +80,3 @@ function AimAndScope() {
         </div>
     );
 }
-
-export default memo(AimAndScope);

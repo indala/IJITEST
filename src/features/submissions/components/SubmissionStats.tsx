@@ -1,27 +1,18 @@
-'use client';
-
 import { 
     FileText, 
     Clock, 
     CheckCircle2, 
     AlertCircle
 } from 'lucide-react';
-import { useMemo } from 'react';
-import {motion} from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card';
+import type { SubmissionStats as SubmissionStatsData } from '@/db/types';
 
 interface SubmissionStatsProps {
-    stats: {
-        total: number;
-        submitted: number;
-        underReview: number;
-        published: number;
-        rejected: number;
-    }
+    stats: SubmissionStatsData;
 }
 
 export default function SubmissionStats({ stats }: SubmissionStatsProps) {
-    const items = useMemo(() => [
+    const items = [
         { 
             label: 'Total Manuscripts', 
             value: stats.total, 
@@ -54,17 +45,12 @@ export default function SubmissionStats({ stats }: SubmissionStatsProps) {
             bg: 'bg-emerald-500/10',
             borderColor: 'border-emerald-500/20'
         }
-    ], [stats]);
+    ];
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {items.map((item, idx) => (
-                <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                >
+            {items.map((item) => (
+                <div key={item.label}>
                     <Card className="border-border/50 shadow-sm bg-card hover:shadow-md transition-all duration-300 rounded-xl overflow-hidden group">
                         <CardContent className="p-3 2xl:p-4">
                             <div className="flex items-center justify-between mb-3">
@@ -82,7 +68,7 @@ export default function SubmissionStats({ stats }: SubmissionStatsProps) {
                             </div>
                         </CardContent>
                     </Card>
-                </motion.div>
+                </div>
             ))}
         </div>
     );

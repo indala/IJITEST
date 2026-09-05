@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { submissions, publications, volumesIssues } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { getLatestIssuePapers } from "@/actions/archives";
 import { type PaperDetailParams } from "@/db/types";
 
@@ -30,8 +30,14 @@ export async function GET(
         })
             .from(submissions)
             .innerJoin(publications, eq(submissions.id, publications.submissionId))
-            .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
-            .where(eq(submissions.paperId, canonicalPaperId))
+            .innerJoin(volumesIssues, and(
+                eq(publications.issueId, volumesIssues.id),
+                eq(volumesIssues.status, 'published')
+            ))
+            .where(and(
+                eq(submissions.paperId, canonicalPaperId),
+                eq(submissions.status, 'published')
+            ))
             .limit(1);
 
         const row = pubRows[0];

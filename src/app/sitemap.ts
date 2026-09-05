@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/guidelines', priority: 0.85, changeFrequency: 'monthly' as const },
     { path: '/editorial-board', priority: 0.85, changeFrequency: 'monthly' as const },
     { path: '/about', priority: 0.8, changeFrequency: 'monthly' as const },
+    { path: '/open-access', priority: 0.85, changeFrequency: 'monthly' as const },
     { path: '/ethics', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/faqs', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/peer-review', priority: 0.8, changeFrequency: 'monthly' as const },

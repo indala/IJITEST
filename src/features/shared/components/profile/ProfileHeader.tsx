@@ -2,15 +2,17 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Camera, User, Mail } from 'lucide-react';
+import { Camera, User as UserIcon, Mail } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+import type { User, UserProfile, UserRole } from "@/db/types";
+
 interface ProfileHeaderProps {
-    fullName: string;
-    email: string;
-    role: string;
-    photoUrl?: string;
+    fullName: UserProfile['fullName'];
+    email: User['email'];
+    role: UserRole;
+    photoUrl?: UserProfile['photoUrl'] | undefined;
     previewUrl: string | null;
     onPhotoClick: () => void;
 }
@@ -38,7 +40,7 @@ export const ProfileHeader = React.memo(({
                                 unoptimized={!!previewUrl}
                             />
                         ) : (
-                            <User className="w-12 h-12 text-muted-foreground/30" />
+                            <UserIcon className="w-12 h-12 text-muted-foreground/30" />
                         )}
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center">
                             <Camera className="w-8 h-8 text-white" />

@@ -61,6 +61,7 @@ export default async function Footer() {
                         <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Journal Portals</h3>
                         <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-white/80 list-none p-0 text-xs m-0">
                             <li><Link href="/about" className="hover:text-secondary transition-colors">About Journal</Link></li>
+                            <li><Link href="/open-access" className="hover:text-secondary transition-colors">Open Access Policy</Link></li>
                             <li><Link href="/editorial-board" className="hover:text-secondary transition-colors">Editorial Board</Link></li>
                             <li><Link href="/guidelines" className="hover:text-secondary transition-colors">Author Guidelines</Link></li>
                             <li><Link href="/peer-review" className="hover:text-secondary transition-colors">Peer Review</Link></li>
@@ -71,7 +72,6 @@ export default async function Footer() {
                             <li><Link href="/terms" className="hover:text-secondary transition-colors">Terms of Use</Link></li>
                             <li><Link href="/track" className="hover:text-secondary transition-colors">Track Manuscript</Link></li>
                             <li><Link href="/contact" className="hover:text-secondary transition-colors">Contact Office</Link></li>
-                            <li><Link href="/login" className="hover:text-secondary transition-colors">Login</Link></li>
                         </ul>
                     </div>
 

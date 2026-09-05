@@ -65,12 +65,12 @@ export default async function About() {
                                 </CardContent>
                             </Card>
 
-                            <Card className="bg-[#000066] border-none text-white shadow-md rounded-xl group overflow-hidden relative">
+                            <Card className="bg-primary border-none text-primary-foreground shadow-md rounded-xl group overflow-hidden relative">
                                 <CardContent className="p-4 sm:p-5 relative z-10 space-y-2">
                                     <h2 className="text-white m-0">Call for Papers</h2>
                                     <p className="text-white/70 m-0">Submit your breakthrough research for our upcoming 2026 Monthly edition.</p>
                                     <div className="pt-2">
-                                        <Button asChild size="sm" className="w-full h-9 bg-white text-[#000066] hover:bg-white/90 font-bold text-xs rounded-lg shadow-xs transition-all cursor-pointer">
+                                        <Button asChild size="sm" className="w-full h-9 bg-white text-primary hover:bg-white/90 font-bold text-xs rounded-lg shadow-xs transition-all cursor-pointer">
                                             <Link href="/submit" className="flex items-center justify-center gap-1.5">
                                                 <span>Submit Manuscript</span>
                                                 <ChevronRight className="w-3.5 h-3.5" />

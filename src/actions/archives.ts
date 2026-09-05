@@ -47,8 +47,14 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
             issue: volumesIssues,
         })
             .from(publications)
-            .leftJoin(submissions, eq(publications.submissionId, submissions.id))
-            .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+            .innerJoin(volumesIssues, and(
+                eq(publications.issueId, volumesIssues.id),
+                eq(volumesIssues.status, 'published')
+            ))
+            .innerJoin(submissions, and(
+                eq(publications.submissionId, submissions.id),
+                eq(submissions.status, 'published')
+            ))
             .orderBy(asc(submissions.paperId));
 
         if (!rows.length) return actionSuccess([] as PublishedPaperUI[]);
@@ -109,8 +115,11 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
         })
             .from(publications)
             .where(eq(publications.issueId, latestIssue.id))
-            .leftJoin(submissions, eq(publications.submissionId, submissions.id))
-            .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+            .innerJoin(submissions, and(
+                eq(publications.submissionId, submissions.id),
+                eq(submissions.status, 'published')
+            ))
+            .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
             .orderBy(asc(submissions.paperId));
 
         if (!rows.length) return actionSuccess([] as PublishedPaperUI[]);
@@ -168,9 +177,15 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
             issue: volumesIssues,
         })
             .from(publications)
+            .innerJoin(volumesIssues, and(
+                eq(publications.issueId, volumesIssues.id),
+                eq(volumesIssues.status, 'published')
+            ))
+            .innerJoin(submissions, and(
+                eq(publications.submissionId, submissions.id),
+                eq(submissions.status, 'published')
+            ))
             .where(ne(publications.issueId, latestId))
-            .leftJoin(submissions, eq(publications.submissionId, submissions.id))
-            .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
             .orderBy(asc(submissions.paperId))
             .limit(limit)
             .offset(offset);
@@ -237,15 +252,21 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
             authorProfile: userProfiles
         })
             .from(publications)
-            .where(whereClause)
-            .leftJoin(submissions, eq(publications.submissionId, submissions.id))
+            .innerJoin(volumesIssues, and(
+                eq(publications.issueId, volumesIssues.id),
+                eq(volumesIssues.status, 'published')
+            ))
+            .innerJoin(submissions, and(
+                eq(publications.submissionId, submissions.id),
+                eq(submissions.status, 'published')
+            ))
             .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
             .leftJoin(submissionVersions, and(
                 eq(submissions.id, submissionVersions.submissionId),
                 eq(submissionVersions.versionNumber, latestVersions.maxVersion)
             ))
-            .leftJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
             .leftJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
+            .where(whereClause)
             .limit(1);
 
         const row = rows[0];

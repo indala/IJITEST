@@ -1,4 +1,6 @@
 import { getSettingsData } from '@/actions/settings';
+import { getLatestPublishedIssue } from '@/actions/publications';
+import { getLatestIssuePapers } from '@/actions/archives';
 import type { Metadata } from 'next';
 import HomeCarousel from '@/features/home/components/HomeCarousel';
 import WelcomeSection from '@/features/home/components/WelcomeSection';
@@ -48,10 +50,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const settings = await getSettingsData();
+  const [settings, latestIssueRes, latestPapersRes] = await Promise.all([
+    getSettingsData(),
+    getLatestPublishedIssue(),
+    getLatestIssuePapers()
+  ]);
+
+  const latestIssue = latestIssueRes.success ? latestIssueRes.data : null;
+  const latestPapers = latestPapersRes.success ? (latestPapersRes.data ?? []) : [];
+
   return (
     <div className="flex flex-col overflow-hidden bg-background relative">
-      <AnnouncementBar />
+      <AnnouncementBar latestPaper={latestPapers[0]} />
       
       {/* Background Decorative Blob */}
       <div className="absolute top-[20%] right-0 w-[800px] h-[800px] bg-primary/2 rounded-full blur-[150px] -z-10 pointer-events-none" />
@@ -72,8 +82,8 @@ export default async function Home() {
               </div>
 
               <div className="space-y-4 sm:space-y-5">
-                <CurrentIssueWidget />
-                <AnnouncementsWidget />
+                <CurrentIssueWidget latestIssue={latestIssue} />
+                <AnnouncementsWidget latestIssue={latestIssue} />
                 <AuthorQuickLinks />
                 <CallForPapersWidget />
                 <ApcFeeWidget />
@@ -84,17 +94,17 @@ export default async function Home() {
             </>
           }
         >
-          <WelcomeSection />
-          <HomeStats />
-          <HomeCurrentIssue />
+          <WelcomeSection settings={settings} />
+          <HomeStats settings={settings} />
+          <HomeCurrentIssue latestIssue={latestIssue} papers={latestPapers} />
           <PublicationWorkflow />
           <DisciplineTaxonomyGrid />
-          <AimAndScope />
+          <AimAndScope shortName={settings['journalShortName']} />
           <HomeIndexingStrip />
         </SidebarLayout>
       </Section>
 
-      <PublisherSection />
+      <PublisherSection settings={settings} />
     </div>
   );
 }

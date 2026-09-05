@@ -1,27 +1,21 @@
-'use client';
-
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { motion, animate } from 'framer-motion';
-import type { AnimationPlaybackControls } from 'framer-motion';
-import { useRef, useEffect, useId } from 'react';
-import { useLenis } from 'lenis/react';
+import PageHeaderScroll from './PageHeaderScroll';
 
-interface BreadcrumbItem {
+export interface BreadcrumbItem {
     name: string;
     href: string;
 }
 
-interface PageHeaderProps {
+export interface PageHeaderProps {
     title: string;
-    description?: string;
+    description?: string | undefined;
     breadcrumbs: BreadcrumbItem[];
-    scrollOnComplete?: boolean;
-    disableBreadcrumbJsonLd?: boolean;
+    scrollOnComplete?: boolean | undefined;
+    disableBreadcrumbJsonLd?: boolean | undefined;
 }
 
 function BreadcrumbJsonLd({ items, baseUrl }: { items: BreadcrumbItem[]; baseUrl: string }) {
-    const id = useId();
     const itemListElement = items.map((item, idx) => ({
         '@type': 'ListItem',
         position: idx + 1,
@@ -31,7 +25,6 @@ function BreadcrumbJsonLd({ items, baseUrl }: { items: BreadcrumbItem[]; baseUrl
 
     return (
         <script
-            id={id}
             type="application/ld+json"
             dangerouslySetInnerHTML={{
                 __html: JSON.stringify({
@@ -44,116 +37,65 @@ function BreadcrumbJsonLd({ items, baseUrl }: { items: BreadcrumbItem[]; baseUrl
     );
 }
 
-export default function PageHeader({ title, description, breadcrumbs, scrollOnComplete = true, disableBreadcrumbJsonLd = false }: PageHeaderProps) {
-    const sectionRef = useRef<HTMLElement>(null);
-    const animationRef = useRef<AnimationPlaybackControls | null>(null);
-    const lenis = useLenis();
-
-    useEffect(() => {
-        const stopAnimation = () => {
-            if (animationRef.current) {
-                animationRef.current.stop();
-                animationRef.current = null;
-            }
-        };
-
-        window.addEventListener('wheel', stopAnimation, { passive: true });
-        window.addEventListener('touchmove', stopAnimation, { passive: true });
-        window.addEventListener('pointerdown', stopAnimation, { passive: true });
-
-        return () => {
-            window.removeEventListener('wheel', stopAnimation);
-            window.removeEventListener('touchmove', stopAnimation);
-            window.removeEventListener('pointerdown', stopAnimation);
-            stopAnimation();
-        };
-    }, []);
-
-    const handleAnimationComplete = () => {
-        if (scrollOnComplete && sectionRef.current) {
-            const sectionBottom =
-                sectionRef.current.getBoundingClientRect().bottom + window.scrollY - 80;
-
-            if (lenis) {
-                lenis.scrollTo(sectionBottom, {
-                    duration: 1.2,
-                    easing: (t) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t), // smooth ease-out-expo
-                });
-            } else {
-                animationRef.current = animate(window.scrollY, sectionBottom, {
-                    duration: 1.2,
-                    ease: [0.32, 0.72, 0, 1],
-                    onUpdate: (latest) => window.scrollTo(0, latest),
-                });
-            }
-        }
-    };
-
-
-    const rawBaseUrl = (typeof window !== 'undefined'
-        ? window.location.origin
-        : process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org');
+export default function PageHeader({
+    title,
+    description,
+    breadcrumbs,
+    scrollOnComplete = true,
+    disableBreadcrumbJsonLd = false
+}: PageHeaderProps) {
+    const rawBaseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
     const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl.replace(/\/$/, '') : `https://${rawBaseUrl.replace(/\/$/, '')}`;
+    const headerId = 'page-header-section';
 
     return (
         <>
             {!disableBreadcrumbJsonLd && (
                 <BreadcrumbJsonLd items={breadcrumbs} baseUrl={baseUrl.replace(/\/$/, '')} />
             )}
-            <section ref={sectionRef} className="relative py-5 sm:py-7 bg-[#000066] border-b border-white/10 overflow-hidden">
-            <div className="container-responsive relative z-10 space-y-2">
-                <nav aria-label="Breadcrumb">
-                    <ol className="flex items-center gap-1.5 list-none p-0 m-0">
-                        {breadcrumbs.map((crumb, idx) => {
-                            const isLast = idx === breadcrumbs.length - 1;
-                            return (
-                                <motion.li
-                                    key={crumb.href + idx}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: idx * 0.05, ease: "easeOut" }}
-                                    className="flex items-center gap-1.5"
-                                >
-                                    <Link
-                                        href={crumb.href}
-                                        aria-current={isLast ? "page" : undefined}
-                                        className={`text-[11px] sm:text-xs font-medium tracking-tight transition-all duration-200 ${isLast ? "text-white font-semibold" : "text-white/60 hover:text-white"}`}
+            {scrollOnComplete && <PageHeaderScroll targetId={headerId} />}
+            <section id={headerId} className="relative py-5 sm:py-7 bg-primary border-b border-white/10 overflow-hidden">
+                <div className="container-responsive relative z-10 space-y-2">
+                    <nav aria-label="Breadcrumb">
+                        <ol className="flex items-center gap-1.5 list-none p-0 m-0">
+                            {breadcrumbs.map((crumb, idx) => {
+                                const isLast = idx === breadcrumbs.length - 1;
+                                return (
+                                    <li
+                                        key={crumb.href + idx}
+                                        className="flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2 duration-300 fill-mode-both"
+                                        style={{ animationDelay: `${idx * 50}ms` }}
                                     >
-                                        {crumb.name}
-                                    </Link>
-                                    {!isLast && (
-                                        <ChevronRight className="w-3 h-3 text-secondary" />
-                                    )}
-                                </motion.li>
-                            );
-                        })}
-                    </ol>
-                </nav>
+                                        <Link
+                                            href={crumb.href}
+                                            aria-current={isLast ? "page" : undefined}
+                                            className={`text-[11px] sm:text-xs font-medium tracking-tight transition-all duration-200 ${isLast ? "text-white font-semibold" : "text-white/60 hover:text-white"}`}
+                                        >
+                                            {crumb.name}
+                                        </Link>
+                                        {!isLast && (
+                                            <ChevronRight className="w-3 h-3 text-secondary" />
+                                        )}
+                                    </li>
+                                );
+                            })}
+                        </ol>
+                    </nav>
 
-                <div className="grid grid-cols-1 gap-4 items-end">
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        onAnimationComplete={handleAnimationComplete}
-                    >
-                        <h1 className="text-white m-0">
-                            {title}
-                        </h1>
-                        {description && (
-                            <motion.p
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 0.9 }}
-                                transition={{ delay: 0.2, duration: 0.6 }}
-                                className="max-w-3xl text-white/80 border-l-2 border-white/30 pl-3.5 m-0 mt-1"
-                            >
-                                {description}
-                            </motion.p>
-                        )}
-                    </motion.div>
+                    <div className="grid grid-cols-1 gap-4 items-end">
+                        <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both">
+                            <h1 className="text-white m-0">
+                                {title}
+                            </h1>
+                            {description && (
+                                <p className="max-w-3xl text-white/80 border-l-2 border-white/30 pl-3.5 m-0 mt-1 animate-in fade-in duration-700 delay-200 fill-mode-both">
+                                    {description}
+                                </p>
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
         </>
     );
 }

@@ -1,30 +1,23 @@
-"use client";
-
 import { Newspaper, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { memo, useMemo } from 'react';
 import { Card, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useLatestIssue } from '@/hooks/queries/usePublic';
+import type { Issue } from '@/db/types';
 
-function AnnouncementsWidget() {
-    const { data: dbIssue } = useLatestIssue();
+interface AnnouncementsWidgetProps {
+    latestIssue?: Issue | null;
+}
 
-    const currentStatus = useMemo(() => {
-        if (dbIssue) {
-            return {
-                volume: dbIssue.volumeNumber,
-                issue: dbIssue.issueNumber,
-                date: `${dbIssue.monthRange} ${dbIssue.year}`
-            };
-        }
-
-        return {
-            volume: 1,
-            issue: 5,
-            date: "August 2026"
-        };
-    }, [dbIssue]);
+export default function AnnouncementsWidget({ latestIssue }: AnnouncementsWidgetProps) {
+    const currentStatus = latestIssue ? {
+        volume: latestIssue.volumeNumber,
+        issue: latestIssue.issueNumber,
+        date: `${latestIssue.monthRange} ${latestIssue.year}`
+    } : {
+        volume: 1,
+        issue: 5,
+        date: "August 2026"
+    };
 
     return (
         <div>
@@ -59,4 +52,3 @@ function AnnouncementsWidget() {
     );
 }
 
-export default memo(AnnouncementsWidget);

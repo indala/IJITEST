@@ -1,18 +1,14 @@
-'use client';
-
-import { useLatestIssuePapers } from "@/hooks/queries/usePublic";
 import { Megaphone, ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+import type { PublishedPaperUI } from "@/db/types";
 
-export default function AnnouncementBar() {
-    const { data: latestPapers } = useLatestIssuePapers();
-    const isVisible = !!(latestPapers && latestPapers.length > 0);
+interface AnnouncementBarProps {
+    latestPaper?: PublishedPaperUI | null | undefined;
+}
 
-    if (!latestPapers || latestPapers.length === 0 || !isVisible) return null;
-
-    const latestIssue = latestPapers[0];
-    if (!latestIssue) return null;
-    const publishDate = latestIssue.publishedAt ? new Date(latestIssue.publishedAt) : new Date();
+export default function AnnouncementBar({ latestPaper }: AnnouncementBarProps) {
+    if (!latestPaper) return null;
+    const publishDate = latestPaper.publishedAt ? new Date(latestPaper.publishedAt) : new Date();
     const monthYear = publishDate.toLocaleDateString('en-US', {
         month: 'long',
         year: 'numeric'

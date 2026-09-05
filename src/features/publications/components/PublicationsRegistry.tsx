@@ -161,18 +161,18 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                         <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/5 shadow-sm">
                             <BookOpen className="w-6 h-6 text-primary" />
                         </div>
-                        <h1 className="font-semibold text-[#000066] text-xl xl:text-2xl">
+                        <h1 className="panel-title m-0">
                             Manage Publications
                         </h1>
                     </div>
-                    <p className="text-sm xl:text-base 2xl:text-lg text-muted-foreground border-l-2 border-primary/20 pl-4 py-0.5 max-w-2xl leading-relaxed">
+                    <p className="panel-subtitle border-l-2 border-primary/20 pl-4 py-0.5 max-w-2xl leading-relaxed m-0">
                         {role === 'admin' ? 'Manage the journal publication schedule, volumes, and archival issues.' : 'Review and manage editorial publication cycles.'}
                     </p>
                 </div>
 
                 <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
                     <DialogTrigger asChild>
-                        <Button className="h-10 px-6 bg-[#000066] text-white font-bold text-[10px] uppercase tracking-wider rounded-lg shadow-sm hover:bg-[#000088] transition-all">
+                        <Button className="btn-primary">
                             <Plus className="w-4 h-4 mr-2" /> New Issue
                         </Button>
                     </DialogTrigger>
@@ -244,10 +244,10 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
             {/* Publication Metrics */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: 'Volumes', value: stats.totalVolumes, icon: Layers, colors: 'text-[#000066] bg-[#000066]/5' },
-                    { label: 'Published', value: stats.publishedIssues, icon: CheckCircle2, colors: 'text-[#000066] bg-[#000066]/5' },
-                    { label: 'Open', value: stats.openIssues, icon: Clock, colors: 'text-[#000066] bg-[#000066]/5' },
-                    { label: 'Indexed', value: stats.totalPapers, icon: FileText, colors: 'text-[#000066] bg-[#000066]/5' },
+                    { label: 'Volumes', value: stats.totalVolumes, icon: Layers, colors: 'text-primary bg-primary/5' },
+                    { label: 'Published', value: stats.publishedIssues, icon: CheckCircle2, colors: 'text-primary bg-primary/5' },
+                    { label: 'Open', value: stats.openIssues, icon: Clock, colors: 'text-primary bg-primary/5' },
+                    { label: 'Indexed', value: stats.totalPapers, icon: FileText, colors: 'text-primary bg-primary/5' },
                 ].map((item) => (
                     <div
                         key={item.label}
@@ -255,8 +255,8 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                     >
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{item.label}</p>
-                                <h3 className="text-2xl font-bold text-gray-900">{item.value}</h3>
+                                <p className="text-meta uppercase tracking-widest">{item.label}</p>
+                                <h3 className="text-2xl font-bold text-foreground">{item.value}</h3>
                             </div>
                             <div className={`w-10 h-10 rounded-lg ${item.colors} flex items-center justify-center border border-border/5`}>
                                 <item.icon className="w-5 h-5" />
@@ -276,23 +276,23 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                 <div className="p-6 space-y-6">
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Volume {v.volumeNumber}</p>
-                                            <h3 className="font-semibold text-gray-900 leading-none text-xl">
+                                            <p className="text-meta uppercase tracking-widest">Volume {v.volumeNumber}</p>
+                                            <h3 className="font-semibold text-foreground leading-none text-xl">
                                                 Issue {v.issueNumber}
                                             </h3>
                                         </div>
-                                        <Badge className={`h-6 px-2 text-[9px] font-bold uppercase rounded-md ${v.status === 'published' ? 'bg-[#000066]/5 text-[#000066] border border-[#000066]/10' : 'bg-orange-500/5 text-orange-600 border border-orange-500/10'}`}>
+                                        <Badge className={`h-6 px-2 text-label rounded-md ${v.status === 'published' ? 'badge-brand' : 'bg-orange-500/5 text-orange-600 border border-orange-500/10'}`}>
                                             {v.status === 'published' ? 'Published' : 'Open'}
                                         </Badge>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-muted/30 p-4 rounded-xl border border-border/50">
-                                            <p className="text-[10px] font-semibold text-muted-foreground tracking-wide mb-1">Year</p>
+                                            <p className="text-meta tracking-wide mb-1">Year</p>
                                             <p className="text-lg font-bold text-foreground">{v.year}</p>
                                         </div>
                                         <div className="bg-muted/30 p-4 rounded-xl border border-border/50">
-                                            <p className="text-[10px] font-semibold text-muted-foreground tracking-wide mb-1">Duration</p>
+                                            <p className="text-meta tracking-wide mb-1">Duration</p>
                                             <p className="text-base font-bold text-foreground truncate">{v.monthRange}</p>
                                         </div>
                                     </div>
@@ -302,7 +302,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                             <Button
                                                 variant="outline"
                                                 onClick={() => toggleExpand(v.id)}
-                                                className="w-full h-10 gap-2 border-border/50 text-[#000066] font-bold text-[10px] uppercase rounded-lg hover:bg-[#000066]/5"
+                                                className="w-full h-10 gap-2 border-border/50 text-primary font-bold text-label rounded-lg hover:bg-primary/5"
                                             >
                                                 {expandedIssue === v.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDownIcon className="w-3.5 h-3.5" />}
                                                 {expandedIssue === v.id ? 'Hide' : `View (${v.paperCount || 0})`}
@@ -371,9 +371,9 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                         )}
 
                                         <div className="flex items-center justify-center gap-4 pt-4 border-t border-border/50">
-                                            <button onClick={() => setShowEditModal(v)} className="text-[10px] font-bold text-[#000066] uppercase hover:underline">Edit</button>
+                                            <button onClick={() => setShowEditModal(v)} className="text-label text-primary hover:underline">Edit</button>
                                             <span className="w-1 h-1 rounded-full bg-border" />
-                                            <button disabled={isDeleting} onClick={() => handleDelete(v.id)} className="text-[10px] font-bold text-rose-500 uppercase hover:underline disabled:opacity-50">Delete</button>
+                                            <button disabled={isDeleting} onClick={() => handleDelete(v.id)} className="text-label text-rose-500 hover:underline disabled:opacity-50">Delete</button>
                                         </div>
                                     </div>
                                 </div>

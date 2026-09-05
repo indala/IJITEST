@@ -79,7 +79,7 @@ export default function ForgotPassword() {
                                 exit={{ opacity: 0 }}
                              >
                                 {error && (
-                                    <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-bold">
+                                    <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl text-sm font-semibold">
                                         {error}
                                     </div>
                                 )}

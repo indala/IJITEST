@@ -1,33 +1,21 @@
-"use client";
-
 import { Mail } from 'lucide-react';
 import Link from 'next/link';
-import { memo } from 'react';
-import { motion } from 'framer-motion';
+import type { JournalSettings } from '@/db/types';
 
-import { useSettingsContext } from '@/components/providers/SettingsContext';
+interface PublisherSectionProps {
+    settings: JournalSettings | Record<string, string | undefined>;
+}
 
-function PublisherSection() {
-    const settings = useSettingsContext();
+export default function PublisherSection({ settings }: PublisherSectionProps) {
     const publisherName = settings['publisherName'] || "Felix Academic Publications";
     const supportEmail = settings['supportEmail'] || "support@ijitest.org";
 
     return (
         <section className="section-padding bg-background relative overflow-hidden border-t border-primary/5 my-2">
-            <motion.div
-                animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2"
-            />
+            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 pointer-events-none animate-pulse" />
 
             <div className="container-responsive text-center sm:text-left relative z-10">
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="max-w-3xl 2xl:max-w-5xl space-y-2.5 2xl:space-y-4"
-                >
+                <div className="max-w-3xl 2xl:max-w-5xl space-y-2.5 2xl:space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <h2 className="m-0">About the Publisher</h2>
                     <p className="border-l-4 border-secondary/30 pl-3.5 text-muted-foreground m-0">
                         {settings['journalShortName'] || 'IJITEST'} is published by <span className="font-semibold text-primary">{publisherName}</span>, dedicated to providing a high-quality global bedrock for research sharing and open scientific excellence.
@@ -47,10 +35,9 @@ function PublisherSection() {
                             Author Submission Guidelines
                         </Link>
                     </div>
-                </motion.div>
+                </div>
             </div>
         </section>
     );
 }
 
-export default memo(PublisherSection);

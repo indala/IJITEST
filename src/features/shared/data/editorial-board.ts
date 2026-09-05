@@ -1,14 +1,16 @@
+import type { UserProfile, User, UserRole } from "@/db/types";
+
 export interface BoardMember {
-    full_name: string;
-    designation: string;
-    institute: string;
-    email?: string;
-    role: string;
-    nationality?: string;
-    department?: string;
-    secondaryEmail?: string;
-    profileLink?: string;
-    officialAddress?: string;
+    full_name: UserProfile['fullName'];
+    designation: NonNullable<UserProfile['designation']>;
+    institute: NonNullable<UserProfile['institute']>;
+    email?: User['email'] | undefined;
+    role: UserRole;
+    nationality?: NonNullable<UserProfile['nationality']> | undefined;
+    department?: string | undefined;
+    secondaryEmail?: User['email'] | undefined;
+    profileLink?: string | undefined;
+    officialAddress?: string | undefined;
 }
 
 export const staticEditorialBoardMembers: BoardMember[] = [

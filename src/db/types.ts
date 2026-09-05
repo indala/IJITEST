@@ -115,6 +115,10 @@ export type SubmissionUI = SubmissionDetail &
         completedReviews?: number | undefined;
     };
 
+export type SubmissionStats = {
+    total: number;
+} & Record<Extract<SubmissionStatus, 'submitted' | 'underReview' | 'published' | 'rejected'>, number>;
+
 // 🧪 Reviews
 export type ReviewAssignment = InferSelectModel<typeof reviewAssignments>;
 export type NewReviewAssignment = InferInsertModel<typeof reviewAssignments>;

@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getSecureUrl } from "@/lib/utils";
-import { type ReviewWithReviewer, type SubmissionUI } from "@/db/types";
+import { type ReviewWithReviewer, type SubmissionUI, type UserRole, type SubmissionStatus } from "@/db/types";
 import { PdfViewer } from "@/components/reviewer/PdfViewer";
 import { ExpertiseDossier } from "@/features/shared/components/profile/ExpertiseDossier";
 import DeleteSubmissionButton from "@/features/submissions/components/DeleteSubmissionButton";
@@ -29,19 +29,20 @@ import RebrandPdfButton from "@/features/submissions/components/RebrandPdfButton
 import { SubmissionDecisionActions } from "@/app/(panel)/admin/submissions/[id]/_components/SubmissionDecisionActions";
 
 interface SubmissionDetailContainerProps {
-    role: "admin" | "editor";
+    role: Extract<UserRole, "admin" | "editor">;
     submission: SubmissionUI;
 }
 
 export default function SubmissionDetailContainer({ role, submission }: SubmissionDetailContainerProps) {
-    const getStatusVariant = (status: string) => {
+    const getStatusVariant = (status: SubmissionStatus) => {
         switch (status) {
             case 'submitted': return 'bg-indigo-500/10 text-indigo-600 border-none';
             case 'underReview': return 'bg-amber-500/10 text-amber-600 border-none';
             case 'accepted': return 'bg-purple-500/10 text-purple-600 border-none';
-            case 'paid': return 'bg-emerald-500/10 text-emerald-600 border-none';
+            case 'paymentPending': return 'bg-emerald-500/10 text-emerald-600 border-none';
             case 'published': return 'bg-cyan-500/10 text-cyan-600 border-none';
             case 'rejected': return 'bg-rose-500/10 text-rose-600 border-none';
+            case 'revisionRequested': return 'bg-orange-500/10 text-orange-600 border-none';
             default: return 'bg-muted text-muted-foreground border-none';
         }
     };

@@ -163,38 +163,38 @@
      Headings (h1 - h6) Single Source of Truth
      -------------------------------------------------------------------------- */
   h1 {
-    color: #000066;
-    @apply font-serif font-bold text-[#000066] leading-tight tracking-tight mb-2.5;
+    color: var(--color-primary);
+    @apply font-serif font-bold text-primary leading-tight tracking-tight mb-2.5;
     @apply text-xl sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl;
   }
 
   h2 {
-    color: #000066;
-    @apply font-serif font-bold text-[#000066] leading-snug tracking-tight mb-2;
+    color: var(--color-primary);
+    @apply font-serif font-bold text-primary leading-snug tracking-tight mb-2;
     @apply text-base sm:text-lg md:text-xl xl:text-2xl 2xl:text-3xl;
   }
 
   h3 {
-    color: #000066;
-    @apply font-serif font-bold text-[#000066] leading-snug tracking-tight mb-1.5;
+    color: var(--color-primary);
+    @apply font-serif font-bold text-primary leading-snug tracking-tight mb-1.5;
     @apply text-sm sm:text-base md:text-lg xl:text-xl 2xl:text-2xl;
   }
 
   h4 {
-    color: #000066;
-    @apply font-sans font-semibold text-[#000066] leading-normal mb-1;
+    color: var(--color-primary);
+    @apply font-sans font-semibold text-primary leading-normal mb-1;
     @apply text-xs sm:text-sm md:text-base xl:text-lg 2xl:text-xl;
   }
 
   h5 {
-    color: #000066;
-    @apply font-sans font-semibold text-[#000066] leading-normal mb-1;
+    color: var(--color-primary);
+    @apply font-sans font-semibold text-primary leading-normal mb-1;
     @apply text-xs sm:text-xs md:text-sm xl:text-base 2xl:text-lg;
   }
 
   h6 {
-    color: #000066;
-    @apply font-sans font-bold text-[#000066] uppercase tracking-wider mb-0.5;
+    color: var(--color-primary);
+    @apply font-sans font-bold text-primary uppercase tracking-wider mb-0.5;
     @apply text-[10px] sm:text-[11px] md:text-xs xl:text-sm 2xl:text-sm;
   }
 
@@ -245,16 +245,64 @@
     @apply font-sans font-bold uppercase tracking-wider text-[10px] sm:text-[11px] md:text-xs xl:text-xs 2xl:text-sm;
   }
 
+  /* Standardized Form & Field Utilities */
+  .form-label-brand {
+    @apply text-primary font-bold uppercase tracking-wider text-[10px] sm:text-[11px] md:text-xs xl:text-xs 2xl:text-sm;
+  }
+
+  .input-standard {
+    @apply bg-muted/20 border-border/50 rounded-lg font-medium text-foreground transition-all focus-visible:ring-1 focus-visible:ring-primary/30;
+    @apply text-xs sm:text-sm xl:text-sm 2xl:text-base;
+    @apply h-10 sm:h-11 xl:h-11 2xl:h-12 px-3 sm:px-4 2xl:px-5;
+  }
+
+  /* Standardized Panel & Card Utilities */
+  .panel-title {
+    @apply font-bold tracking-tight text-foreground text-lg sm:text-xl md:text-2xl xl:text-3xl 2xl:text-4xl;
+  }
+
+  .panel-subtitle {
+    @apply font-medium text-muted-foreground text-xs sm:text-xs md:text-sm xl:text-sm 2xl:text-base;
+  }
+
+  .card-title-brand {
+    @apply font-bold text-primary tracking-tight text-base sm:text-base md:text-lg xl:text-xl 2xl:text-2xl;
+  }
+
   .btn-primary {
-    @apply bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition-all inline-block text-center cursor-pointer font-semibold text-sm shadow-sm;
+    @apply bg-primary text-white rounded-lg hover:bg-primary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm;
+    @apply text-xs sm:text-sm xl:text-sm 2xl:text-base;
+    @apply px-3.5 py-1.5 sm:px-4 sm:py-2 xl:px-5 xl:py-2.5 2xl:px-6 2xl:py-3;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-white px-5 py-2 rounded-lg hover:bg-secondary/90 transition-all inline-block text-center cursor-pointer font-semibold text-sm shadow-sm;
+    @apply bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm;
+    @apply text-xs sm:text-sm xl:text-sm 2xl:text-base;
+    @apply px-3.5 py-1.5 sm:px-4 sm:py-2 xl:px-5 xl:py-2.5 2xl:px-6 2xl:py-3;
   }
 
   .btn-outline {
-    @apply border border-primary/20 text-primary px-5 py-2 rounded-lg hover:bg-primary/5 transition-all inline-block text-center cursor-pointer font-semibold text-sm;
+    @apply border border-primary/20 text-primary rounded-lg hover:bg-primary/5 transition-all inline-block text-center cursor-pointer font-semibold;
+    @apply text-xs sm:text-sm xl:text-sm 2xl:text-base;
+    @apply px-3.5 py-1.5 sm:px-4 sm:py-2 xl:px-5 xl:py-2.5 2xl:px-6 2xl:py-3;
+  }
+
+  .btn-sm {
+    @apply font-semibold rounded-lg;
+    @apply text-[11px] sm:text-xs md:text-xs xl:text-xs 2xl:text-sm;
+    @apply px-2.5 py-1 sm:px-3 sm:py-1.5 xl:px-3.5 xl:py-1.5 2xl:px-4 2xl:py-2;
+  }
+
+  .btn-lg {
+    @apply font-semibold rounded-xl;
+    @apply text-sm sm:text-base md:text-base xl:text-lg 2xl:text-xl;
+    @apply px-5 py-2.5 sm:px-6 sm:py-3 md:px-7 md:py-3.5 xl:px-8 xl:py-4 2xl:px-10 2xl:py-4.5;
+  }
+
+  .badge-brand {
+    @apply bg-primary/5 text-primary border border-primary/10 font-semibold rounded-md uppercase tracking-wider;
+    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-xs 2xl:text-xs;
+    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
   }
 
   .section-padding {

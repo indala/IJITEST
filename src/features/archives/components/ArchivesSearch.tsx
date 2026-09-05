@@ -6,11 +6,11 @@ import { Search, Archive, Layers, BookOpen, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import type { PublishedPaperUI } from '@/db/types';
+import type { PublishedPaperUI, Issue } from '@/db/types';
 
-interface VolumeData {
-    volumeNumber: number;
-    year: number;
+export interface VolumeData {
+    volumeNumber: Issue['volumeNumber'];
+    year: Issue['year'];
     issuesCount: number;
     papersCount: number;
 }

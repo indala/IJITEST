@@ -1,5 +1,3 @@
-"use client";
-
 import { BookOpen, ShieldCheck, UserCheck, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { memo } from 'react';

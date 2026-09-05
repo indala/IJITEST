@@ -25,8 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EditorialBoard() {
-    const settings = await getSettingsData();
-    const res = await getEditorialBoard();
+    const [settings, res] = await Promise.all([getSettingsData(), getEditorialBoard()]);
     const initialMembers = res.success ? res.data || [] : [];
 
     return (

@@ -1,5 +1,3 @@
-'use client';
-
 import { memo } from 'react';
 import Link from 'next/link';
 import { ExternalLink, CheckCircle2, Globe, Sparkles } from 'lucide-react';

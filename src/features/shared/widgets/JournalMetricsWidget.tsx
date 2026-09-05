@@ -1,5 +1,3 @@
-'use client';
-
 import { memo } from 'react';
 import { Award, CheckCircle2 } from 'lucide-react';
 

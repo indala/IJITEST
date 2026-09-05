@@ -9,13 +9,13 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { RequestResubmissionModal } from "@/components/panels/RequestResubmissionModal";
 
-import type { ActionResponse } from "@/db/types";
+import type { ActionResponse, Submission, Version, SubmissionStatus, FinalDecision } from "@/db/types";
 
 interface SubmissionDecisionActionsProps {
-    submissionId: number;
-    paperId: string;
-    paperTitle: string;
-    status: string;
+    submissionId: Submission['id'];
+    paperId: Submission['paperId'];
+    paperTitle: Version['title'];
+    status: SubmissionStatus;
 }
 
 export function SubmissionDecisionActions({
@@ -28,7 +28,7 @@ export function SubmissionDecisionActions({
     // 1. Decision Action (Accept/Reject)
     const [, decideAction] = useActionState(
         async (_prev: ActionResponse | null, formData: FormData) => {
-            const decision = formData.get("decision") as "accepted" | "rejected";
+            const decision = formData.get("decision") as Extract<FinalDecision, "accepted" | "rejected">;
             const result = await decideSubmission(submissionId, decision);
             if (result.success) {
                 toast.success(result.message || "Decision finalized successfully");

@@ -1,15 +1,15 @@
-'use client';
-
 import { Mail, MapPin, ShieldAlert, ChevronRight, Clock, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import ContactForm from '@/features/contact/components/ContactForm';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Card } from '@/components/ui/card';
+import type { JournalSettings } from '@/db/types';
 
-import { useSettingsContext } from '@/components/providers/SettingsContext';
+interface ContactClientProps {
+    settings: JournalSettings | Record<string, string | undefined>;
+}
 
-export default function ContactClient() {
-    const settings = useSettingsContext();
+export default function ContactClient({ settings }: ContactClientProps) {
     const supportEmail = settings['supportEmail'] || '';
     const supportPhone = settings['supportPhone'] || '';
 

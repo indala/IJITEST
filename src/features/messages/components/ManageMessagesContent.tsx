@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import { InboxFilters } from "./InboxFilters"
+import { InboxFilters, type InboxFilterTab } from "./InboxFilters"
 import { MessageList } from "./MessageList"
 import { MessageDetail } from "./MessageDetail"
 import { useMessages } from "@/hooks/queries/useMessages"
@@ -15,7 +15,7 @@ export function ManageMessagesContent() {
     const router = useRouter()
     const pathname = usePathname()
 
-    const activeStatus = searchParams.get('status') || 'all'
+    const activeStatus = (searchParams.get('status') as InboxFilterTab) || 'all'
     const search = searchParams.get('search') || ""
 
     const { data: messages = [], isLoading } = useMessages({ search })

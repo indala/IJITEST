@@ -13,19 +13,21 @@ import { Badge } from '@/components/ui/badge';
 import { type PublishedPaperUI } from '@/db/types';
 
 interface ArchivesClientProps {
-    mode?: 'current' | 'archive';
+    mode?: 'current' | 'archive' | undefined;
+    initialPapers?: PublishedPaperUI[] | undefined;
 }
 
-export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps) {
+export default function ArchivesClient({ mode = 'archive', initialPapers }: ArchivesClientProps) {
     const currentIssueQuery = useLatestIssuePapers();
     const archiveQuery = useArchivePapers();
 
-    const isLoading = mode === 'current' ? currentIssueQuery.isLoading : archiveQuery.isLoading;
+    const queryData = mode === 'current' ? currentIssueQuery.data : archiveQuery.data;
+    const isLoading = (mode === 'current' ? currentIssueQuery.isLoading : archiveQuery.isLoading) && !initialPapers?.length;
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
 
     const filteredPapers = useMemo(() => {
-        const papers = (mode === 'current' ? currentIssueQuery.data : archiveQuery.data) || [];
+        const papers = queryData || initialPapers || [];
         return papers.filter((p) =>
             p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             p.authorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -33,7 +35,7 @@ export default function ArchivesClient({ mode = 'archive' }: ArchivesClientProps
             (p.keywords && p.keywords.toLowerCase().includes(searchQuery.toLowerCase())) ||
             p.paperId.toLowerCase().includes(searchQuery.toLowerCase())
         );
-    }, [mode, currentIssueQuery.data, archiveQuery.data, searchQuery]);
+    }, [queryData, initialPapers, searchQuery]);
 
     const hierarchy = useMemo(() => {
         const volumes: Record<number, {

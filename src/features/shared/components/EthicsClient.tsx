@@ -1,5 +1,3 @@
-'use client';
-
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import { ScrollSpyNav } from '@/components/common/ScrollSpyNav';

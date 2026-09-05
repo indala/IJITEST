@@ -20,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Contact() {
+    const settings = await getSettingsData();
     return (
         <div className="bg-background min-h-screen">
             <PageHeader
@@ -30,7 +31,7 @@ export default async function Contact() {
                     { name: 'Contact', href: '/contact' },
                 ]}
             />
-            <ContactClient />
+            <ContactClient settings={settings} />
         </div>
     );
 }

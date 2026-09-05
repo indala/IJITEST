@@ -31,13 +31,13 @@ const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: Pap
 
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1.5 font-medium">
-                                <span className="font-bold text-[#000066]">Publication:</span>
+                                <span className="font-bold text-primary">Publication:</span>
                                 <span>Volume {paper.volumeNumber}, Issue {paper.issueNumber} {paper.monthRange ? `(${paper.monthRange} ${paper.publicationYear})` : `(${paper.publicationYear})`}</span>
                             </div>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2 text-xs">
-                            <span className="font-bold text-[#000066]">Authors:</span>
+                            <span className="font-bold text-primary">Authors:</span>
                             <p className="text-foreground/90 font-medium m-0">
                                 {paper.authorsList && paper.authorsList.length > 0 
                                     ? paper.authorsList.join(', ') 
@@ -51,7 +51,7 @@ const PaperCard = memo(function PaperCard({ paper, basePath = '/archives' }: Pap
                             ID: {paper.paperId}
                         </span>
 
-                        <Button asChild size="sm" className="bg-[#000066] hover:bg-[#000088] text-white shadow-xs rounded-lg transition-all h-7 px-3 text-xs font-bold">
+                        <Button asChild size="sm" className="btn-primary btn-sm shadow-xs transition-all h-7 px-3">
                             <Link href={paperUrl} className="flex items-center gap-1.5">
                                 <Eye className="size-3.5" />
                                 <span>View Article</span>

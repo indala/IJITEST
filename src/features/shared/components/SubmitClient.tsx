@@ -1,10 +1,6 @@
-'use client';
-
 import { ChevronRight, HelpCircle, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-
-const SubmissionForm = dynamic(() => import('@/features/submissions/components/SubmissionForm'), { ssr: false });
+import SubmissionForm from '@/features/submissions/components/SubmissionForm';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
 

@@ -80,7 +80,7 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
                     </p>
                     {copyrightUrl && (
                         <div className="pt-2">
-                            <Button asChild variant="outline" size="sm" className="h-9 gap-2 border-primary/20 text-[#000066] hover:bg-[#000066]/5 font-semibold text-xs transition-all">
+                            <Button asChild variant="outline" size="sm" className="h-9 gap-2 border-primary/20 text-primary hover:bg-primary/5 font-semibold text-xs transition-all">
                                 <a href={copyrightUrl} download target="_blank" rel="noopener noreferrer">
                                     <Download className="w-3.5 h-3.5" />
                                     Download Copyright Template
@@ -106,7 +106,7 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
                                 file
                                     ? 'border-emerald-500/50 bg-emerald-500/5'
                                     : 'border-primary/10 bg-card hover:border-primary/30 hover:bg-primary/2'
-                             }`}
+                            }`}
                         >
                             {file ? (
                                 <div className="text-center px-4 py-6">
@@ -131,7 +131,7 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
                     <Button
                         type="submit"
                         disabled={isPending || !file}
-                        className="w-full h-12 bg-[#000066] hover:bg-[#000088] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-md transition-all active:scale-[0.99] cursor-pointer"
+                        className="w-full h-12 btn-primary font-bold text-xs uppercase tracking-widest rounded-xl shadow-md transition-all active:scale-[0.99] cursor-pointer"
                     >
                         {isPending ? (
                             <div className="flex items-center justify-center gap-2">

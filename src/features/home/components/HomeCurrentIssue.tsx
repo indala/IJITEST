@@ -1,33 +1,16 @@
-'use client';
-
-import { memo } from 'react';
 import Link from 'next/link';
 import { BookOpen, Download, Eye, ExternalLink, ChevronRight, ShieldCheck, Sparkles } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useLatestIssue, useLatestIssuePapers } from '@/hooks/queries/usePublic';
-import type { PublishedPaperUI } from '@/db/types';
+import type { PublishedPaperUI, Issue } from '@/db/types';
 
-function HomeCurrentIssue() {
-    const { data: latestIssue, isLoading: isIssueLoading } = useLatestIssue();
-    const { data: papers, isLoading: isPapersLoading } = useLatestIssuePapers();
+interface HomeCurrentIssueProps {
+    latestIssue: Issue | null;
+    papers: PublishedPaperUI[];
+}
 
-    const isLoading = isIssueLoading || isPapersLoading;
-
-    if (isLoading) {
-        return (
-            <div className="p-6 rounded-2xl bg-card border border-border/60 animate-pulse space-y-4">
-                <div className="h-6 w-48 bg-muted rounded" />
-                <div className="h-4 w-72 bg-muted/60 rounded" />
-                <div className="space-y-3 pt-4">
-                    <div className="h-20 bg-muted/40 rounded-xl" />
-                    <div className="h-20 bg-muted/40 rounded-xl" />
-                </div>
-            </div>
-        );
-    }
-
+export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIssueProps) {
     if (!latestIssue || !papers || papers.length === 0) {
         return null;
     }
@@ -168,4 +151,3 @@ function HomeCurrentIssue() {
     );
 }
 
-export default memo(HomeCurrentIssue);

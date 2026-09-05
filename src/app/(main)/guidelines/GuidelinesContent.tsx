@@ -1,5 +1,3 @@
-"use client";
-
 import {
     Download
 } from 'lucide-react';
@@ -9,11 +7,13 @@ import Link from 'next/link';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import { ScrollSpyNav } from '@/components/common/ScrollSpyNav';
+import type { JournalSettings } from '@/db/types';
 
-import { useSettingsContext } from '@/components/providers/SettingsContext';
+interface GuidelinesContentProps {
+    settings: JournalSettings | Record<string, string | undefined>;
+}
 
-export default function GuidelinesContent() {
-    const settings = useSettingsContext();
+export default function GuidelinesContent({ settings }: GuidelinesContentProps) {
     const supportEmail = settings['supportEmail'] || "support@ijitest.org";
 
     const sections = [

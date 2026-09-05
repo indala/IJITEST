@@ -52,15 +52,15 @@ export default function LoginClient() {
         <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 2xl:p-8 relative">
             <Link
                 href="/"
-                className="absolute top-4 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/50 bg-card text-xs font-semibold text-muted-foreground hover:text-[#000066] hover:bg-muted/30 transition-all shadow-sm group"
+                className="absolute top-4 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/50 bg-card text-xs font-semibold text-muted-foreground hover:text-primary hover:bg-muted/30 transition-all shadow-sm group"
             >
                 <Home className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
                 <span>Back to Home</span>
             </Link>
             <div className="max-w-md w-full 2xl:max-w-lg">
                 <section className="text-center mb-8 2xl:mb-12">
-                    <div className="bg-[#000066]/5 w-16 h-16 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl flex items-center justify-center mx-auto mb-4 2xl:mb-6 border border-[#000066]/10">
-                        <Lock className="w-8 h-8 2xl:w-10 2xl:h-10 text-[#000066]" />
+                    <div className="bg-primary/5 w-16 h-16 2xl:w-20 2xl:h-20 rounded-xl 2xl:rounded-2xl flex items-center justify-center mx-auto mb-4 2xl:mb-6 border border-primary/10">
+                        <Lock className="w-8 h-8 2xl:w-10 2xl:h-10 text-primary" />
                     </div>
                     <h1 className="mb-1 2xl:mb-2">Portal Access</h1>
                     <p className="font-medium leading-relaxed">
@@ -132,7 +132,7 @@ export default function LoginClient() {
                                         aria-label={showPassword ? "Hide password" : "Show password"}
                                         disabled={isPending}
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="h-8 w-8 2xl:h-10 2xl:w-10 text-muted-foreground/60 hover:text-[#000066] transition-colors hover:bg-transparent"
+                                        className="h-8 w-8 2xl:h-10 2xl:w-10 text-muted-foreground/60 hover:text-primary transition-colors hover:bg-transparent"
                                     >
                                         {showPassword ? <EyeOff className="w-4 h-4 2xl:w-5 2xl:h-5" /> : <Eye className="w-4 h-4 2xl:w-5 2xl:h-5" />}
                                     </Button>
@@ -144,7 +144,7 @@ export default function LoginClient() {
                             <label className="flex items-center gap-2 cursor-pointer group">
                                 <span className="text-[10px] 2xl:text-xs font-bold text-muted-foreground tracking-widest uppercase">Remember session</span>
                             </label>
-                            <Link href="/auth/forgot-password" title="Forgot Password" className="text-[10px] 2xl:text-xs font-bold text-[#000066] hover:text-[#000088] tracking-widest uppercase transition-colors">
+                            <Link href="/auth/forgot-password" title="Forgot Password" className="text-[10px] 2xl:text-xs font-bold text-primary hover:text-primary/80 tracking-widest uppercase transition-colors">
                                 Forgot Password?
                             </Link>
                         </div>
@@ -167,7 +167,7 @@ function LoginSubmitButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full h-11 2xl:h-13 bg-[#000066] hover:bg-[#000088] text-white font-semibold text-sm 2xl:text-base rounded-lg 2xl:rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full h-11 2xl:h-13 btn-primary rounded-lg 2xl:rounded-xl shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
         >
             {pending ? (
                 <>Logging in <Loader2 className="w-4 h-4 2xl:w-5 2xl:h-5 animate-spin" /></>

@@ -1,5 +1,3 @@
-'use client';
-
 import {
     Download,
     BookOpen,
@@ -10,10 +8,9 @@ import {
     Quote
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
 import type { PublishedPaperUI } from "@/db/types";
 import CitationSection from "./CitationSection";
-import { incrementPaperViews, incrementPaperDownloads } from "@/actions/publications";
+import { PaperViewTracker, DownloadPaperButton } from "./PaperActions";
 
 interface PaperDetailClientProps {
     paper: PublishedPaperUI;
@@ -23,32 +20,9 @@ interface PaperDetailClientProps {
 export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDetailClientProps) {
     const isRetracted = paper.status === 'retracted';
 
-    useEffect(() => {
-        const paperId = paper.id;
-        const storageKey = `v_${paperId}`;
-        if (!localStorage.getItem(storageKey)) {
-            incrementPaperViews(paperId).then((res) => {
-                if (res.success) {
-                    localStorage.setItem(storageKey, '1');
-                }
-            });
-        }
-    }, [paper.id]);
-
-    const handleDownload = () => {
-        const paperId = paper.id;
-        const storageKey = `d_${paperId}`;
-        if (!localStorage.getItem(storageKey)) {
-            incrementPaperDownloads(paperId).then((res) => {
-                if (res.success) {
-                    localStorage.setItem(storageKey, '1');
-                }
-            });
-        }
-    };
-
     return (
         <div className="container-responsive -mt-10">
+            <PaperViewTracker paperId={paper.id} />
             {isRetracted && (
                 <div className="mb-12 bg-red-50 border-2 border-red-200 p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-6 shadow-xl shadow-red-900/5 animate-pulse">
                     <div className="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center shrink-0 rotate-3">
@@ -131,16 +105,11 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                     </span>
                                 </div>
 
-                                <a
-                                    href={paper.filePath}
-                                    download
-                                    onClick={handleDownload}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                <DownloadPaperButton
+                                    filePath={paper.filePath}
+                                    paperId={paper.id}
                                     className="hidden md:flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-label shadow-xs transition-all shrink-0"
-                                >
-                                    <Download className="w-3.5 h-3.5" /> <span>Download PDF</span>
-                                </a>
+                                />
                             </div>
 
                             {/* DOI & Digital Repository Badges */}
@@ -223,16 +192,13 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                 <div className="space-y-4 sm:space-y-5">
                     {/* Download Button (Mobile Only) */}
                     <div className="flex flex-col gap-2 md:hidden">
-                        <a
-                            href={paper.filePath}
-                            download
-                            onClick={handleDownload}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <DownloadPaperButton
+                            filePath={paper.filePath}
+                            paperId={paper.id}
                             className="w-full flex items-center justify-center gap-2 bg-primary text-white py-2.5 rounded-lg font-bold text-xs shadow-xs hover:bg-primary/90 transition-all"
                         >
                             <Download className="w-4 h-4" /> Download Full Paper
-                        </a>
+                        </DownloadPaperButton>
                     </div>
                     
                     {/* Citation Widget (Client Component) */}

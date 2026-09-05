@@ -1,21 +1,16 @@
-'use client';
-import { motion } from 'framer-motion';
-import { memo } from 'react';
+import type { JournalSettings } from '@/db/types';
 
-import { useSettingsContext } from '@/components/providers/SettingsContext';
+interface WelcomeSectionProps {
+    settings: JournalSettings | Record<string, string | undefined>;
+}
 
-function WelcomeSection() {
-    const settings = useSettingsContext();
+export default function WelcomeSection({ settings }: WelcomeSectionProps) {
     const name = settings['journalName'] || '';
     const shortName = settings['journalShortName'] || '';
 
     return (
-        <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative group"
+        <section
+            className="relative group animate-in fade-in slide-in-from-bottom-3 duration-700"
             aria-labelledby="welcome-heading"
         >
             <h2 id="welcome-heading">
@@ -34,8 +29,7 @@ function WelcomeSection() {
                     <span>Frequency: <strong className="text-primary">Monthly (12 Issues/Year)</strong></span>
                 </div>
             </div>
-        </motion.section>
+        </section>
     );
 }
 
-export default memo(WelcomeSection);
