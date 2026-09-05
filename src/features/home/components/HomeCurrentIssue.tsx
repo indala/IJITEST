@@ -62,15 +62,15 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
                         : paper.authorName;
 
                     return (
-                        <Card 
+                        <div 
                             key={paper.paperId}
-                            className="p-4 rounded-xl border border-border/70 bg-card hover:border-primary/30 hover:shadow-xs transition-all duration-200 group"
+                            className="p-3.5 sm:p-4 rounded-lg border border-border/50 bg-card hover:border-primary/30 hover:bg-muted/10 transition-all duration-200 group"
                         >
-                            <div className="flex flex-col gap-2.5">
+                            <div className="flex flex-col gap-2">
                                 {/* Title & Paper ID Badge */}
                                 <div className="flex items-start justify-between gap-3">
                                     <Link href={articleUrl} className="flex-1">
-                                        <h3 className="group-hover:text-secondary transition-colors leading-snug m-0">
+                                        <h3 className="group-hover:text-secondary transition-colors leading-snug m-0 text-sm sm:text-base font-serif font-semibold">
                                             {paper.title}
                                         </h3>
                                     </Link>
@@ -80,10 +80,10 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
                                 </div>
 
                                 {/* Authors & Page Info */}
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs 2xl:text-sm text-foreground/80">
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-foreground/80">
                                     <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-primary/70">Authors:</span>
-                                        <span className="font-medium text-foreground/90">{authors}</span>
+                                        <span className="font-medium text-primary">Authors:</span>
+                                        <span className="text-foreground/90">{authors}</span>
                                     </div>
                                     {paper.startPage && paper.endPage && (
                                         <div className="flex items-center gap-1 text-muted-foreground">
@@ -95,15 +95,15 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
 
                                 {/* Abstract Snippet */}
                                 {paper.abstract && (
-                                    <p className="text-muted-foreground line-clamp-2 leading-relaxed m-0">
+                                    <p className="text-muted-foreground text-xs line-clamp-2 leading-relaxed m-0">
                                         {paper.abstract}
                                     </p>
                                 )}
 
                                 {/* Action Buttons Strip */}
-                                <div className="pt-2 border-t border-border/40 flex flex-wrap items-center justify-between gap-2">
+                                <div className="pt-2 border-t border-border/30 flex flex-wrap items-center justify-between gap-2">
                                     <div className="flex items-center gap-2">
-                                        <Button asChild size="sm" variant="default" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm bg-primary hover:bg-primary/90 rounded-md">
+                                        <Button asChild size="sm" variant="default" className="h-7 px-3 text-xs bg-primary hover:bg-primary/90 rounded-md">
                                             <Link href={articleUrl} className="flex items-center gap-1.5">
                                                 <Eye className="w-3.5 h-3.5" />
                                                 <span>Read Article</span>
@@ -111,7 +111,7 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
                                         </Button>
 
                                         {paper.filePath && (
-                                            <Button asChild size="sm" variant="outline" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm border-primary/20 text-primary hover:bg-primary/5 rounded-md">
+                                            <Button asChild size="sm" variant="outline" className="h-7 px-3 text-xs border-primary/20 text-primary hover:bg-primary/5 rounded-md">
                                                 <a href={paper.filePath} download target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
                                                     <Download className="w-3.5 h-3.5 text-emerald-600" />
                                                     <span>PDF</span>
@@ -121,29 +121,31 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
                                     </div>
 
                                     {/* Digital Preservation Badge */}
-                                    <a
-                                        href={paper.doi ? `https://doi.org/${paper.doi}` : "https://doi.org/10.5281/zenodo.22016453"}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-[11px] 2xl:text-xs font-mono text-muted-foreground hover:text-primary transition-colors"
-                                    >
-                                        <span>DOI: {paper.doi || "10.5281/zenodo.22016453"}</span>
-                                        <ExternalLink className="w-2.5 h-2.5 opacity-60" />
-                                    </a>
+                                    {paper.doi && (
+                                        <a
+                                            href={`https://doi.org/${paper.doi}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 text-[11px] font-mono text-muted-foreground hover:text-primary transition-colors"
+                                        >
+                                            <span>DOI: {paper.doi}</span>
+                                            <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                                        </a>
+                                    )}
                                 </div>
                             </div>
-                        </Card>
+                        </div>
                     );
                 })}
             </div>
 
             {/* Bottom Repository Link */}
-            <div className="p-3.5 2xl:p-5 rounded-xl bg-primary/5 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs 2xl:text-sm">
+            <div className="p-3 sm:p-3.5 rounded-lg bg-primary/5 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2 text-primary font-medium text-center sm:text-left">
                     <Sparkles className="w-4 h-4 text-secondary shrink-0" />
-                    <span>All published articles are preserved with permanent DOIs across Open Science Repositories & OpenAIRE discovery hub.</span>
+                    <span>All published articles are assigned permanent DOIs and persistent digital preservation.</span>
                 </div>
-                <Button asChild size="sm" variant="outline" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm border-primary/20 text-primary hover:bg-primary/5 shrink-0">
+                <Button asChild size="sm" variant="outline" className="h-7 px-3 text-xs border-primary/20 text-primary hover:bg-primary/5 shrink-0">
                     <Link href="/archives">Browse All Volumes ({year})</Link>
                 </Button>
             </div>

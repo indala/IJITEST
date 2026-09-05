@@ -5,28 +5,43 @@ interface WelcomeSectionProps {
 }
 
 export default function WelcomeSection({ settings }: WelcomeSectionProps) {
-    const name = settings['journalName'] || '';
-    const shortName = settings['journalShortName'] || '';
+    const name = settings['journalName'] || 'International Journal of Innovative Trends in Engineering, Science and Technology';
+    const shortName = settings['journalShortName'] || 'IJITEST';
+    const issn = settings['issnNumber'] || '3139-6887';
+    const frequency = settings['publicationFrequency'] || 'Monthly (12 Issues per year)';
 
     return (
         <section
-            className="relative group animate-in fade-in slide-in-from-bottom-3 duration-700"
+            className="space-y-3.5 animate-in fade-in slide-in-from-bottom-2 duration-500"
             aria-labelledby="welcome-heading"
         >
-            <h2 id="welcome-heading">
+            <h2 id="welcome-heading" className="m-0">
                 Welcome to {shortName}
             </h2>
 
-            <div className="opacity-90 border-l-4 border-secondary/30 group-hover:border-secondary transition-colors duration-300 pl-3.5 space-y-2 text-left text-pretty max-w-none">
-                <p title='welcome description' className='text-justify text-muted-foreground m-0'>
-                    {name} ({shortName}) is an international, peer-reviewed scholarly journal dedicated to the dissemination of high-quality research in Engineering, Science, Technology, and Management. The journal encourages fundamental, interdisciplinary, theoretical, and applied research that advances innovation, industrial development, and sustainable practices across emerging and established domains. {shortName} follows a rigorous double-blind peer-review process and adheres strictly to global ethical publishing standards.
+            <div className="border-l-2 border-secondary/40 pl-3.5 space-y-3 text-left">
+                <p title="welcome description" className="text-body text-justify m-0">
+                    {name} ({shortName}) is an international, peer-reviewed scholarly journal dedicated to the dissemination of high-quality research across Engineering, Science, Technology, and Applied Sciences. The journal encourages fundamental, interdisciplinary, theoretical, and applied investigations that advance innovation, industrial development, and sustainable practices. {shortName} strictly adheres to standard publication ethics and follows a rigorous double-blind peer-review workflow.
                 </p>
-                <div className="flex flex-wrap items-center gap-3 font-semibold text-primary/90 text-xs sm:text-sm 2xl:text-base border-t border-primary/10 pt-2.5 2xl:pt-3.5">
-                    <span>Subject: <strong className="text-primary">{settings['journalSubject'] || 'Multidisciplinary Engineering & Technology'}</strong></span>
-                    <span>•</span>
-                    <span>Language: <strong className="text-primary">English</strong></span>
-                    <span>•</span>
-                    <span>Frequency: <strong className="text-primary">Monthly (12 Issues/Year)</strong></span>
+
+                {/* Clean, unboxed academic metadata with symbols */}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-2 border-t border-border/50 text-xs sm:text-sm text-foreground/85">
+                    <span className="inline-flex items-center gap-1.5">
+                        <span className="text-secondary">▪</span>
+                        <span>ISSN (Online): <span className="font-semibold text-primary">{issn}</span></span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                        <span className="text-secondary">▪</span>
+                        <span>Frequency: <span className="font-medium text-foreground">{frequency}</span></span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                        <span className="text-secondary">▪</span>
+                        <span>Review: <span className="font-medium text-foreground">Double-Blind Peer Review</span></span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                        <span className="text-secondary">▪</span>
+                        <span>Access: <span className="font-medium text-emerald-700">Gold Open Access</span></span>
+                    </span>
                 </div>
             </div>
         </section>

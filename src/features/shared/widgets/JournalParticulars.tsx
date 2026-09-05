@@ -4,23 +4,23 @@ import { Globe, Mail, Info } from 'lucide-react';
 import type { JournalSettings } from '@/db/types';
 
 interface JournalParticularsProps {
-    settings: JournalSettings;
+    settings: JournalSettings | Record<string, string | undefined>;
 }
 
 export const JournalParticulars = ({ settings }: JournalParticularsProps) => {
     const particulars = [
-        { label: "Title", value: (settings.journalName || '') },
-        { label: "Abbreviated Title", value: (settings.journalShortName || '') },
-        { label: "ISSN (Online)", value: (settings.issnNumber || '') },
-        { label: "Frequency", value: (settings.publicationFrequency || '') },
-        { label: "Starting Year", value: (settings.startingYear || '') },
-        { label: "Publication Format", value: (settings.publicationFormat || '') },
-        { label: "Language", value: (settings.journalLanguage || '') },
-        { label: "Subject", value: (settings.journalSubject || '') },
-        { label: "Publisher", value: (settings.publisherName || '') },
-        { label: "UDYAM", value: (settings.udyamRegistration || '') },
-        { label: "Email", value: "felixtecsolutions@gmail.com" },
-        { label: "Website", value: (settings.journalWebsite || '') },
+        { label: "Title", value: (settings['journalName'] || '') },
+        { label: "Abbreviated Title", value: (settings['journalShortName'] || '') },
+        { label: "ISSN (Online)", value: (settings['issnNumber'] || '') },
+        { label: "Frequency", value: (settings['publicationFrequency'] || '') },
+        { label: "Starting Year", value: (settings['startingYear'] || '') },
+        { label: "Publication Format", value: (settings['publicationFormat'] || '') },
+        { label: "Language", value: (settings['journalLanguage'] || '') },
+        { label: "Subject", value: (settings['journalSubject'] || '') },
+        { label: "Publisher", value: (settings['publisherName'] || '') },
+        { label: "UDYAM", value: (settings['udyamRegistration'] || '') },
+        { label: "Email", value: (settings['supportEmail'] || 'felixtecsolutions@gmail.com') },
+        { label: "Website", value: (settings['journalWebsite'] || '') },
     ];
 
     return (
@@ -30,20 +30,20 @@ export const JournalParticulars = ({ settings }: JournalParticularsProps) => {
                 <CardTitle className="text-white tracking-wide m-0">Journal Particulars</CardTitle>
             </div>
             <CardContent className="p-0">
-                <div className="divide-y divide-primary/5">
+                <div className="grid grid-cols-1 md:grid-cols-2 border-b border-border/40 text-xs">
                     {particulars.map((item, idx) => (
-                        <div key={idx} className="grid grid-cols-3 p-2.5 text-xs group/item hover:bg-primary/5 transition-colors">
-                            <span className="text-label text-primary/60">{item.label}</span>
-                            <span className="col-span-2 text-primary font-medium pl-2 border-l border-primary/5">{item.value}</span>
+                        <div key={idx} className="grid grid-cols-3 p-2.5 sm:p-3 hover:bg-primary/5 transition-colors border-t border-border/40">
+                            <span className="text-label text-primary/70 font-semibold">{item.label}</span>
+                            <span className="col-span-2 text-foreground font-medium pl-2.5 border-l border-border/40 break-words">{item.value}</span>
                         </div>
                     ))}
                 </div>
                 <div className="p-4 bg-muted/30 flex justify-between items-center border-t border-primary/5">
                     <div className="flex gap-3">
-                        <a href={`https://${(settings.journalWebsite || '')}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-all text-primary/60 hover:text-primary" aria-label="Visit Journal Website">
+                        <a href={(settings['journalWebsite']?.startsWith('http') ? settings['journalWebsite'] : `https://${settings['journalWebsite'] || 'ijitest.org'}`)} target="_blank" rel="noopener noreferrer" className="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-all text-primary/60 hover:text-primary" aria-label="Visit Journal Website">
                             <Globe className="w-3.5 h-3.5" />
                         </a>
-                        <a href={`mailto:${(settings.supportEmail || '')}`} className="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-all text-primary/60 hover:text-primary" aria-label="Send Email to Editor">
+                        <a href={`mailto:${(settings['supportEmail'] || 'support@ijitest.org')}`} className="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-all text-primary/60 hover:text-primary" aria-label="Send Email to Editor">
                             <Mail className="w-3.5 h-3.5" />
                         </a>
                     </div>

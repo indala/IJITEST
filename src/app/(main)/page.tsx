@@ -4,21 +4,16 @@ import { getLatestIssuePapers } from '@/actions/archives';
 import type { Metadata } from 'next';
 import HomeCarousel from '@/features/home/components/HomeCarousel';
 import WelcomeSection from '@/features/home/components/WelcomeSection';
-import HomeStats from '@/features/home/components/HomeStats';
 import HomeCurrentIssue from '@/features/home/components/HomeCurrentIssue';
 import AimAndScope from '@/features/home/components/AimAndScope';
-import HomeIndexingStrip from '@/features/home/components/HomeIndexingStrip';
-import PublicationWorkflow from '@/features/home/components/PublicationWorkflow';
-import DisciplineTaxonomyGrid from '@/features/home/components/DisciplineTaxonomyGrid';
 import AnnouncementsWidget from '@/features/shared/widgets/AnnouncementsWidget';
-import CurrentIssueWidget from '@/features/shared/widgets/CurrentIssueWidget';
 import PublisherSection from '@/features/home/components/PublisherSection';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import AuthorQuickLinks from '@/features/home/components/AuthorQuickLinks';
 import CallForPapersWidget from '@/features/shared/widgets/CallForPapersWidget';
 import ResourceDeskWidget from '@/features/shared/widgets/ResourceDeskWidget';
 import EthicsWidget from '@/features/shared/widgets/EthicsWidget';
-import JournalMetricsWidget from '@/features/shared/widgets/JournalMetricsWidget';
+import JournalParticulars from '@/features/shared/widgets/JournalParticulars';
 import ApcFeeWidget from '@/features/shared/widgets/ApcFeeWidget';
 import AnnouncementBar from '@/features/home/components/AnnouncementBar';
 import { Section } from '@/components/layout/Section';
@@ -82,25 +77,20 @@ export default async function Home() {
               </div>
 
               <div className="space-y-4 sm:space-y-5">
-                <CurrentIssueWidget latestIssue={latestIssue} />
+                <CallForPapersWidget />
                 <AnnouncementsWidget latestIssue={latestIssue} />
                 <AuthorQuickLinks />
-                <CallForPapersWidget />
-                <ApcFeeWidget />
-                <JournalMetricsWidget />
                 <ResourceDeskWidget settings={settings} />
+                <ApcFeeWidget />
                 <EthicsWidget />
               </div>
             </>
           }
         >
           <WelcomeSection settings={settings} />
-          <HomeStats settings={settings} />
+          <AimAndScope settings={settings} shortName={settings['journalShortName']} />
+          <JournalParticulars settings={settings} />
           <HomeCurrentIssue latestIssue={latestIssue} papers={latestPapers} />
-          <PublicationWorkflow />
-          <DisciplineTaxonomyGrid />
-          <AimAndScope shortName={settings['journalShortName']} />
-          <HomeIndexingStrip />
         </SidebarLayout>
       </Section>
 

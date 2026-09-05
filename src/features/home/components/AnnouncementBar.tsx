@@ -1,3 +1,5 @@
+"use client";
+
 import { Megaphone, ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import type { PublishedPaperUI } from "@/db/types";
