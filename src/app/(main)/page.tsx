@@ -14,7 +14,6 @@ import AuthorQuickLinks from '@/features/home/components/AuthorQuickLinks';
 import CallForPapersWidget from '@/features/shared/widgets/CallForPapersWidget';
 import ResourceDeskWidget from '@/features/shared/widgets/ResourceDeskWidget';
 import EthicsWidget from '@/features/shared/widgets/EthicsWidget';
-import JournalParticulars from '@/features/shared/widgets/JournalParticulars';
 import ApcFeeWidget from '@/features/shared/widgets/ApcFeeWidget';
 import AnnouncementBar from '@/features/home/components/AnnouncementBar';
 import { Section } from '@/components/layout/Section';
@@ -114,7 +113,6 @@ export default async function Home() {
         >
           <WelcomeSection settings={settings} />
           <AimAndScope settings={settings} shortName={settings['journalShortName']} />
-          <JournalParticulars settings={settings} />
           <Suspense fallback={<HomeCurrentIssueSkeleton />}>
             <HomeCurrentIssueSection />
           </Suspense>

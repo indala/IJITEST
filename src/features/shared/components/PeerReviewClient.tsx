@@ -5,7 +5,6 @@ import { ShieldCheck, Clock, ChevronRight, Search, Gavel, Users } from 'lucide-r
 import Link from 'next/link';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
-import PeerReviewFlowchart from '@/features/peer-review/components/PeerReviewFlowchart';
 
 import type { JournalSettings } from '@/db/types';
 
@@ -60,8 +59,6 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                         </div>
                     </motion.section>
 
-                    {/* Interactive Peer Review Process Flowchart with Scroll & Continuous Animation */}
-                    <PeerReviewFlowchart />
 
                     {/* Review Pipeline */}
                     <motion.section
