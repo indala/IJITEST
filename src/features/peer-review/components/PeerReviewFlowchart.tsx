@@ -9,8 +9,6 @@ import {
     Clock, 
     UserCheck,
     CheckCircle2,
-    Sparkles,
-    MoveRight,
     Smartphone
 } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
