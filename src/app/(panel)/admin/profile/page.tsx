@@ -30,10 +30,10 @@ async function AdminProfileContent() {
 
 export default function AdminProfilePage() {
     return (
-        <section className="space-y-10">
-            <header className="space-y-1 2xl:space-y-2 border-b border-white/5 pb-8">
-                <h1 className="font-serif text-2xl xl:text-3xl 2xl:text-4xl font-semibold text-foreground tracking-tight capitalize leading-none">Administrative identity</h1>
-                <p className="text-[9px] xl:text-xs 2xl:text-sm font-medium text-muted-foreground capitalize tracking-widest opacity-60">Manage your core credentials and architectural clearance.</p>
+        <section className="space-y-4">
+            <header className="space-y-1 border-b border-border/70 pb-3 sm:pb-4">
+                <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">Administrative Identity</h1>
+                <p className="panel-subtitle text-body-sm text-muted-foreground">Manage your core credentials and administrative clearance.</p>
             </header>
 
             <Suspense fallback={<ProfileDossierSkeleton />}>

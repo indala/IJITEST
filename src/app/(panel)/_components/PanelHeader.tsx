@@ -21,11 +21,11 @@ export function PanelHeader({
     const activeItem = filteredItems.find(i => pathname === i.fullHref);
 
     return (
-        <header className="bg-background/95 backdrop-blur-sm border-b border-border/50 flex items-center justify-between px-4 sm:px-6 py-10 h-16 sticky top-0 z-30 transition-all">
+        <header className="bg-background/95 backdrop-blur-sm border-b border-border/70 flex items-center justify-between px-4 sm:px-6 h-16 sticky top-0 z-30 transition-colors">
             <div className="flex items-center gap-4">
                 <SidebarTrigger className="lg:hidden h-10 w-10 cursor-pointer text-primary" />
                 <div className="flex flex-col">
-                    <h1 className="text-xl font-bold tracking-tight text-foreground">
+                    <h1 className="panel-title text-lg sm:text-xl font-bold tracking-tight text-foreground m-0">
                         {activeItem?.name || 'Overview'}
                     </h1>
                 </div>

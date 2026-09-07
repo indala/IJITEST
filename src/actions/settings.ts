@@ -1,5 +1,6 @@
 "use server";
 import "server-only"
+import { cache } from "react";
 
 import { db } from "@/lib/db";
 import { settings, submissions, publications } from "@/db/schema";
@@ -59,11 +60,11 @@ const DEFAULT_SETTINGS: Record<string, string> = {
 
 export async function getSettings(): Promise<ActionResponse<Record<string, string>>> {
     'use cache'
-    cacheLife('hours')
-    cacheTag(CACHE_TAGS.SETTINGS, CACHE_TAGS.PUBLIC_DATA)
+    cacheLife('settings')
+    cacheTag(CACHE_TAGS.SETTINGS)
 
     try {
-        cacheLogger.miss(CACHE_TAGS.SETTINGS, "settings, public-data");
+        cacheLogger.miss(CACHE_TAGS.SETTINGS, "settings");
         const rows = await db.select().from(settings);
 
         const result: Record<string, string> = { ...DEFAULT_SETTINGS };
@@ -85,16 +86,21 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
     }
 }
 
-/**
- * Utility for Server Components to get raw settings directly.
- */
-export async function getSettingsData(): Promise<Record<string, string>> {
+const getCachedSettingsData = cache(async (): Promise<Record<string, string>> => {
     try {
         const res = await getSettings();
         return res.data || DEFAULT_SETTINGS;
     } catch {
         return { ...DEFAULT_SETTINGS };
     }
+});
+
+/**
+ * Utility for Server Components to get raw settings directly.
+ * Deduplicated per-request via React.cache.
+ */
+export async function getSettingsData(): Promise<Record<string, string>> {
+    return getCachedSettingsData();
 }
 
 export async function updateSettings(formData: FormData): Promise<ActionResponse> {
@@ -165,12 +171,39 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
         });
 
         cacheLogger.invalidation(CACHE_TAGS.SETTINGS, "settings updated");
-        updateTag(CACHE_TAGS.SETTINGS);           // Immediate cache expiration (Next.js 16)
-        updateTag(CACHE_TAGS.PUBLIC_DATA);         // Purge public papers, archives & issue cache
-        revalidatePath('/', 'layout');       // Re-renders root layout + all children
+        updateTag(CACHE_TAGS.SETTINGS);
+        if (newDoiPrefix && newDoiPrefix.startsWith("10.")) {
+            updateTag(CACHE_TAGS.ARCHIVES);
+        }
+        revalidatePath('/', 'layout');
         return actionSuccess();
     } catch (error) {
         console.error("Update Settings Error:", error);
         return serverError(error, "update settings");
     }
 }
+
+export async function togglePromotionStatus(isActive: boolean): Promise<ActionResponse<{ isPromotionActive: string }>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'admin') {
+            return actionError("Unauthorized");
+        }
+
+        const value = isActive ? "true" : "false";
+
+        await db.insert(settings)
+            .values({ settingKey: 'isPromotionActive', settingValue: value })
+            .onDuplicateKeyUpdate({ set: { settingValue: value } });
+
+        cacheLogger.invalidation(CACHE_TAGS.SETTINGS, `promotion status toggled to ${value}`);
+        updateTag(CACHE_TAGS.SETTINGS);
+        revalidatePath('/', 'layout');
+
+        return actionSuccess({ isPromotionActive: value });
+    } catch (error) {
+        console.error("Toggle Promotion Error:", error);
+        return serverError(error, "toggle promotion status");
+    }
+}
+

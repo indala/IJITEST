@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useActionState } from 'react';
 import { 
-    Plus, BookOpen, Clock, CheckCircle2, Layers, 
+    Plus, BookOpen, Clock, CheckCircle2, 
     CheckCircle, Save, ChevronDown as ChevronDownIcon, ChevronUp, FileText, Eye, Unlink, Loader2 
 } from 'lucide-react';
 import {
@@ -153,33 +153,33 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
     }
 
     return (
-        <section className="space-y-8 pb-12 max-w-7xl 2xl:max-w-[1900px] mx-auto">
+        <section className="space-y-4">
             {/* Header */}
-            <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border/50 pb-8">
-                <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/5 shadow-sm">
-                            <BookOpen className="w-6 h-6 text-primary" />
+            <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-3 border-b border-border/70 pb-3 sm:pb-4">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 text-primary shadow-xs">
+                            <BookOpen className="w-4 h-4" />
                         </div>
-                        <h1 className="panel-title m-0">
+                        <h1 className="panel-title m-0 text-xl xl:text-2xl font-bold text-primary">
                             Manage Publications
                         </h1>
                     </div>
-                    <p className="panel-subtitle border-l-2 border-primary/20 pl-4 py-0.5 max-w-2xl leading-relaxed m-0">
+                    <p className="panel-subtitle border-l-2 border-primary/20 pl-3 py-0.5 max-w-2xl leading-relaxed m-0 text-body-sm text-muted-foreground">
                         {role === 'admin' ? 'Manage the journal publication schedule, volumes, and archival issues.' : 'Review and manage editorial publication cycles.'}
                     </p>
                 </div>
 
                 <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
                     <DialogTrigger asChild>
-                        <Button className="btn-primary">
+                        <Button className="btn-primary h-9">
                             <Plus className="w-4 h-4 mr-2" /> New Issue
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md rounded-2xl p-8 bg-card border-border shadow-2xl">
-                        <DialogHeader className="space-y-4">
-                            <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/5 flex items-center justify-center text-primary">
-                                <Plus className="w-6 h-6" />
+                    <DialogContent className="sm:max-w-md rounded-2xl p-5 sm:p-6 bg-card border-border/70 shadow-2xl">
+                        <DialogHeader className="space-y-3">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                                <Plus className="w-5 h-5" />
                             </div>
                             <div className="space-y-1">
                                 <DialogTitle className="text-xl font-semibold text-foreground tracking-tight">New Publication Issue</DialogTitle>
@@ -188,52 +188,50 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                 </DialogDescription>
                             </div>
                         </DialogHeader>
-                        <form action={createAction} className="space-y-5 pt-4">
+                        <form action={createAction} className="space-y-4 pt-2">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-semibold text-primary/70">Volume Number</Label>
+                                    <Label className="text-label text-foreground">Volume Number</Label>
                                     <Input
                                         name="volume"
                                         type="number"
                                         required
-                                        className="h-10 bg-primary/2 border-primary/10 focus-visible:ring-1 text-base rounded-md px-4"
+                                        className="h-10 bg-background border-border/70 focus-visible:ring-1 text-sm rounded-lg px-3"
                                         placeholder="e.g. 1"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-semibold text-primary/70">Issue Number</Label>
+                                    <Label className="text-label text-foreground">Issue Number</Label>
                                     <Input
                                         name="issue"
                                         type="number"
                                         required
-                                        className="h-10 bg-primary/2 border-primary/10 focus-visible:ring-1 text-base rounded-md px-4"
+                                        className="h-10 bg-background border-border/70 focus-visible:ring-1 text-sm rounded-lg px-3"
                                         placeholder="e.g. 1"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-xs font-semibold text-primary/70">Publication Year</Label>
+                                <Label className="text-label text-foreground">Publication Year</Label>
                                 <Input
                                     name="year"
                                     type="number"
                                     required
                                     defaultValue={new Date().getFullYear()}
-                                    className="h-10 bg-primary/2 border-primary/10 focus-visible:ring-1 text-base rounded-md px-4"
+                                    className="h-10 bg-background border-border/70 focus-visible:ring-1 text-sm rounded-lg px-3"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-xs font-semibold text-primary/70">Month Range</Label>
+                                <Label className="text-label text-foreground">Month Range</Label>
                                 <Input
                                     name="monthRange"
-                                    type="text"
-                                    required
                                     placeholder="e.g. Jan - Mar"
-                                    className="h-10 bg-primary/2 border-primary/10 focus-visible:ring-1 text-base rounded-md px-4"
+                                    className="h-10 bg-background border-border/70 focus-visible:ring-1 text-sm rounded-lg px-3"
                                 />
                             </div>
                             <DialogFooter className="pt-4">
-                                <Button disabled={isCreating} type="submit" className="w-full h-11 bg-primary text-white rounded-lg cursor-pointer">
-                                    {isCreating ? 'Creating...' : 'Create Issue'}
+                                <Button type="submit" disabled={isCreating} className="w-full btn-primary h-10 rounded-lg">
+                                    {isCreating ? "Initializing..." : "Create Issue"}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -241,59 +239,58 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                 </Dialog>
             </header>
 
-            {/* Publication Metrics */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Performance Snapshot */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {[
-                    { label: 'Volumes', value: stats.totalVolumes, icon: Layers, colors: 'text-primary bg-primary/5' },
-                    { label: 'Published', value: stats.publishedIssues, icon: CheckCircle2, colors: 'text-primary bg-primary/5' },
-                    { label: 'Open', value: stats.openIssues, icon: Clock, colors: 'text-primary bg-primary/5' },
-                    { label: 'Indexed', value: stats.totalPapers, icon: FileText, colors: 'text-primary bg-primary/5' },
+                    { label: 'Total Volumes', value: stats.totalVolumes, icon: BookOpen, colors: 'text-primary bg-primary/10 border-primary/20' },
+                    { label: 'Published Issues', value: stats.publishedIssues, icon: CheckCircle2, colors: 'text-emerald-600 bg-emerald-500/10 border-emerald-500/20' },
+                    { label: 'Open Submissions', value: stats.openIssues, icon: Clock, colors: 'text-amber-600 bg-amber-500/10 border-amber-500/20' },
+                    { label: 'Indexed', value: stats.totalPapers, icon: FileText, colors: 'text-primary bg-primary/10 border-primary/20' },
                 ].map((item) => (
                     <div
                         key={item.label}
-                        className="p-6 bg-card rounded-xl shadow-sm border border-border/50"
+                        className="p-3.5 sm:p-4 bg-card rounded-xl shadow-2xs border border-border/70"
                     >
                         <div className="flex items-center justify-between">
-                            <div className="space-y-1">
-                                <p className="text-meta uppercase tracking-widest">{item.label}</p>
-                                <h3 className="text-2xl font-bold text-foreground">{item.value}</h3>
+                            <div className="space-y-0.5">
+                                <p className="text-label text-muted-foreground uppercase">{item.label}</p>
+                                <h3 className="text-xl lg:text-2xl font-bold text-foreground">{item.value}</h3>
                             </div>
-                            <div className={`w-10 h-10 rounded-lg ${item.colors} flex items-center justify-center border border-border/5`}>
-                                <item.icon className="w-5 h-5" />
+                            <div className={`w-9 h-9 rounded-lg ${item.colors} flex items-center justify-center border shadow-xs`}>
+                                <item.icon className="w-4 h-4" />
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-
             {/* Grid of Issues */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
                 {volumes.map((v) => (
                     <div key={v.id}>
-                        <Card className="border-border/50 shadow-sm transition-all bg-card rounded-xl overflow-hidden">
+                        <Card className="border-border/70 shadow-2xs transition-all bg-card rounded-xl overflow-hidden">
                             <CardContent className="p-0">
-                                <div className="p-6 space-y-6">
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div className="space-y-1">
-                                            <p className="text-meta uppercase tracking-widest">Volume {v.volumeNumber}</p>
-                                            <h3 className="font-semibold text-foreground leading-none text-xl">
+                                <div className="p-4 sm:p-5 space-y-3.5">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="space-y-0.5">
+                                            <p className="text-meta uppercase">Volume {v.volumeNumber}</p>
+                                            <h3 className="font-semibold text-foreground leading-tight text-base">
                                                 Issue {v.issueNumber}
                                             </h3>
                                         </div>
-                                        <Badge className={`h-6 px-2 text-label rounded-md ${v.status === 'published' ? 'badge-brand' : 'bg-orange-500/5 text-orange-600 border border-orange-500/10'}`}>
+                                        <Badge className={`h-5 px-2 text-[10px] font-semibold rounded-md border-none ${v.status === 'published' ? 'bg-emerald-50 text-emerald-600' : 'badge-brand'}`}>
                                             {v.status === 'published' ? 'Published' : 'Open'}
                                         </Badge>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="bg-muted/30 p-4 rounded-xl border border-border/50">
-                                            <p className="text-meta tracking-wide mb-1">Year</p>
-                                            <p className="text-lg font-bold text-foreground">{v.year}</p>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-muted/30 p-3 rounded-lg border border-border/70">
+                                            <p className="text-meta mb-0.5">Year</p>
+                                            <p className="text-base font-bold text-foreground">{v.year}</p>
                                         </div>
-                                        <div className="bg-muted/30 p-4 rounded-xl border border-border/50">
-                                            <p className="text-meta tracking-wide mb-1">Duration</p>
-                                            <p className="text-base font-bold text-foreground truncate">{v.monthRange}</p>
+                                        <div className="bg-muted/30 p-3 rounded-lg border border-border/70">
+                                            <p className="text-meta mb-0.5">Duration</p>
+                                            <p className="text-sm font-bold text-foreground truncate">{v.monthRange}</p>
                                         </div>
                                     </div>
 
@@ -302,13 +299,13 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                             <Button
                                                 variant="outline"
                                                 onClick={() => toggleExpand(v.id)}
-                                                className="w-full h-10 gap-2 border-border/50 text-primary font-bold text-label rounded-lg hover:bg-primary/5"
+                                                className="w-full h-9 gap-2 border-border/70 text-primary font-semibold text-xs rounded-lg hover:bg-primary/10"
                                             >
                                                 {expandedIssue === v.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDownIcon className="w-3.5 h-3.5" />}
-                                                {expandedIssue === v.id ? 'Hide' : `View (${v.paperCount || 0})`}
+                                                {expandedIssue === v.id ? 'Hide Manuscripts' : `View Manuscripts (${v.paperCount || 0})`}
                                             </Button>
                                         ) : (
-                                            <div className="w-full h-10 flex items-center justify-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/20 rounded-lg border border-border/50">
+                                            <div className="w-full h-9 flex items-center justify-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/20 rounded-lg border border-border/70">
                                                 {v.paperCount || 0} Linked
                                             </div>
                                         )}
@@ -319,36 +316,36 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                     initial={{ height: 0, opacity: 0 }}
                                                     animate={{ height: 'auto', opacity: 1 }}
                                                     exit={{ height: 0, opacity: 0 }}
-                                                    className="overflow-hidden bg-primary/2 rounded-xl border border-primary/10"
+                                                    className="overflow-hidden bg-muted/30 rounded-xl border border-border/70"
                                                 >
-                                                    <div className="p-4 space-y-3">
+                                                    <div className="p-3 space-y-2">
                                                         {loadingPapers ? (
                                                             <div className="py-6 text-center">
-                                                                <div className="w-6 h-6 border-2 border-primary/10 border-t-primary rounded-full animate-spin mx-auto" />
+                                                                <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
                                                             </div>
                                                         ) : issuePapers.length > 0 ? (
                                                             <div className="space-y-2">
                                                                 {issuePapers.map((paper) => (
-                                                                    <div key={paper.id} className="p-3 bg-card rounded-lg border border-border/50 flex items-center justify-between gap-4 transition-all hover:border-primary/20">
+                                                                    <div key={paper.id} className="p-2.5 bg-card rounded-lg border border-border/70 flex items-center justify-between gap-3 transition-all hover:border-primary/30 shadow-2xs">
                                                                         <div className="min-w-0">
-                                                                            <p className="text-xs font-semibold text-primary leading-tight line-clamp-1">{paper.title}</p>
-                                                                            <p className="text-[10px] text-muted-foreground mt-0.5">ID: {paper.paperId}</p>
+                                                                            <p className="text-xs font-semibold text-foreground leading-tight line-clamp-1">{paper.title}</p>
+                                                                            <p className="text-meta mt-0.5">ID: {paper.paperId}</p>
                                                                         </div>
-                                                                        <div className="flex items-center gap-1">
-                                                                            <Button asChild variant="ghost" size="icon" className="w-8 h-8 text-muted-foreground hover:text-primary rounded-md">
+                                                                        <div className="flex items-center gap-1 shrink-0">
+                                                                            <Button asChild variant="ghost" size="icon" className="w-7 h-7 text-muted-foreground hover:text-primary rounded-md">
                                                                                 <a title='View' href={`/admin/submissions/${paper.id}`} target="_blank">
-                                                                                    <Eye className="w-4 h-4" />
+                                                                                    <Eye className="w-3.5 h-3.5" />
                                                                                 </a>
                                                                             </Button>
-                                                                            <Button disabled={isUnassigning} title='Unlink' onClick={() => handleUnassign(paper.id)} variant="ghost" size="icon" className="w-8 h-8 text-rose-500/60 hover:text-rose-500 rounded-md">
-                                                                                {isUnassigning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Unlink className="w-4 h-4" />}
+                                                                            <Button disabled={isUnassigning} title='Unlink' onClick={() => handleUnassign(paper.id)} variant="ghost" size="icon" className="w-7 h-7 text-rose-500/70 hover:text-rose-600 rounded-md">
+                                                                                {isUnassigning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unlink className="w-3.5 h-3.5" />}
                                                                             </Button>
                                                                         </div>
                                                                     </div>
                                                                 ))}
                                                             </div>
                                                         ) : (
-                                                            <div className="py-8 text-center text-xs text-muted-foreground font-medium">No papers assigned yet.</div>
+                                                            <div className="py-6 text-center text-xs text-muted-foreground font-medium">No papers assigned yet.</div>
                                                         )}
                                                     </div>
                                                 </motion.div>
@@ -359,21 +356,21 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                             <Button
                                                 onClick={() => handlePublish(v.id)}
                                                 disabled={isPublishing}
-                                                className="w-full h-11 bg-emerald-600 text-white font-bold text-[10px] uppercase rounded-lg shadow-sm hover:bg-emerald-700 transition-all active:scale-[0.98]"
+                                                className="w-full h-10 bg-emerald-600 text-white font-semibold text-xs rounded-lg shadow-sm hover:bg-emerald-700 transition-all active:scale-[0.98]"
                                             >
                                                 {isPublishing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
-                                                Publish
+                                                Publish Issue
                                             </Button>
                                         ) : (
-                                            <div className="w-full h-11 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold uppercase flex items-center justify-center gap-2 border border-emerald-100">
-                                                Published
+                                            <div className="w-full h-10 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 border border-emerald-200/60">
+                                                <CheckCircle2 className="w-4 h-4" /> Published
                                             </div>
                                         )}
 
-                                        <div className="flex items-center justify-center gap-4 pt-4 border-t border-border/50">
-                                            <button onClick={() => setShowEditModal(v)} className="text-label text-primary hover:underline">Edit</button>
+                                        <div className="flex items-center justify-center gap-4 pt-3 border-t border-border/70">
+                                            <button onClick={() => setShowEditModal(v)} className="text-label text-primary hover:underline font-medium cursor-pointer">Edit</button>
                                             <span className="w-1 h-1 rounded-full bg-border" />
-                                            <button disabled={isDeleting} onClick={() => handleDelete(v.id)} className="text-label text-rose-500 hover:underline disabled:opacity-50">Delete</button>
+                                            <button disabled={isDeleting} onClick={() => handleDelete(v.id)} className="text-label text-rose-500 hover:underline font-medium disabled:opacity-50 cursor-pointer">Delete</button>
                                         </div>
                                     </div>
                                 </div>
@@ -383,12 +380,12 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                 ))}
 
                 {volumes.length === 0 && (
-                    <div className="col-span-full py-32 bg-primary/2 border border-dashed border-border rounded-2xl flex flex-col items-center justify-center text-center space-y-6">
-                        <div className="w-16 h-16 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground/30 shadow-sm">
-                            <BookOpen className="w-8 h-8" />
+                    <div className="col-span-full py-24 bg-card border border-dashed border-border/70 rounded-2xl flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="w-12 h-12 rounded-xl bg-muted/50 border border-border/70 flex items-center justify-center text-muted-foreground/40 shadow-xs">
+                            <BookOpen className="w-6 h-6" />
                         </div>
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-primary/60 text-xl">No Issues Found</h3>
+                        <div className="space-y-1">
+                            <h3 className="font-semibold text-foreground text-lg">No Issues Found</h3>
                             <p className="text-sm text-muted-foreground max-w-md mx-auto px-6">There are no publication issues in the registry. Create your first volume and issue to begin.</p>
                         </div>
                     </div>
@@ -396,9 +393,9 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
             </div>
 
             <Dialog open={!!showEditModal} onOpenChange={(open) => !open && setShowEditModal(null)}>
-                <DialogContent className="sm:max-w-md rounded-2xl p-8 bg-card border-border shadow-2xl">
+                <DialogContent className="sm:max-w-md rounded-2xl p-6 sm:p-8 bg-card border-border/70 shadow-2xl">
                     <DialogHeader className="space-y-4">
-                        <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/5 flex items-center justify-center text-primary">
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                             <Save className="w-6 h-6" />
                         </div>
                         <div className="space-y-1">
@@ -409,54 +406,54 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                         </div>
                     </DialogHeader>
                     {showEditModal && (
-                        <form action={editAction} className="space-y-5 pt-4">
+                        <form action={editAction} className="space-y-4 pt-2">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-semibold text-primary/70">Volume</Label>
+                                    <Label className="text-label text-foreground">Volume</Label>
                                     <Input
                                         name="volume"
                                         type="number"
                                         required
                                         defaultValue={showEditModal.volumeNumber}
-                                        className="h-10 bg-primary/2 border-primary/10 text-base"
+                                        className="h-10 bg-background border-border/70 text-sm"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-semibold text-primary/70">Issue</Label>
+                                    <Label className="text-label text-foreground">Issue</Label>
                                     <Input
                                         name="issue"
                                         type="number"
                                         required
                                         defaultValue={showEditModal.issueNumber}
-                                        className="h-10 bg-primary/2 border-primary/10 text-base"
+                                        className="h-10 bg-background border-border/70 text-sm"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-semibold text-primary/70">Year</Label>
+                                <Label className="text-label text-foreground">Year</Label>
                                 <Input
                                     name="year"
                                     type="number"
                                     required
                                     defaultValue={showEditModal.year}
-                                    className="h-10 bg-primary/2 border-primary/10 text-base"
+                                    className="h-10 bg-background border-border/70 text-sm"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-semibold text-primary/70">Month Range</Label>
+                                <Label className="text-label text-foreground">Month Range</Label>
                                 <Input
                                     name="monthRange"
                                     type="text"
                                     required
                                     defaultValue={showEditModal.monthRange || ""}
-                                    className="h-10 bg-primary/2 border-primary/10 text-base"
+                                    className="h-10 bg-background border-border/70 text-sm"
                                 />
                             </div>
 
                             <DialogFooter className="pt-4">
-                                <Button disabled={isEditing} type="submit" className="w-full h-11 bg-primary text-white rounded-lg">
+                                <Button disabled={isEditing} type="submit" className="w-full h-10 btn-primary rounded-lg cursor-pointer">
                                     {isEditing ? 'Updating...' : 'Save Changes'}
                                 </Button>
                             </DialogFooter>

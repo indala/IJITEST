@@ -25,28 +25,28 @@ export default function SubmissionRegistry({
     role 
 }: SubmissionRegistryProps) {
     return (
-        <section className="space-y-12 pb-20 max-w-7xl 2xl:max-w-[1900px] mx-auto">
+        <section className="space-y-4">
             {/* Header Section */}
-            <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-border/50 pb-12">
-                <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 2xl:w-20 2xl:h-20 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 shadow-sm">
-                            <Plus className="w-6 h-6 2xl:w-10 2xl:h-10 text-primary" />
+            <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-3 border-b border-border/70 pb-3 sm:pb-4">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 text-primary shadow-xs">
+                            <Plus className="w-4 h-4" />
                         </div>
-                        <h1 className="text-primary">
+                        <h1 className="panel-title m-0 text-xl xl:text-2xl font-bold text-primary">
                             {role === 'admin' ? 'Manuscript Registry' : 'Editorial Hub'}
                         </h1>
                     </div>
-                    <p className="opacity-60 border-l-4 border-primary/20 pl-6 py-1 max-w-2xl leading-relaxed">
+                    <p className="panel-subtitle border-l-2 border-primary/20 pl-3 py-0.5 max-w-2xl leading-relaxed m-0 text-body-sm text-muted-foreground">
                         {role === 'admin' 
                             ? 'Precision oversight of the global technical submission pipeline and peer-review integrity protocols.'
                             : 'Secure administration of the peer-review lifecycle and editorial decision workflows.'}
                     </p>
                 </div>
-                <div className="flex gap-4">
-                    <Button asChild className="h-14 2xl:h-20 px-10 2xl:px-16 gap-3 bg-primary text-white rounded-xl shadow-xl shadow-primary/10 hover:scale-[1.02] transition-all">
-                        <Link href="/submit" className="flex items-center gap-3">
-                            <Plus className="w-5 h-5 2xl:w-8 2xl:h-8" /> New Submission
+                <div className="flex gap-2.5">
+                    <Button asChild className="btn-primary h-9">
+                        <Link href="/submit" className="flex items-center gap-2">
+                            <Plus className="w-4 h-4 mr-1" /> New Submission
                         </Link>
                     </Button>
                 </div>
@@ -56,9 +56,9 @@ export default function SubmissionRegistry({
             <SubmissionStats stats={stats} />
 
             {/* Main Content Area */}
-            <Card className="border-border/50 shadow-sm overflow-hidden bg-card rounded-2xl">
+            <Card className="border-border/70 shadow-2xs overflow-hidden bg-card rounded-xl">
                 <CardContent className="p-0">
-                    <div className="p-8 border-b border-border/50 bg-muted/30">
+                    <div className="p-3 sm:p-4 border-b border-border/70 bg-muted/20">
                         <SubmissionTabs currentStatus={currentStatus} />
                     </div>
 
@@ -67,18 +67,18 @@ export default function SubmissionRegistry({
                         role={role}
                     />
 
-                    <div className="p-10 border-t border-border/50 flex items-center justify-center bg-muted/30">
-                        <p className="opacity-60">
-                            Registry Audit End | {submissions.length} Records in Selection
+                    <div className="p-3 sm:p-4 border-t border-border/70 flex items-center justify-center bg-muted/20">
+                        <p className="text-meta">
+                            Registry Total: <span className="font-semibold text-foreground">{submissions.length}</span> records in selection
                         </p>
                     </div>
                 </CardContent>
             </Card>
 
             {submissions.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-40 bg-muted/20 border border-dashed border-border/50 rounded-xl space-y-6">
-                    <AlertTriangle className="w-14 h-14 text-muted-foreground/20 mb-2" />
-                    <p className="opacity-40">No active records in this database segment</p>
+                <div className="flex flex-col items-center justify-center py-24 bg-card border border-dashed border-border/70 rounded-2xl space-y-4">
+                    <AlertTriangle className="w-12 h-12 text-muted-foreground/30" />
+                    <p className="text-body-sm text-muted-foreground">No active records in this database segment</p>
                 </div>
             )}
         </section>

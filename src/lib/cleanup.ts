@@ -3,6 +3,8 @@ import { db } from "./db";
 import { users, submissions, submissionVersions, submissionFiles } from "@/db/schema";
 import { eq, and, lte, inArray, notInArray } from "drizzle-orm";
 import { safeDeleteFile } from "./fs-utils";
+import { revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "./cache-tags";
 
 /**
  * Automatically clean up author accounts that haven't taken action within 28 days 
@@ -71,6 +73,11 @@ export async function cleanupInactiveAuthors() {
                 await db.delete(users).where(eq(users.id, sub.authorId));
                 deletedUserCount++;
             }
+        }
+
+        if (deletedSubCount > 0) {
+            revalidateTag(CACHE_TAGS.SUBMISSIONS, 'max');
+            revalidateTag(CACHE_TAGS.SUBMISSIONS_SUBMITTED_COUNT, 'max');
         }
 
         console.log(`Cleanup Task Completed: Deleted ${deletedSubCount} stalled submissions and ${deletedUserCount} author accounts.`);

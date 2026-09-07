@@ -1,7 +1,11 @@
+"use client";
+ 
+import { motion } from 'framer-motion';
 import { ShieldCheck, Clock, ChevronRight, Search, Gavel, Users } from 'lucide-react';
 import Link from 'next/link';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
+import PeerReviewFlowchart from '@/features/peer-review/components/PeerReviewFlowchart';
 
 import type { JournalSettings } from '@/db/types';
 
@@ -36,7 +40,13 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6 sm:space-y-8">
                     {/* Hero Statement */}
-                    <section className="bg-primary p-5 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-xs">
+                    <motion.section
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.45 }}
+                        className="bg-primary p-5 sm:p-6 rounded-xl text-white relative overflow-hidden shadow-xs"
+                    >
                         <div className="relative z-10 flex flex-col md:flex-row items-center gap-5">
                             <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 shrink-0">
                                 <ShieldCheck className="w-6 h-6 text-secondary" />
@@ -48,17 +58,33 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                                 </p>
                             </div>
                         </div>
-                    </section>
+                    </motion.section>
+
+                    {/* Interactive Peer Review Process Flowchart with Scroll & Continuous Animation */}
+                    <PeerReviewFlowchart />
 
                     {/* Review Pipeline */}
-                    <section className="space-y-4">
+                    <motion.section
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="space-y-4"
+                    >
                         <h2 className="m-0">
                             Review Pipeline
                         </h2>
 
                         <div className="space-y-4">
                             {stages.map((stage, idx) => (
-                                <article key={idx} className="group relative flex gap-4">
+                                <motion.article
+                                    key={idx}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.4, delay: idx * 0.1 }}
+                                    className="group relative flex gap-4"
+                                >
                                     <div className="flex flex-col items-center">
                                         <div className="w-9 h-9 rounded-lg bg-primary/5 flex items-center justify-center text-primary border border-primary/10 transition-colors shrink-0">
                                             <stage.icon className="w-4 h-4" />
@@ -73,13 +99,19 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                                             {stage.desc}
                                         </p>
                                     </div>
-                                </article>
+                                </motion.article>
                             ))}
                         </div>
-                    </section>
+                    </motion.section>
 
                     {/* Velocity Highlight */}
-                    <section className="p-4 sm:p-5 bg-card border border-border/70 rounded-xl shadow-2xs border-l-4 border-l-secondary">
+                    <motion.section
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.45 }}
+                        className="p-4 sm:p-5 bg-card border border-border/70 rounded-xl shadow-2xs border-l-4 border-l-secondary"
+                    >
                         <div className="flex flex-col md:flex-row items-center gap-4">
                             <div className="w-10 h-10 bg-secondary/10 rounded-xl flex items-center justify-center shrink-0 border border-secondary/20">
                                 <Clock className="w-5 h-5 text-secondary" />
@@ -91,11 +123,17 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                                 </p>
                             </div>
                         </div>
-                    </section>
+                    </motion.section>
                 </div>
 
                 {/* Sidebar */}
-                <aside className="space-y-4 sm:space-y-5">
+                <motion.aside
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.15 }}
+                    transition={{ duration: 0.5, delay: 0.15 }}
+                    className="space-y-4 sm:space-y-5"
+                >
                     <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
                         <TrackManuscriptWidget />
                     </div>
@@ -120,9 +158,8 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                             <Link href="/join-us" className="w-full h-full flex items-center justify-center">Submit Profile</Link>
                         </Button>
                     </div>
-                </aside>
+                </motion.aside>
             </div>
         </section>
     );
 }
-

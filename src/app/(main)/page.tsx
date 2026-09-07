@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { getSettingsData } from '@/actions/settings';
 import { getLatestPublishedIssue } from '@/actions/publications';
 import { getLatestIssuePapers } from '@/actions/archives';
@@ -18,6 +19,33 @@ import ApcFeeWidget from '@/features/shared/widgets/ApcFeeWidget';
 import AnnouncementBar from '@/features/home/components/AnnouncementBar';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
+import {
+  AnnouncementBarSkeleton,
+  AnnouncementsWidgetSkeleton,
+  HomeCurrentIssueSkeleton,
+} from '@/features/home/components/HomeSkeletons';
+
+async function AnnouncementBarSection() {
+  const latestPapersRes = await getLatestIssuePapers();
+  const latestPaper = latestPapersRes.success ? latestPapersRes.data?.[0] : undefined;
+  return <AnnouncementBar latestPaper={latestPaper} />;
+}
+
+async function AnnouncementsWidgetSection() {
+  const latestIssueRes = await getLatestPublishedIssue();
+  const latestIssue = latestIssueRes.success ? latestIssueRes.data : null;
+  return <AnnouncementsWidget latestIssue={latestIssue} />;
+}
+
+async function HomeCurrentIssueSection() {
+  const [latestIssueRes, latestPapersRes] = await Promise.all([
+    getLatestPublishedIssue(),
+    getLatestIssuePapers()
+  ]);
+  const latestIssue = latestIssueRes.success ? latestIssueRes.data : null;
+  const latestPapers = latestPapersRes.success ? (latestPapersRes.data ?? []) : [];
+  return <HomeCurrentIssue latestIssue={latestIssue} papers={latestPapers} />;
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettingsData();
@@ -45,18 +73,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [settings, latestIssueRes, latestPapersRes] = await Promise.all([
-    getSettingsData(),
-    getLatestPublishedIssue(),
-    getLatestIssuePapers()
-  ]);
-
-  const latestIssue = latestIssueRes.success ? latestIssueRes.data : null;
-  const latestPapers = latestPapersRes.success ? (latestPapersRes.data ?? []) : [];
+  const settings = await getSettingsData();
 
   return (
     <div className="flex flex-col overflow-hidden bg-background relative">
-      <AnnouncementBar latestPaper={latestPapers[0]} />
+      <Suspense fallback={<AnnouncementBarSkeleton />}>
+        <AnnouncementBarSection />
+      </Suspense>
       
       {/* Background Decorative Blob */}
       <div className="absolute top-[20%] right-0 w-[800px] h-[800px] bg-primary/2 rounded-full blur-[150px] -z-10 pointer-events-none" />
@@ -78,7 +101,9 @@ export default async function Home() {
 
               <div className="space-y-4 sm:space-y-5">
                 <CallForPapersWidget />
-                <AnnouncementsWidget latestIssue={latestIssue} />
+                <Suspense fallback={<AnnouncementsWidgetSkeleton />}>
+                  <AnnouncementsWidgetSection />
+                </Suspense>
                 <AuthorQuickLinks />
                 <ResourceDeskWidget settings={settings} />
                 <ApcFeeWidget />
@@ -90,7 +115,9 @@ export default async function Home() {
           <WelcomeSection settings={settings} />
           <AimAndScope settings={settings} shortName={settings['journalShortName']} />
           <JournalParticulars settings={settings} />
-          <HomeCurrentIssue latestIssue={latestIssue} papers={latestPapers} />
+          <Suspense fallback={<HomeCurrentIssueSkeleton />}>
+            <HomeCurrentIssueSection />
+          </Suspense>
         </SidebarLayout>
       </Section>
 

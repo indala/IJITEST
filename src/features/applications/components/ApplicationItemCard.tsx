@@ -22,12 +22,12 @@ export const ApplicationItemCard = React.memo(({
 }: ApplicationItemCardProps) => {
     return (
         <Card 
-            className={`relative overflow-hidden border-primary/5 bg-card/50 transition-all hover:bg-card hover:border-primary/20 cursor-pointer group ${isSelected ? 'ring-2 ring-primary/50' : ''}`}
+            className={`relative overflow-hidden border-border/70 bg-card transition-all hover:border-primary/30 cursor-pointer group rounded-xl shadow-2xs ${isSelected ? 'ring-2 ring-primary/50' : ''}`}
             onClick={() => onInspect(app)}
         >
             <CardContent className="p-0 flex flex-col lg:flex-row items-stretch lg:items-center">
                 <div 
-                    className={`px-6 py-4 lg:py-10 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-primary/5 bg-muted/5 lg:bg-transparent ${app.status !== 'pending' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`px-4 py-3 lg:py-4 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-border/70 bg-muted/10 lg:bg-transparent ${app.status !== 'pending' ? 'opacity-50 cursor-not-allowed' : ''}`}
                     onClick={(e) => { 
                         if (app.status !== 'pending') return;
                         e.stopPropagation(); 
@@ -37,46 +37,46 @@ export const ApplicationItemCard = React.memo(({
                     <Checkbox checked={isSelected} disabled={app.status !== 'pending'} />
                 </div>
 
-                <div className="p-4 flex justify-center shrink-0 lg:border-r border-primary/5">
-                    <div className="w-16 h-16 lg:w-20 lg:h-20 bg-muted rounded-xl border border-primary/5 overflow-hidden shadow-inner relative">
+                <div className="p-3.5 flex justify-center shrink-0 lg:border-r border-border/70">
+                    <div className="w-12 h-12 lg:w-14 lg:h-14 bg-muted rounded-xl border border-border/70 overflow-hidden shadow-inner relative">
                         {app.photoUrl ? (
                             <NextImage 
                                 src={app.photoUrl} 
                                 alt="" 
-                                width={80} 
-                                height={80} 
+                                width={56} 
+                                height={56} 
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center opacity-20"><User /></div>
+                            <div className="w-full h-full flex items-center justify-center opacity-20"><User className="w-5 h-5" /></div>
                         )}
                     </div>
                 </div>
 
-                <div className="p-6 flex-1 space-y-2 lg:border-r border-primary/5 min-w-0">
-                    <div className="flex items-center gap-3">
-                        <h3 className="font-bold text-sm lg:text-lg text-foreground truncate uppercase tracking-tight">{app.fullName}</h3>
-                        <Badge className={`rounded-lg h-5 px-2.5 border-none text-[7px] lg:text-[8px] font-black uppercase tracking-widest ${
-                            app.type === 'editor' ? 'bg-purple-500/10 text-purple-600 ' : 'bg-blue-500/10 text-blue-600 '
+                <div className="p-3.5 sm:p-4 flex-1 space-y-1.5 lg:border-r border-border/70 min-w-0">
+                    <div className="flex items-center gap-2.5">
+                        <h3 className="font-semibold text-sm text-foreground truncate">{app.fullName}</h3>
+                        <Badge className={`rounded-md h-5 px-2 border-none text-[8px] font-semibold uppercase ${
+                            app.type === 'editor' ? 'bg-purple-500/10 text-purple-600' : 'bg-blue-500/10 text-blue-600'
                         }`}>
                             {app.type}
                         </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-x-4 lg:gap-x-6 gap-y-1 text-muted-foreground text-[8px] lg:text-[10px] font-bold uppercase tracking-widest opacity-60">
-                        <span className="flex items-center gap-2"><Building2 className="w-3 lg:w-3.5 h-3 lg:h-3.5" /> {app.institute}</span>
-                        <span className="flex items-center gap-2"><Briefcase className="w-3 lg:w-3.5 h-3 lg:h-3.5" /> {app.designation}</span>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-[10px] font-medium">
+                        <span className="flex items-center gap-1.5"><Building2 className="w-3 h-3 text-primary" /> {app.institute}</span>
+                        <span className="flex items-center gap-1.5"><Briefcase className="w-3 h-3 text-primary" /> {app.designation}</span>
                     </div>
                 </div>
 
-                <div className="p-4 lg:p-8 flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-3 bg-muted/5 h-full min-w-0 lg:min-w-[200px] border-t lg:border-t-0 border-primary/5">
-                    <Badge className={`h-7 lg:h-8 px-4 lg:px-5 text-[8px] lg:text-[10px] font-black tracking-widest uppercase border-none rounded-xl ${
+                <div className="p-3.5 sm:p-4 flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-2 bg-muted/5 h-full min-w-0 lg:min-w-[170px] border-t lg:border-t-0 border-border/70">
+                    <Badge className={`h-6 px-3 text-[10px] font-semibold border-none rounded-md ${
                         app.status === 'approved' ? 'bg-emerald-500 text-white' :
                         app.status === 'rejected' ? 'bg-rose-500 text-white' :
                         'bg-amber-500 text-black'
                     }`}>
                         {app.status}
                     </Badge>
-                    <p className="text-[8px] lg:text-[9px] font-bold text-muted-foreground uppercase opacity-40">
+                    <p className="text-meta">
                         {dayjs(app.createdAt).format('DD MMM YYYY')}
                     </p>
                 </div>

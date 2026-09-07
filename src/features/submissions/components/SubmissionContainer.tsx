@@ -53,36 +53,36 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, rol
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         key={sub.id}
-        className="p-6 space-y-4 bg-card border-b border-border/50 active:bg-muted/50 transition-colors"
+        className="p-3.5 sm:p-4 space-y-2.5 bg-card border-b border-border/70 active:bg-muted/50 transition-colors"
     >
-        <div className="flex justify-between items-start gap-4">
-            <div className="space-y-3 flex-1">
+        <div className="flex justify-between items-start gap-3">
+            <div className="space-y-1.5 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono bg-muted px-2 py-1 rounded border border-border/50 opacity-60">
+                    <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs border border-border/70 text-muted-foreground font-semibold">
                         {sub.paperId}
                     </span>
-                    <Badge className={`h-6 px-3 rounded-lg border-none ${getStatusVariant(sub.status)}`}>
+                    <Badge className={`h-5 px-2.5 rounded-md text-[10px] font-semibold border-none ${getStatusVariant(sub.status)}`}>
                         {sub.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                     </Badge>
                 </div>
-                <h4 className="font-serif text-foreground text-xl leading-tight">
+                <h4 className="font-medium text-foreground text-sm leading-snug">
                     {sub.title}
                 </h4>
             </div>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-primary rounded-xl" aria-label="More options">
-                        <MoreVertical className="w-5 h-5" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-lg" aria-label="More options">
+                        <MoreVertical className="w-4 h-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 rounded-xl p-2 shadow-xl border-border bg-card">
-                    <DropdownMenuItem asChild className="rounded-lg h-12 gap-3 px-4 focus:bg-primary/10 focus:text-primary transition-all">
+                <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5 shadow-xl border-border/70 bg-card">
+                    <DropdownMenuItem asChild className="rounded-lg h-9 gap-2.5 px-3 text-xs sm:text-sm font-medium focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer">
                         <Link href={`/${role}/submissions/${sub.id}`}>
                             <Eye className="w-4 h-4 text-primary" />
-                            <span className="opacity-80">Inspect Manuscript</span>
+                            <span>Inspect Manuscript</span>
                         </Link>
                     </DropdownMenuItem>
-                    <Separator className="my-2" />
+                    <Separator className="my-1 border-border/50" />
                     {role === 'admin' && sub.status !== 'published' && (
                         <div className="px-1 py-1">
                             <DeleteSubmissionButton submissionId={sub.id} status={sub.status} variant="full" />
@@ -92,104 +92,100 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, rol
             </DropdownMenu>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-                <span className="opacity-40">Author</span>
-                <p className="text-foreground truncate flex items-center gap-2">
-                    <User className="w-4 h-4 text-primary" /> {sub.authorName}
+        <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="space-y-0.5">
+                <span className="text-meta">Author</span>
+                <p className="text-foreground truncate flex items-center gap-1.5 font-medium">
+                    <User className="w-3.5 h-3.5 text-primary" /> {sub.authorName}
                 </p>
             </div>
-            <div className="space-y-1 text-right">
-                <span className="opacity-40">Registry Date</span>
-                <p className="text-foreground">
-                    {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
+            <div className="space-y-0.5">
+                <span className="text-meta">Date</span>
+                <p className="text-foreground flex items-center gap-1.5 font-medium">
+                    <Calendar className="w-3.5 h-3.5 text-primary" /> {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString() : 'N/A'}
                 </p>
             </div>
         </div>
 
-        <Button asChild className="w-full h-12 bg-primary text-white rounded-xl hover:scale-[1.02] transition-all">
-            <Link href={`/${role}/submissions/${sub.id}`}>Examine Dossier</Link>
-        </Button>
+        <div className="pt-2 border-t border-border/50 flex justify-end gap-2">
+            <Button asChild size="sm" className="h-8 px-3 btn-primary text-xs font-semibold rounded-lg">
+                <Link href={`/${role}/submissions/${sub.id}`}>
+                    Examine
+                </Link>
+            </Button>
+        </div>
     </motion.div>
 ));
 
 SubmissionMobileCard.displayName = 'SubmissionMobileCard';
 
 const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, role: string }) => (
-    <TableRow
-        key={sub.id}
-        className="border-b border-border/50 group hover:bg-muted/30 transition-all"
-    >
-        <TableCell className="px-6 py-6">
-            <span className="font-mono  bg-muted px-2 py-1 rounded border border-border/50 opacity-60">
+    <TableRow className="hover:bg-muted/30 transition-colors border-b border-border/50 group">
+        <TableCell className="px-3.5 py-3">
+            <span className="font-mono text-xs text-muted-foreground bg-muted/60 px-2 py-0.5 rounded border border-border/60">
                 {sub.paperId}
             </span>
         </TableCell>
-        <TableCell className="px-6 py-6 max-w-96 whitespace-normal">
-            <div className="flex flex-col gap-2 ">
-                <h4 className="font-serif text-foreground text-xl leading-tight group-hover:text-primary transition-colors wrap-break-word">
+        <TableCell className="px-3.5 py-3">
+            <div className="space-y-1">
+                <h4 className="font-medium text-foreground text-sm leading-snug group-hover:text-primary transition-colors wrap-break-word">
                     {sub.title}
                 </h4>
-                <div className="flex items-center gap-10 opacity-60">
-                    <span className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-primary" /> {sub.authorName}
+                <div className="flex items-center gap-4 text-meta">
+                    <span className="flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-primary" /> {sub.authorName}
                     </span>
-                    <span className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-primary" /> {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'N/A'}
+                    <span className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-primary" /> {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString(undefined, { dateStyle: 'medium' }) : 'N/A'}
                     </span>
                 </div>
             </div>
         </TableCell>
-        <TableCell className="px-6 py-6">
-            <div className="flex flex-col gap-2 items-center">
-                <Badge className={`h-8 px-4 rounded-lg border-none shadow-sm ${getStatusVariant(sub.status)}`}>
+        <TableCell className="px-3.5 py-3">
+            <div className="flex flex-col gap-1.5 items-center">
+                <Badge className={`h-5 px-2 text-[10px] font-semibold rounded-md border-none ${getStatusVariant(sub.status)}`}>
                     {sub.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                 </Badge>
                 {sub.status === 'underReview' && (sub.completedReviews ?? 0) > 0 && (
-                    <div className="flex items-center gap-2 text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                        <MessageSquare className="w-4 h-4" />
-                        {sub.completedReviews} REVIEWS
+                    <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20 text-[10px] font-semibold">
+                        <MessageSquare className="w-3 h-3" />
+                        {sub.completedReviews} Reviews
                     </div>
                 )}
             </div>
         </TableCell>
-        <TableCell className="px-6 py-6 text-right">
-            <div className="flex items-center justify-end gap-4">
-                <Button asChild className="h-10 px-6 bg-primary text-white rounded-xl shadow-lg shadow-primary/10 hover:scale-[1.05] transition-all  group-hover:opacity-100">
+        <TableCell className="px-3.5 py-3 text-right">
+            <div className="flex items-center justify-end gap-2">
+                <Button asChild size="sm" className="h-8 px-3 btn-primary text-xs font-semibold rounded-lg">
                     <Link href={`/${role}/submissions/${sub.id}`}>
-                        EXAMINE
+                        Examine
                     </Link>
                 </Button>
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 text-primary/30 hover:text-primary rounded-xl transition-all hover:bg-primary/5 cursor-pointer" aria-label="More options">
-                            <MoreVertical className="size-6 text-primary" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-lg transition-colors cursor-pointer" aria-label="More options">
+                            <MoreVertical className="w-4 h-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-64 rounded-3xl p-3 shadow-2xl border-primary/5 bg-white/95 backdrop-blur-xl">
-                        <DropdownMenuItem asChild className="rounded-xl h-14 gap-4 px-5 focus:bg-primary/5 focus:text-primary transition-all">
+                    <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5 shadow-xl border-border/70 bg-card">
+                        <DropdownMenuItem asChild className="rounded-lg h-9 gap-2.5 px-3 text-xs sm:text-sm font-medium focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer">
                             <Link href={`/${role}/submissions/${sub.id}`}>
-                                <FileText className="w-5 h-5 text-primary/40" />
-                                <div className="flex flex-col">
-                                    <span className="opacity-80">Decision Protocol</span>
-                                    <span className="opacity-40">Manage Manuscript Lifecycle</span>
-                                </div>
+                                <FileText className="w-4 h-4 text-primary" />
+                                <span>Decision Protocol</span>
                             </Link>
                         </DropdownMenuItem>
-                        <Separator className="my-3 bg-primary/5" />
+                        <Separator className="my-1 border-border/50" />
                         {role === 'admin' && sub.status !== 'published' && (
                             <div className="px-1 py-1">
                                 <DeleteSubmissionButton submissionId={sub.id} status={sub.status} variant="full" />
                             </div>
                         )}
                         {role === 'editor' && sub.filePath && (
-                            <DropdownMenuItem asChild className="rounded-xl h-12 gap-4 group">
-                                <a href={sub.filePath} download className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
-                                        <Download className="w-4 h-4 text-emerald-600 group-hover:text-white transition-colors" />
-                                    </div>
-                                    <span className="opacity-60 group-hover:text-primary">Download MS</span>
+                            <DropdownMenuItem asChild className="rounded-lg h-9 gap-2.5 px-3 text-xs sm:text-sm font-medium group cursor-pointer">
+                                <a href={sub.filePath} download className="flex items-center gap-2.5">
+                                    <Download className="w-4 h-4 text-emerald-600" />
+                                    <span>Download MS</span>
                                 </a>
                             </DropdownMenuItem>
                         )}
@@ -224,44 +220,44 @@ export default function SubmissionContainer({ submissions, role }: SubmissionCon
     return (
         <div className="flex flex-col">
             {/* Search & Stats Header */}
-            <div className="p-8 border-b border-border/50 bg-muted/20">
-                <div className="flex flex-col md:flex-row gap-6 items-stretch md:items-center justify-between ">
-                    <div className="flex-1">
+            <div className="p-4 sm:p-5 border-b border-border/70 bg-muted/10">
+                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+                    <div className="flex-1 max-w-md">
                         <SubmissionSearch
                             placeholder="Search manuscripts..."
                             onLocalFilter={setFilterQuery}
                         />
                     </div>
-                    <div className="flex items-center gap-6 px-8 py-4 bg-card rounded-2xl border border-border/50 shrink-0 shadow-sm transition-all hover:border-primary/20 self-start md:self-auto group">
+                    <div className="flex items-center gap-3 px-3.5 py-2 bg-card rounded-xl border border-border/70 shrink-0 shadow-2xs self-start sm:self-auto">
                         <div className="flex flex-col items-end">
-                            <span className="opacity-40">Active Records</span>
-                            <span className="text-2xl text-primary">
-                                {filteredSubmissions.length} <span className="opacity-30 mx-1">/</span> {submissions.length}
+                            <span className="text-meta">Active Records</span>
+                            <span className="text-sm font-bold text-primary">
+                                {filteredSubmissions.length} <span className="text-muted-foreground/50 font-normal">/</span> {submissions.length}
                             </span>
                         </div>
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:rotate-12 transition-transform">
-                            <FileText className="w-6 h-6 text-primary" />
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                            <FileText className="w-4 h-4" />
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Mobile Card View */}
-            <div className="md:hidden divide-y divide-primary/5">
+            <div className="md:hidden divide-y divide-border/70">
                 {filteredSubmissions.map((sub) => (
                     <SubmissionMobileCard key={sub.id} sub={sub} role={role} />
                 ))}
             </div>
 
             {/* Desktop Table View */}
-            <div className="hidden md:block overflow-visible px-6">
+            <div className="hidden md:block overflow-visible">
                 <Table>
-                    <TableHeader className="bg-muted/50">
-                        <TableRow className="border-b border-border/50">
-                            <TableHead className="font-black h-14 px-6 opacity-90 w-40">System ID</TableHead>
-                            <TableHead className="font-black h-14 px-6 opacity-90">Manuscript Dossier</TableHead>
-                            <TableHead className="font-black h-14 px-6 opacity-90 w-48 text-center">Status</TableHead>
-                            <TableHead className="font-black h-14 px-6 opacity-90 w-40 text-right">Actions</TableHead>
+                    <TableHeader className="bg-muted/40">
+                        <TableRow className="border-b border-border/70">
+                            <TableHead className="font-semibold h-11 px-4 text-label uppercase text-muted-foreground w-36">System ID</TableHead>
+                            <TableHead className="font-semibold h-11 px-4 text-label uppercase text-muted-foreground">Manuscript Dossier</TableHead>
+                            <TableHead className="font-semibold h-11 px-4 text-label uppercase text-muted-foreground w-40 text-center">Status</TableHead>
+                            <TableHead className="font-semibold h-11 px-4 text-label uppercase text-muted-foreground w-36 text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

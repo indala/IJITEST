@@ -204,7 +204,7 @@ export async function updateProfileField(userId: string, field: string, value: s
             .set(updateDoc)
             .where(eq(userProfiles.userId, userId));
 
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.EDITORIAL_BOARD);
         revalidatePath("/(panel)", "layout");
         revalidatePath("/editorial-board");
         return actionSuccess(trimmedValue);
@@ -287,7 +287,7 @@ export async function updateResearchInterests(userId: string, interests: string[
             await tx.insert(applicationInterests).values(joinRows);
         });
 
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.EDITORIAL_BOARD);
         revalidatePath("/(panel)", "layout");
         revalidatePath("/editorial-board");
         return { success: true, data: cleanInterests };
@@ -340,7 +340,7 @@ export async function updateProfilePhoto(userId: string, formData: FormData): Pr
 
         await safeDeleteFile(oldPhoto);
 
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.EDITORIAL_BOARD);
         revalidatePath("/(panel)", "layout");
         revalidatePath("/editorial-board");
         return { success: true, data: photoUrl };

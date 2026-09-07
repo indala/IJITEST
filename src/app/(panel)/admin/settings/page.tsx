@@ -16,14 +16,15 @@ import {
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useSettings } from '@/hooks/queries/useSettings';
-import { useState, useActionState } from 'react';
+import { useState, useActionState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { updateSettings } from '@/actions/settings';
+import { updateSettings, togglePromotionStatus } from '@/actions/settings';
 import type { ActionResponse } from '@/db/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
@@ -76,6 +77,42 @@ export default function SystemSettings() {
     const queryClient = useQueryClient();
     const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
     const [selectedCopyright, setSelectedCopyright] = useState<string | null>(null);
+    const [isPromotionActive, setIsPromotionActive] = useState<boolean>(true);
+    const [isTogglingPromotion, setIsTogglingPromotion] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (settings.isPromotionActive !== undefined) {
+            setIsPromotionActive(settings.isPromotionActive !== 'false');
+        }
+    }, [settings.isPromotionActive]);
+
+    const handleTogglePromotion = async (checked: boolean) => {
+        setIsPromotionActive(checked);
+        setIsTogglingPromotion(true);
+        try {
+            const res = await togglePromotionStatus(checked);
+            if (res.success) {
+                toast.success(checked ? "Promotion Modal Enabled" : "Promotion Modal Disabled", {
+                    description: checked
+                        ? "Visitors will now see the 100% APC Waiver popup on the homepage."
+                        : "The promotional popup is now suppressed site-wide."
+                });
+                queryClient.invalidateQueries({ queryKey: ['settings'] });
+            } else {
+                setIsPromotionActive(!checked);
+                toast.error("Update Failed", {
+                    description: res.error || "Failed to update promotion status."
+                });
+            }
+        } catch {
+            setIsPromotionActive(!checked);
+            toast.error("Update Failed", {
+                description: "An unexpected error occurred while toggling promotion status."
+            });
+        } finally {
+            setIsTogglingPromotion(false);
+        }
+    };
 
     const [_, formAction, isPending] = useActionState(async (_prevState: ActionResponse | null, formData: FormData) => {
         try {
@@ -555,36 +592,80 @@ export default function SystemSettings() {
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="lg:col-span-2">
-                        <Card className="relative overflow-hidden bg-white/40 backdrop-blur-md border border-slate-200 shadow-lg rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-8">
-                            <div className="absolute top-0 left-0 w-1.5 h-full bg-purple-500/20" />
-                            <div className="flex items-center gap-6">
-                                <div className="w-16 h-16 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shadow-xl border border-purple-100 shrink-0 rotate-3">
-                                    <Sparkles className="w-8 h-8" />
+                        <Card className="relative overflow-hidden bg-white/60 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all hover:shadow-2xl hover:shadow-purple-500/5">
+                            <div className="absolute top-0 left-0 w-2 h-full bg-purple-500" />
+                            <div className="flex items-center gap-5">
+                                <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shadow-md border border-purple-100 shrink-0">
+                                    <Sparkles className="w-7 h-7" />
                                 </div>
-                                <div className="space-y-1">
-                                    <h3 className="text-slate-900 font-bold">Growth Protocol <span className="text-slate-400 text-xs ml-2">v2.4</span></h3>
-                                    <p className="text-slate-600 text-xs max-w-md font-medium">Override global promotion modules for landing zones & user interfaces.</p>
+                                <div className="space-y-1.5">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <h3 className="text-slate-900 font-bold text-base m-0">Visitor Promotion Popup</h3>
+                                        <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                                            100% APC Waiver
+                                        </Badge>
+                                    </div>
+                                    <p className="text-slate-600 text-xs max-w-xl font-medium leading-relaxed m-0">
+                                        Controls the introductory modal popup shown to first-time visitors after 5 seconds, offering the 100% Article Processing Charge (APC) waiver for the 2026 volume.
+                                    </p>
                                 </div>
                             </div>
-                            <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                                <select
-                                    name="isPromotionActive"
-                                    defaultValue={settings.isPromotionActive || "true"}
-                                    aria-label="Promotion Module Status"
-                                    className="h-12 w-full sm:w-56 rounded-xl bg-white border border-slate-200 px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all shadow-md text-slate-900 cursor-pointer outline-none ring-offset-background focus:ring-2 focus:ring-purple-200"
-                                >
-                                    <option value="true">Active Transmission</option>
-                                    <option value="false">Silent Protocol</option>
-                                </select>
-                                <div className="hidden sm:flex flex-col text-right">
-                                    <span className="text-[8px] font-bold tracking-widest uppercase text-purple-600">Auto-Saving Disabled</span>
-                                    <span className="text-[8px] font-bold tracking-widest uppercase text-slate-400">Requires Sync</span>
+
+                            <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end bg-slate-50/90 border border-slate-200/80 px-4 py-3 rounded-2xl shadow-xs shrink-0">
+                                <div className="flex flex-col text-left md:text-right">
+                                    <div className="flex items-center gap-1.5 justify-start md:justify-end">
+                                        <span className={cn(
+                                            "w-2 h-2 rounded-full",
+                                            isPromotionActive ? "bg-emerald-500 animate-pulse" : "bg-slate-300"
+                                        )} />
+                                        <span className="text-xs font-bold text-slate-900">
+                                            {isPromotionActive ? "Popup Active" : "Popup Disabled"}
+                                        </span>
+                                    </div>
+                                    <span className="text-[10px] font-medium text-slate-500">
+                                        {isTogglingPromotion ? "Auto-saving..." : (isPromotionActive ? "Visible to new visitors" : "Hidden site-wide")}
+                                    </span>
                                 </div>
+
+                                <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                                    {isTogglingPromotion && (
+                                        <Loader2 className="w-4 h-4 text-purple-600 animate-spin" />
+                                    )}
+                                    <Switch
+                                        id="promotion-switch"
+                                        checked={isPromotionActive}
+                                        disabled={isTogglingPromotion}
+                                        onCheckedChange={handleTogglePromotion}
+                                        aria-label="Toggle visitor promotion popup"
+                                    />
+                                </div>
+                                <input type="hidden" name="isPromotionActive" value={isPromotionActive ? "true" : "false"} />
                             </div>
                         </Card>
+                    </motion.div>
+
+                    {/* Bottom Save Action Bar */}
+                    <motion.div variants={itemVariants} className="lg:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm mt-2">
+                        <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                            <span>Ready to persist changes across journal configurations?</span>
+                        </div>
+                        <Button
+                            type="submit"
+                            disabled={isPending}
+                            className="w-full sm:w-auto h-11 px-8 gap-3 bg-primary text-white font-bold text-xs tracking-wider rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all group/save cursor-pointer"
+                        >
+                            {isPending ? (
+                                <Loader2 className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <Save className="w-4 h-4 group-hover/save:rotate-12 transition-transform" />
+                            )}
+                            {isPending ? "SAVING..." : "SAVE ALL SETTINGS"}
+                        </Button>
                     </motion.div>
                 </div>
             </form>
         </motion.section>
+
     );
 }

@@ -17,10 +17,10 @@ export default async function AuthorProfilePage() {
     }
 
     return (
-        <section className="space-y-10">
-            <header className="space-y-2 border-b border-white/5 pb-8">
-                <h1 className="font-serif text-3xl font-black text-foreground tracking-tight uppercase leading-none">Researcher Identity</h1>
-                <p className="text-xs font-mono font-medium text-muted-foreground uppercase tracking-widest opacity-60">Personal Submission Portfolio and Academic Archive.</p>
+        <section className="space-y-4">
+            <header className="space-y-1 border-b border-border/70 pb-3 sm:pb-4">
+                <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">Researcher Identity</h1>
+                <p className="panel-subtitle text-body-sm text-muted-foreground">Personal submission portfolio and academic credentials.</p>
             </header>
 
             <Suspense fallback={

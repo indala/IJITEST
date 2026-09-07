@@ -28,22 +28,22 @@ export default function SubmissionTabs({ currentStatus = 'all' }: { currentStatu
     }, [searchParams, router]);
 
     return (
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
             {statuses.map((tab) => {
                 const isActive = currentStatus === tab.value;
                 return (
                     <button
                         key={tab.value}
                         onClick={() => handleTabClick(tab.value)}
-                        className={`relative px-8 2xl:px-14 py-4 rounded-xl text-xs font-bold tracking-widest transition-all whitespace-nowrap uppercase ${isActive
-                            ? 'text-white'
-                            : 'text-foreground/60 hover:text-primary bg-muted/50 border border-border/50 hover:bg-muted'
+                        className={`relative px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-all whitespace-nowrap uppercase cursor-pointer ${isActive
+                            ? 'text-primary-foreground'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
                             }`}
                     >
                         {isActive && (
                             <motion.div
                                 layoutId="activeTab"
-                                className="absolute inset-0 bg-primary rounded-xl shadow-lg shadow-primary/10"
+                                className="absolute inset-0 bg-primary rounded-lg shadow-xs"
                                 transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                             />
                         )}

@@ -1,6 +1,7 @@
 import { Search, Database, ChevronRight, Globe, Layers, BarChart3, Binary, CheckCircle2, ExternalLink, ShieldCheck, Sparkles, BookCheck } from 'lucide-react';
 import RoadmapSection from '@/features/indexing/components/RoadmapSection';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import { NowIndexingGrid } from '@/features/indexing/components/IndexingLogos';
 import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -101,6 +102,9 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                             </div>
                         </div>
                     </Card>
+
+                    {/* Now Indexing Visual Portfolio */}
+                    <NowIndexingGrid />
 
                     {/* Verified Indexing & Partner Agencies */}
                     <section className="space-y-4">

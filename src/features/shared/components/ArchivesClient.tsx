@@ -18,8 +18,12 @@ interface ArchivesClientProps {
 }
 
 export default function ArchivesClient({ mode = 'archive', initialPapers }: ArchivesClientProps) {
-    const currentIssueQuery = useLatestIssuePapers();
-    const archiveQuery = useArchivePapers();
+    const currentIssueQuery = useLatestIssuePapers({
+        enabled: mode === 'current',
+    });
+    const archiveQuery = useArchivePapers({
+        enabled: mode === 'archive',
+    });
 
     const queryData = mode === 'current' ? currentIssueQuery.data : archiveQuery.data;
     const isLoading = (mode === 'current' ? currentIssueQuery.isLoading : archiveQuery.isLoading) && !initialPapers?.length;
@@ -27,7 +31,7 @@ export default function ArchivesClient({ mode = 'archive', initialPapers }: Arch
     const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
 
     const filteredPapers = useMemo(() => {
-        const papers = queryData || initialPapers || [];
+        const papers: PublishedPaperUI[] = queryData || initialPapers || [];
         return papers.filter((p) =>
             p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             p.authorName.toLowerCase().includes(searchQuery.toLowerCase()) ||

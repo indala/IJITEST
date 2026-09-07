@@ -190,7 +190,7 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
             html: template.html
         });
 
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.EDITORIAL_BOARD);
         revalidatePath("/admin/applications");
         revalidatePath("/admin/users");
         revalidatePath("/editorial-board");

@@ -17,10 +17,10 @@ export default async function EditorProfilePage() {
     }
 
     return (
-        <section className="space-y-10">
-            <header className="space-y-2 border-b border-white/5 pb-8">
-                <h1 className="font-serif text-2xl xl:text-3xl 2xl:text-4xl font-semibold text-foreground tracking-tight capitalize leading-none">Editorial identity</h1>
-                <p className="text-xs xl:text-sm font-semibold text-muted-foreground border-l-2 border-primary/10 pl-4 mt-2 capitalize tracking-wide transition-all duration-500">Board metadata and system clearance vault.</p>
+        <section className="space-y-4">
+            <header className="space-y-1 border-b border-border/70 pb-3 sm:pb-4">
+                <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">Editorial Identity</h1>
+                <p className="panel-subtitle text-body-sm text-muted-foreground">Board metadata and system clearance credentials.</p>
             </header>
 
             <Suspense fallback={

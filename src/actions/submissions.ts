@@ -25,8 +25,8 @@ import {
     type ReviewWithReviewer,
     serverError,
 } from "@/db/types";
-import { cacheTag, revalidatePath, updateTag } from "next/cache";
-import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount, createNotification } from "./notifications";
+import { cacheLife, cacheTag, revalidatePath, updateTag } from "next/cache";
+import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount, invalidateReviewerAssignmentsCount, createNotification } from "./notifications";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";
 import { sendEmail, emailTemplates } from "@/lib/mail";
@@ -41,6 +41,7 @@ import {
 
 const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> => {
     "use cache";
+    cacheLife("hours");
     cacheTag(CACHE_TAGS.SUBMISSION(id), CACHE_TAGS.SUBMISSIONS);
 
     try {
@@ -447,15 +448,20 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
             .innerJoin(submissionVersions, eq(submissionFiles.versionId, submissionVersions.id))
             .where(eq(submissionVersions.submissionId, id));
 
+        let reviewerIdsToInvalidate: string[] = [];
+
         // 2. Database cleanup
         await db.transaction(async (tx) => {
             // Delete reviews before assignments (FK constraint)
             const assignmentRows = await tx
-                .select({ id: reviewAssignments.id })
+                .select({ id: reviewAssignments.id, reviewerId: reviewAssignments.reviewerId })
                 .from(reviewAssignments)
                 .where(eq(reviewAssignments.submissionId, id));
 
             if (assignmentRows.length > 0) {
+                reviewerIdsToInvalidate = Array.from(
+                    new Set(assignmentRows.map(a => a.reviewerId).filter((rId): rId is string => Boolean(rId)))
+                );
                 const aIds = assignmentRows.map(a => a.id);
                 await tx.delete(reviews).where(inArray(reviews.assignmentId, aIds));
             }
@@ -484,6 +490,9 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
 
         await invalidateSubmittedSubmissionsCount();
         await invalidateAuthorActionsCount(authorId);
+        if (reviewerIdsToInvalidate.length > 0) {
+            await Promise.all(reviewerIdsToInvalidate.map(rId => invalidateReviewerAssignmentsCount(rId)));
+        }
         revalidatePath('/admin/submissions');
         cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(id), "deleteSubmission");
         updateTag(CACHE_TAGS.SUBMISSION(id));
@@ -491,7 +500,7 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
             updateTag(CACHE_TAGS.PAPER(subRes.data.paperId));
         }
         updateTag(CACHE_TAGS.SUBMISSIONS);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.ARCHIVES);
         return { success: true };
     } catch (error) {
         return serverError(error, "delete submission");

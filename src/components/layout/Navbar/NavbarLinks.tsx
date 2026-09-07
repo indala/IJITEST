@@ -4,10 +4,6 @@ import { navigation } from './nav-data';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
-import { getPublishedPapers } from '@/actions/archives';
-import { getEditorialBoard } from '@/actions/users';
-import { publicKeys } from '@/hooks/queries/usePublic';
 
 interface NavbarLinksProps {
     isScrolled: boolean;
@@ -16,27 +12,10 @@ interface NavbarLinksProps {
 export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
     const [activeIndex, setActiveIndex] = useState<string | null>(null);
     const pathname = usePathname();
-    const queryClient = useQueryClient();
 
     const handleActivate = useCallback((name: string) => {
         setActiveIndex(name);
-
-        // Prefetch high-priority public data based on activation
-        if (name === 'Archives') {
-            queryClient.prefetchQuery({
-                queryKey: publicKeys.archives(),
-                queryFn: () => getPublishedPapers(),
-                staleTime: 1000 * 60 * 5
-            });
-        }
-        if (name === 'Editorial Board') {
-            queryClient.prefetchQuery({
-                queryKey: publicKeys.editorialBoard(),
-                queryFn: () => getEditorialBoard(),
-                staleTime: 1000 * 60 * 5
-            });
-        }
-    }, [queryClient]);
+    }, []);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.key === 'Escape') {

@@ -172,7 +172,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
     }
 
     return (
-        <section className="flex-1 flex flex-col min-h-0 space-y-4 lg:space-y-6 p-4 lg:px-6 lg:pb-6">
+        <section className="flex-1 flex flex-col min-h-0 space-y-3 sm:space-y-4">
             <ApplicationFilterBar
                 interest={interest}
                 role={role}
@@ -194,18 +194,18 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
                 isPendingAction={isPendingAction}
             />
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-3">
                 {filteredApps.length === 0 ? (
-                    <div className="py-32 text-center bg-primary/2 border-2 border-dashed border-primary/10 rounded-2xl space-y-4">
-                        <AlertCircle className="w-12 h-12 text-primary/10 mx-auto" />
-                        <p className="text-[10px] font-bold text-primary/30 uppercase tracking-widest">No matching dossiers found</p>
+                    <div className="py-20 text-center bg-card border border-dashed border-border/70 rounded-xl space-y-3">
+                        <AlertCircle className="w-10 h-10 text-muted-foreground/30 mx-auto" />
+                        <p className="text-body-sm text-muted-foreground">No matching dossiers found</p>
                     </div>
                 ) : (
                     <div 
-                        className="flex-1 min-h-0 bg-muted/5 rounded-2xl lg:rounded-3xl border border-primary/5 overflow-y-auto custom-scrollbar p-2 lg:p-4"
+                        className="flex-1 min-h-0 bg-card rounded-xl border border-border/70 overflow-y-auto custom-scrollbar p-3 sm:p-4 shadow-2xs"
                         data-lenis-prevent
                     >
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {filteredApps.map((app) => (
                                 <ApplicationItemCard 
                                     key={app.id}

@@ -140,42 +140,42 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
         {
             title: "Paper Formatting Guidelines",
             content: (
-                <div className="space-y-8">
+                <div className="space-y-6 sm:space-y-7">
                     <div>
-                        <h3 className="text-secondary  mb-4">1. Text and Type Area (Margins)</h3>
+                        <h3 className="text-foreground font-semibold text-sm sm:text-base mb-2">1. Text and Type Area (Margins)</h3>
                         <p>Paper should of standard format (8.5 &ldquo; x 11&rdquo;) with the text fully justified.</p>
-                        <p className="mt-2 ">Margins : Top 0.7&rdquo;, Bottom 0.7&rdquo;, Right 0.6&rdquo;, Left 0.6&rdquo;</p>
+                        <p className="mt-2">Margins : Top 0.7&rdquo;, Bottom 0.7&rdquo;, Right 0.6&rdquo;, Left 0.6&rdquo;</p>
                         <p className="mt-2">Paper should be in two column format with column width 3.42&rdquo; and space between columns be 0.2&rdquo;. No figures should fall out of this text page.</p>
                     </div>
 
                     <div>
-                        <h3 className="text-secondary  mb-4">2. Titles Format</h3>
+                        <h3 className="text-foreground font-semibold text-sm sm:text-base mb-2">2. Titles Format</h3>
                         <ul className="space-y-2 list-none pl-0">
                             <li>• <b>Paper Title :</b> Capitalize Each Word case, 14 point type (Times Roman Bold)</li>
                             <li>• <b>Author(s) and Affiliation :</b> Capitalize Each Word case, 10 point type (Times Roman)</li>
                             <li>• <b>Head :</b> BOLD CAPITAL LETTERS. 10 point type (Times Roman)</li>
                             <li>• <b>Sub Head :</b> Lower case, 10 point (Times Roman)</li>
                         </ul>
-                        <p className="mt-4 text-primary/60">Note: Leave two line spaces between title and author names/affiliation. Leave 3 lines spaces between author/affiliation and abstract.</p>
+                        <p className="mt-4 text-muted-foreground">Note: Leave two line spaces between title and author names/affiliation. Leave 3 lines spaces between author/affiliation and abstract.</p>
                     </div>
 
                     <div>
-                        <h3 className="text-secondary  mb-4">3. Text</h3>
+                        <h3 className="text-foreground font-semibold text-sm sm:text-base mb-2">3. Text</h3>
                         <p>Text type should be 10 point Times Roman. Text should be single spaced. First line of all paragraphs should be indented and there should be one line gap between consecutive paragraphs.</p>
                     </div>
 
                     <div>
-                        <h3 className="text-secondary  mb-4">4. Heads / Sub Heads</h3>
+                        <h3 className="text-foreground font-semibold text-sm sm:text-base mb-2">4. Heads / Sub Heads</h3>
                         <p>Levels of subheads should be easily distinguishable from each other with the use of numbers. There should be one line spaces before each subhead and one line space after each subhead.</p>
                     </div>
 
                     <div>
-                        <h3 className="text-secondary  mb-4">5. Figures and Tables</h3>
+                        <h3 className="text-foreground font-semibold text-sm sm:text-base mb-2">5. Figures and Tables</h3>
                         <p>Legends/Captions should be 9 point (Times Roman). Figure legend should be beneath the figure (Figure 1, Figure 2 etc..) and table legend should be above the table (Table 1, Table 2 etc….). Both must be cited in text.</p>
                     </div>
 
                     <div>
-                        <h3 className="text-secondary mb-2">6. References</h3>
+                        <h3 className="text-foreground font-semibold text-sm sm:text-base mb-2">6. References</h3>
                         <p className="mb-2">References text type should be 10 point (Times Roman) at the end of the paper. Format as follows:</p>
                         <div className="space-y-2 bg-primary/5 p-3.5 rounded-xl border border-primary/10 font-mono text-xs overflow-x-auto">
                             <p className="m-0">[1] Jesmin Nahar and Tasadduq Imam et al,&rdquo; Association rule mining to detect factors which contribute to heart disease in males and females&rdquo;, Journal of Expert Systems with Applications Vol.40, PP.1086&ndash;1093, 2013</p>
@@ -290,10 +290,10 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                     <div className="space-y-6 sm:space-y-8">
                         {sections.map((section, idx) => (
                             <section key={idx} id={`guideline-${idx}`} className="scroll-mt-24">
-                                <h2 className="text-secondary mb-1.5 flex items-baseline gap-2 m-0">
+                                <h2 className="text-foreground font-semibold text-base sm:text-lg mb-2 flex items-baseline gap-2 m-0">
                                     {section.title}
                                 </h2>
-                                <div className="text-justify text-primary/80 space-y-2 border-l-2 border-secondary/20 pl-3.5">
+                                <div className="text-justify text-foreground/80 space-y-2 border-l-2 border-primary/20 pl-3.5">
                                     {section.content}
                                 </div>
                             </section>

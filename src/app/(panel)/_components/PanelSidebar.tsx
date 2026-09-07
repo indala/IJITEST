@@ -66,15 +66,15 @@ export function PanelSidebar({
                 </Tooltip>
             )}
 
-            <SidebarHeader className="h-16 flex flex-row items-center justify-between px-6 border-b border-border/20 overflow-hidden">
+            <SidebarHeader className="h-16 flex flex-row items-center justify-between px-6 border-b border-border/70 overflow-hidden">
                 <Link href="/" className="flex items-center gap-3 group cursor-pointer shrink-0" onClick={() => setOpenMobile(false)}>
                     <div className="bg-primary size-8 rounded-lg flex items-center justify-center shadow-lg shadow-primary/10 group-hover:scale-105 transition-transform shrink-0">
                         <Layers className="size-5 text-white stroke-2"/>
                     </div>
                     {!isCollapsed && (
-                        <div className="space-y-0 whitespace-nowrap opacity-100 transition-opacity duration-300">
-                            <h2>IJITEST</h2>
-                            <span className="text-xs opacity-70">Portal</span>
+                        <div className="space-y-0.5 whitespace-nowrap opacity-100 transition-opacity duration-300">
+                            <span className="font-serif font-bold text-primary text-base leading-none block tracking-tight">IJITEST</span>
+                            <span className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground block">Portal</span>
                         </div>
                     )}
                 </Link>
@@ -142,7 +142,7 @@ export function PanelSidebar({
                 </SidebarMenu>
             </SidebarContent>
 
-            <SidebarFooter className="p-6 border-t border-border/20 mt-auto">
+            <SidebarFooter className="p-4 border-t border-border/70 mt-auto">
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button

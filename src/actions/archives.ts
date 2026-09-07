@@ -36,8 +36,8 @@ import { cacheLogger } from "@/lib/cache-logger";
 
 export async function getPublishedPapers(): Promise<ActionResponse<PublishedPaperUI[]>> {
     'use cache'
-    cacheLife('hours')
-    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.PUBLIC_DATA)
+    cacheLife('archive')
+    cacheTag(CACHE_TAGS.ARCHIVES)
 
     try {
         cacheLogger.miss(CACHE_TAGS.ARCHIVES, "getPublishedPapers");
@@ -93,8 +93,8 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
 
 export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPaperUI[]>> {
     'use cache'
-    cacheLife('hours')
-    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE, CACHE_TAGS.PUBLIC_DATA)
+    cacheLife('archive')
+    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE)
 
     try {
         cacheLogger.miss(CACHE_TAGS.ARCHIVES, "getLatestIssuePapers");
@@ -158,8 +158,8 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
 
 export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionResponse<PublishedPaperUI[]>> {
     'use cache'
-    cacheLife('hours')
-    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.PUBLIC_DATA)
+    cacheLife('archive')
+    cacheTag(CACHE_TAGS.ARCHIVES)
 
     try {
         cacheLogger.miss(CACHE_TAGS.ARCHIVES, `getArchivePapers limit=${limit} offset=${offset}`);
@@ -226,8 +226,8 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
 
 export async function getPaperById(id: string): Promise<ActionResponse<PublishedPaperUI>> {
     'use cache'
-    cacheLife('hours')
-    cacheTag(CACHE_TAGS.PAPER(id), CACHE_TAGS.PUBLIC_DATA)
+    cacheLife('archive')
+    cacheTag(CACHE_TAGS.PAPER(id), CACHE_TAGS.ARCHIVES)
 
     try {
         cacheLogger.miss(CACHE_TAGS.PAPER(id), `getPaperById id=${id}`);

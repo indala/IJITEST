@@ -21,6 +21,7 @@ import {
 import { eq, and, sql, inArray, isNotNull, not } from "drizzle-orm";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { safeInvalidateTag, invalidateReviewerAssignmentsCount, invalidateAuthorActionsCount } from "./notifications";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import crypto from 'crypto';
 import { emailTemplates, sendEmail, sendEmailWithRetry } from '@/lib/mail';
@@ -30,8 +31,8 @@ import { hash } from "bcryptjs";
 
 export async function getEditorialBoard(): Promise<ActionResponse<SafeUserWithProfile[]>> {
     'use cache'
-    cacheLife('hours')
-    cacheTag(CACHE_TAGS.PUBLIC_DATA)
+    cacheLife('days')
+    cacheTag(CACHE_TAGS.EDITORIAL_BOARD)
 
     try {
         const rows = await db.select({
@@ -162,7 +163,7 @@ export async function createUser(formData: FormData): Promise<ActionResponse> {
                 .catch(e => console.error("Invitation email failed:", e));
         }
 
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.EDITORIAL_BOARD);
         revalidatePath('/admin/users');
         revalidatePath('/editorial-board');
         return { success: true };
@@ -237,7 +238,7 @@ export async function setupPassword(formData: FormData): Promise<ActionResponse>
             return actionError(result.error);
         }
 
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.EDITORIAL_BOARD);
         revalidatePath('/editorial-board');
         revalidatePath('/admin/users');
 
@@ -329,7 +330,7 @@ export async function updateUserRole(userId: string, role: "admin" | "editor" | 
             .set({ role })
             .where(eq(users.id, userId));
 
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.EDITORIAL_BOARD);
         revalidatePath('/admin/users');
         revalidatePath('/editorial-board');
         return { success: true };
@@ -369,7 +370,7 @@ export async function deleteUser(id: string): Promise<ActionResponse> {
             return { success: false, error: "Unauthorized: Editors cannot delete Admin accounts." };
         }
 
-        return await db.transaction(async (tx) => {
+        await db.transaction(async (tx) => {
             const profile = await tx.select({ photoUrl: userProfiles.photoUrl })
                 .from(userProfiles)
                 .where(eq(userProfiles.userId, id))
@@ -400,12 +401,17 @@ export async function deleteUser(id: string): Promise<ActionResponse> {
             if (profile[0]?.photoUrl) {
                 await safeDeleteFile(profile[0].photoUrl);
             }
-
-            updateTag(CACHE_TAGS.PUBLIC_DATA);
-            revalidatePath('/admin/users');
-            revalidatePath('/editorial-board');
-            return { success: true };
         });
+
+        await invalidateReviewerAssignmentsCount(id);
+        await invalidateAuthorActionsCount(id);
+        await safeInvalidateTag(CACHE_TAGS.USER_NOTIFICATIONS(id));
+        await safeInvalidateTag(CACHE_TAGS.USER_NOTIFICATIONS_UNREAD_COUNT(id));
+        await safeInvalidateTag(CACHE_TAGS.EDITORIAL_BOARD);
+
+        revalidatePath('/admin/users');
+        revalidatePath('/editorial-board');
+        return { success: true };
     } catch (error) {
         console.error("Delete User Error:", error);
         return { success: false, error: "Failed to delete user" };
@@ -487,7 +493,7 @@ export async function updateUserProfile(formData: FormData): Promise<ActionRespo
             await safeDeleteFile(oldPhotoUrl);
         }
 
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        updateTag(CACHE_TAGS.EDITORIAL_BOARD);
         revalidatePath(`/${session.user.role}/profile`);
         revalidatePath('/editorial-board');
         return { success: true };

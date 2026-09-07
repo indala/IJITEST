@@ -5,6 +5,7 @@ import { getPublishedPapers, getLatestIssuePapers, getArchivePapers } from '@/ac
 import { trackManuscript } from '@/actions/track';
 import { getLatestPublishedIssue } from '@/actions/publications';
 import { getEditorialBoard } from '@/actions/users';
+import type { ActionResponse, PublishedPaperUI } from '@/db/types';
 
 export const publicKeys = {
     all: ['public'] as const,
@@ -36,23 +37,25 @@ export function usePublicArchives() {
     });
 }
 
-export function useLatestIssuePapers() {
-    return useQuery({
+export function useLatestIssuePapers(options?: { enabled?: boolean }) {
+    return useQuery<ActionResponse<PublishedPaperUI[]>, Error, PublishedPaperUI[]>({
         queryKey: publicKeys.currentIssue(),
         queryFn: () => getLatestIssuePapers(),
         select: (res) => res.success ? (res.data ?? []) : [],
         staleTime: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 30,
+        enabled: options?.enabled ?? true,
     });
 }
 
-export function useArchivePapers() {
-    return useQuery({
+export function useArchivePapers(options?: { enabled?: boolean }) {
+    return useQuery<ActionResponse<PublishedPaperUI[]>, Error, PublishedPaperUI[]>({
         queryKey: publicKeys.archivePapers(),
         queryFn: () => getArchivePapers(),
         select: (res) => res.success ? (res.data ?? []) : [],
         staleTime: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 30,
+        enabled: options?.enabled ?? true,
     });
 }
 

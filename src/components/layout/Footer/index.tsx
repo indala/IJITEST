@@ -72,6 +72,8 @@ export default async function Footer() {
                             <li><Link href="/terms" className="hover:text-secondary transition-colors">Terms of Use</Link></li>
                             <li><Link href="/track" className="hover:text-secondary transition-colors">Track Manuscript</Link></li>
                             <li><Link href="/contact" className="hover:text-secondary transition-colors">Contact Office</Link></li>
+                            <li><Link href="/join-us" className="hover:text-secondary transition-colors">Join As Reviewer</Link></li>
+                            <li><Link href="/login" className="hover:text-secondary transition-colors">Portal Login</Link></li>
                         </ul>
                     </div>
 

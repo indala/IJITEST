@@ -85,6 +85,7 @@ export function TrackSearchForm({
                                 name="email"
                                 value={emailInput}
                                 onChange={(e) => onEmailChange(e.target.value)}
+                                autoFocus={!!paperIdInput && !emailInput}
                                 required
                                 className="h-10 rounded-lg bg-muted/20 border-border/70 text-primary px-3 text-body-sm"
                                 placeholder="author@institution.edu"

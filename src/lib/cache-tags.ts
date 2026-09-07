@@ -10,6 +10,7 @@ export const CACHE_TAGS = {
     LATEST_ISSUE: "latest-issue",
     ARCHIVES: "archives",
     SUBMISSIONS: "submissions",
+    EDITORIAL_BOARD: "editorial-board",
     
     // Entity-Specific Tag Builders (Parameterized)
     SUBMISSION: (id: number | string) => `submission-${id}`,
@@ -26,4 +27,4 @@ export const CACHE_TAGS = {
     SUBMISSIONS_SUBMITTED_COUNT: "submissions-submitted-count"
 } as const;
 
-export type CacheTagType = typeof CACHE_TAGS[keyof Omit<typeof CACHE_TAGS, 'SUBMISSION' | 'PAPER' | 'REVIEWER_ASSIGNMENTS_COUNT' | 'AUTHOR_ACTIONS_COUNT'>];
+export type CacheTagType = typeof CACHE_TAGS[keyof Omit<typeof CACHE_TAGS, 'SUBMISSION' | 'PAPER' | 'REVIEWER_ASSIGNMENTS_COUNT' | 'AUTHOR_ACTIONS_COUNT' | 'USER_NOTIFICATIONS' | 'USER_NOTIFICATIONS_UNREAD_COUNT'>];

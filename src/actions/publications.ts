@@ -70,10 +70,8 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
             status: 'open'
         });
         revalidatePath('/admin/publications');
-        revalidatePath('/', 'layout');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, "createVolumeIssue");
         updateTag(CACHE_TAGS.PUBLICATIONS);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
         return actionSuccess();
@@ -84,15 +82,15 @@ export async function createVolumeIssue(formData: FormData): Promise<ActionRespo
 }
 
 /**
- * Fetch all volumes and issues with paper counts
+ * Fetch all volumes and issues with paper counts (Admin / Editor panel)
  */
 export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { paperCount: number })[]>> {
-    'use cache'
-    cacheLife('hours')
-    cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.PUBLIC_DATA)
-
     try {
-        cacheLogger.miss(CACHE_TAGS.PUBLICATIONS, "getVolumesIssues");
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return actionError("Unauthorized");
+        }
+
         const rows = await db.select({
             vi: volumesIssues,
             paperCount: count(submissions.id)
@@ -108,7 +106,7 @@ export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { pape
         }));
         return actionSuccess(data);
     } catch (error) {
-        cacheLogger.error(CACHE_TAGS.PUBLICATIONS, error);
+        console.error("Fetch Volumes/Issues Error:", error);
         return serverError<(Issue & { paperCount: number })[]>(error, "fetch issues");
     }
 }
@@ -118,8 +116,8 @@ export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { pape
  */
 export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> {
     'use cache'
-    cacheLife('hours')
-    cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.LATEST_ISSUE, CACHE_TAGS.PUBLIC_DATA)
+    cacheLife('archive')
+    cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.LATEST_ISSUE)
 
     try {
         cacheLogger.miss(CACHE_TAGS.PUBLICATIONS, "getLatestPublishedIssue");
@@ -137,7 +135,7 @@ export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> 
 }
 
 /**
- * Assign a paper to an issue, brand its PDF, and update its status to 'published'
+ * Assign a paper to an issue, brand its PDF, and update its status appropriately
  */
 export async function assignPaperToIssue(submissionId: number, issueId: number, startPage?: number, endPage?: number): Promise<ActionResponse> {
     try {
@@ -169,6 +167,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         const issue = issueRows[0];
         if (!issue) return actionError("Issue not found");
 
+        const isIssuePublished = issue.status === 'published';
         const settings = await getSettingsData();
 
         // 4. Auto-Page Numbering Logic (outside transaction)
@@ -223,6 +222,9 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         });
 
         // 6. Database transaction — only pure DB ops
+        const publishedDate = isIssuePublished ? new Date() : null;
+        const targetStatus = isIssuePublished ? 'published' : 'accepted';
+
         await db.transaction(async (tx) => {
             await tx.insert(publications).values({
                 submissionId,
@@ -231,7 +233,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
                 startPage: confirmedStartPage,
                 endPage: confirmedEndPage,
                 doi: generatedDoi,
-                publishedAt: new Date()
+                publishedAt: publishedDate
             }).onDuplicateKeyUpdate({
                 set: {
                     issueId,
@@ -239,51 +241,59 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
                     startPage: confirmedStartPage,
                     endPage: confirmedEndPage,
                     doi: generatedDoi,
-                    publishedAt: new Date()
+                    publishedAt: publishedDate
                 }
             });
 
             await tx.update(submissions)
-                .set({ status: 'published', issueId })
+                .set({ status: targetStatus, issueId })
                 .where(eq(submissions.id, submissionId));
         });
 
-        // 7. Email notification AFTER transaction (fire-and-forget)
-        const template = emailTemplates.manuscriptPublished(
-            submission.authorName,
-            submission.title,
-            submission.paperId,
-            issue.volumeNumber,
-            issue.issueNumber,
-            issue.year
-        );
-        sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })
-            .catch(e => console.error("Publication email failed:", e));
+        // 7. Notifications & Search Engine indexing (only if issue is already published)
+        if (isIssuePublished) {
+            const template = emailTemplates.manuscriptPublished(
+                submission.authorName,
+                submission.title,
+                submission.paperId,
+                issue.volumeNumber,
+                issue.issueNumber,
+                issue.year
+            );
+            sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })
+                .catch(e => console.error("Publication email failed:", e));
 
-        // In-app Panel Notification
-        createNotification({
-            userId: submission.correspondingAuthorId,
-            createdByUserId: session.user.id,
-            type: "paper_published",
-            priority: "high",
-            message: `Congratulations! Your manuscript ${submission.paperId} has been successfully published in Vol ${issue.volumeNumber}, Issue ${issue.issueNumber}.`,
-            actionLink: `/article/${submission.paperId}`,
-            metadata: { submissionId, paperId: submission.paperId }
-        }).catch(e => console.error("In-app publication notification failed:", e));
+            createNotification({
+                userId: submission.correspondingAuthorId,
+                createdByUserId: session.user.id,
+                type: "paper_published",
+                priority: "high",
+                message: `Congratulations! Your manuscript ${submission.paperId} has been successfully published in Vol ${issue.volumeNumber}, Issue ${issue.issueNumber}.`,
+                actionLink: `/article/${submission.paperId}`,
+                metadata: { submissionId, paperId: submission.paperId }
+            }).catch(e => console.error("In-app publication notification failed:", e));
 
-        // 8. IndexNow notification AFTER transaction (fire-and-forget)
-        const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
-        const paperUrl = `${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${submission.paperId}`;
-        submitToIndexNow([paperUrl])
-            .catch((e: unknown) => console.error("IndexNow submission failed:", e));
+            const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
+            const paperUrl = `${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${submission.paperId}`;
+            submitToIndexNow([paperUrl])
+                .catch((e: unknown) => console.error("IndexNow submission failed:", e));
+        } else {
+            createNotification({
+                userId: submission.correspondingAuthorId,
+                createdByUserId: session.user.id,
+                type: "paper_accepted",
+                priority: "medium",
+                message: `Your manuscript ${submission.paperId} has been assigned to Volume ${issue.volumeNumber}, Issue ${issue.issueNumber} and scheduled for publication.`,
+                actionLink: `/admin/submissions/${submissionId}`,
+                metadata: { submissionId, paperId: submission.paperId }
+            }).catch(e => console.error("In-app schedule notification failed:", e));
+        }
 
         if (submission.correspondingAuthorId) {
             await invalidateAuthorActionsCount(submission.correspondingAuthorId);
         }
         revalidatePath('/admin/submissions');
         revalidatePath('/admin/publications');
-        revalidatePath('/archives');
-        revalidatePath('/', 'layout');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `assignPaperToIssue ${submissionId}`);
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
         if (submission?.paperId) {
@@ -292,7 +302,6 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         updateTag(CACHE_TAGS.SUBMISSIONS);
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
         return actionSuccess();
     } catch (error) {
@@ -304,7 +313,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
 
 
 /**
- * Publish an entire issue
+ * Publish an entire issue and transition all assigned papers to published
  */
 export async function publishIssue(id: number): Promise<ActionResponse> {
     try {
@@ -321,33 +330,72 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
             .limit(1);
         const prevLatestIssue = prevLatestIssueRows[0];
 
-        // 2. Publish the new issue
-        await db.update(volumesIssues)
-            .set({ status: 'published' })
-            .where(eq(volumesIssues.id, id));
+        const issueRows = await db.select().from(volumesIssues).where(eq(volumesIssues.id, id)).limit(1);
+        const issue = issueRows[0];
+        if (!issue) return actionError("Issue not found");
 
-        // 3. Fetch papers for the newly published issue
+        // 2. Fetch papers for the newly published issue
         const issuePapers = await db.select({
             id: submissions.id,
-            paperId: submissions.paperId
+            paperId: submissions.paperId,
+            authorId: submissions.correspondingAuthorId
         })
             .from(submissions)
             .where(eq(submissions.issueId, id));
 
-        const issueRows = await db.select().from(volumesIssues).where(eq(volumesIssues.id, id)).limit(1);
-        const issue = issueRows[0];
+        // 3. Publish the issue and update all assigned papers
+        await db.transaction(async (tx) => {
+            await tx.update(volumesIssues)
+                .set({ status: 'published' })
+                .where(eq(volumesIssues.id, id));
+
+            await tx.update(submissions)
+                .set({ status: 'published' })
+                .where(eq(submissions.issueId, id));
+
+            await tx.update(publications)
+                .set({ publishedAt: new Date() })
+                .where(eq(publications.issueId, id));
+        });
 
         const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
         const urlsToSubmit: string[] = [];
 
-        // Add newly published issue papers (now in current-issue)
-        if (issue && issuePapers.length > 0) {
-            issuePapers.forEach(paper => {
+        // 4. Send email & in-app notifications and collect URLs for newly published papers
+        if (issuePapers.length > 0) {
+            for (const paper of issuePapers) {
                 urlsToSubmit.push(`${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${paper.paperId}`);
-            });
+
+                // Fetch full submission details asynchronously for email & notification delivery
+                getSubmissionById(paper.id).then(subRes => {
+                    if (subRes.success && subRes.data) {
+                        const sub = subRes.data;
+                        const template = emailTemplates.manuscriptPublished(
+                            sub.authorName,
+                            sub.title,
+                            sub.paperId,
+                            issue.volumeNumber,
+                            issue.issueNumber,
+                            issue.year
+                        );
+                        sendEmail({ to: sub.authorEmail, subject: template.subject, html: template.html })
+                            .catch(e => console.error(`Publication email failed for ${paper.paperId}:`, e));
+
+                        createNotification({
+                            userId: sub.correspondingAuthorId,
+                            createdByUserId: session.user.id,
+                            type: "paper_published",
+                            priority: "high",
+                            message: `Congratulations! Your manuscript ${sub.paperId} has been successfully published in Vol ${issue.volumeNumber}, Issue ${issue.issueNumber}.`,
+                            actionLink: `/article/${sub.paperId}`,
+                            metadata: { submissionId: sub.id, paperId: sub.paperId }
+                        }).catch(e => console.error(`In-app notification failed for ${paper.paperId}:`, e));
+                    }
+                }).catch(e => console.error(`Failed to fetch submission ${paper.id} for notifications:`, e));
+            }
         }
 
-        // 4. Fetch papers for the previous latest issue (which are now archived)
+        // 5. Fetch papers for the previous latest issue (which are now archived)
         if (prevLatestIssue && prevLatestIssue.id !== id) {
             const prevIssuePapers = await db.select({
                 paperId: submissions.paperId
@@ -362,17 +410,14 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
             }
         }
 
-        // 5. Submit all updated URLs to IndexNow (Bing, Yandex, Naver)
+        // 6. Submit all updated URLs to IndexNow (Bing, Yandex, Naver)
         if (urlsToSubmit.length > 0) {
             submitToIndexNow(urlsToSubmit)
                 .catch((e: unknown) => console.error("IndexNow batch submission failed:", e));
         }
 
         revalidatePath('/admin/publications');
-        revalidatePath('/archives');
-        revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
-        revalidatePath('/', 'layout');
         issuePapers.forEach(paper => {
             if (paper?.id) updateTag(CACHE_TAGS.SUBMISSION(paper.id));
             if (paper?.paperId) updateTag(CACHE_TAGS.PAPER(paper.paperId));
@@ -380,7 +425,6 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         updateTag(CACHE_TAGS.SUBMISSIONS);
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
         return actionSuccess();
     } catch (error) {
@@ -449,6 +493,12 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
             return actionError("Unauthorized");
         }
 
+        const subRows = await db.select({
+            id: submissions.id,
+            paperId: submissions.paperId
+        }).from(submissions).where(eq(submissions.id, submissionId)).limit(1);
+        const sub = subRows[0];
+
         await db.transaction(async (tx) => {
             await tx.delete(publications).where(eq(publications.submissionId, submissionId));
             await tx.update(submissions)
@@ -458,12 +508,14 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
 
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
-        revalidatePath('/', 'layout');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `unassignPaperFromIssue ${submissionId}`);
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        if (sub?.paperId) {
+            updateTag(CACHE_TAGS.PAPER(sub.paperId));
+        }
+        updateTag(CACHE_TAGS.SUBMISSIONS);
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
         return actionSuccess();
     } catch (error) {
@@ -504,7 +556,6 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {
         console.error("Update Publication Error:", error);
@@ -522,6 +573,11 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
             return actionError("Unauthorized: Admin access required.");
         }
 
+        const papers = await db.select({
+            id: submissions.id,
+            paperId: submissions.paperId
+        }).from(submissions).where(eq(submissions.issueId, id));
+
         await db.transaction(async (tx) => {
             // 1. Unassign all papers
             await tx.delete(publications).where(eq(publications.issueId, id));
@@ -531,6 +587,11 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
 
             // 2. Delete issue
             await tx.delete(volumesIssues).where(eq(volumesIssues.id, id));
+        });
+
+        papers.forEach(paper => {
+            if (paper?.id) updateTag(CACHE_TAGS.SUBMISSION(paper.id));
+            if (paper?.paperId) updateTag(CACHE_TAGS.PAPER(paper.paperId));
         });
 
         return actionSuccess();
@@ -543,7 +604,6 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
         updateTag(CACHE_TAGS.SUBMISSIONS);
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
     }
 }
@@ -567,8 +627,7 @@ export async function incrementPaperViews(submissionId: number): Promise<ActionR
         await db.update(publications)
             .set({ views: sql`views + 1` })
             .where(eq(publications.submissionId, submissionId));
-        updateTag(CACHE_TAGS.PUBLICATIONS);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+
         return actionSuccess();
     } catch (error) {
         console.error("Increment Views Error:", error);
@@ -595,8 +654,7 @@ export async function incrementPaperDownloads(submissionId: number): Promise<Act
         await db.update(publications)
             .set({ downloads: sql`downloads + 1` })
             .where(eq(publications.submissionId, submissionId));
-        updateTag(CACHE_TAGS.PUBLICATIONS);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+
         return actionSuccess();
     } catch (error) {
         console.error("Increment Downloads Error:", error);
@@ -670,8 +728,6 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');
-        revalidatePath('/archives');
-        revalidatePath('/', 'layout');
         cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), `rebrandPaperPdf ${submissionId}`);
         
         if (sub.paperId) {
@@ -679,12 +735,8 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
         }
 
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
-        if (sub?.paperId) {
-            updateTag(CACHE_TAGS.PAPER(sub.paperId));
-        }
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
 
         return actionSuccess();

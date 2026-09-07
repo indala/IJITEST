@@ -23,12 +23,14 @@ import { type ActionResponse, serverError } from "@/db/types";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
 
+const phoneRegex = /^[+]?[\d\s\-().]{7,25}$/;
+
 const submissionSchema = z.object({
     authorName: z.string().min(2, "Author name is required").max(255, "Author name cannot exceed 255 characters"),
-    authorEmail: z.email("Invalid email address").max(255, "Email address cannot exceed 255 characters"),
+    authorEmail: z.string().email("Invalid email address").max(255, "Email address cannot exceed 255 characters"),
     authorPhone: z.string()
-        .regex(/^[0-9]+$/, "Author phone must contain only numbers")
-        .max(20, "Phone number cannot exceed 20 characters")
+        .regex(phoneRegex, "Please enter a valid phone number (e.g., +91 9876543210)")
+        .max(25, "Phone number cannot exceed 25 characters")
         .optional()
         .or(z.literal('')),
     authorDesignation: z.string().min(2, "Author designation is required").max(255, "Designation cannot exceed 255 characters"),
@@ -340,7 +342,6 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         await invalidateSubmittedSubmissionsCount();
         updateTag(CACHE_TAGS.SUBMISSIONS);
         updateTag(CACHE_TAGS.SUBMISSIONS_SUBMITTED_COUNT);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
         revalidatePath('/admin/submissions');
         revalidatePath('/editor/submissions');
         return { success: true, data: { paperId: result.paperId } };

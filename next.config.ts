@@ -26,6 +26,23 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   cacheComponents: true,
+  cacheLife: {
+    archive: {
+      stale: 86400,       // 1 day
+      revalidate: 604800,  // 7 days
+      expire: 31536000,   // 1 year
+    },
+    settings: {
+      stale: 3600,        // 1 hour
+      revalidate: 86400,   // 1 day
+      expire: 604800,     // 7 days
+    },
+    dashboard: {
+      stale: 30,          // 30 seconds
+      revalidate: 60,     // 1 minute
+      expire: 300,        // 5 minutes
+    },
+  },
   allowedDevOrigins: process.env['ALLOWED_DEV_ORIGINS']?.split(',').filter(Boolean) ?? [],
   experimental: {
     serverActions: {

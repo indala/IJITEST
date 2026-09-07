@@ -7,7 +7,7 @@ import { eq, count, and, inArray, desc } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { type ActionResponse, type Notification, type NotificationType, type PushSubscriptionRow, serverError } from "@/db/types";
-import { updateTag, cacheLife, cacheTag } from "next/cache";
+import { updateTag, revalidateTag, cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";
 import webpush from "web-push";
@@ -23,9 +23,21 @@ if (vapidPublicKey && vapidPrivateKey) {
     );
 }
 
+/**
+ * Safely invalidates a cache tag in both Server Action contexts (via updateTag)
+ * and Route Handler/Cron contexts (falling back to revalidateTag).
+ */
+export async function safeInvalidateTag(tag: string): Promise<void> {
+    try {
+        updateTag(tag);
+    } catch {
+        revalidateTag(tag, 'max');
+    }
+}
+
 async function getPendingMessagesCountCached(): Promise<number> {
     "use cache";
-    cacheLife("hours");
+    cacheLife("dashboard");
     cacheTag(CACHE_TAGS.MESSAGES_PENDING_COUNT);
 
     try {
@@ -42,7 +54,7 @@ async function getPendingMessagesCountCached(): Promise<number> {
 
 async function getSubmittedSubmissionsCountCached(): Promise<number> {
     "use cache";
-    cacheLife("hours");
+    cacheLife("dashboard");
     cacheTag(CACHE_TAGS.SUBMISSIONS_SUBMITTED_COUNT);
 
     try {
@@ -59,7 +71,7 @@ async function getSubmittedSubmissionsCountCached(): Promise<number> {
 
 async function getReviewerAssignmentsCountCached(userId: string): Promise<number> {
     "use cache";
-    cacheLife("hours");
+    cacheLife("dashboard");
     cacheTag(CACHE_TAGS.REVIEWER_ASSIGNMENTS_COUNT(userId));
 
     try {
@@ -79,7 +91,7 @@ async function getReviewerAssignmentsCountCached(userId: string): Promise<number
 
 async function getAuthorActionsCountCached(userId: string): Promise<number> {
     "use cache";
-    cacheLife("hours");
+    cacheLife("dashboard");
     cacheTag(CACHE_TAGS.AUTHOR_ACTIONS_COUNT(userId));
 
     try {
@@ -100,24 +112,24 @@ async function getAuthorActionsCountCached(userId: string): Promise<number> {
 // Invalidation Helpers
 export async function invalidateMessagesCount(): Promise<void> {
     cacheLogger.invalidation(CACHE_TAGS.MESSAGES_PENDING_COUNT);
-    updateTag(CACHE_TAGS.MESSAGES_PENDING_COUNT);
+    await safeInvalidateTag(CACHE_TAGS.MESSAGES_PENDING_COUNT);
 }
 
 export async function invalidateSubmittedSubmissionsCount(): Promise<void> {
     cacheLogger.invalidation(CACHE_TAGS.SUBMISSIONS_SUBMITTED_COUNT);
-    updateTag(CACHE_TAGS.SUBMISSIONS_SUBMITTED_COUNT);
+    await safeInvalidateTag(CACHE_TAGS.SUBMISSIONS_SUBMITTED_COUNT);
 }
 
 export async function invalidateReviewerAssignmentsCount(userId: string): Promise<void> {
     const tag = CACHE_TAGS.REVIEWER_ASSIGNMENTS_COUNT(userId);
     cacheLogger.invalidation(tag);
-    updateTag(tag);
+    await safeInvalidateTag(tag);
 }
 
 export async function invalidateAuthorActionsCount(userId: string): Promise<void> {
     const tag = CACHE_TAGS.AUTHOR_ACTIONS_COUNT(userId);
     cacheLogger.invalidation(tag);
-    updateTag(tag);
+    await safeInvalidateTag(tag);
 }
 
 export async function getNotificationCounts(): Promise<ActionResponse<{ messages: number, submissions: number }>> {
@@ -179,9 +191,9 @@ export async function createNotification({
             metadata,
         });
 
-        // Invalidate both feed cache and unread count cache
-        updateTag(CACHE_TAGS.USER_NOTIFICATIONS(userId));
-        updateTag(CACHE_TAGS.USER_NOTIFICATIONS_UNREAD_COUNT(userId));
+        // Invalidate both feed cache and unread count cache safely across Server Actions and Crons
+        await safeInvalidateTag(CACHE_TAGS.USER_NOTIFICATIONS(userId));
+        await safeInvalidateTag(CACHE_TAGS.USER_NOTIFICATIONS_UNREAD_COUNT(userId));
 
         // 🚀 Background Web Push trigger
         if (vapidPublicKey && vapidPrivateKey) {
@@ -232,7 +244,7 @@ export async function createNotification({
 
 async function getRecentNotificationsCached(userId: string, limit: number, unreadOnly: boolean): Promise<Notification[]> {
     "use cache";
-    cacheLife("hours");
+    cacheLife("dashboard");
     cacheTag(CACHE_TAGS.USER_NOTIFICATIONS(userId));
 
     try {
@@ -277,7 +289,7 @@ export async function getRecentNotifications({
 
 async function getUnreadNotificationsCountCached(userId: string): Promise<number> {
     "use cache";
-    cacheLife("hours");
+    cacheLife("dashboard");
     cacheTag(CACHE_TAGS.USER_NOTIFICATIONS_UNREAD_COUNT(userId));
 
     try {
@@ -322,8 +334,8 @@ export async function markNotificationAsRead(notificationId: number): Promise<Ac
                 eq(notifications.userId, userId)
             ));
 
-        updateTag(CACHE_TAGS.USER_NOTIFICATIONS(userId));
-        updateTag(CACHE_TAGS.USER_NOTIFICATIONS_UNREAD_COUNT(userId));
+        await safeInvalidateTag(CACHE_TAGS.USER_NOTIFICATIONS(userId));
+        await safeInvalidateTag(CACHE_TAGS.USER_NOTIFICATIONS_UNREAD_COUNT(userId));
 
         return { success: true };
     } catch (error) {
@@ -342,8 +354,8 @@ export async function markAllNotificationsAsRead(): Promise<ActionResponse<void>
             .set({ isRead: true })
             .where(eq(notifications.userId, userId));
 
-        updateTag(CACHE_TAGS.USER_NOTIFICATIONS(userId));
-        updateTag(CACHE_TAGS.USER_NOTIFICATIONS_UNREAD_COUNT(userId));
+        await safeInvalidateTag(CACHE_TAGS.USER_NOTIFICATIONS(userId));
+        await safeInvalidateTag(CACHE_TAGS.USER_NOTIFICATIONS_UNREAD_COUNT(userId));
 
         return { success: true };
     } catch (error) {

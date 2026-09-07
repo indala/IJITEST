@@ -250,14 +250,14 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
     }
 
     return (
-        <section className="space-y-8 pb-20">
+        <section className="space-y-4">
             {/* Header Section */}
-            <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-border/50 pb-10">
-                <div className="space-y-4">
-                    <h1 className="text-2xl 2xl:text-3xl font-bold text-primary tracking-tight">
+            <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/70 pb-3 sm:pb-4">
+                <div className="space-y-1">
+                    <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">
                         {role === 'reviewer' ? 'Reviews' : 'Manage Reviews'}
                     </h1>
-                    <p className="text-sm font-medium text-muted-foreground max-w-2xl leading-relaxed">
+                    <p className="panel-subtitle text-body-sm text-muted-foreground max-w-2xl leading-relaxed">
                         {role === 'reviewer'
                             ? 'Technical evaluation portal for manuscript review workflows.'
                             : 'Global administration of editorial integrity and peer-review lifecycle.'}
@@ -289,9 +289,9 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
 
             {/* List */}
             <div className="space-y-4">
-                <div className="flex items-center gap-2 px-2">
-                    <h2 className="text-[10px] font-bold text-primary tracking-[0.4em] uppercase opacity-40">Registry queue</h2>
-                    <Badge variant="outline" className="text-[10px] font-bold text-primary/40 bg-primary/5 border-none">
+                <div className="flex items-center gap-2 px-1">
+                    <h2 className="text-label text-muted-foreground uppercase">Registry Queue</h2>
+                    <Badge variant="outline" className="badge-brand text-[10px] font-medium h-5 px-2 rounded-md">
                         {isInternalStaff ? groupedReviews.length : filteredReviews.length}
                     </Badge>
                 </div>
@@ -322,9 +322,9 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
                     )}
 
                     {((isInternalStaff && groupedReviews.length === 0) || (!isInternalStaff && filteredReviews.length === 0)) && (
-                        <div className="py-32 text-center bg-primary/2 border-2 border-dashed border-primary/5 rounded-xl space-y-4">
-                            <ShieldAlert className="w-12 h-12 text-primary/10 mx-auto" />
-                            <p className="text-[10px] font-bold text-primary/30 uppercase tracking-widest">No matching evaluations found</p>
+                        <div className="py-24 text-center bg-card border border-dashed border-border/70 rounded-2xl space-y-4">
+                            <ShieldAlert className="w-12 h-12 text-muted-foreground/30 mx-auto" />
+                            <p className="text-body-sm text-muted-foreground">No matching evaluations found</p>
                         </div>
                     )}
                 </div>

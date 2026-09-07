@@ -11,6 +11,7 @@ import Link from "next/link";
 import type { PublishedPaperUI } from "@/db/types";
 import CitationSection from "./CitationSection";
 import { PaperViewTracker, DownloadPaperButton } from "./PaperActions";
+import { CrossrefLogo } from "@/features/indexing/components/IndexingLogos";
 
 interface PaperDetailClientProps {
     paper: PublishedPaperUI;
@@ -130,6 +131,16 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                         <span>Assignment in Progress</span>
                                     </span>
                                 )}
+                                <a
+                                    href={`https://search.crossref.org/?q=${encodeURIComponent(paper.doi || paper.title)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 hover:bg-amber-100 border border-amber-200 text-label font-bold text-amber-900 transition-colors shadow-2xs"
+                                    title="Crossref Cited-by & Metadata Record"
+                                >
+                                    <CrossrefLogo className="h-3.5 w-auto" />
+                                    <span>Cited-by Record</span>
+                                </a>
                                 <a
                                     href="https://zenodo.org/communities/ijitest/records?q=&l=list&p=1&s=10&sort=newest"
                                     target="_blank"

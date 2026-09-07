@@ -166,14 +166,22 @@ export default function ReviewerApplicationForm() {
     const handleNext = useCallback(() => {
         // Validation per step
         if (step === 1) {
-            if (!formData.fullName || !formData.designation || !formData.email || emailStatus.exists) {
-                toast.error("Please provide valid info.");
+            if (emailStatus.exists) {
+                toast.error("An account with this email already exists. Please login or use a different email.");
+                return;
+            }
+            if (!formData.fullName || !formData.designation || !formData.email) {
+                toast.error("Please fill in all required academic identity fields.");
                 return;
             }
         }
         if (step === 2) {
-            if (!formData.institute || !formData.nationality || formData.researchInterests.length === 0) {
-                toast.error("Please add research info.");
+            if (!formData.institute || !formData.nationality) {
+                toast.error("Please specify your institution and nationality.");
+                return;
+            }
+            if (formData.researchInterests.length === 0) {
+                toast.error("Please select at least one research interest.");
                 return;
             }
         }

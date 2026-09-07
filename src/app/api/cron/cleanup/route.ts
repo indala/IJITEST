@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 import { eq, inArray, lt, and, sql } from "drizzle-orm";
 import { users, submissions, submissionVersions, submissionFiles } from "@/db/schema";
@@ -67,6 +69,9 @@ export async function GET(req: Request) {
         }
 
         console.log(`Cleanup: hard-deleted ${submissionIds.length} stale submissions and ${deletedAuthorsCount} authors.`);
+
+        revalidateTag(CACHE_TAGS.SUBMISSIONS, 'max');
+        revalidateTag(CACHE_TAGS.SUBMISSIONS_SUBMITTED_COUNT, 'max');
 
         return NextResponse.json({
             deletedCount: submissionIds.length,

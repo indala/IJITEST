@@ -83,7 +83,7 @@ export function PanelShell({ children, session }: PanelShellProps) {
                         handleLogout={handleLogout}
                     />
 
-                    <section className="p-3 lg:p-6 2xl:p-8 max-w-screen-2xl 2xl:max-w-[1600px] mx-auto w-full transition-all duration-500">
+                    <section className="px-3 sm:px-5 lg:px-6 py-4 sm:py-5 max-w-7xl mx-auto w-full space-y-4">
                         {children}
                     </section>
                 </SidebarInset>

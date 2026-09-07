@@ -74,66 +74,65 @@ const UserItemCard = React.memo(({ user, currentUserId, isUpdatingRole, onDelete
     const isEditingSelf = currentUserId === String(user.id);
 
     return (
-        <Card key={user.id} className="border-border/50 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden bg-card rounded-2xl">
-            <CardContent className="p-8">
-                <div className="flex items-center gap-6 mb-8">
-                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shrink-0 shadow-sm">
-                        <UserCog className="w-8 h-8" />
+        <Card className="border-border/70 shadow-2xs hover:border-primary/30 transition-all bg-card rounded-xl">
+            <CardContent className="p-3.5 sm:p-4">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shrink-0 shadow-xs">
+                        <UserCog className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                        <h3 className="truncate mb-3">
+                        <h3 className="font-semibold text-foreground text-sm truncate mb-0.5">
                             {user.profile?.fullName || 'No Name'}
                         </h3>
-                        <Badge className={`h-7 px-4 text-[10px] font-bold tracking-widest border-none transition-all uppercase ${getRoleVariant(user.role)}`}>
+                        <Badge className={`h-5 px-2 text-[10px] font-semibold border-none transition-all uppercase ${getRoleVariant(user.role)}`}>
                             {user.role}
                         </Badge>
                     </div>
                 </div>
 
-                <div className="space-y-4 mb-8">
-                    <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground bg-muted/30 px-4 py-3 rounded-xl border border-border/50">
-                        <Mail className="w-4 h-4 text-primary" />
-                        <span>{user.email}</span>
+                <div className="space-y-1.5 mb-3">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 px-2.5 py-1.5 rounded-lg border border-border/70">
+                        <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span className="truncate">{user.email}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground px-1">
-                        <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                    <div className="flex items-center gap-1.5 text-meta px-1">
+                        <ShieldCheck className="w-3 h-3 text-emerald-600 shrink-0" />
                         <span>Member since {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}</span>
                     </div>
                 </div>
 
-                <div className="pt-5 border-t border-border/50">
-                    <p className="mb-4 text-sm text-muted-foreground">Actions</p>
-                    <div className="flex flex-col gap-3">
+                <div className="pt-2.5 border-t border-border/70">
+                    <div className="flex flex-col gap-2">
                         {isEditingSelf ? (
-                            <Badge className="h-14 w-full justify-center px-8 text-xs font-bold tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl uppercase flex items-center gap-3">
-                                <ShieldCheck className="w-5 h-5" /> Active Managed Session
+                            <Badge className="h-8 w-full justify-center px-3 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg uppercase flex items-center gap-1.5">
+                                <ShieldCheck className="w-3.5 h-3.5" /> Active Session
                             </Badge>
                         ) : (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-2">
                                 <Dialog>
                                     <DialogTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="h-10 gap-2 border-border bg-card text-foreground hover:bg-muted font-medium text-xs rounded-xl transition-all cursor-pointer"
+                                            className="h-8 gap-1 border-border/70 bg-card text-foreground hover:bg-muted font-medium text-xs rounded-lg transition-colors cursor-pointer"
                                         >
-                                            <UserCog className="w-4 h-4" /> Change role
+                                            <UserCog className="w-3.5 h-3.5" /> Role
                                         </Button>
                                     </DialogTrigger>
-                                    <DialogContent className="sm:max-w-md rounded-2xl p-10 bg-card">
-                                        <DialogHeader className="space-y-3">
-                                            <DialogTitle>Change role</DialogTitle>
+                                    <DialogContent className="sm:max-w-md rounded-2xl p-5 sm:p-6 bg-card border-border/70 shadow-2xl">
+                                        <DialogHeader className="space-y-2">
+                                            <DialogTitle className="text-xl font-semibold text-foreground tracking-tight">Change Role</DialogTitle>
                                             <DialogDescription className="text-sm text-muted-foreground">
                                                 Change the role for <span className="text-foreground font-semibold">{user.profile?.fullName}</span>.
                                             </DialogDescription>
                                         </DialogHeader>
-                                        <div className="py-6 space-y-3">
-                                            <label className="text-xs font-medium text-muted-foreground">Select role</label>
+                                        <div className="py-3 space-y-2">
+                                            <label className="text-label text-foreground">Select Role</label>
                                             <select
                                                 title="Select Role"
                                                 defaultValue={user.role}
                                                 disabled={isUpdatingRole}
                                                 onChange={(e) => onUpdateRole(user.id, e.target.value as "admin" | "editor" | "reviewer" | "author")}
-                                                className="w-full h-11 bg-muted/50 border-border/50 rounded-xl px-4 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/10 disabled:opacity-50"
+                                                className="w-full h-9 bg-background border border-border/70 rounded-lg px-3 text-sm font-medium text-foreground outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
                                             >
                                                 <option value="reviewer">Reviewer</option>
                                                 <option value="editor">Editor</option>
@@ -145,9 +144,9 @@ const UserItemCard = React.memo(({ user, currentUserId, isUpdatingRole, onDelete
                                 <Button
                                     variant="destructive"
                                     onClick={() => onDelete(user)}
-                                    className="h-10 gap-2 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs rounded-xl cursor-pointer"
+                                    className="h-8 gap-1.5 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs rounded-lg cursor-pointer"
                                 >
-                                    <Trash2 className="w-4 h-4" /> Remove
+                                    <Trash2 className="w-3.5 h-3.5" /> Remove
                                 </Button>
                             </div>
                         )}
@@ -253,58 +252,58 @@ export default function UserManagement() {
     if (loading) return <div className="p-20 text-center font-semibold text-muted-foreground tracking-widest text-xs animate-pulse">Scanning Directory...</div>;
 
     return (
-        <section className="space-y-6">
+        <section className="space-y-4">
             {/* Header Section */}
-            <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border/50 pb-8">
-                <div className="space-y-2">
-                    <h1>Users & roles</h1>
-                    <p className="max-w-2xl">Manage editorial staff and reviewers.</p>
+            <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/70 pb-3 sm:pb-4">
+                <div className="space-y-1">
+                    <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">Users & Roles</h1>
+                    <p className="panel-subtitle text-body-sm text-muted-foreground">Manage editorial staff and reviewers.</p>
                 </div>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-2.5">
                     <Button
                         variant="outline"
                         onClick={handleCleanup}
                         disabled={isCleaning}
-                        className="h-10 px-4 gap-2 border-amber-500/20 text-amber-600 hover:bg-amber-500/5 font-medium text-xs rounded-xl transition-all cursor-pointer"
+                        className="h-9 px-3 gap-1.5 border-amber-500/30 text-amber-600 hover:bg-amber-500/10 font-medium text-xs rounded-lg transition-colors cursor-pointer"
                     >
-                        <ShieldAlert className="w-4 h-4" />
-                        {isCleaning ? "Cleaning..." : "Cleanup inactive authors"}
+                        <ShieldAlert className="w-3.5 h-3.5" />
+                        {isCleaning ? "Cleaning..." : "Cleanup Inactive"}
                     </Button>
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                         <Input
                             placeholder="Search by name or email..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="h-10 w-64 pl-9 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 text-sm rounded-xl"
+                            className="h-9 w-56 pl-8 bg-background border-border/70 focus-visible:ring-1 focus-visible:ring-primary text-xs sm:text-sm rounded-lg"
                             aria-label="Search users by name or email"
                         />
                     </div>
                     <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
                         <DialogTrigger asChild>
-                            <Button className="h-10 px-5 gap-2 bg-primary text-white font-medium text-xs rounded-xl hover:bg-primary/90 transition-all cursor-pointer">
-                                <UserPlus className="w-4 h-4" /> Add staff
+                            <Button className="h-9 btn-primary text-xs font-semibold rounded-lg">
+                                <UserPlus className="w-3.5 h-3.5 mr-1.5" /> Add Staff
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-md rounded-xl p-6 bg-card border-border/50">
-                            <DialogHeader>
-                                <DialogTitle>Invite staff member</DialogTitle>
+                        <DialogContent className="sm:max-w-md rounded-2xl p-5 sm:p-6 bg-card border-border/70 shadow-2xl">
+                            <DialogHeader className="space-y-2">
+                                <DialogTitle className="text-xl font-semibold text-foreground tracking-tight">Invite Staff Member</DialogTitle>
                                 <DialogDescription className="text-sm text-muted-foreground">
                                     An invitation email will be sent with setup instructions.
                                 </DialogDescription>
                             </DialogHeader>
-                            <form action={createAction} className="space-y-4">
+                            <form action={createAction} className="space-y-4 pt-2">
                                 <div className="space-y-1.5">
-                                    <label htmlFor="staff-fullName" className="text-xs font-medium text-muted-foreground">Full name</label>
-                                    <Input id="staff-fullName" name="fullName" required className="h-10 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 text-sm rounded-xl" placeholder="Dr. Jane Smith" />
+                                    <label htmlFor="staff-fullName" className="text-label text-foreground">Full name</label>
+                                    <Input id="staff-fullName" name="fullName" required className="h-10 bg-background border-border/70 text-sm rounded-lg" placeholder="Dr. Jane Smith" />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="staff-email" className="text-xs font-medium text-muted-foreground">Email</label>
-                                    <Input id="staff-email" name="email" type="email" required className="h-10 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30 text-sm rounded-xl" placeholder="jane@ijitest.com" />
+                                    <label htmlFor="staff-email" className="text-label text-foreground">Email</label>
+                                    <Input id="staff-email" name="email" type="email" required className="h-10 bg-background border-border/70 text-sm rounded-lg" placeholder="jane@ijitest.com" />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="staff-role" className="text-xs font-medium text-muted-foreground">Role</label>
-                                    <select id="staff-role" name="role" required className="flex h-10 w-full rounded-xl bg-muted/50 px-3 py-1 text-sm transition-colors outline-none border-none ring-offset-background focus:ring-1 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 text-foreground">
+                                    <label htmlFor="staff-role" className="text-label text-foreground">Role</label>
+                                    <select id="staff-role" name="role" required className="flex h-10 w-full rounded-lg bg-background border border-border/70 px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-primary text-foreground">
                                         <option value="reviewer">Reviewer</option>
                                         <option value="editor">Editor</option>
                                         <option value="admin">Admin</option>
@@ -314,9 +313,9 @@ export default function UserManagement() {
                                     <Button
                                         type="submit"
                                         disabled={isCreatingStaff}
-                                        className="w-full h-10 font-medium text-sm rounded-xl bg-primary text-white hover:bg-primary/90 cursor-pointer"
+                                        className="w-full h-10 btn-primary rounded-lg cursor-pointer"
                                     >
-                                        {isCreatingStaff ? "Sending..." : "Send invite"}
+                                        {isCreatingStaff ? "Sending..." : "Send Invite"}
                                     </Button>
                                 </DialogFooter>
                             </form>
@@ -326,12 +325,12 @@ export default function UserManagement() {
             </header>
 
             {/* Users Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 2xl:gap-8 transition-all duration-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {filteredUsers.length === 0 ? (
-                    <div className="col-span-full py-20 bg-muted/20 border-2 border-dashed border-border/50 rounded-xl flex flex-col items-center justify-center text-center">
-                        <Users className="w-10 h-10 text-muted-foreground/20 mb-4" />
-                        <h3>{searchQuery ? "No matching users found" : "No Staff Found"}</h3>
-                        <p>{searchQuery ? "Try a different search term." : "Start by adding your first team member."}</p>
+                    <div className="col-span-full py-20 bg-card border border-dashed border-border/70 rounded-2xl flex flex-col items-center justify-center text-center space-y-2">
+                        <Users className="w-10 h-10 text-muted-foreground/30 mb-2" />
+                        <h3 className="font-semibold text-foreground text-base">{searchQuery ? "No matching users found" : "No Staff Found"}</h3>
+                        <p className="text-xs text-muted-foreground">{searchQuery ? "Try a different search term." : "Start by adding your first team member."}</p>
                     </div>
                 ) : filteredUsers.map((user) => (
                     <UserItemCard

@@ -305,7 +305,12 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                 .set({ status: 'submitted', updatedAt: new Date() })
                 .where(eq(submissions.id, submissionId));
 
-            return { mName, nextVersion, verId };
+            const [subRecord] = await tx.select({ paperId: submissions.paperId })
+                .from(submissions)
+                .where(eq(submissions.id, submissionId))
+                .limit(1);
+
+            return { mName, nextVersion, verId, paperId: subRecord?.paperId };
         });
 
         // 2. FILE SYSTEM OPERATIONS (POST-COMMIT)
@@ -372,6 +377,9 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         await invalidateAuthorActionsCount(author.id);
         if (submissionId) {
             updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        }
+        if (result.paperId) {
+            updateTag(CACHE_TAGS.PAPER(result.paperId));
         }
         updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/author');
@@ -707,7 +715,6 @@ export async function runCleanupInactiveAuthors(): Promise<ActionResponse<{ dele
 
         if (deletedCount > 0) {
             updateTag(CACHE_TAGS.SUBMISSIONS);
-            updateTag(CACHE_TAGS.PUBLIC_DATA);
             await invalidateSubmittedSubmissionsCount();
         }
 

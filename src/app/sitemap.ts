@@ -6,8 +6,8 @@ import { CACHE_TAGS } from '@/lib/cache-tags';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   'use cache';
-  cacheLife('hours');
-  cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.PUBLIC_DATA);
+  cacheLife('days');
+  cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES);
   const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
 
   // 1. Core High-Priority & Informational Routes
