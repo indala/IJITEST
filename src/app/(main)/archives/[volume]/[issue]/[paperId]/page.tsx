@@ -52,6 +52,70 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
         : pubYearStr) as string;
 
     const description = paper.abstract ? paper.abstract.substring(0, 160) : '';
+    const canonicalUrl = `${baseUrl}/archives/${volume}/${issue}/${canonicalPaperId}`;
+    const pdfFullUrl = paper.pdfUrl ? (paper.pdfUrl.startsWith('http') ? paper.pdfUrl : `${baseUrl}${paper.pdfUrl}`) : '';
+    const authorInstitutions = Array.isArray(paper.coAuthors) && paper.coAuthors.length > 0
+        ? (paper.coAuthors.map(a => a.institution).filter(Boolean) as string[])
+        : (paper.affiliation && paper.affiliation !== 'N/A' ? [paper.affiliation] : []);
+    const keywordsList = (paper.keywords || '')
+        .split(',')
+        .map(k => k.trim())
+        .filter(Boolean);
+    const publisher = settings['publisherName'] || settings['journalName'] || 'IJITEST';
+    const journalTitle = settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
+    const journalAbbrev = settings['journalShortName'] || 'IJITEST';
+    const issn = settings['issnNumber'] || '';
+
+    const otherMeta: Record<string, string | number | (string | number)[]> = {
+        'gs_meta_revision': '1.1',
+        'citation_title': paper.title,
+        'citation_author': paper.authorsList,
+        'citation_publication_date': formattedDate.replace(/-/g, '/'),
+        'citation_journal_title': journalTitle,
+        'citation_journal_abbrev': journalAbbrev,
+        'citation_publisher': publisher,
+        'citation_issn': issn,
+        'citation_abstract': paper.abstract || '',
+        'citation_volume': paper.volumeNumber ? String(paper.volumeNumber) : '',
+        'citation_issue': paper.issueNumber ? String(paper.issueNumber) : '',
+        'citation_firstpage': paper.startPage ? String(paper.startPage) : '',
+        'citation_lastpage': paper.endPage ? String(paper.endPage) : '',
+        'citation_abstract_html_url': canonicalUrl,
+        'citation_fulltext_html_url': canonicalUrl,
+        'dc.title': paper.title || '',
+        'dc.creator': paper.authorsList,
+        'dc.date': formattedDate,
+        'dc.subject': paper.keywords || '',
+        'dc.description': paper.abstract || '',
+        'dc.publisher': publisher,
+        'dc.rights': 'https://creativecommons.org/licenses/by/4.0/',
+        'dc.format': ['text/html', 'application/pdf'],
+        'dc.source': `${journalTitle}; ISSN: ${issn || 'N/A'}`,
+        'dc.language': 'en',
+        'dc.type': ['Text.Serial.Journal', 'Research Article'],
+    };
+
+    if (authorInstitutions.length > 0) {
+        otherMeta['citation_author_institution'] = authorInstitutions;
+    }
+    const authorOrcids = Array.isArray(paper.coAuthors)
+        ? (paper.coAuthors.map(a => a.orcidId).filter(Boolean) as string[])
+        : [];
+    if (authorOrcids.length > 0) {
+        otherMeta['citation_author_orcid'] = authorOrcids;
+    }
+    if (keywordsList.length > 0) {
+        otherMeta['citation_keywords'] = keywordsList;
+    }
+    if (paper.doi) {
+        otherMeta['citation_doi'] = paper.doi;
+        otherMeta['dc.identifier'] = `doi:${paper.doi}`;
+    } else {
+        otherMeta['dc.identifier'] = canonicalUrl;
+    }
+    if (pdfFullUrl) {
+        otherMeta['citation_pdf_url'] = pdfFullUrl;
+    }
 
     return {
         title: paper.title,
@@ -62,31 +126,9 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
             type: 'article',
             authors: paper.authorsList,
         },
-        other: {
-            'citation_title': paper.title,
-            'citation_author': paper.authorsList,
-            'citation_publication_date': formattedDate.replace(/-/g, '/'),
-            'citation_journal_title': settings['journalName'] || 'IJITEST',
-            'citation_issn': settings['issnNumber'] || '',
-            'citation_abstract': paper.abstract || '',
-            'citation_doi': paper.doi || '',
-            'citation_volume': paper.volumeNumber ? String(paper.volumeNumber) : '',
-            'citation_issue': paper.issueNumber ? String(paper.issueNumber) : '',
-            'citation_firstpage': paper.startPage ? String(paper.startPage) : '',
-            'citation_lastpage': paper.endPage ? String(paper.endPage) : '',
-            'citation_pdf_url': paper.pdfUrl ? (paper.pdfUrl.startsWith('http') ? paper.pdfUrl : `${baseUrl}${paper.pdfUrl}`) : '',
-            'citation_fulltext_html_url': `${baseUrl}/archives/${volume}/${issue}/${canonicalPaperId}`,
-            'dc.title': paper.title || '',
-            'dc.creator': paper.authorsList,
-            'dc.date': formattedDate,
-            'dc.subject': paper.keywords || '',
-            'dc.description': paper.abstract || '',
-            'dc.identifier': paper.doi || '',
-            'dc.language': 'en',
-            'dc.type': 'Research Article',
-        },
+        other: otherMeta,
         alternates: {
-            canonical: `${baseUrl}/archives/${volume}/${issue}/${canonicalPaperId}`
+            canonical: canonicalUrl
         },
         twitter: {
             card: 'summary_large_image',

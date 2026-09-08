@@ -24,20 +24,27 @@ import {
 } from '@/actions/publications'
 import { useQueryClient } from '@tanstack/react-query'
 import { type ActionResponse } from '@/db/types'
+import { useSettingsContext } from '@/components/providers/SettingsContext'
 
 interface PublicationAssignmentProps {
     submissionId: number;
     currentIssueId?: number | null;
+    paperId?: string;
 }
 
-export default function PublicationAssignment({ submissionId, currentIssueId }: PublicationAssignmentProps) {
+export default function PublicationAssignment({ submissionId, currentIssueId, paperId }: PublicationAssignmentProps) {
     const queryClient = useQueryClient();
+    const settings = useSettingsContext();
+    const doiPrefix = settings['doiPrefix'] || '10.68139';
+    const isAutoMode = settings['doiAssignmentMode'] === 'auto';
     const { data: volumes = [], isLoading: loading } = useVolumesIssues();
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedIssueId, setSelectedIssueId] = useState<string>(currentIssueId?.toString() || "");
     const [startPage, setStartPage] = useState<string>("");
     const [endPage, setEndPage] = useState<string>("");
+    const [doiChoice, setDoiChoice] = useState<'none' | 'official' | 'custom'>(isAutoMode ? 'official' : 'none');
+    const [customDoiValue, setCustomDoiValue] = useState<string>("");
     const [isAssigning, startAssign] = useTransition();
 
     const [, createAction, isCreating] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
@@ -58,13 +65,23 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
             return;
         }
 
+        let targetDoi: string | null = null;
+        if (doiChoice === 'official') {
+            targetDoi = paperId ? `${doiPrefix}/${paperId}` : doiPrefix;
+        } else if (doiChoice === 'custom') {
+            targetDoi = customDoiValue.trim() || null;
+        } else {
+            targetDoi = null;
+        }
+
         startAssign(async () => {
             try {
                 const res = await assignPaperToIssue(
                     submissionId,
                     parseInt(selectedIssueId),
                     startPage ? parseInt(startPage) : undefined,
-                    endPage ? parseInt(endPage) : undefined
+                    endPage ? parseInt(endPage) : undefined,
+                    targetDoi
                 );
                 if (res.success) {
                     toast.success("Manuscript committed to archive");
@@ -198,6 +215,62 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
                             className="h-10 bg-background border-emerald-500/10 rounded-lg"
                         />
                     </div>
+                </div>
+
+                {/* DOI Allocation Protocol */}
+                <div className="space-y-2 pt-3 border-t border-emerald-500/10">
+                    <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-semibold text-foreground">DOI Assignment</label>
+                        <span className="text-[10px] text-muted-foreground font-mono">Prefix: {doiPrefix}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted/40 rounded-lg border border-border/40 text-xs">
+                        <button
+                            type="button"
+                            onClick={() => setDoiChoice('none')}
+                            className={`py-1.5 px-2 rounded text-center transition-all cursor-pointer font-medium ${
+                                doiChoice === 'none' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                        >
+                            No DOI
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setDoiChoice('official')}
+                            className={`py-1.5 px-2 rounded text-center transition-all cursor-pointer font-medium ${
+                                doiChoice === 'official' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                        >
+                            Official CrossRef
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setDoiChoice('custom')}
+                            className={`py-1.5 px-2 rounded text-center transition-all cursor-pointer font-medium ${
+                                doiChoice === 'custom' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                        >
+                            Zenodo / Custom
+                        </button>
+                    </div>
+
+                    {doiChoice === 'official' && (
+                        <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs space-y-0.5">
+                            <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Official DOI Target</p>
+                            <p className="font-mono text-emerald-900 dark:text-emerald-300 break-all">{doiPrefix}/{paperId || '...'}</p>
+                        </div>
+                    )}
+
+                    {doiChoice === 'custom' && (
+                        <div className="space-y-1 pt-1">
+                            <Input
+                                placeholder="e.g. 10.5281/zenodo.12345678"
+                                value={customDoiValue}
+                                onChange={(e) => setCustomDoiValue(e.target.value)}
+                                className="h-9 bg-background text-xs font-mono"
+                            />
+                            <p className="text-[10px] text-muted-foreground">Enter the persistent digital identifier (Zenodo, DataCite, or external DOI).</p>
+                        </div>
+                    )}
                 </div>
             </div>
 

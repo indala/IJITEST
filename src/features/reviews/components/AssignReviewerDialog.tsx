@@ -14,13 +14,14 @@ import {
     DialogFooter
 } from "@/components/ui/dialog";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import type { SafeUserWithProfile, UnassignedPaper } from '@/db/types';
+import type { SafeUserWithProfile, UnassignedPaper, ReviewerPerformanceMetrics } from '@/db/types';
 
 interface AssignReviewerDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     unassigned: UnassignedPaper[];
     sortedStaff: SafeUserWithProfile[];
+    metrics?: Record<string, ReviewerPerformanceMetrics> | undefined;
     selectedSubmissionId: string;
     onSelectedSubmissionIdChange: (id: string) => void;
     onAutoConvert: () => Promise<void>;
@@ -49,6 +50,7 @@ export function AssignReviewerDialog({
     onOpenChange,
     unassigned,
     sortedStaff,
+    metrics,
     selectedSubmissionId,
     onSelectedSubmissionIdChange,
     onAutoConvert,
@@ -82,7 +84,14 @@ export function AssignReviewerDialog({
                 </DialogHeader>
                 <form action={handleSubmit} className="space-y-5 pt-5">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase px-1">Manuscript</label>
+                        <div className="flex items-center justify-between px-1">
+                            <label className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">Manuscript</label>
+                            {selectedPaper?.isBlinded && (
+                                <span className="text-[8px] font-bold bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded-full border border-blue-500/20">
+                                    🔒 Blinded Manuscript
+                                </span>
+                            )}
+                        </div>
                         <Select 
                             name="submissionId" 
                             required 
@@ -94,7 +103,9 @@ export function AssignReviewerDialog({
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-primary/5 bg-card">
                                 {unassigned.map(paper => (
-                                    <SelectItem key={paper.id} value={paper.id.toString()}>{paper.paperId} | {paper.title.slice(0, 40)}...</SelectItem>
+                                    <SelectItem key={paper.id} value={paper.id.toString()}>
+                                        {paper.paperId} | {paper.title.slice(0, 35)}... {paper.isBlinded ? '(Blinded)' : ''}
+                                    </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -106,9 +117,17 @@ export function AssignReviewerDialog({
                                 <SelectValue placeholder="Identify staff..." />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-primary/5 bg-card">
-                                {sortedStaff.map(r => (
-                                    <SelectItem key={r.id} value={r.id.toString()}>{r.profile?.fullName || r.email} ({formatLastActive(r.lastActiveAt)})</SelectItem>
-                                ))}
+                                {sortedStaff.map(r => {
+                                    const m = metrics?.[r.id];
+                                    const ratingBadge = m && m.completedReviewsCount > 0 
+                                        ? `⭐ ${m.averageRating ?? 'N/A'} (${m.completedReviewsCount})` 
+                                        : '⭐ New';
+                                    return (
+                                        <SelectItem key={r.id} value={r.id.toString()}>
+                                            {r.profile?.fullName || r.email} [{ratingBadge}] ({formatLastActive(r.lastActiveAt)})
+                                        </SelectItem>
+                                    );
+                                })}
                             </SelectContent>
                         </Select>
                     </div>

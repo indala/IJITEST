@@ -23,6 +23,8 @@ import {
     type UserWithProfile,
     type SubmissionFile,
     type ReviewWithReviewer,
+    actionSuccess,
+    actionError,
     serverError,
 } from "@/db/types";
 import { cacheLife, cacheTag, revalidatePath, updateTag } from "next/cache";
@@ -136,6 +138,7 @@ const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> 
             authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
             authorEmail: submissionData.correspondingAuthor?.email || "",
             coAuthors: submissionData.authors,
+            doi: submissionData.publication?.doi || null,
             volumeNumber: submissionData.issue?.volumeNumber,
             issueNumber: submissionData.issue?.issueNumber,
             startPage: submissionData.publication?.startPage,
@@ -272,6 +275,7 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
                 authorName: row.authorProfile?.fullName || "Unknown Author",
                 authorEmail: row.author?.email || "",
                 coAuthors: subAuthors,
+                doi: row.publication?.doi || null,
                 volumeNumber: row.issue?.volumeNumber,
                 issueNumber: row.issue?.issueNumber,
                 startPage: row.publication?.startPage,
@@ -610,7 +614,15 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
         const latestVersion = versionRows[0];
         if (!latestVersion) return { success: false, error: "No version records found." };
 
-        const fileRows = await db.select()
+        const blindedRows = await db.select()
+            .from(submissionFiles)
+            .where(and(
+                eq(submissionFiles.versionId, latestVersion.id),
+                eq(submissionFiles.fileType, 'blindedManuscript')
+            ))
+            .limit(1);
+
+        const fileRows = blindedRows.length > 0 ? blindedRows : await db.select()
             .from(submissionFiles)
             .where(and(
                 eq(submissionFiles.versionId, latestVersion.id),
@@ -658,5 +670,269 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
     } catch (error) {
         console.error("Auto Sync PDF Error:", error);
         return serverError(error, "convert document");
+    }
+}
+
+/**
+ * 4.4 Plagiarism & Similarity Report Tracking: Record score and optional Turnitin/iThenticate report
+ */
+export async function recordSimilarityScore(
+    submissionId: number,
+    percentage: number,
+    reportFile?: File | null
+): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized: Editor or Admin role required." };
+        }
+
+        if (percentage < 0 || percentage > 100) {
+            return { success: false, error: "Similarity percentage must be between 0% and 100%." };
+        }
+
+        const versionRows = await db.select()
+            .from(submissionVersions)
+            .where(eq(submissionVersions.submissionId, submissionId))
+            .orderBy(desc(submissionVersions.versionNumber))
+            .limit(1);
+
+        const latestVersion = versionRows[0];
+        if (!latestVersion) return { success: false, error: "Submission version not found." };
+
+        let reportUrl = latestVersion.similarityReportUrl;
+        if (reportFile && reportFile.size > 0) {
+            const timestamp = Date.now();
+            const ext = reportFile.name.split('.').pop();
+            const fileName = `similarity_${submissionId}_v${latestVersion.versionNumber}_${timestamp}.${ext}`;
+            reportUrl = `/api/files/submissions/${fileName}`;
+            const relativePath = `submissions/${fileName}`;
+            const buffer = Buffer.from(await reportFile.arrayBuffer());
+            await uploadFileToStorage(relativePath, buffer, reportFile.name);
+        }
+
+        await db.update(submissionVersions)
+            .set({
+                similarityPercentage: percentage,
+                similarityReportUrl: reportUrl
+            })
+            .where(eq(submissionVersions.id, latestVersion.id));
+
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath(`/editor/submissions/${submissionId}`);
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        return { success: true };
+    } catch (error) {
+        console.error("Record Similarity Error:", error);
+        return serverError(error, "record similarity report");
+    }
+}
+
+/**
+ * 5.3 Galley Proofing: Request author to review typeset galley proof
+ */
+export async function requestGalleyApproval(submissionId: number): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized: Editor or Admin role required." };
+        }
+
+        const rows = await db.select({
+            id: submissions.id,
+            paperId: submissions.paperId,
+            authorId: submissions.correspondingAuthorId,
+            authorEmail: users.email,
+            authorName: userProfiles.fullName,
+            title: submissionVersions.title,
+        })
+            .from(submissions)
+            .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
+            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+            .where(eq(submissions.id, submissionId))
+            .orderBy(desc(submissionVersions.versionNumber))
+            .limit(1);
+
+        const sub = rows[0];
+        if (!sub) return { success: false, error: "Submission not found." };
+
+        await db.update(submissions)
+            .set({
+                galleyStatus: 'pendingApproval',
+                updatedAt: new Date()
+            })
+            .where(eq(submissions.id, submissionId));
+
+        // Send in-app notification
+        await createNotification({
+            userId: sub.authorId,
+            createdByUserId: session.user.id,
+            type: "revision_requested",
+            priority: "high",
+            message: `Galley Proof Ready for Review: Please review and approve your typeset article ${sub.paperId}.`,
+            actionLink: `/author/submissions/${submissionId}`,
+            metadata: { submissionId, paperId: sub.paperId }
+        });
+
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath(`/author/submissions/${submissionId}`);
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        return { success: true };
+    } catch (error) {
+        console.error("Request Galley Error:", error);
+        return serverError(error, "request galley approval");
+    }
+}
+
+/**
+ * 5.3 Galley Proofing: Author approves galley proof or submits correction notes
+ */
+export async function respondToGalleyProof(
+    submissionId: number,
+    approved: boolean,
+    correctionNote?: string
+): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user) return { success: false, error: "Authentication required." };
+
+        const subRows = await db.select()
+            .from(submissions)
+            .where(eq(submissions.id, submissionId))
+            .limit(1);
+
+        const sub = subRows[0];
+        if (!sub) return { success: false, error: "Submission not found." };
+
+        // Ensure current user is author or editor/admin
+        if (sub.correspondingAuthorId !== session.user.id && !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized." };
+        }
+
+        if (approved) {
+            await db.update(submissions)
+                .set({
+                    galleyStatus: 'approved',
+                    galleyApprovedAt: new Date(),
+                    updatedAt: new Date()
+                })
+                .where(eq(submissions.id, submissionId));
+        } else {
+            if (!correctionNote || !correctionNote.trim()) {
+                return { success: false, error: "Please provide typographical correction notes." };
+            }
+
+            await db.update(submissions)
+                .set({
+                    galleyStatus: 'correctionsRequested',
+                    galleyCorrectionsNote: correctionNote.trim(),
+                    updatedAt: new Date()
+                })
+                .where(eq(submissions.id, submissionId));
+        }
+
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath(`/author/submissions/${submissionId}`);
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        return { success: true };
+    } catch (error) {
+        console.error("Respond Galley Error:", error);
+        return serverError(error, "respond to galley proof");
+    }
+}
+
+/**
+ * FORMAL MANUSCRIPT RETRACTION (COPE / OJS Standard)
+ * Sets status to 'retracted', preserves the metadata record and records the official reasoning and notice URL.
+ */
+export async function retractPaper(
+    submissionId: number,
+    reason: string,
+    noticeUrl?: string
+): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'admin') {
+            return actionError("Unauthorized: Admin privileges required for retraction.");
+        }
+
+        if (!reason || !reason.trim()) {
+            return actionError("A formal retraction rationale is required.");
+        }
+
+        const rows = await db.select().from(submissions).where(eq(submissions.id, submissionId)).limit(1);
+        const sub = rows[0];
+        if (!sub) return actionError("Submission not found.");
+
+        await db.update(submissions)
+            .set({
+                status: 'retracted',
+                retractionReason: reason.trim(),
+                retractionNoticeUrl: noticeUrl?.trim() || null,
+                retractedAt: new Date(),
+                updatedAt: new Date()
+            })
+            .where(eq(submissions.id, submissionId));
+
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath(`/archives`);
+        if (sub.paperId) {
+            updateTag(CACHE_TAGS.PAPER(sub.paperId));
+        }
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.ARCHIVES);
+
+        return actionSuccess();
+    } catch (error) {
+        console.error("Retract Paper Error:", error);
+        return serverError(error, "retract paper");
+    }
+}
+
+/**
+ * FORMAL CORRIGENDUM / ERRATUM ISSUANCE (OJS Standard)
+ * Sets status to 'corrigendum', displaying an amendment banner and notice link.
+ */
+export async function issueCorrigendum(
+    submissionId: number,
+    amendmentDetails: string,
+    noticeUrl?: string
+): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'editor')) {
+            return actionError("Unauthorized: Editorial privileges required.");
+        }
+
+        if (!amendmentDetails || !amendmentDetails.trim()) {
+            return actionError("Amendment details are required.");
+        }
+
+        const rows = await db.select().from(submissions).where(eq(submissions.id, submissionId)).limit(1);
+        const sub = rows[0];
+        if (!sub) return actionError("Submission not found.");
+
+        await db.update(submissions)
+            .set({
+                status: 'corrigendum',
+                retractionReason: amendmentDetails.trim(),
+                retractionNoticeUrl: noticeUrl?.trim() || null,
+                updatedAt: new Date()
+            })
+            .where(eq(submissions.id, submissionId));
+
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath(`/archives`);
+        if (sub.paperId) {
+            updateTag(CACHE_TAGS.PAPER(sub.paperId));
+        }
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.ARCHIVES);
+
+        return actionSuccess();
+    } catch (error) {
+        console.error("Issue Corrigendum Error:", error);
+        return serverError(error, "issue corrigendum");
     }
 }

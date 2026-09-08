@@ -258,6 +258,9 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
 
         const manuscriptFile = formData.get("manuscript") as File;
         const changelog = formData.get("changelog") as string;
+        const rebuttalLetter = formData.get("rebuttalLetter") as string | null;
+        const rebuttalFile = formData.get("rebuttalFile") as File | null;
+        const blindedFile = formData.get("blindedManuscript") as File | null;
 
         if (!manuscriptFile || manuscriptFile.size === 0) return { success: false, error: "Revised manuscript is required." };
 
@@ -288,6 +291,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                 abstract: latest.abstract,
                 keywords: latest.keywords,
                 changelog: changelog || "Revised version submission",
+                rebuttalLetter: rebuttalLetter || null,
             });
             const verId = versionInsert.insertId;
 
@@ -296,9 +300,25 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             const mName = `revised_manuscript_${submissionId}_v${nextVersion}_${timestamp}.${manuscriptFile.name.split('.').pop()}`;
             const mUrl = `/api/files/submissions/${mName}`;
 
-            await tx.insert(submissionFiles).values([
+            const filesToInsert: (typeof submissionFiles.$inferInsert)[] = [
                 { versionId: verId, fileType: "mainManuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size }
-            ]);
+            ];
+
+            let bName: string | null = null;
+            if (blindedFile && blindedFile.size > 0) {
+                bName = `revised_blinded_${submissionId}_v${nextVersion}_${timestamp}.${blindedFile.name.split('.').pop()}`;
+                const bUrl = `/api/files/submissions/${bName}`;
+                filesToInsert.push({ versionId: verId, fileType: "blindedManuscript", fileUrl: bUrl, originalName: blindedFile.name, fileSize: blindedFile.size });
+            }
+
+            let rName: string | null = null;
+            if (rebuttalFile && rebuttalFile.size > 0) {
+                rName = `rebuttal_letter_${submissionId}_v${nextVersion}_${timestamp}.${rebuttalFile.name.split('.').pop()}`;
+                const rUrl = `/api/files/submissions/${rName}`;
+                filesToInsert.push({ versionId: verId, fileType: "rebuttalLetter", fileUrl: rUrl, originalName: rebuttalFile.name, fileSize: rebuttalFile.size });
+            }
+
+            await tx.insert(submissionFiles).values(filesToInsert);
 
             // D. Set status back to 'submitted'
             await tx.update(submissions)
@@ -310,7 +330,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                 .where(eq(submissions.id, submissionId))
                 .limit(1);
 
-            return { mName, nextVersion, verId, paperId: subRecord?.paperId };
+            return { mName, bName, rName, nextVersion, verId, paperId: subRecord?.paperId };
         });
 
         // 2. FILE SYSTEM OPERATIONS (POST-COMMIT)
@@ -319,6 +339,20 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             const manuscriptBuffer = Buffer.from(await manuscriptFile.arrayBuffer());
             await uploadFileToStorage(relativeManuscriptPath, manuscriptBuffer, manuscriptFile.name);
             fileCleanup.push(relativeManuscriptPath);
+
+            if (result.bName && blindedFile && blindedFile.size > 0) {
+                const relativeBlindedPath = `submissions/${result.bName}`;
+                const blindedBuffer = Buffer.from(await blindedFile.arrayBuffer());
+                await uploadFileToStorage(relativeBlindedPath, blindedBuffer, blindedFile.name);
+                fileCleanup.push(relativeBlindedPath);
+            }
+
+            if (result.rName && rebuttalFile && rebuttalFile.size > 0) {
+                const relativeRebuttalPath = `submissions/${result.rName}`;
+                const rebuttalBuffer = Buffer.from(await rebuttalFile.arrayBuffer());
+                await uploadFileToStorage(relativeRebuttalPath, rebuttalBuffer, rebuttalFile.name);
+                fileCleanup.push(relativeRebuttalPath);
+            }
         } catch (uploadError) {
             console.error("Upload revised paper failed:", uploadError);
             // IO failed — cleanup disk on storage service and rollback DB

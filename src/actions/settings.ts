@@ -4,7 +4,7 @@ import { cache } from "react";
 
 import { db } from "@/lib/db";
 import { settings, submissions, publications } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { type ActionResponse, actionSuccess, actionError, serverError } from "@/db/types";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -31,7 +31,7 @@ const ALLOWED_SETTING_KEYS = new Set([
     'journalWebsite', 'apcDescription', 'templateUrl', 'copyrightUrl',
     'isPromotionActive', 'publicationFrequency', 'startingYear',
     'publicationFormat', 'journalLanguage', 'journalSubject', 'udyamRegistration',
-    'doiPrefix'
+    'doiPrefix', 'doiAssignmentMode'
 ]);
 
 const DEFAULT_SETTINGS: Record<string, string> = {
@@ -55,7 +55,8 @@ const DEFAULT_SETTINGS: Record<string, string> = {
     journalLanguage: 'English',
     journalSubject: 'Multidisciplinary (Engineering, Science and Technology, Healthcare, Management Sciences)',
     udyamRegistration: 'UDYAM-AP-10-0125617',
-    doiPrefix: ''
+    doiPrefix: '10.68139',
+    doiAssignmentMode: 'manual'
 };
 
 export async function getSettings(): Promise<ActionResponse<Record<string, string>>> {
@@ -140,9 +141,6 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
         }
 
         // Check if doiPrefix was provided and is not empty
-        const doiPrefixEntry = resolvedEntries.find(([key]) => key === 'doiPrefix');
-        const newDoiPrefix = doiPrefixEntry ? doiPrefixEntry[1].trim() : null;
-
         await db.transaction(async (tx) => {
             for (const [key, value] of resolvedEntries) {
                 // Store as camelCase in DB as requested
@@ -150,36 +148,64 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
                     .values({ settingKey: key, settingValue: value })
                     .onDuplicateKeyUpdate({ set: { settingValue: value } });
             }
-
-            // If a valid DOI prefix is set, dynamically update DOIs for all publications
-            if (newDoiPrefix && newDoiPrefix.startsWith("10.")) {
-                // Fetch all publications and their submission paperIds
-                const pubs = await tx.select({
-                    id: publications.id,
-                    paperId: submissions.paperId
-                })
-                    .from(publications)
-                    .innerJoin(submissions, eq(publications.submissionId, submissions.id));
-
-                for (const pub of pubs) {
-                    const generatedDoi = `${newDoiPrefix}/${pub.paperId}`;
-                    await tx.update(publications)
-                        .set({ doi: generatedDoi })
-                        .where(eq(publications.id, pub.id));
-                }
-            }
         });
 
         cacheLogger.invalidation(CACHE_TAGS.SETTINGS, "settings updated");
         updateTag(CACHE_TAGS.SETTINGS);
-        if (newDoiPrefix && newDoiPrefix.startsWith("10.")) {
-            updateTag(CACHE_TAGS.ARCHIVES);
-        }
         revalidatePath('/', 'layout');
         return actionSuccess();
     } catch (error) {
         console.error("Update Settings Error:", error);
         return serverError(error, "update settings");
+    }
+}
+
+/**
+ * Explicit admin action to batch-assign official DOI (e.g. 10.68139/[paperId]) to selected publications.
+ * Only triggered when explicitly requested by an Administrator.
+ */
+export async function bulkAssignDoi(submissionIds: number[]): Promise<ActionResponse<{ updatedCount: number }>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'admin') {
+            return actionError("Unauthorized");
+        }
+
+        if (!submissionIds.length) {
+            return actionError("No papers selected for DOI assignment.");
+        }
+
+        const currentSettings = await getSettingsData();
+        const prefix = currentSettings['doiPrefix'] ? currentSettings['doiPrefix'].trim() : "10.68139";
+        if (!prefix.startsWith("10.")) {
+            return actionError("Invalid DOI Prefix configured in settings.");
+        }
+
+        const pubs = await db.select({
+            id: publications.id,
+            submissionId: publications.submissionId,
+            paperId: submissions.paperId
+        })
+            .from(publications)
+            .innerJoin(submissions, eq(publications.submissionId, submissions.id))
+            .where(inArray(publications.submissionId, submissionIds));
+
+        for (const pub of pubs) {
+            const generatedDoi = `${prefix}/${pub.paperId}`;
+            await db.update(publications)
+                .set({ doi: generatedDoi })
+                .where(eq(publications.id, pub.id));
+        }
+
+        cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `bulk DOI assigned for ${pubs.length} papers`);
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        revalidatePath('/', 'layout');
+
+        return actionSuccess({ updatedCount: pubs.length });
+    } catch (error) {
+        console.error("Bulk Assign DOI Error:", error);
+        return serverError(error, "bulk assign DOI");
     }
 }
 

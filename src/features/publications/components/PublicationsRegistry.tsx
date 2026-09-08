@@ -367,7 +367,20 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                             </div>
                                         )}
 
-                                        <div className="flex items-center justify-center gap-4 pt-3 border-t border-border/70">
+                                        <div className="flex items-center justify-center gap-3 pt-3 border-t border-border/70 flex-wrap">
+                                            {v.status === 'published' && (
+                                                <>
+                                                    <a
+                                                        href={`/api/export/crossref/issue/${v.id}`}
+                                                        download
+                                                        title="Download CrossRef Schema 5.3.1 XML batch deposit for this issue"
+                                                        className="text-label text-emerald-600 hover:underline font-medium cursor-pointer"
+                                                    >
+                                                        CrossRef XML
+                                                    </a>
+                                                    <span className="w-1 h-1 rounded-full bg-border" />
+                                                </>
+                                            )}
                                             <button onClick={() => setShowEditModal(v)} className="text-label text-primary hover:underline font-medium cursor-pointer">Edit</button>
                                             <span className="w-1 h-1 rounded-full bg-border" />
                                             <button disabled={isDeleting} onClick={() => handleDelete(v.id)} className="text-label text-rose-500 hover:underline font-medium disabled:opacity-50 cursor-pointer">Delete</button>

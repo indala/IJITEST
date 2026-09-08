@@ -89,12 +89,22 @@ export const submissions = mysqlTable("submissions", {
     status: mysqlEnum("status", [
         'submitted', 'editorAssigned', 'underReview', 
         'revisionRequested', 'accepted', 'rejected', 
-        'paymentPending', 'published', 'retracted'
+        'paymentPending', 'published', 'retracted', 'corrigendum'
     ]).default('submitted').notNull(),
     
     finalDecision: mysqlEnum("final_decision", ['accept', 'reject', 'withdrawn']),
     decisionAt: timestamp("decision_at"),
     decisionBy: varchar("decision_by", { length: 36 }).references(() => users.id, { onDelete: "set null" }),
+
+    // 5.3 Galley Proofing Lifecycle (OJS Parity)
+    galleyStatus: mysqlEnum("galley_status", ['notRequested', 'pendingApproval', 'approved', 'correctionsRequested']).default('notRequested').notNull(),
+    galleyApprovedAt: timestamp("galley_approved_at"),
+    galleyCorrectionsNote: text("galley_corrections_note"),
+
+    // 6.3 Retraction, Corrigendum & Errata Governance
+    retractionReason: text("retraction_reason"),
+    retractionNoticeUrl: varchar("retraction_notice_url", { length: 500 }),
+    retractedAt: timestamp("retracted_at"),
 
     correspondingAuthorId: varchar("corresponding_author_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
     issueId: int("issue_id").references(() => volumesIssues.id),
@@ -145,7 +155,17 @@ export const submissionVersions = mysqlTable("submission_versions", {
     keywords: text("keywords"),
     subjectArea: varchar("subject_area", { length: 255 }),
     
+    // 4.4 Plagiarism & Similarity Report Tracking
+    similarityPercentage: int("similarity_percentage"),
+    similarityReportUrl: varchar("similarity_report_url", { length: 500 }),
+
+    // 4.5 Conflict of Interest & Ethics Declarations
+    competingInterests: text("competing_interests"),
+    fundingStatement: text("funding_statement"),
+    ethicalApproval: text("ethical_approval"),
+
     changelog: text("changelog"), // Author's notes on changes
+    rebuttalLetter: text("rebuttal_letter"), // Point-by-point response to reviewers for revisions
     createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
     unique("submission_version_unique").on(table.submissionId, table.versionNumber),
@@ -164,7 +184,17 @@ export const submissionVersionsRelations = relations(submissionVersions, ({ one,
 export const submissionFiles = mysqlTable("submission_files", {
     id: int("id").primaryKey().autoincrement().notNull(),
     versionId: int("version_id").notNull().references(() => submissionVersions.id, { onDelete: "cascade" }),
-    fileType: mysqlEnum("file_type", ['mainManuscript', 'pdfVersion','copyrightForm','supplementary', 'feedback', 'paymentProof']).notNull(),
+    fileType: mysqlEnum("file_type", [
+        'mainManuscript', 
+        'blindedManuscript', 
+        'titlePage', 
+        'rebuttalLetter', 
+        'pdfVersion', 
+        'copyrightForm', 
+        'supplementary', 
+        'feedback', 
+        'paymentProof'
+    ]).notNull(),
     fileUrl: varchar("file_url", { length: 500 }).notNull(),
     originalName: varchar("original_name", { length: 255 }),
     fileSize: int("file_size"),
@@ -189,6 +219,8 @@ export const submissionAuthors = mysqlTable("submission_authors", {
     phone: varchar("phone", { length: 20 }),
     designation: varchar("designation", { length: 255 }),
     institution: varchar("institution", { length: 500 }),
+    orcidId: varchar("orcid_id", { length: 50 }),
+    creditRoles: json("credit_roles").$type<string[]>(),
     isCorresponding: boolean("is_corresponding").default(false).notNull(),
     orderIndex: int("order_index").default(0).notNull(),
 }, (table) => [
@@ -237,6 +269,9 @@ export const reviewAssignments = mysqlTable("review_assignments", {
     respondedAt: timestamp("responded_at"),
     lastReminderSentAt: timestamp("last_reminder_sent_at"),
     reminderCount: int("reminder_count").default(0).notNull(),
+    invitationToken: varchar("invitation_token", { length: 64 }),
+    invitationTokenExpiresAt: timestamp("invitation_token_expires_at"),
+    declineReason: text("decline_reason"),
 }, (table) => [
     unique("unique_assignment").on(table.submissionId, table.reviewerId, table.versionId, table.reviewRound),
 ]);
@@ -271,6 +306,16 @@ export const reviews = mysqlTable("reviews", {
     decision: mysqlEnum("decision", ['accept', 'minorRevision', 'majorRevision', 'reject']).notNull(),
     score: int("score"),
     confidence: int("confidence"),
+    rubricData: json("rubric_data").$type<{
+        originality: number;
+        methodology: number;
+        clarity: number;
+        literatureReview: number;
+        remarks?: string;
+    }>(),
+    editorRating: int("editor_rating"), // 1 to 5 stars assigned by Editor
+    editorRatingRemarks: text("editor_rating_remarks"),
+    ratedAt: timestamp("rated_at"),
     commentsToAuthor: text("comments_to_author"),
     commentsToEditor: text("comments_to_editor"),
     createdAt: timestamp("created_at").defaultNow(),
@@ -293,6 +338,7 @@ export const payments = mysqlTable("payments", {
     status: mysqlEnum("status", ['pending', 'paid', 'verified', 'failed', 'waived']).default('pending').notNull(),
     provider: varchar("provider", { length: 50 }),
     transactionId: varchar("transaction_id", { length: 255 }).unique(),
+    invoiceNumber: varchar("invoice_number", { length: 100 }),
     paidAt: timestamp("paid_at"),
     createdAt: timestamp("created_at").defaultNow(),
 });
@@ -311,6 +357,7 @@ export const volumesIssues = mysqlTable("volumes_issues", {
     issueNumber: int("issue_number").notNull(),
     year: int("year").notNull(),
     monthRange: varchar("month_range", { length: 100 }),
+    fullBookPdfUrl: varchar("full_book_pdf_url", { length: 500 }),
     status: mysqlEnum("status", ['open', 'published']).default('open').notNull(),
     createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
@@ -538,3 +585,15 @@ export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one })
         references: [users.id],
     }),
 }));
+
+// 📧 17. EMAIL TEMPLATES (OJS Parity)
+export const emailTemplates = mysqlTable("email_templates", {
+    id: int("id").primaryKey().autoincrement().notNull(),
+    templateKey: varchar("template_key", { length: 100 }).unique().notNull(),
+    name: varchar("name", { length: 255 }).notNull(),
+    description: varchar("description", { length: 500 }),
+    subjectTemplate: varchar("subject_template", { length: 500 }).notNull(),
+    bodyTemplate: text("body_template").notNull(),
+    variables: json("variables").$type<string[]>(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
+});

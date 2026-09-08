@@ -263,22 +263,84 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                         </CardContent>
                     </Card>
 
-                    {/* Published Link (if applicable) */}
+                    {/* APC Remittance & Receipt */}
+                    {sub.payment && (
+                        <Card className="border-primary/10 shadow-xl shadow-primary/5">
+                            <CardHeader className="bg-primary/5 border-b border-primary/5">
+                                <div className="flex items-center justify-between">
+                                    <CardTitle className="text-sm font-black text-primary uppercase tracking-widest">
+                                        APC Remittance
+                                    </CardTitle>
+                                    <Badge className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 ${
+                                        ['paid', 'verified'].includes(sub.payment.status)
+                                            ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                                            : sub.payment.status === 'waived'
+                                            ? 'bg-purple-100 text-purple-700 border-purple-200'
+                                            : 'bg-amber-100 text-amber-700 border-amber-200'
+                                    }`}>
+                                        {sub.payment.status === 'verified' ? 'Verified' : sub.payment.status}
+                                    </Badge>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="pt-6 space-y-4">
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-primary/50 font-bold uppercase tracking-wider">Fee Amount</span>
+                                    <span className="font-black text-primary text-sm">{sub.payment.amount} {sub.payment.currency}</span>
+                                </div>
+                                {sub.payment.invoiceNumber && (
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-primary/50 font-bold uppercase tracking-wider">Invoice No.</span>
+                                        <span className="font-mono font-bold text-primary/70">{sub.payment.invoiceNumber}</span>
+                                    </div>
+                                )}
+                                {sub.payment.transactionId && (
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-primary/50 font-bold uppercase tracking-wider">Transaction ID</span>
+                                        <span className="font-mono text-[11px] text-primary/60 truncate max-w-[150px]">{sub.payment.transactionId}</span>
+                                    </div>
+                                )}
+                                {['paid', 'verified'].includes(sub.payment.status) ? (
+                                    <Button asChild variant="outline" className="w-full h-10 gap-2 rounded-xl font-bold uppercase text-xs border-primary/20 hover:bg-primary/5">
+                                        <a href={`/api/receipt/${sub.payment.id}`} target="_blank" rel="noopener noreferrer">
+                                            <Download className="w-4 h-4 text-primary" />
+                                            Download Tax Invoice & Receipt
+                                        </a>
+                                    </Button>
+                                ) : sub.payment.status === 'pending' ? (
+                                    <Button asChild className="w-full h-10 gap-2 rounded-xl font-bold uppercase text-xs bg-primary text-primary-foreground hover:bg-primary/90">
+                                        <Link href={`/payment/${sub.paperId}`}>
+                                            Proceed to APC Payment
+                                        </Link>
+                                    </Button>
+                                ) : null}
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Published Link & Certificate (if applicable) */}
                     {sub.publication && (
-                        <Link 
-                            href={getSecureUrl(sub.publication.finalPdfUrl)}
-                            target="_blank"
-                            className="flex flex-col items-center justify-center gap-4 p-8 bg-primary rounded-3xl text-white text-center shadow-2xl shadow-primary/40 hover:scale-[1.02] transition-transform"
-                        >
-                            <Calendar className="w-12 h-12 text-secondary" />
-                            <div className="space-y-1">
-                                <h3 className="text-lg font-black tracking-tight">Paper Published!</h3>
-                                <p className="text-xs text-white/60 font-black uppercase tracking-widest">
-                                    Volume {sub.publication.volumeNumber}, Issue {sub.publication.issueNumber}
-                                </p>
-                            </div>
-                            <Badge className="bg-white/20 text-white border-0 text-[10px] tracking-widest font-black h-8 px-5 rounded-full backdrop-blur-sm">VIEW ARCHIVE</Badge>
-                        </Link>
+                        <div className="space-y-3">
+                            <Link 
+                                href={getSecureUrl(sub.publication.finalPdfUrl)}
+                                target="_blank"
+                                className="flex flex-col items-center justify-center gap-4 p-8 bg-primary rounded-3xl text-white text-center shadow-2xl shadow-primary/40 hover:scale-[1.02] transition-transform"
+                            >
+                                <Calendar className="w-12 h-12 text-secondary" />
+                                <div className="space-y-1">
+                                    <h3 className="text-lg font-black tracking-tight">Paper Published!</h3>
+                                    <p className="text-xs text-white/60 font-black uppercase tracking-widest">
+                                        Volume {sub.publication.volumeNumber}, Issue {sub.publication.issueNumber}
+                                    </p>
+                                </div>
+                                <Badge className="bg-white/20 text-white border-0 text-[10px] tracking-widest font-black h-8 px-5 rounded-full backdrop-blur-sm">VIEW ARCHIVE</Badge>
+                            </Link>
+                            <Button asChild variant="outline" className="w-full h-10 gap-2 rounded-xl font-bold uppercase text-xs border-primary/20 hover:bg-primary/5">
+                                <a href={`/api/certificate/${sub.paperId}`} target="_blank" rel="noopener noreferrer">
+                                    <Download className="w-4 h-4 text-primary" />
+                                    Download Certificate (PDF)
+                                </a>
+                            </Button>
+                        </div>
                     )}
                 </div>
             </div>

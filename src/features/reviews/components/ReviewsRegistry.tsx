@@ -12,8 +12,8 @@ import type { ReviewAssignment } from '@/hooks/queries/useReviews';
 import { useUsers } from '@/hooks/queries/useUsers';
 import { type UserRole } from "@/db/types";
 import { decideSubmission, autoSyncManuscriptToPdf, requestResubmissionWithComments } from '@/actions/submissions';
-import { useQueryClient } from '@tanstack/react-query';
-import { assignReviewer, submitReview } from '@/actions/reviews';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { assignReviewer, submitReview, getReviewerMetrics } from '@/actions/reviews';
 
 import { ReviewItemCard } from './ReviewItemCard';
 import { GroupedReviewCard, type GroupedReview } from './GroupedReviewCard';
@@ -31,6 +31,14 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
     const { data: reviews = [], isLoading: loadingReviews, refetch: refetchReviews } = useActiveReviews(reviewerId);
     const { data: unassigned = [], isLoading: loadingUnassigned } = useUnassignedPapers();
     const { data: staff = [], isLoading: loadingStaff } = useUsers('reviewer');
+    const { data: reviewerMetrics } = useQuery({
+        queryKey: ['reviewerMetrics'],
+        queryFn: async () => {
+            const res = await getReviewerMetrics();
+            return res.success ? res.data : undefined;
+        },
+        enabled: role !== 'reviewer'
+    });
     const sortedStaff = useMemo(() => {
         return [...staff].sort((a, b) => {
             const aTime = a.lastActiveAt ? new Date(a.lastActiveAt).getTime() : 0;
@@ -269,6 +277,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
                         onOpenChange={setShowAssignModal}
                         unassigned={unassigned}
                         sortedStaff={sortedStaff}
+                        metrics={reviewerMetrics}
                         selectedSubmissionId={selectedSubmissionId}
                         onSelectedSubmissionIdChange={setSelectedSubmissionId}
                         onAutoConvert={handleAutoConvert}

@@ -7,6 +7,7 @@ import {
     submissions,
     submissionAuthors,
     submissionVersions,
+    submissionFiles,
     volumesIssues,
     userProfiles
 } from "@/db/schema";
@@ -18,6 +19,7 @@ import {
     type Author,
     type Submission,
     type Version,
+    type SubmissionFile,
     type Issue,
     type UserProfile,
     type Publication,
@@ -277,13 +279,18 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
             .where(eq(submissionAuthors.submissionId, row.submission.id))
             .orderBy(submissionAuthors.orderIndex);
 
+        const versionFiles = row.version?.id ? await db.select()
+            .from(submissionFiles)
+            .where(eq(submissionFiles.versionId, row.version.id)) : [];
+
         const data = mapPublicationToUI({
             ...row.publication,
             submission: {
                 ...row.submission,
                 versions: [row.version],
                 correspondingAuthor: { profile: row.authorProfile },
-                authors: authorsList
+                authors: authorsList,
+                files: versionFiles
             },
             issue: row.issue
         });
@@ -300,9 +307,10 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
 type PublicationInput = Partial<Omit<Publication, 'issueId'>> & {
     submissionId?: Publication['submissionId'] | null;
     submission?: (
-        Partial<Pick<Submission, 'paperId' | 'status' | 'updatedAt'>> & {
+        Partial<Pick<Submission, 'paperId' | 'status' | 'updatedAt' | 'retractionReason' | 'retractionNoticeUrl' | 'retractedAt'>> & {
             authors?: Author[];
-            versions?: Array<Partial<Pick<Version, 'title' | 'abstract' | 'keywords'>> | null>;
+            versions?: Array<Partial<Pick<Version, 'title' | 'abstract' | 'keywords' | 'competingInterests' | 'fundingStatement' | 'ethicalApproval'>> | null>;
+            files?: SubmissionFile[];
             correspondingAuthor?: {
                 profile?: Partial<Pick<UserProfile, 'fullName' | 'institute'>> | null;
             } | null;
@@ -323,6 +331,8 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
     const correspondingAuthor = sortedAuthors.find(a => a.isCorresponding) || sortedAuthors[0];
 
     const primaryAuthorName = correspondingAuthor?.name || sortedAuthors[0]?.name || "Anonymous Author";
+
+    const supplementaryFiles = pub.submission?.files?.filter(f => f.fileType === 'supplementary') || [];
 
     return {
         id: pub.submissionId || 0,
@@ -360,6 +370,88 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         authorsList: sortedAuthors.map(a => a.name),
         views: pub.views || 0,
         downloads: pub.downloads || 0,
-        citations: pub.citations || 0
+        citations: pub.citations || 0,
+        competingInterests: latestVersion?.competingInterests || null,
+        fundingStatement: latestVersion?.fundingStatement || null,
+        ethicalApproval: latestVersion?.ethicalApproval || null,
+        supplementaryFiles: supplementaryFiles,
+        retractionReason: pub.submission?.retractionReason || null,
+        retractionNoticeUrl: pub.submission?.retractionNoticeUrl || null,
+        retractedAt: pub.submission?.retractedAt || null,
     };
+}
+
+export async function getIssuePapersByIssueId(issueId: number): Promise<ActionResponse<{ issue: Issue; papers: PublishedPaperUI[] }>> {
+    'use cache'
+    cacheLife('archive')
+    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.PUBLICATIONS)
+
+    try {
+        const issueRows = await db.select().from(volumesIssues).where(eq(volumesIssues.id, issueId)).limit(1);
+        const issue = issueRows[0];
+        if (!issue) return actionError("Issue not found");
+
+        const rows = await db.select({
+            publication: publications,
+            submission: submissions,
+            issue: volumesIssues,
+        })
+            .from(publications)
+            .where(eq(publications.issueId, issueId))
+            .innerJoin(submissions, and(
+                eq(publications.submissionId, submissions.id),
+                eq(submissions.status, 'published')
+            ))
+            .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+            .orderBy(asc(submissions.paperId));
+
+        if (!rows.length) {
+            return actionSuccess({ issue, papers: [] });
+        }
+
+        const submissionIds = rows.map(r => r.submission?.id).filter(Boolean) as number[];
+
+        const authorsList = await db.select().from(submissionAuthors)
+            .where(inArray(submissionAuthors.submissionId, submissionIds))
+            .orderBy(submissionAuthors.orderIndex);
+
+        const versionsList = await db.select().from(submissionVersions)
+            .where(inArray(submissionVersions.submissionId, submissionIds))
+            .orderBy(desc(submissionVersions.versionNumber));
+
+        const papers = rows.map(row => {
+            const paperAuthors = authorsList.filter(a => a.submissionId === row.submission?.id);
+            const paperVersions = versionsList.filter(v => v.submissionId === row.submission?.id);
+
+            return mapPublicationToUI({
+                ...row.publication,
+                submission: {
+                    ...row.submission,
+                    versions: paperVersions,
+                    authors: paperAuthors
+                },
+                issue: row.issue
+            });
+        });
+
+        return actionSuccess({ issue, papers });
+    } catch (error) {
+        return serverError(error, "fetch issue papers by issue ID");
+    }
+}
+
+export async function getPublishedIssues(): Promise<ActionResponse<Issue[]>> {
+    'use cache'
+    cacheLife('archive')
+    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.PUBLICATIONS)
+
+    try {
+        const rows = await db.select()
+            .from(volumesIssues)
+            .where(eq(volumesIssues.status, 'published'))
+            .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber));
+        return actionSuccess(rows);
+    } catch (error) {
+        return serverError(error, "fetch published issues");
+    }
 }

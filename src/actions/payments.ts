@@ -69,12 +69,16 @@ export async function updatePaymentStatus(paymentId: number, status: PaymentStat
         }
 
         let authorId: string | null = null;
+        const invoiceNum = `INV-${new Date().getFullYear()}-${paymentId.toString().padStart(5, '0')}`;
         await db.transaction(async (tx) => {
             await tx.update(payments)
                 .set({ 
                     status, 
                     transactionId: transactionId || null, 
-                    paidAt: status === 'paid' || status === 'verified' || status === 'waived' ? new Date() : null
+                    paidAt: status === 'paid' || status === 'verified' || status === 'waived' ? new Date() : null,
+                    invoiceNumber: ['paid', 'verified', 'waived'].includes(status)
+                        ? sql`COALESCE(${payments.invoiceNumber}, ${invoiceNum})`
+                        : undefined
                 })
                 .where(eq(payments.id, paymentId));
 

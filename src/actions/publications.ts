@@ -6,7 +6,8 @@ import {
     submissions,
     volumesIssues,
     publications,
-    submissionVersions
+    submissionVersions,
+    submissionAuthors
 } from "@/db/schema";
 import {
     type ActionResponse,
@@ -16,7 +17,7 @@ import {
     type PaperWithPublication,
     serverError
 } from "@/db/types";
-import { eq, and, sql, desc, count } from "drizzle-orm";
+import { eq, and, sql, desc, count, inArray, asc } from "drizzle-orm";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { getSettingsData } from "./settings";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -30,6 +31,7 @@ import { authOptions } from "@/lib/auth";
 import { headers } from "next/headers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { submitToIndexNow } from "@/lib/indexnow";
+import { isBot } from "@/lib/bot-detector";
 
 
 /**
@@ -137,7 +139,13 @@ export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> 
 /**
  * Assign a paper to an issue, brand its PDF, and update its status appropriately
  */
-export async function assignPaperToIssue(submissionId: number, issueId: number, startPage?: number, endPage?: number): Promise<ActionResponse> {
+export async function assignPaperToIssue(
+    submissionId: number,
+    issueId: number,
+    startPage?: number,
+    endPage?: number,
+    customDoi?: string | null
+): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || session.user.role !== 'admin') {
@@ -197,13 +205,26 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
         const confirmedStartPage = finalStartPage as number;
         const confirmedEndPage = finalEndPage as number;
 
-        // 5. Generate Branded PDF OUTSIDE transaction (IO operation)
+        // 5. Selective DOI Resolution Logic
+        const doiPrefix = settings['doiPrefix'] ? settings['doiPrefix'].trim() : "10.68139";
+        const doiMode = settings['doiAssignmentMode'] || 'manual';
+
+        let resolvedDoi: string | null = null;
+        if (customDoi !== undefined) {
+            // Admin explicitly provided or cleared DOI
+            resolvedDoi = customDoi && customDoi.trim().length > 0 ? customDoi.trim() : null;
+        } else if (doiMode === 'auto' && doiPrefix.startsWith("10.")) {
+            // Auto mode fallback
+            resolvedDoi = `${doiPrefix}/${submission.paperId}`;
+        } else {
+            // Manual / Selective mode: leave unassigned unless explicitly provided
+            resolvedDoi = null;
+        }
+
+        // 6. Generate Branded PDF OUTSIDE transaction (IO operation)
         const brandedFileName = `${submission.paperId}-published.pdf`;
         const brandedRelativePath = `/api/files/published/${brandedFileName}`;
         const cleanInput = latestPdf.fileUrl;
-
-        const doiPrefix = settings['doiPrefix'] ? settings['doiPrefix'].trim() : "";
-        const generatedDoi = doiPrefix.startsWith("10.") ? `${doiPrefix}/${submission.paperId}` : null;
 
         await triggerPdfBranding(cleanInput, brandedRelativePath, {
             journalName: settings['journalName'] || "IJITEST",
@@ -212,16 +233,16 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
             issue: issue.issueNumber,
             year: issue.year,
             monthRange: issue.monthRange || "",
-            issn: settings['issnNumber'] || "XXXX-XXXX",
+            issn: settings['issnNumber'] || "3139-6887",
             website: settings['journalWebsite'] || "https://ijitest.org",
             paperId: submission.paperId,
             startPage: confirmedStartPage,
             endPage: confirmedEndPage,
-            doi: generatedDoi,
+            doi: resolvedDoi,
             license: "Creative Commons Attribution 4.0 International (CC BY 4.0)"
         });
 
-        // 6. Database transaction — only pure DB ops
+        // 7. Database transaction — only pure DB ops
         const publishedDate = isIssuePublished ? new Date() : null;
         const targetStatus = isIssuePublished ? 'published' : 'accepted';
 
@@ -232,7 +253,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
                 finalPdfUrl: brandedRelativePath,
                 startPage: confirmedStartPage,
                 endPage: confirmedEndPage,
-                doi: generatedDoi,
+                doi: resolvedDoi,
                 publishedAt: publishedDate
             }).onDuplicateKeyUpdate({
                 set: {
@@ -240,7 +261,7 @@ export async function assignPaperToIssue(submissionId: number, issueId: number, 
                     finalPdfUrl: brandedRelativePath,
                     startPage: confirmedStartPage,
                     endPage: confirmedEndPage,
-                    doi: generatedDoi,
+                    doi: resolvedDoi,
                     publishedAt: publishedDate
                 }
             });
@@ -609,11 +630,17 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
 }
 
 /**
- * Increment view count for a published paper
+ * Increment view count for a published paper (COUNTER Compliant)
  */
 export async function incrementPaperViews(submissionId: number): Promise<ActionResponse> {
     try {
         const headerList = await headers();
+        const userAgent = headerList.get("user-agent") || "";
+        if (isBot(userAgent)) {
+            // COUNTER standard: silently ignore automated spiders and bots
+            return actionSuccess();
+        }
+
         const ip = headerList.get("x-forwarded-for") || "127.0.0.1";
         const limit = await checkRateLimit({
             key: `pub:views:${ip}:${submissionId}`,
@@ -636,11 +663,17 @@ export async function incrementPaperViews(submissionId: number): Promise<ActionR
 }
 
 /**
- * Increment download count for a published paper
+ * Increment download count for a published paper (COUNTER Compliant)
  */
 export async function incrementPaperDownloads(submissionId: number): Promise<ActionResponse> {
     try {
         const headerList = await headers();
+        const userAgent = headerList.get("user-agent") || "";
+        if (isBot(userAgent)) {
+            // COUNTER standard: silently ignore automated spiders and bots
+            return actionSuccess();
+        }
+
         const ip = headerList.get("x-forwarded-for") || "127.0.0.1";
         const limit = await checkRateLimit({
             key: `pub:downloads:${ip}:${submissionId}`,
@@ -745,4 +778,198 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
         return serverError(error, "re-brand paper");
     }
 }
+
+/**
+ * Update, assign, or remove the DOI of a specific publication.
+ * Re-brands the published PDF if it exists so the header/footer reflects the new DOI.
+ */
+export async function updatePublicationDoi(submissionId: number, doi: string | null): Promise<ActionResponse<{ doi: string | null }>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return actionError("Unauthorized");
+        }
+
+        const cleanDoi = doi && doi.trim().length > 0 ? doi.trim() : null;
+
+        // 1. Fetch Publication & Submission Details
+        const pubRows = await db.select({
+            pub: publications,
+            sub: submissions,
+            issue: volumesIssues
+        })
+            .from(publications)
+            .innerJoin(submissions, eq(publications.submissionId, submissions.id))
+            .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
+
+        const row = pubRows[0];
+        if (!row) {
+            return actionError("Publication not found for this submission.");
+        }
+        const { pub, sub, issue } = row;
+
+        // 2. Update DOI in database
+        await db.update(publications)
+            .set({ doi: cleanDoi })
+            .where(eq(publications.submissionId, submissionId));
+
+        // 3. If a published PDF exists, re-brand it with the updated DOI
+        const subRes = await getSubmissionById(submissionId);
+        if (subRes.success && subRes.data) {
+            const latestPdf = subRes.data.allFiles.find(f => f.fileType === 'pdfVersion');
+            if (latestPdf && pub.finalPdfUrl) {
+                const settings = await getSettingsData();
+                try {
+                    await triggerPdfBranding(latestPdf.fileUrl, pub.finalPdfUrl, {
+                        journalName: settings['journalName'] || "IJITEST",
+                        journalShortName: "IJITEST",
+                        volume: issue.volumeNumber,
+                        issue: issue.issueNumber,
+                        year: issue.year,
+                        monthRange: issue.monthRange || "",
+                        issn: settings['issnNumber'] || "3139-6887",
+                        website: settings['journalWebsite'] || "https://ijitest.org",
+                        paperId: sub.paperId,
+                        startPage: pub.startPage,
+                        endPage: pub.endPage,
+                        doi: cleanDoi,
+                        license: "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+                    });
+                } catch (brandErr) {
+                    console.error("Failed to re-brand PDF during DOI update:", brandErr);
+                }
+            }
+        }
+
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath('/admin/submissions');
+        revalidatePath('/admin/publications');
+        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), `updatePublicationDoi ${submissionId}`);
+
+        if (sub.paperId) {
+            updateTag(CACHE_TAGS.PAPER(sub.paperId));
+        }
+
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        updateTag(CACHE_TAGS.LATEST_ISSUE);
+
+        return actionSuccess({ doi: cleanDoi });
+    } catch (error) {
+        console.error("Update Publication DOI Error:", error);
+        return serverError(error, "update publication DOI");
+    }
+}
+
+/**
+ * GENERATE COMPLETE ISSUE FULL-BOOK PDF
+ * Concatenates all published papers in an issue with an official Table of Contents.
+ */
+export async function generateCompleteIssueBook(issueId: number): Promise<ActionResponse<{ fullBookPdfUrl: string; totalPages: number }>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'editor')) {
+            return actionError("Unauthorized: Admin or Editor access required.");
+        }
+
+        const issueRows = await db.select().from(volumesIssues).where(eq(volumesIssues.id, issueId)).limit(1);
+        const issue = issueRows[0];
+        if (!issue) return actionError("Issue not found");
+
+        // Fetch all publications in this issue
+        const pubRows = await db.select({
+            publication: publications,
+            submission: submissions,
+        })
+        .from(publications)
+        .innerJoin(submissions, and(
+            eq(publications.submissionId, submissions.id),
+            eq(submissions.status, 'published')
+        ))
+        .where(eq(publications.issueId, issueId))
+        .orderBy(asc(publications.startPage), asc(submissions.paperId));
+
+        if (!pubRows.length) {
+            return actionError("No published articles found in this issue to compile.");
+        }
+
+        const subIds = pubRows.map(p => p.submission.id);
+        const authorsList = await db.select().from(submissionAuthors)
+            .where(inArray(submissionAuthors.submissionId, subIds))
+            .orderBy(submissionAuthors.orderIndex);
+
+        const versionsList = await db.select().from(submissionVersions)
+            .where(inArray(submissionVersions.submissionId, subIds))
+            .orderBy(desc(submissionVersions.versionNumber));
+
+        const storageUrl = process.env["STORAGE_SERVICE_URL"] || 'http://localhost:3001';
+        const apiKey = process.env["STORAGE_SERVICE_API_KEY"] || '';
+
+        const articlesPayload = pubRows.map(p => {
+            const authors = authorsList
+                .filter(a => a.submissionId === p.submission.id)
+                .map(a => a.name);
+
+            const version = versionsList.find(v => v.submissionId === p.submission.id);
+
+            return {
+                paperId: p.submission.paperId,
+                title: version?.title || "Untitled Paper",
+                authors: authors.length > 0 ? authors : ["Contributing Author"],
+                pdfPath: p.publication.finalPdfUrl,
+                startPage: p.publication.startPage ?? undefined,
+                endPage: p.publication.endPage ?? undefined,
+                doi: p.publication.doi ?? undefined,
+            };
+        });
+
+        const outputPath = `issues/volume-${issue.volumeNumber}-issue-${issue.issueNumber}-fullbook.pdf`;
+
+        const response = await fetch(`${storageUrl}/process/issue-book?outputPath=${encodeURIComponent(outputPath)}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': apiKey,
+            },
+            body: JSON.stringify({
+                journalName: "International Journal of Innovative Trends in Engineering Science and Technology",
+                journalShortName: "IJITEST",
+                volume: issue.volumeNumber,
+                issue: issue.issueNumber,
+                year: issue.year,
+                monthRange: issue.monthRange || "",
+                issn: "2584-XXXX",
+                website: "https://ijitest.org",
+                articles: articlesPayload,
+            }),
+        });
+
+        if (!response.ok) {
+            const errBody = await response.text();
+            throw new Error(`Storage service error: ${errBody}`);
+        }
+
+        const result = await response.json();
+
+        // Update database with generated full book PDF path
+        await db.update(volumesIssues)
+            .set({ fullBookPdfUrl: outputPath })
+            .where(eq(volumesIssues.id, issueId));
+
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        revalidatePath('/archives');
+        revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}`);
+        revalidatePath('/admin/publications');
+
+        return actionSuccess({ fullBookPdfUrl: outputPath, totalPages: result.totalPages });
+    } catch (error) {
+        console.error("Generate Complete Issue Book Error:", error);
+        return serverError(error, "generate complete issue book");
+    }
+}
+
 

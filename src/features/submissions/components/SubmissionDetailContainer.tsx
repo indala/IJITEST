@@ -26,6 +26,7 @@ import DeleteSubmissionButton from "@/features/submissions/components/DeleteSubm
 import AdminPdfUpload from "@/features/submissions/components/AdminPdfUpload";
 import PublicationAssignment from "@/features/submissions/components/PublicationAssignment";
 import RebrandPdfButton from "@/features/submissions/components/RebrandPdfButton";
+import EditDoiModal from "@/features/submissions/components/EditDoiModal";
 import { SubmissionDecisionActions } from "@/app/(panel)/admin/submissions/[id]/_components/SubmissionDecisionActions";
 
 interface SubmissionDetailContainerProps {
@@ -323,17 +324,39 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                     <Separator className="bg-white/10" />
                                                     <div className="space-y-3">
                                                         <div className="flex items-center justify-between">
-                                                            <p className="text-[10px] font-semibold  text-white/40 tracking-widest uppercase">Archive Node</p>
+                                                            <p className="text-[10px] font-semibold text-white/40 tracking-widest uppercase">Archive Node</p>
                                                             <p className="text-xs font-semibold">
                                                                 {submission.volumeNumber && `Vol ${submission.volumeNumber}, Issue ${submission.issueNumber}`}
                                                                 {submission.startPage && `, pp. ${submission.startPage}-${submission.endPage}`}
                                                             </p>
                                                         </div>
-                                                        <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-white/5 hover:bg-white/10 text-white font-semibold text-[10px]  tracking-widest border border-white/10 rounded-xl cursor-pointer">
+                                                        <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                                                            <div className="space-y-0.5 max-w-[65%]">
+                                                                <p className="text-[10px] font-semibold text-white/40 tracking-widest uppercase">DOI Allocation</p>
+                                                                <p className="text-xs font-mono font-medium text-emerald-300 break-all">
+                                                                    {submission.doi || <span className="text-white/40 italic font-sans text-[11px]">Unassigned (No DOI)</span>}
+                                                                </p>
+                                                            </div>
+                                                            {role === 'admin' && (
+                                                                <EditDoiModal
+                                                                    submissionId={submission.id}
+                                                                    paperId={submission.paperId}
+                                                                    currentDoi={submission.doi}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                        <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-white/5 hover:bg-white/10 text-white font-semibold text-[10px] tracking-widest border border-white/10 rounded-xl cursor-pointer">
                                                             <Link className="cursor-pointer" href={publicArchiveUrl}>
                                                                 <ExternalLink className="w-3.5 h-3.5" /> View Public Archive
                                                             </Link>
                                                         </Button>
+                                                        {submission.doi && (
+                                                            <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold text-[10px] tracking-widest border border-emerald-500/20 rounded-xl cursor-pointer">
+                                                                <a href={`/api/export/crossref/${submission.paperId}`} download={`crossref-${submission.paperId}.xml`}>
+                                                                    <Download className="w-3.5 h-3.5" /> Export CrossRef XML
+                                                                </a>
+                                                            </Button>
+                                                        )}
                                                         {role === 'admin' && <RebrandPdfButton submissionId={submission.id} />}
                                                     </div>
                                                 </CardContent>
@@ -350,14 +373,15 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                             <CheckCircle className="w-5 h-5 text-emerald-600" />
                                                         </div>
                                                         <div className="space-y-0.5">
-                                                            <p className="text-[10px] font-semibold text-emerald-600  tracking-widest">Ready for Indexing</p>
-                                                            <p className="text-[10px] font-medium text-muted-foreground ">Payment Verified / Waived</p>
+                                                            <p className="text-[10px] font-semibold text-emerald-600 tracking-widest">Ready for Indexing</p>
+                                                            <p className="text-[10px] font-medium text-muted-foreground">Payment Verified / Waived</p>
                                                         </div>
                                                     </div>
 
                                                     <PublicationAssignment
                                                         submissionId={submission.id}
                                                         currentIssueId={submission.issueId ?? null}
+                                                        paperId={submission.paperId}
                                                     />
 
                                                     <Link

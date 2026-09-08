@@ -5,7 +5,7 @@ import { razorpay } from "@/lib/razorpay";
 import crypto from "crypto";
 import { db } from "@/lib/db";
 import { payments, submissions, settings, userProfiles, users, submissionVersions } from "@/db/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { invalidateAuthorActionsCount, createNotification } from "./notifications";
@@ -129,12 +129,14 @@ export async function verifyRazorpayPayment(data: {
 
         let authorId: string | null = null;
         // 2. Update Payment Status & Submission Status in DB
+        const invoiceNum = `INV-${new Date().getFullYear()}-${submissionId.toString().padStart(5, '0')}`;
         await db.transaction(async (tx) => {
             await tx.update(payments)
                 .set({ 
                     status: 'paid', 
                     transactionId: razorpayPaymentId, 
-                    paidAt: new Date() 
+                    paidAt: new Date(),
+                    invoiceNumber: sql`COALESCE(${payments.invoiceNumber}, ${invoiceNum})`
                 })
                 .where(eq(payments.submissionId, submissionId));
 

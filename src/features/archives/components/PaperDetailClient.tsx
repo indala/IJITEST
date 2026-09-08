@@ -5,7 +5,11 @@ import {
     ArrowLeft,
     FileText,
     Eye,
-    Quote
+    Quote,
+    Award,
+    ShieldCheck,
+    Paperclip,
+    FileSpreadsheet
 } from "lucide-react";
 import Link from "next/link";
 import type { PublishedPaperUI } from "@/db/types";
@@ -18,8 +22,23 @@ interface PaperDetailClientProps {
     mode?: 'current' | 'archive';
 }
 
+const OrcidIcon = ({ orcid }: { orcid: string }) => (
+    <a
+        href={`https://orcid.org/${orcid}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center text-[#A6CE39] hover:opacity-80 transition-opacity ml-1 align-middle"
+        title={`ORCID: https://orcid.org/${orcid}`}
+    >
+        <svg className="w-3.5 h-3.5 inline" viewBox="0 0 256 256" fill="currentColor">
+            <path d="M128,0A128,128,0,1,0,256,128,128,128,0,0,0,128,0ZM86.35,186.29H64.76V77.47h21.6ZM75.56,65.6a13,13,0,1,1,13-13A13,13,0,0,1,75.56,65.6Zm123.63,65.86c0,35.43-20.21,48.24-44.57,48.24H110.1V77.47h44.57C179,77.47,199.19,90.28,199.19,131.46Zm-22.18,0c0-26.65-12.78-33.72-27.18-33.72H130.63v67.44h19.2C164.23,165.18,177.01,158.11,177.01,131.46Z" />
+        </svg>
+    </a>
+);
+
 export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDetailClientProps) {
     const isRetracted = paper.status === 'retracted';
+    const isCorrigendum = paper.status === 'corrigendum';
 
     return (
         <div className="container-responsive -mt-10">
@@ -32,18 +51,41 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                     <div className="flex-1 text-center md:text-left">
                         <h3 className="text-red-900 mb-1 uppercase tracking-tighter m-0">Manuscript Retracted</h3>
                         <p className="text-red-700 font-bold leading-relaxed max-w-2xl m-0">
-                            This article has been formally retracted due to editorial policy violations or significant technical inaccuracies. 
-                            Please refer to the official retraction notice for detailed reasoning.
+                            {paper.retractionReason || 'This article has been formally retracted due to editorial policy violations or significant technical inaccuracies. Please refer to the official retraction notice for detailed reasoning.'}
                         </p>
                     </div>
-                    {/* @ts-expect-error - retractionNoticeUrl might be missing in some states */}
                     {paper.retractionNoticeUrl && (
                         <a 
-                            // @ts-expect-error - retractionNoticeUrl might be missing on PublishedPaperUI
                             href={paper.retractionNoticeUrl} 
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="bg-red-900 text-white px-8 py-4 rounded-xl font-black text-[10px] tracking-[0.2em] hover:bg-red-800 transition-colors shadow-lg shadow-red-900/20"
                         >
                             VIEW NOTICE
+                        </a>
+                    )}
+                </div>
+            )}
+
+            {isCorrigendum && (
+                <div className="mb-12 bg-amber-50 border-2 border-amber-200 p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-6 shadow-xl shadow-amber-900/5">
+                    <div className="w-16 h-16 bg-amber-600 rounded-2xl flex items-center justify-center shrink-0 rotate-3">
+                        <FileText className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="flex-1 text-center md:text-left">
+                        <h3 className="text-amber-900 mb-1 uppercase tracking-tighter m-0">Formal Corrigendum / Erratum Issued</h3>
+                        <p className="text-amber-800 font-bold leading-relaxed max-w-2xl m-0">
+                            {paper.retractionReason || 'A formal corrigendum or erratum notice has been issued for this publication to amend typographical or editorial records.'}
+                        </p>
+                    </div>
+                    {paper.retractionNoticeUrl && (
+                        <a 
+                            href={paper.retractionNoticeUrl} 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-amber-900 text-white px-8 py-4 rounded-xl font-black text-[10px] tracking-[0.2em] hover:bg-amber-800 transition-colors shadow-lg shadow-amber-900/20"
+                        >
+                            VIEW CORRIGENDUM
                         </a>
                     )}
                 </div>
@@ -101,8 +143,18 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-3 gap-y-3 pt-3 border-t border-border/40">
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                                     <span className="text-label text-primary shrink-0">Authors:</span>
-                                    <span className="font-medium text-foreground/90">
-                                        {Array.isArray(paper.authorsList) ? paper.authorsList.join(', ') : ''}
+                                    <span className="font-medium text-foreground/90 inline-flex flex-wrap items-center gap-x-1">
+                                        {paper.coAuthors && paper.coAuthors.length > 0 ? (
+                                            paper.coAuthors.map((author, idx) => (
+                                                <span key={idx} className="inline-flex items-center">
+                                                    <span>{author.name}</span>
+                                                    {author.orcidId && <OrcidIcon orcid={author.orcidId} />}
+                                                    {idx < (paper.coAuthors?.length ?? 0) - 1 && <span className="mr-1">,</span>}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            Array.isArray(paper.authorsList) ? paper.authorsList.join(', ') : ''
+                                        )}
                                     </span>
                                 </div>
 
@@ -179,6 +231,87 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                             </div>
                         )}
 
+                        {/* CRediT (Contributor Roles Taxonomy) Statement */}
+                        {paper.coAuthors && paper.coAuthors.some(a => Array.isArray(a.creditRoles) && a.creditRoles.length > 0) && (
+                            <div className="p-4 sm:p-5 rounded-xl bg-muted/30 border border-border/60 space-y-2">
+                                <div className="flex items-center gap-1.5 text-xs font-bold text-primary uppercase tracking-wider">
+                                    <Award className="w-3.5 h-3.5 text-secondary" /> Author Contributions (CRediT Statement)
+                                </div>
+                                <div className="space-y-1.5 text-xs text-foreground/85">
+                                    {paper.coAuthors
+                                        .filter(a => Array.isArray(a.creditRoles) && a.creditRoles.length > 0)
+                                        .map((a, i) => (
+                                            <div key={i} className="flex flex-col sm:flex-row sm:items-baseline gap-1">
+                                                <span className="font-bold text-foreground shrink-0">{a.name}:</span>
+                                                <span className="text-muted-foreground">{a.creditRoles?.join(', ')}</span>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Ethics & Disclosures */}
+                        {(paper.competingInterests || paper.fundingStatement || paper.ethicalApproval) && (
+                            <div className="p-4 sm:p-5 rounded-xl bg-muted/30 border border-border/60 space-y-2.5">
+                                <div className="flex items-center gap-1.5 text-xs font-bold text-primary uppercase tracking-wider">
+                                    <ShieldCheck className="w-3.5 h-3.5 text-secondary" /> Declarations & Ethics
+                                </div>
+                                <div className="space-y-2 text-xs text-foreground/85">
+                                    {paper.fundingStatement && (
+                                        <div>
+                                            <span className="font-bold text-foreground mr-1.5">Funding:</span>
+                                            <span className="text-muted-foreground">{paper.fundingStatement}</span>
+                                        </div>
+                                    )}
+                                    {paper.competingInterests && (
+                                        <div>
+                                            <span className="font-bold text-foreground mr-1.5">Conflict of Interest:</span>
+                                            <span className="text-muted-foreground">{paper.competingInterests}</span>
+                                        </div>
+                                    )}
+                                    {paper.ethicalApproval && (
+                                        <div>
+                                            <span className="font-bold text-foreground mr-1.5">Ethical Approval:</span>
+                                            <span className="text-muted-foreground">{paper.ethicalApproval}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Supplementary Materials */}
+                        {paper.supplementaryFiles && paper.supplementaryFiles.length > 0 && (
+                            <div className="p-4 sm:p-5 rounded-xl bg-muted/30 border border-border/60 space-y-3">
+                                <div className="flex items-center gap-1.5 text-xs font-bold text-primary uppercase tracking-wider">
+                                    <Paperclip className="w-3.5 h-3.5 text-secondary" /> Supplementary Materials ({paper.supplementaryFiles.length})
+                                </div>
+                                <div className="space-y-2">
+                                    {paper.supplementaryFiles.map((file, idx) => (
+                                        <div key={idx} className="flex items-center justify-between p-2.5 bg-card rounded-lg border border-border/50 text-xs">
+                                            <div className="flex items-center gap-2 truncate mr-2">
+                                                <FileSpreadsheet className="w-4 h-4 text-primary shrink-0" />
+                                                <span className="font-medium truncate">{file.originalName || `Supplementary File ${idx + 1}`}</span>
+                                                {file.fileSize && (
+                                                    <span className="text-muted-foreground text-[10px] shrink-0">
+                                                        ({(file.fileSize / 1024).toFixed(1)} KB)
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <a
+                                                href={file.fileUrl}
+                                                download
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-primary hover:text-primary/80 font-semibold px-2.5 py-1 bg-primary/5 rounded border border-primary/15 transition-colors shrink-0"
+                                            >
+                                                <Download className="w-3 h-3" /> Download
+                                            </a>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Open Access & Creative Commons License */}
                         <div className="p-3.5 sm:p-4 rounded-xl bg-primary/5 border border-primary/15 shadow-2xs">
                             <div className="space-y-1">
@@ -201,6 +334,27 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
 
                 {/* Sidebar Utilities */}
                 <div className="space-y-4 sm:space-y-5">
+                    {/* Publication Certificate Generator */}
+                    <div className="bg-card p-4 sm:p-5 rounded-2xl border border-border/70 shadow-2xs space-y-3">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shrink-0">
+                                <Award className="w-4 h-4" />
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-bold text-foreground m-0">Publication Certificate</h4>
+                                <p className="text-[11px] text-muted-foreground m-0">Official verified author credential</p>
+                            </div>
+                        </div>
+                        <a
+                            href={`/api/certificate/${paper.paperId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-xs transition-all"
+                        >
+                            <Download className="w-3.5 h-3.5" /> Download Certificate (PDF)
+                        </a>
+                    </div>
+
                     {/* Download Button (Mobile Only) */}
                     <div className="flex flex-col gap-2 md:hidden">
                         <DownloadPaperButton

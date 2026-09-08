@@ -4,6 +4,7 @@ import { getPublishedPapers } from '@/actions/archives';
 import { notFound } from 'next/navigation';
 import PaperCard from '@/features/archives/components/PaperCard';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import { BookOpen, Download } from 'lucide-react';
 
 export async function generateStaticParams() {
     try {
@@ -85,6 +86,26 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
 
                     {/* Sidebar widgets */}
                     <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
+                        <div className="bg-card p-5 rounded-2xl border border-border/70 shadow-2xs space-y-3">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                                    <BookOpen className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold text-foreground m-0">Complete Issue</h3>
+                                    <p className="text-[11px] text-muted-foreground m-0">Full Book with Table of Contents</p>
+                                </div>
+                            </div>
+                            <a
+                                href={`/api/files/issues/volume-${volNumber}-issue-${issueNumber}-fullbook.pdf`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-xs transition-all"
+                            >
+                                <Download className="w-3.5 h-3.5" /> Download Complete Issue (PDF)
+                            </a>
+                        </div>
+
                         <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
                             <TrackManuscriptWidget />
                         </div>

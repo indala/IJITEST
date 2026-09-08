@@ -79,6 +79,19 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         }
 
         const manuscriptFile = formData.get("manuscript") as File;
+        const blindedFile = formData.get("blindedManuscript") as File | null;
+        const authorOrcid = (formData.get("authorOrcid") as string || "").trim() || null;
+        const competingInterests = (formData.get("competingInterests") as string || "").trim() || null;
+        const fundingStatement = (formData.get("fundingStatement") as string || "").trim() || null;
+        const ethicalApproval = (formData.get("ethicalApproval") as string || "").trim() || null;
+        let authorCreditRoles: string[] | null = null;
+        try {
+            const rawRoles = formData.get("authorCreditRoles") as string;
+            if (rawRoles) {
+                const parsed = JSON.parse(rawRoles);
+                if (Array.isArray(parsed)) authorCreditRoles = parsed;
+            }
+        } catch {}
 
         if (!manuscriptFile || manuscriptFile.size === 0) return { success: false, error: "Manuscript file is mandatory" };
 
@@ -117,6 +130,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                     institute: validated.data.affiliation,
                     phone: validated.data.authorPhone,
                     designation: validated.data.authorDesignation,
+                    orcidId: authorOrcid,
                 });
 
                 await tx.insert(userInvitations).values({
@@ -136,6 +150,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                         institute: validated.data.affiliation,
                         phone: validated.data.authorPhone,
                         designation: validated.data.authorDesignation,
+                        ...(authorOrcid ? { orcidId: authorOrcid } : {})
                     })
                     .where(eq(userProfiles.userId, userId));
             }
@@ -181,6 +196,9 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 title: validated.data.title,
                 abstract: validated.data.abstract,
                 keywords: validated.data.keywords,
+                competingInterests,
+                fundingStatement,
+                ethicalApproval,
             });
             const verId = versionInsert.insertId;
 
@@ -192,6 +210,8 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 phone: validated.data.authorPhone,
                 designation: validated.data.authorDesignation,
                 institution: validated.data.affiliation,
+                orcidId: authorOrcid,
+                creditRoles: authorCreditRoles,
                 isCorresponding: true,
                 orderIndex: 0,
             }];
@@ -209,6 +229,8 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                                 phone: ca.phone || null,
                                 designation: ca.designation || null,
                                 institution: ca.institution || null,
+                                orcidId: ca.orcidId ? String(ca.orcidId).trim() : null,
+                                creditRoles: Array.isArray(ca.creditRoles) ? ca.creditRoles : null,
                                 isCorresponding: false,
                                 orderIndex: idx + 1,
                             });
@@ -229,9 +251,22 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 { versionId: verId, fileType: "mainManuscript", fileUrl: mUrl, originalName: manuscriptFile.name, fileSize: manuscriptFile.size }
             ];
 
+            let bName: string | undefined = undefined;
+            if (blindedFile && blindedFile.size > 0) {
+                bName = `blinded_manuscript_${subId}_${timestamp}.${blindedFile.name.split('.').pop()}`;
+                const bUrl = `/api/files/submissions/${bName}`;
+                fileRecords.push({
+                    versionId: verId,
+                    fileType: "blindedManuscript",
+                    fileUrl: bUrl,
+                    originalName: blindedFile.name,
+                    fileSize: blindedFile.size
+                });
+            }
+
             await tx.insert(submissionFiles).values(fileRecords);
 
-            return { paperId, subId, mName, cName: undefined, userId };
+            return { paperId, subId, mName, bName, cName: undefined, userId };
         });
 
         // 3. File Uploads (Happens post-transaction to strictly follow "DB First" rule)
@@ -240,6 +275,13 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const manuscriptBuffer = Buffer.from(await manuscriptFile.arrayBuffer());
             await uploadFileToStorage(relativeManuscriptPath, manuscriptBuffer, manuscriptFile.name);
             fileCleanupList.push(relativeManuscriptPath);
+
+            if (result.bName && blindedFile && blindedFile.size > 0) {
+                const relativeBlindedPath = `submissions/${result.bName}`;
+                const blindedBuffer = Buffer.from(await blindedFile.arrayBuffer());
+                await uploadFileToStorage(relativeBlindedPath, blindedBuffer, blindedFile.name);
+                fileCleanupList.push(relativeBlindedPath);
+            }
         } catch (uploadError) {
             console.error("Upload error:", uploadError);
             // File-system cleanup for orphaned files on storage service

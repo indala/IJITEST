@@ -81,6 +81,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           });
         }
 
+        // Direct PDF URL for academic crawlers and Google Scholar indexing
+        if (paper.pdfUrl) {
+          const fullPdfUrl = paper.pdfUrl.startsWith('http') ? paper.pdfUrl : `${baseUrl}${paper.pdfUrl}`;
+          if (!addedUrls.has(fullPdfUrl)) {
+            addedUrls.add(fullPdfUrl);
+            dynamicRoutes.push({
+              url: fullPdfUrl,
+              lastModified: lastMod,
+              changeFrequency: 'monthly' as const,
+              priority: 0.85,
+            });
+          }
+        }
+
         // If in latest issue, also include the current-issue link
         if (latestPaperIds.has(paper.id)) {
           const currentArticleUrl = `${baseUrl}/current-issue/volume${volNum}/issue${issNum}/${paperId}`;

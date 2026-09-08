@@ -17,7 +17,8 @@ import {
     activityLogs,
     settings,
     chatMessages,
-    pushSubscriptions
+    pushSubscriptions,
+    emailTemplates
 } from "./schema";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
@@ -34,6 +35,7 @@ export type ContactStatus = InferSelectModel<typeof contactMessages>['status'];
 export type VolumeIssueStatus = InferSelectModel<typeof volumesIssues>['status'];
 export type FileType = InferSelectModel<typeof submissionFiles>['fileType'];
 export type FinalDecision = InferSelectModel<typeof submissions>['finalDecision'];
+export type GalleyStatus = InferSelectModel<typeof submissions>['galleyStatus'];
 export type NotificationType = InferSelectModel<typeof notifications>['type'];
 
 // 👤 Users & Profiles
@@ -105,6 +107,7 @@ export type SubmissionUI = SubmissionDetail &
         authorName: Pick<Author, 'name'>['name'];
         authorEmail: Pick<Author, 'email'>['email'];
         coAuthors: Author[];
+        doi?: Pick<Publication, 'doi'>['doi'] | undefined;
         volumeNumber?: Pick<Issue, 'volumeNumber'>['volumeNumber'] | undefined;
         issueNumber?: Pick<Issue, 'issueNumber'>['issueNumber'] | undefined;
         startPage?: Pick<Publication, 'startPage'>['startPage'] | undefined;
@@ -201,6 +204,8 @@ export type Notification = InferSelectModel<typeof notifications>;
 // 📜 System
 export type ActivityLog = InferSelectModel<typeof activityLogs>;
 export type Setting = InferSelectModel<typeof settings>;
+export type EmailTemplate = InferSelectModel<typeof emailTemplates>;
+export type NewEmailTemplate = InferInsertModel<typeof emailTemplates>;
 
 // 📰 UI / Public View Types
 export type PublishedPaperUI = Pick<Submission, 'status' | 'updatedAt'> &
@@ -219,6 +224,13 @@ export type PublishedPaperUI = Pick<Submission, 'status' | 'updatedAt'> &
         publicationYear: Pick<Issue, 'year'>['year'] | null;
         coAuthors: Author[];
         authorsList: string[];
+        competingInterests?: string | null | undefined;
+        fundingStatement?: string | null | undefined;
+        ethicalApproval?: string | null | undefined;
+        supplementaryFiles?: SubmissionFile[] | undefined;
+        retractionReason?: string | null | undefined;
+        retractionNoticeUrl?: string | null | undefined;
+        retractedAt?: Date | string | null | undefined;
     };
 
 // 🗺️ Route Param Types (for Next.js [dynamic] pages — derived from schema)
@@ -243,8 +255,38 @@ export type TrackedManuscript = Pick<Submission, 'id' | 'paperId' | 'status' | '
     reviewerFeedback?: (string | null)[] | undefined;
 };
 
+// 🏷️ CRediT (Contributor Roles Taxonomy) Standards
+export const CREDIT_ROLES = [
+    'Conceptualization',
+    'Data Curation',
+    'Formal Analysis',
+    'Funding Acquisition',
+    'Investigation',
+    'Methodology',
+    'Project Administration',
+    'Resources',
+    'Software',
+    'Supervision',
+    'Validation',
+    'Visualization',
+    'Writing – Original Draft',
+    'Writing – Review & Editing',
+] as const;
+
+export type CreditRole = (typeof CREDIT_ROLES)[number];
+
+export type ReviewerPerformanceMetrics = {
+    userId: string;
+    completedReviewsCount: number;
+    averageRating: number | null;
+    averageTurnaroundDays: number | null;
+};
+
 export type ActiveReview = Pick<ReviewAssignment, 'id' | 'status' | 'assignedAt' | 'deadline' | 'reviewRound' | 'submissionId'> &
     Pick<Review, 'decision' | 'commentsToAuthor' | 'submittedAt'> & {
+        reviewId?: number | null | undefined;
+        editorRating?: number | null | undefined;
+        editorRatingRemarks?: string | null | undefined;
         paperId: Pick<Submission, 'paperId'>['paperId'];
         submissionStatus: SubmissionStatus;
         title: Pick<Version, 'title'>['title'];
@@ -256,6 +298,7 @@ export type ActiveReview = Pick<ReviewAssignment, 'id' | 'status' | 'assignedAt'
 export type UnassignedPaper = Pick<Submission, 'id' | 'paperId'> & {
     title: Pick<Version, 'title'>['title'];
     pdfUrl: Pick<SubmissionFile, 'fileUrl'>['fileUrl'] | null;
+    isBlinded?: boolean | undefined;
 };
 
 // 🧪 Common Return Types (Discriminated Union)

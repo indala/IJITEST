@@ -27,7 +27,7 @@ import {
     triggerDocxToPdfConversion 
 } from "@/lib/fs-utils";
 
-import { type ActionResponse, type ActiveReview, type UnassignedPaper, serverError } from "@/db/types";
+import { type ActionResponse, type ActiveReview, type UnassignedPaper, type ReviewerPerformanceMetrics, serverError } from "@/db/types";
 
 /**
  * Assign a reviewer to a submission.
@@ -56,38 +56,31 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 return { success: false, error: "Maximum of 6 reviewers have already been assigned to this submission." };
             }
 
-            // 2. Duplicate check
-            const existing = await tx.select()
-                .from(reviewAssignments)
-                .where(and(
-                    eq(reviewAssignments.submissionId, submissionId),
-                    eq(reviewAssignments.reviewerId, reviewerId)
-                ));
-
-            if (existing.length > 0) {
-                return { success: false, error: "This reviewer is already assigned to this submission." };
-            }
-
-            // 3. Conflict of interest check (Same institution)
+            // 2. Conflict of interest check (Check reviewer institute against ALL co-authors)
             const [reviewerProfile] = await tx.select({ institute: userProfiles.institute })
                 .from(userProfiles)
                 .where(eq(userProfiles.userId, reviewerId))
                 .limit(1);
 
-            const [leadAuthor] = await tx.select({ institution: submissionAuthors.institution })
+            const authors = await tx.select({
+                name: submissionAuthors.name,
+                institution: submissionAuthors.institution
+            })
                 .from(submissionAuthors)
-                .where(and(
-                    eq(submissionAuthors.submissionId, submissionId),
-                    eq(submissionAuthors.isCorresponding, true)
-                ))
-                .limit(1);
+                .where(eq(submissionAuthors.submissionId, submissionId));
 
-            if (reviewerProfile?.institute && leadAuthor?.institution &&
-                reviewerProfile.institute.toLowerCase() === leadAuthor.institution.toLowerCase()) {
-                return { success: false, error: "Conflict of interest: Reviewer and Author belong to the same institution." };
+            if (reviewerProfile?.institute && reviewerProfile.institute.trim() !== '') {
+                const reviewerInst = reviewerProfile.institute.trim().toLowerCase();
+                const conflict = authors.find(a => a.institution && a.institution.trim().toLowerCase() === reviewerInst);
+                if (conflict) {
+                    return {
+                        success: false,
+                        error: `Conflict of Interest Detected: Reviewer belongs to the same institution ("${reviewerProfile.institute}") as author ${conflict.name}.`
+                    };
+                }
             }
 
-            // 4. Version Check
+            // 3. Version & Round Check
             const latestVersions = await tx.select()
                 .from(submissionVersions)
                 .where(eq(submissionVersions.submissionId, submissionId))
@@ -97,6 +90,21 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
             if (!latestVersions.length) return { success: false, error: "Submission version not found." };
             const version = latestVersions[0];
             if (!version) return { success: false, error: "Submission version not found." };
+
+            const currentRound = version.versionNumber || 1;
+
+            // 4. Duplicate check in the current round
+            const existing = await tx.select()
+                .from(reviewAssignments)
+                .where(and(
+                    eq(reviewAssignments.submissionId, submissionId),
+                    eq(reviewAssignments.reviewerId, reviewerId),
+                    eq(reviewAssignments.reviewRound, currentRound)
+                ));
+
+            if (existing.length > 0) {
+                return { success: false, error: `This reviewer is already assigned to Round ${currentRound} of this submission.` };
+            }
 
             // 5. PDF copy for reviewer
             let pdfUrl: string | null = null;
@@ -128,17 +136,23 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                     pdfUrl = existingPdf.fileUrl;
                 }
             } else {
-                // Try to find the manuscript and ensure it's a PDF
-                const manuscripts = await tx.select()
+                // 3.4 Double-Blind Manuscript Anonymization: Prioritize blinded manuscript if present
+                const blindedFiles = await tx.select()
+                    .from(submissionFiles)
+                    .where(and(
+                        eq(submissionFiles.versionId, version.id),
+                        eq(submissionFiles.fileType, 'blindedManuscript')
+                    ))
+                    .limit(1);
+
+                const manuscript = blindedFiles[0] || (await tx.select()
                     .from(submissionFiles)
                     .where(and(
                         eq(submissionFiles.versionId, version.id),
                         eq(submissionFiles.fileType, 'mainManuscript')
                     ))
-                    .limit(1);
+                    .limit(1))[0];
 
-                if (!manuscripts.length) return { success: false, error: "No manuscript file available." };
-                const manuscript = manuscripts[0];
                 if (!manuscript) return { success: false, error: "No manuscript file available." };
 
                 if (manuscript.fileUrl.toLowerCase().endsWith('.pdf')) {
@@ -154,7 +168,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                             versionId: version.id,
                             fileType: 'pdfVersion',
                             fileUrl: pdfUrl,
-                            originalName: 'system_converted_pdf.pdf',
+                            originalName: manuscript.fileType === 'blindedManuscript' ? 'blinded_reviewer_manuscript.pdf' : 'system_converted_pdf.pdf',
                             fileSize: fileSize
                         });
                     } catch (err: unknown) {
@@ -165,22 +179,20 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
             }
 
             // 6. Record Assignment — all reviewers assigned together share the same review round
-            const roundRes = await tx.select({ max: sql<number>`MAX(${reviewAssignments.reviewRound})` })
-                .from(reviewAssignments)
-                .where(eq(reviewAssignments.submissionId, submissionId));
-            // Use current max round (not +1) so concurrent assignments share the same round.
-            // Only increment when a new round is explicitly started (e.g. after revision).
-            const reviewRound = roundRes[0]?.max || 1;
+            const invitationToken = crypto.randomBytes(32).toString('hex');
+            const invitationExpires = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 days
 
             await tx.insert(reviewAssignments).values({
                 submissionId,
                 reviewerId,
                 versionId: version.id,
                 assignedBy,
-                reviewRound,
+                reviewRound: currentRound,
                 status: 'assigned',
                 deadline: new Date(deadline),
                 assignedAt: new Date(),
+                invitationToken,
+                invitationTokenExpiresAt: invitationExpires,
             });
 
             // 7. Update Submission Status
@@ -286,6 +298,36 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
     const confidence = formData.get('confidence') ? parseInt(formData.get('confidence') as string) : null;
     const feedbackFile = formData.get('feedbackFile') as File | null;
 
+    const rubricRaw = formData.get('rubricData') as string | null;
+    let rubricData: {
+        originality: number;
+        methodology: number;
+        clarity: number;
+        literatureReview: number;
+        remarks?: string;
+    } | null = null;
+
+    if (rubricRaw) {
+        try {
+            rubricData = JSON.parse(rubricRaw);
+        } catch {}
+    } else {
+        const orig = parseInt(formData.get('rubricOriginality') as string);
+        const meth = parseInt(formData.get('rubricMethodology') as string);
+        const clar = parseInt(formData.get('rubricClarity') as string);
+        const lit = parseInt(formData.get('rubricLiteratureReview') as string);
+        const rem = formData.get('rubricRemarks') as string | null;
+        if (!isNaN(orig) && !isNaN(meth) && !isNaN(clar) && !isNaN(lit)) {
+            rubricData = {
+                originality: orig,
+                methodology: meth,
+                clarity: clar,
+                literatureReview: lit,
+                ...(rem ? { remarks: rem } : {})
+            };
+        }
+    }
+
     try {
         let fileUrl: string | null = null;
         if (feedbackFile && feedbackFile.size > 0) {
@@ -338,6 +380,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                 decision,
                 score,
                 confidence,
+                rubricData,
                 commentsToAuthor,
                 commentsToEditor,
                 submittedAt: new Date()
@@ -346,6 +389,7 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                     decision,
                     score,
                     confidence,
+                    rubricData,
                     commentsToAuthor,
                     commentsToEditor,
                     submittedAt: new Date()
@@ -469,7 +513,10 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
             submissionStatus: submissions.status,
             title: submissionVersions.title,
             reviewerName: userProfiles.fullName,
+            reviewId: reviews.id,
             decision: reviews.decision,
+            editorRating: reviews.editorRating,
+            editorRatingRemarks: reviews.editorRatingRemarks,
             commentsToAuthor: reviews.commentsToAuthor,
             submittedAt: reviews.submittedAt,
             manuscriptPath: manuscriptSubquery.manuscriptUrl,
@@ -523,16 +570,27 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<Unas
             .groupBy(submissionFiles.versionId)
             .as('mp');
 
+        const blindedSubquery = db.select({
+            versionId: submissionFiles.versionId,
+            blindedCount: count().as('blinded_count')
+        })
+            .from(submissionFiles)
+            .where(eq(submissionFiles.fileType, 'blindedManuscript'))
+            .groupBy(submissionFiles.versionId)
+            .as('bs');
+
         const rows = await db.select({
             id: submissions.id,
             paperId: submissions.paperId,
             title: submissionVersions.title,
-            pdfUrl: manuscriptPaths.pdfUrl
+            pdfUrl: manuscriptPaths.pdfUrl,
+            isBlinded: sql<boolean>`COALESCE(${blindedSubquery.blindedCount}, 0) > 0`
         })
             .from(submissions)
             .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
             .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
             .leftJoin(manuscriptPaths, eq(submissionVersions.id, manuscriptPaths.versionId))
+            .leftJoin(blindedSubquery, eq(submissionVersions.id, blindedSubquery.versionId))
             .where(and(
                 inArray(submissions.status, ['submitted', 'editorAssigned', 'underReview', 'revisionRequested']),
                 eq(submissionVersions.versionNumber, latestVersions.maxVersion)
@@ -542,5 +600,148 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<Unas
     } catch (error) {
         console.error("Get Unassigned Error:", error);
         return serverError(error, "fetch review details");
+    }
+}
+
+/**
+ * Respond to a review invitation using a secure one-click token
+ */
+export async function respondToReviewInvitation(
+    token: string,
+    action: 'accept' | 'decline',
+    declineReason?: string
+): Promise<ActionResponse<{ paperId: string; title: string; deadline: string | null }>> {
+    try {
+        const rows = await db.select({
+            id: reviewAssignments.id,
+            status: reviewAssignments.status,
+            expiresAt: reviewAssignments.invitationTokenExpiresAt,
+            submissionId: reviewAssignments.submissionId,
+            deadline: reviewAssignments.deadline,
+            paperId: submissions.paperId,
+            title: submissionVersions.title,
+            reviewerId: reviewAssignments.reviewerId,
+            reviewerName: userProfiles.fullName,
+            reviewerEmail: users.email
+        })
+            .from(reviewAssignments)
+            .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
+            .innerJoin(submissionVersions, eq(reviewAssignments.versionId, submissionVersions.id))
+            .innerJoin(users, eq(reviewAssignments.reviewerId, users.id))
+            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .where(eq(reviewAssignments.invitationToken, token))
+            .limit(1);
+
+        const assignment = rows[0];
+        if (!assignment) {
+            return { success: false, error: "Invalid or expired review invitation token." };
+        }
+
+        if (assignment.expiresAt && new Date() > new Date(assignment.expiresAt)) {
+            return { success: false, error: "This review invitation has expired. Please contact the editorial office." };
+        }
+
+        if (assignment.status === 'completed') {
+            return { success: false, error: "This review has already been submitted." };
+        }
+
+        const newStatus = action === 'accept' ? 'accepted' : 'declined';
+        await db.update(reviewAssignments)
+            .set({
+                status: newStatus,
+                respondedAt: new Date(),
+                declineReason: action === 'decline' ? (declineReason || 'Declined by reviewer') : null
+            })
+            .where(eq(reviewAssignments.id, assignment.id));
+
+        return {
+            success: true,
+            data: {
+                paperId: assignment.paperId,
+                title: assignment.title,
+                deadline: assignment.deadline ? String(assignment.deadline) : null
+            }
+        };
+    } catch (error) {
+        return serverError(error, "respond to review invitation");
+    }
+}
+
+/**
+ * Rate a completed review assignment (1-5 stars) and add confidential feedback.
+ */
+export async function rateReview(
+    assignmentId: number,
+    rating: number,
+    remarks?: string
+): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return { success: false, error: "Unauthorized: Editor or Admin role required." };
+        }
+
+        if (rating < 1 || rating > 5) {
+            return { success: false, error: "Rating must be between 1 and 5 stars." };
+        }
+
+        const assignment = await db.select()
+            .from(reviewAssignments)
+            .where(eq(reviewAssignments.id, assignmentId))
+            .limit(1);
+
+        if (!assignment.length || !assignment[0]) {
+            return { success: false, error: "Review assignment not found." };
+        }
+
+        await db.update(reviews)
+            .set({
+                editorRating: rating,
+                editorRatingRemarks: remarks || null,
+                ratedAt: new Date()
+            })
+            .where(eq(reviews.assignmentId, assignmentId));
+
+        revalidatePath('/admin/reviews');
+        revalidatePath('/editor/reviews');
+        return { success: true };
+    } catch (error) {
+        console.error("Rate Review Error:", error);
+        return serverError(error, "rate review");
+    }
+}
+
+/**
+ * Aggregate reviewer performance statistics (completed count, average rating, turnaround time).
+ */
+export async function getReviewerMetrics(): Promise<ActionResponse<Record<string, ReviewerPerformanceMetrics>>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user) return { success: false, error: "Authentication required." };
+
+        const rows = await db.select({
+            reviewerId: reviewAssignments.reviewerId,
+            completedCount: sql<number>`COUNT(CASE WHEN ${reviewAssignments.status} = 'completed' THEN 1 END)`,
+            avgRating: sql<number | null>`AVG(${reviews.editorRating})`,
+            avgDays: sql<number | null>`AVG(DATEDIFF(${reviews.submittedAt}, ${reviewAssignments.assignedAt}))`
+        })
+            .from(reviewAssignments)
+            .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId))
+            .groupBy(reviewAssignments.reviewerId);
+
+        const metricsMap: Record<string, ReviewerPerformanceMetrics> = {};
+        for (const row of rows) {
+            metricsMap[row.reviewerId] = {
+                userId: row.reviewerId,
+                completedReviewsCount: Number(row.completedCount) || 0,
+                averageRating: row.avgRating !== null ? Number(Number(row.avgRating).toFixed(1)) : null,
+                averageTurnaroundDays: row.avgDays !== null ? Math.round(Number(row.avgDays)) : null
+            };
+        }
+
+        return { success: true, data: metricsMap };
+    } catch (error) {
+        console.error("Get Reviewer Metrics Error:", error);
+        return serverError(error, "fetch reviewer metrics");
     }
 }

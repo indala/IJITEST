@@ -4,7 +4,7 @@ import React, { useState, useTransition } from 'react';
 import Link from 'next/link';
 import {
     User as UserIcon, FileUp, CheckCircle, Clock,
-    Download, FileText, Eye, X
+    Download, FileText, Eye, X, Star
 } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,8 @@ import {
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import type { ReviewAssignment } from '@/hooks/queries/useReviews';
 import type { User } from '@/db/types';
+import { rateReview } from '@/actions/reviews';
+import { toast } from 'sonner';
 
 interface ReviewItemCardProps {
     item: ReviewAssignment;
@@ -43,6 +45,20 @@ export const ReviewItemCard = React.memo(({
 }: ReviewItemCardProps) => {
     const [feedbackFile, setFeedbackFile] = useState<File | null>(null);
     const [isPending, startFeedbackTransition] = useTransition();
+    const [currentRating, setCurrentRating] = useState<number | null | undefined>(item.editorRating);
+    const [isRatingPending, startRatingTransition] = useTransition();
+
+    const handleRate = (stars: number) => {
+        setCurrentRating(stars);
+        startRatingTransition(async () => {
+            const res = await rateReview(item.id, stars);
+            if (res.success) {
+                toast.success(`Reviewer rated ${stars} stars!`);
+            } else {
+                toast.error(res.error || "Failed to save rating");
+            }
+        });
+    };
 
     const handleFormSubmit = (formData: FormData) => {
         startFeedbackTransition(async () => {
@@ -84,6 +100,41 @@ export const ReviewItemCard = React.memo(({
                         {item.commentsToAuthor && (
                             <div className="mt-6 p-6 bg-muted/30 rounded-2xl border-l-4 border-l-primary text-base text-foreground leading-relaxed italic">
                                 &quot;{item.commentsToAuthor}&quot;
+                            </div>
+                        )}
+
+                        {item.status === 'completed' && (
+                            <div className="flex flex-wrap items-center gap-3 pt-3 mt-2 border-t border-border/40">
+                                <span className="text-xs font-semibold text-muted-foreground">Editor Rating:</span>
+                                <div className="flex items-center gap-1">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                            key={star}
+                                            type="button"
+                                            disabled={!isInternalStaff || isRatingPending}
+                                            onClick={() => handleRate(star)}
+                                            className={`transition-transform p-0.5 ${isInternalStaff ? 'cursor-pointer hover:scale-125' : 'cursor-default'}`}
+                                            title={`Rate reviewer ${star} star${star > 1 ? 's' : ''}`}
+                                        >
+                                            <Star
+                                                className={`w-4 h-4 transition-colors ${
+                                                    (currentRating ?? 0) >= star
+                                                        ? 'fill-amber-400 text-amber-400'
+                                                        : 'text-muted-foreground/30 hover:text-amber-400'
+                                                }`}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                                {currentRating ? (
+                                    <span className="text-[11px] font-bold text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                                        {currentRating} / 5 Stars
+                                    </span>
+                                ) : isInternalStaff ? (
+                                    <span className="text-[10px] text-muted-foreground italic">
+                                        (Click star to rate reviewer performance)
+                                    </span>
+                                ) : null}
                             </div>
                         )}
                     </div>
@@ -147,17 +198,76 @@ export const ReviewItemCard = React.memo(({
                                                     </Select>
                                                 </div>
 
+                                                <div className="space-y-3 p-3 bg-muted/20 rounded-xl border border-border/60">
+                                                    <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Evaluation Rubric (1-5)</p>
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <div className="space-y-1">
+                                                            <label className="text-[10px] font-medium text-muted-foreground">Originality & Novelty</label>
+                                                            <Select name="rubricOriginality" defaultValue="4">
+                                                                <SelectTrigger className="h-9 bg-background border-border/50 text-xs">
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {[5, 4, 3, 2, 1].map(n => (
+                                                                        <SelectItem key={n} value={String(n)}>{n} - {n === 5 ? 'Exceptional' : n === 4 ? 'Good' : n === 3 ? 'Average' : n === 2 ? 'Weak' : 'Unacceptable'}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[10px] font-medium text-muted-foreground">Technical Methodology</label>
+                                                            <Select name="rubricMethodology" defaultValue="4">
+                                                                <SelectTrigger className="h-9 bg-background border-border/50 text-xs">
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {[5, 4, 3, 2, 1].map(n => (
+                                                                        <SelectItem key={n} value={String(n)}>{n} - {n === 5 ? 'Rigorous' : n === 4 ? 'Sound' : n === 3 ? 'Adequate' : n === 2 ? 'Flawed' : 'Invalid'}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[10px] font-medium text-muted-foreground">Clarity & Organization</label>
+                                                            <Select name="rubricClarity" defaultValue="4">
+                                                                <SelectTrigger className="h-9 bg-background border-border/50 text-xs">
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {[5, 4, 3, 2, 1].map(n => (
+                                                                        <SelectItem key={n} value={String(n)}>{n} - {n === 5 ? 'Excellent' : n === 4 ? 'Clear' : n === 3 ? 'Understandable' : n === 2 ? 'Poor' : 'Unreadable'}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[10px] font-medium text-muted-foreground">Literature Review</label>
+                                                            <Select name="rubricLiteratureReview" defaultValue="4">
+                                                                <SelectTrigger className="h-9 bg-background border-border/50 text-xs">
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {[5, 4, 3, 2, 1].map(n => (
+                                                                        <SelectItem key={n} value={String(n)}>{n} - {n === 5 ? 'Comprehensive' : n === 4 ? 'Good' : n === 3 ? 'Moderate' : n === 2 ? 'Sparse' : 'Missing'}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[11px] font-medium text-muted-foreground">score (1-10)</label>
+                                                        <label className="text-[11px] font-medium text-muted-foreground">overall score (1-10)</label>
                                                         <Input
                                                             name="score"
                                                             type="number"
                                                             min="1"
                                                             max="10"
                                                             required
+                                                            defaultValue="8"
                                                             placeholder="8"
-                                                            className="h-11 bg-muted/30 border-border/50 rounded-lg px-4 text-sm"
+                                                            className="h-10 bg-muted/30 border-border/50 rounded-lg px-3 text-sm"
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
@@ -168,8 +278,9 @@ export const ReviewItemCard = React.memo(({
                                                             min="1"
                                                             max="5"
                                                             required
+                                                            defaultValue="4"
                                                             placeholder="4"
-                                                            className="h-11 bg-muted/30 border-border/50 rounded-lg px-4 text-sm"
+                                                            className="h-10 bg-muted/30 border-border/50 rounded-lg px-3 text-sm"
                                                         />
                                                     </div>
                                                 </div>

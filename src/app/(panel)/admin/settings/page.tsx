@@ -19,6 +19,7 @@ import { useSettings } from '@/hooks/queries/useSettings';
 import { useState, useActionState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { updateSettings, togglePromotionStatus } from '@/actions/settings';
+import EmailTemplatesManager from './EmailTemplatesManager';
 import type { ActionResponse } from '@/db/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,7 @@ interface JournalSettings {
     copyrightUrl?: string;
     isPromotionActive?: string;
     doiPrefix?: string;
+    doiAssignmentMode?: string;
 }
 
 const containerVariants: Variants = {
@@ -138,19 +140,8 @@ export default function SystemSettings() {
         }
     }, null);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        const formData = new FormData(e.currentTarget);
-        const newDoi = (formData.get("doiPrefix") as string || "").trim();
-        const oldDoi = (settings.doiPrefix || "").trim();
-
-        if (newDoi !== oldDoi && newDoi.startsWith("10.")) {
-            const confirmed = window.confirm(
-                "CRITICAL WARNING:\n\nYou are updating the DOI Prefix to '" + newDoi + "'.\n\nThis will instantly generate and overwrite DOIs for ALL published papers in the database. Authors and indexing services will receive these updates.\n\nAre you sure you want to synchronize this prefix?"
-            );
-            if (!confirmed) {
-                e.preventDefault();
-            }
-        }
+    const handleSubmit = () => {
+        // Validation or pre-submit checks if needed
     };
 
     if (loading) {
@@ -262,14 +253,33 @@ export default function SystemSettings() {
                                         />
                                     </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">DOI Prefix Protocol</Label>
-                                    <Input
-                                        name="doiPrefix"
-                                        defaultValue={settings.doiPrefix}
-                                        placeholder="e.g. 10.6084"
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm font-mono shadow-sm rounded-xl px-4"
-                                    />
+                                <div className="space-y-4 pt-2 border-t border-slate-100">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Official DOI Prefix Protocol</Label>
+                                            <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">Registered Prefix</span>
+                                        </div>
+                                        <Input
+                                            name="doiPrefix"
+                                            defaultValue={settings.doiPrefix || '10.68139'}
+                                            placeholder="e.g. 10.68139"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm font-mono shadow-sm rounded-xl px-4"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">DOI Assignment Policy</Label>
+                                        <select
+                                            name="doiAssignmentMode"
+                                            defaultValue={settings.doiAssignmentMode || 'manual'}
+                                            className="w-full h-12 bg-white/50 border border-slate-200 focus-visible:ring-2 focus-visible:ring-primary/20 font-medium text-xs rounded-xl px-4 appearance-none outline-none shadow-sm cursor-pointer"
+                                        >
+                                            <option value="manual">Selective / Manual Mode (Assign per paper to selected articles — Recommended)</option>
+                                            <option value="auto">Automatic Mode (Auto-assign 10.68139/[paperId] to all papers on publish)</option>
+                                        </select>
+                                        <p className="text-[10px] text-slate-500 px-1 leading-relaxed">
+                                            In <strong>Selective Mode</strong>, your team decides which accepted papers receive the official CrossRef DOI, a Zenodo DOI, or remain without a DOI. Existing papers are never modified automatically.
+                                        </p>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -665,6 +675,11 @@ export default function SystemSettings() {
                     </motion.div>
                 </div>
             </form>
+
+            {/* 6.1 Email Templates Management (OJS Parity) */}
+            <motion.div variants={itemVariants} className="pt-2">
+                <EmailTemplatesManager />
+            </motion.div>
         </motion.section>
 
     );
