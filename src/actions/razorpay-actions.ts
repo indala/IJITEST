@@ -5,7 +5,7 @@ import { razorpay } from "@/lib/razorpay";
 import crypto from "crypto";
 import { db } from "@/lib/db";
 import { payments, submissions, settings, userProfiles, users, submissionVersions } from "@/db/schema";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, inArray } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { invalidateAuthorActionsCount, createNotification } from "./notifications";
@@ -195,10 +195,32 @@ export async function verifyRazorpayPayment(data: {
                     });
                 }
 
-                const template = emailTemplates.paymentVerified(sub.authorName, sub.title, sub.paperId);
+                const template = await emailTemplates.paymentVerified(sub.authorName, sub.title, sub.paperId);
                 // Fire-and-forget — payment is already recorded, email failure is non-critical
                 sendEmail({ to: sub.authorEmail, subject: template.subject, html: template.html })
                     .catch(e => console.error("Payment confirmation email failed:", e));
+
+                // Notify Editorial & Finance Staff
+                const [payRow] = await db.select({
+                    amount: payments.amount,
+                    currency: payments.currency,
+                }).from(payments).where(eq(payments.submissionId, submissionId)).limit(1);
+
+                const staff = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
+                const alertTemplate = await emailTemplates.paymentReceivedAlert(
+                    sub.title || 'Untitled',
+                    sub.paperId || '',
+                    sub.authorName || 'Author',
+                    payRow?.amount || '0.00',
+                    payRow?.currency || 'INR',
+                    razorpayPaymentId,
+                    submissionId
+                );
+                await Promise.allSettled(staff.map(s => sendEmail({
+                    to: s.email,
+                    subject: alertTemplate.subject,
+                    html: alertTemplate.html,
+                })));
             }
         } catch (emailErr) {
             console.error("Failed to send payment verification email:", emailErr);

@@ -390,8 +390,8 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                 if (paper) {
                     const staff = await db.select({ email: users.email, role: users.role }).from(users).where(inArray(users.role, ['admin', 'editor']));
                     
-                    await Promise.allSettled(staff.map((s) => {
-                        const template = emailTemplates.resubmissionReceived(
+                    await Promise.allSettled(staff.map(async (s) => {
+                        const template = await emailTemplates.resubmissionReceived(
                             paper.authorName || 'Author',
                             paper.title || 'Untitled',
                             paper.paperId || '',
@@ -552,7 +552,7 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
                 const paper = paperInfo[0];
                 if (paper) {
                     const staff = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
-                    const template = emailTemplates.copyrightSubmitted(
+                    const template = await emailTemplates.copyrightSubmitted(
                         paper.authorName || 'Author',
                         paper.title || 'Untitled',
                         paper.paperId,

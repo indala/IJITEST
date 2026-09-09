@@ -158,7 +158,7 @@ export async function createUser(formData: FormData): Promise<ActionResponse> {
         // Only send setup email for non-admin roles (admin has no invitation row)
         if (role !== 'admin') {
             const setupUrl = `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/auth/setup-password?token=${invitationToken}`;
-            const template = emailTemplates.boardInvitation(fullName, role, setupUrl);
+            const template = await emailTemplates.boardInvitation(fullName, role, setupUrl);
             sendEmail({ to: email, subject: template.subject, html: template.html })
                 .catch(e => console.error("Invitation email failed:", e));
         }
@@ -300,7 +300,7 @@ export async function requestPasswordReset(formData: FormData): Promise<ActionRe
 
         const resetUrl = `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/auth/setup-password?token=${resetToken}&ctx=reset`;
 
-        const template = emailTemplates.passwordReset(user.fullName, resetUrl);
+        const template = await emailTemplates.passwordReset(user.fullName, resetUrl);
         sendEmailWithRetry({
             to: email,
             subject: template.subject,

@@ -114,9 +114,10 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         const adminUrl = `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/admin/reviewer-applications`;
         const roleName = type === 'editor' ? 'Editor' : 'Reviewer';
 
-        const adminTemplate = emailTemplates.adminNotification(
-            `New ${roleName} Application`,
-            `A new technical profile from <strong>${fullName}</strong> has been submitted for the <strong>${roleName} Board</strong>.`,
+        const adminTemplate = await emailTemplates.boardApplicationAlert(
+            fullName,
+            email,
+            roleName,
             adminUrl
         );
 
@@ -127,7 +128,7 @@ export async function submitReviewerApplication(formData: FormData): Promise<Act
         });
 
         // Confirmation to Applicant
-        const applicantTemplate = emailTemplates.boardApplicationReceipt(fullName, type);
+        const applicantTemplate = await emailTemplates.boardApplicationReceipt(fullName, type);
         sendEmail({
             to: email,
             subject: applicantTemplate.subject,

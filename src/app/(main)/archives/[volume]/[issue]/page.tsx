@@ -9,17 +9,21 @@ import { BookOpen, Download } from 'lucide-react';
 export async function generateStaticParams() {
     try {
         const res = await getPublishedPapers();
-        if (!res.success || !res.data) return [];
+        if (!res.success || !res.data) {
+            return [{ volume: 'volume1', issue: 'issue1' }];
+        }
         
-        return res.data
+        const params = res.data
             .filter(paper => paper.volumeNumber && paper.issueNumber)
             .map(paper => ({
                 volume: `volume${paper.volumeNumber}`,
                 issue: `issue${paper.issueNumber}`,
             }));
+
+        return params.length > 0 ? params : [{ volume: 'volume1', issue: 'issue1' }];
     } catch (error) {
         console.error("Generate Static Params Error:", error);
-        return [];
+        return [{ volume: 'volume1', issue: 'issue1' }];
     }
 }
 

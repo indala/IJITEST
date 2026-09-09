@@ -8,7 +8,8 @@ import {
     Users,
     Settings,
     UserCog,
-    FileText
+    FileText,
+    Mail
 } from 'lucide-react';
 import React from 'react';
 
@@ -38,6 +39,7 @@ export const sidebarItems: NavigationItem[] = [
     { name: 'Payments', icon: <CreditCard />, href: 'payments', roles: ['admin', 'author'] },
     { name: 'Messages', icon: <MessageSquare />, href: 'messages', roles: ['admin', 'editor', 'reviewer'] },
     { name: 'Users & Roles', icon: <Users />, href: 'users', roles: ['admin'] },
+    { name: 'Email Templates', icon: <Mail />, href: 'email-templates', roles: ['admin'] },
     { name: 'Manage Applications', icon: <FileText />, href: 'applications', roles: ['admin', 'editor'] },
     { name: 'Account Profile', icon: <UserCog />, href: 'profile', roles: ['admin', 'editor', 'reviewer', 'author'] },
     { name: 'System Settings', icon: <Settings />, href: 'settings', roles: ['admin'] },

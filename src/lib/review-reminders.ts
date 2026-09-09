@@ -97,7 +97,7 @@ export async function processReviewReminders() {
             console.log(`Sending reminder to reviewer ${assignment.reviewerEmail} for paper ${assignment.paperId} (diff: ${diffInDays} days).`);
             
             // Send email
-            const template = emailTemplates.reviewDeadlineReminder(
+            const template = await emailTemplates.reviewDeadlineReminder(
                 assignment.reviewerName || "Reviewer",
                 assignment.paperTitle,
                 assignment.paperId,
@@ -142,7 +142,7 @@ export async function processReviewReminders() {
                 console.log(`Sending escalation to editor ${editor.email} for paper ${assignment.paperId} (late: ${Math.abs(diffInDays)} days).`);
                 
                 // Send email
-                const template = emailTemplates.reviewOverdueEscalation(
+                const template = await emailTemplates.reviewOverdueEscalation(
                     editor.name || "Editor",
                     assignment.reviewerName || "Reviewer",
                     assignment.paperTitle,

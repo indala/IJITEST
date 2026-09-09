@@ -11,15 +11,19 @@ import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidg
 export async function generateStaticParams() {
     try {
         const res = await getPublishedPapers();
-        if (!res.success || !res.data) return [];
+        if (!res.success || !res.data) {
+            return [{ volume: 'volume1' }];
+        }
         
         const vols = new Set(res.data.map(p => p.volumeNumber).filter(Boolean));
-        return Array.from(vols).map(v => ({
+        const params = Array.from(vols).map(v => ({
             volume: `volume${v}`,
         }));
+
+        return params.length > 0 ? params : [{ volume: 'volume1' }];
     } catch (error) {
         console.error("Generate Static Params Error:", error);
-        return [];
+        return [{ volume: 'volume1' }];
     }
 }
 

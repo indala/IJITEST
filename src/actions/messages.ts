@@ -143,7 +143,7 @@ export async function replyToMessage(id: number, replyContent: string): Promise<
         if (!message) return actionError("Message not found.");
 
         // Send the reply email
-        const template = emailTemplates.contactReply(
+        const template = await emailTemplates.contactReply(
             message.name, 
             message.subject || 'Your Inquiry to IJITEST', 
             replyContent, 
@@ -213,7 +213,7 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
         await invalidateMessagesCount();
 
         // 1. Auto-reply to visitor (fire-and-forget)
-        const receiptTemplate = emailTemplates.contactReceipt(name || "Visitor", subject || "Inquiry");
+        const receiptTemplate = await emailTemplates.contactReceipt(name || "Visitor", subject || "Inquiry");
         sendEmailWithRetry({
             to: email || "",
             subject: receiptTemplate.subject,
@@ -223,9 +223,12 @@ export async function submitContactMessage(formData: FormData): Promise<ActionRe
         // 2. Notify Admin (fire-and-forget)
         const adminEmail = process.env['ADMIN_EMAIL'] || process.env['SMTP_USER'];
         if (adminEmail) {
-            const adminTemplate = emailTemplates.adminNotification(
-                `New Inquiry: ${subject || 'Contact Form'}`,
-                `Visitor <strong>${name}</strong> (${email}) has submitted a new inquiry:<br><br>"${message}"`
+            const adminTemplate = await emailTemplates.contactInquiryAlert(
+                name || "Website Visitor",
+                email || "Not provided",
+                subject || "Contact Form Inquiry",
+                message,
+                `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/admin/messages`
             );
             sendEmailWithRetry({
                 to: adminEmail,

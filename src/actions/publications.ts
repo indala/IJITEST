@@ -273,7 +273,7 @@ export async function assignPaperToIssue(
 
         // 7. Notifications & Search Engine indexing (only if issue is already published)
         if (isIssuePublished) {
-            const template = emailTemplates.manuscriptPublished(
+            const template = await emailTemplates.manuscriptPublished(
                 submission.authorName,
                 submission.title,
                 submission.paperId,
@@ -388,10 +388,10 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
                 urlsToSubmit.push(`${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${paper.paperId}`);
 
                 // Fetch full submission details asynchronously for email & notification delivery
-                getSubmissionById(paper.id).then(subRes => {
+                getSubmissionById(paper.id).then(async subRes => {
                     if (subRes.success && subRes.data) {
                         const sub = subRes.data;
-                        const template = emailTemplates.manuscriptPublished(
+                        const template = await emailTemplates.manuscriptPublished(
                             sub.authorName,
                             sub.title,
                             sub.paperId,

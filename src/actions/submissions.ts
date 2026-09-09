@@ -336,8 +336,8 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
 
         // Email is fire-and-forget — SMTP failure should not rollback the decision
         const template = decision === 'accepted'
-            ? emailTemplates.manuscriptAcceptance(submission.authorName, submission.title, submission.paperId, isFree)
-            : emailTemplates.manuscriptRejection(submission.authorName, submission.title, submission.paperId, "Does not meet editorial criteria.");
+            ? await emailTemplates.manuscriptAcceptance(submission.authorName, submission.title, submission.paperId, isFree)
+            : await emailTemplates.manuscriptRejection(submission.authorName, submission.title, submission.paperId, "Does not meet editorial criteria.");
 
         sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })
             .catch(e => console.error("Decision email failed:", e));
@@ -400,7 +400,7 @@ export async function requestResubmissionWithComments(
             .set({ status: 'revisionRequested' })
             .where(eq(submissions.id, submissionId));
 
-        const emailData = emailTemplates.resubmissionRequest(
+        const emailData = await emailTemplates.resubmissionRequest(
             submission.authorName,
             submission.title,
             submission.paperId,
@@ -775,6 +775,21 @@ export async function requestGalleyApproval(submissionId: number): Promise<Actio
             metadata: { submissionId, paperId: sub.paperId }
         });
 
+        // Send formal galley proof request email to corresponding author
+        const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
+        const proofUrl = `${baseUrl}/author/submissions/${submissionId}`;
+        const proofEmail = await emailTemplates.galleyProofRequest(
+            sub.authorName || 'Author',
+            sub.title || 'Untitled',
+            sub.paperId || '',
+            proofUrl
+        );
+        sendEmail({
+            to: sub.authorEmail,
+            subject: proofEmail.subject,
+            html: proofEmail.html,
+        }).catch(e => console.error("Galley proof email failed:", e));
+
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/author/submissions/${submissionId}`);
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
@@ -830,6 +845,37 @@ export async function respondToGalleyProof(
                     updatedAt: new Date()
                 })
                 .where(eq(submissions.id, submissionId));
+        }
+
+        // Notify Editors & Staff of author galley proof response
+        try {
+            const [version] = await db.select({ title: submissionVersions.title })
+                .from(submissionVersions)
+                .where(eq(submissionVersions.submissionId, submissionId))
+                .orderBy(desc(submissionVersions.versionNumber))
+                .limit(1);
+
+            const [authorProfile] = await db.select({ fullName: userProfiles.fullName })
+                .from(userProfiles)
+                .where(eq(userProfiles.userId, sub.correspondingAuthorId))
+                .limit(1);
+
+            const staff = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
+            const alertEmail = await emailTemplates.galleyProofResponseAlert(
+                authorProfile?.fullName || 'Author',
+                version?.title || 'Untitled',
+                sub.paperId || '',
+                approved,
+                correctionNote || '',
+                submissionId
+            );
+            await Promise.allSettled(staff.map(s => sendEmail({
+                to: s.email,
+                subject: alertEmail.subject,
+                html: alertEmail.html,
+            })));
+        } catch (mailErr) {
+            console.error("Galley proof response notification failed:", mailErr);
         }
 
         revalidatePath(`/admin/submissions/${submissionId}`);

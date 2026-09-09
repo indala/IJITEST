@@ -182,7 +182,7 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
         const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
         const setupUrl = `${baseUrl}/auth/setup-password?token=${invitationToken}&ctx=setup`;
 
-        const template = emailTemplates.boardInvitation(app.fullName, role, setupUrl);
+        const template = await emailTemplates.boardInvitation(app.fullName, role, setupUrl);
 
         await sendEmail({
             to: app.email,
@@ -236,7 +236,7 @@ export async function rejectApplication(id: number, reason: string): Promise<Act
             .where(eq(applications.id, id));
 
         // 2. Send Rejection Email (fire-and-forget — DB already committed)
-        const template = emailTemplates.boardRejection(app.fullName, role, reason);
+        const template = await emailTemplates.boardRejection(app.fullName, role, reason);
         sendEmailWithRetry({
             to: app.email,
             subject: template.subject,

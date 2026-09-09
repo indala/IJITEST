@@ -12,24 +12,22 @@ import { type PublishedPaperUI, type PaperDetailParams } from "@/db/types";
 export async function generateStaticParams() {
     try {
         const res = await getPublishedPapers();
-        if (!res.success || !res.data) return [];
+        if (!res.success || !res.data) {
+            return [{ volume: 'volume1', issue: 'issue1', paperId: 'placeholder' }];
+        }
 
-        return res.data
-            .filter((paper: PublishedPaperUI) => {
-                if (!paper.paperId) {
-                    console.warn(`[Build] Skipping paper with missing paperId: ID ${paper.id}`);
-                    return false;
-                }
-                return true;
-            })
+        const params = res.data
+            .filter((paper: PublishedPaperUI) => Boolean(paper.paperId))
             .map((paper: PublishedPaperUI) => ({
                 volume: `volume${paper.volumeNumber}`,
                 issue: `issue${paper.issueNumber}`,
                 paperId: paper.paperId,
             }));
+
+        return params.length > 0 ? params : [{ volume: 'volume1', issue: 'issue1', paperId: 'placeholder' }];
     } catch (error) {
         console.error("Generate Static Params Error:", error);
-        return [];
+        return [{ volume: 'volume1', issue: 'issue1', paperId: 'placeholder' }];
     }
 }
 

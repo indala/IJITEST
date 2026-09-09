@@ -12,14 +12,15 @@ import {
     Layout, 
     ExternalLink,
     Loader2,
-    CheckCircle2
+    CheckCircle2,
+    Mail
 } from 'lucide-react';
+import Link from 'next/link';
 import { cn } from "@/lib/utils";
 import { useSettings } from '@/hooks/queries/useSettings';
 import { useState, useActionState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { updateSettings, togglePromotionStatus } from '@/actions/settings';
-import EmailTemplatesManager from './EmailTemplatesManager';
 import type { ActionResponse } from '@/db/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -676,9 +677,28 @@ export default function SystemSettings() {
                 </div>
             </form>
 
-            {/* 6.1 Email Templates Management (OJS Parity) */}
+            {/* 6.1 Email Templates Management Link */}
             <motion.div variants={itemVariants} className="pt-2">
-                <EmailTemplatesManager />
+                <Card className="bg-gradient-to-r from-slate-50 to-indigo-50/30 border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                    <CardContent className="p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 shadow-xs">
+                                <Mail className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-base font-bold text-slate-900 m-0">Customizable Email Templates (OJS Parity)</h3>
+                                <p className="text-xs text-slate-500 m-0 mt-1">
+                                    Configure automated notifications, placeholders, I-beam cursor insertion, undo/redo history, and live branded previews.
+                                </p>
+                            </div>
+                        </div>
+                        <Button asChild variant="outline" className="shrink-0 h-10 px-5 font-bold text-xs bg-white hover:bg-slate-50 border-slate-300 shadow-xs cursor-pointer">
+                            <Link href="/admin/email-templates">
+                                Open Email Templates Manager &rarr;
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
             </motion.div>
         </motion.section>
 

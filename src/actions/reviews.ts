@@ -247,7 +247,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
 
         // 9. Send email & in-app notification AFTER transaction commits (fire-and-forget)
         if (txResult.staff?.email && txResult.paper) {
-            const template = emailTemplates.reviewAssignment(
+            const template = await emailTemplates.reviewAssignment(
                 txResult.staff.name || "Reviewer",
                 txResult.paper.title,
                 deadline,
@@ -428,11 +428,13 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
             };
             const label = decisionLabels[decision] || decision;
 
-            const staffAlert = emailTemplates.staffNotification(
+            const staffAlert = await emailTemplates.reviewCompleted(
                 "Editor",
-                `Review Submitted: ${label} [${info.paperId}]`,
-                `A reviewer has completed their review for the manuscript <strong>"${info.title}"</strong> with a recommendation of <strong>'${label}'</strong>.`,
-                `${process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'}/admin/submissions/${info.submissionId}`
+                session.user.name || "Reviewer",
+                info.title,
+                info.paperId,
+                label,
+                info.submissionId
             );
 
             await Promise.allSettled(admins.map(async (a) => {

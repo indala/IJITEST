@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect, use } from "react";
+import { useState, useTransition, useEffect, use, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, Clock, Shield, Loader2, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -13,7 +13,7 @@ interface InvitationPageProps {
     params: Promise<{ token: string }>;
 }
 
-export default function ReviewInvitationPage({ params }: InvitationPageProps) {
+function ReviewInvitationContent({ params }: InvitationPageProps) {
     const { token } = use(params);
     const searchParams = useSearchParams();
     const preselectedAction = searchParams.get("action") as "accept" | "decline" | null;
@@ -195,5 +195,17 @@ export default function ReviewInvitationPage({ params }: InvitationPageProps) {
                 </CardContent>
             </Card>
         </div>
+    );
+}
+
+export default function ReviewInvitationPage(props: InvitationPageProps) {
+    return (
+        <Suspense fallback={
+            <div className="min-h-[80vh] flex items-center justify-center p-4">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </div>
+        }>
+            <ReviewInvitationContent {...props} />
+        </Suspense>
     );
 }

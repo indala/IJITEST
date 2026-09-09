@@ -309,7 +309,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         const loginUrl = `${baseUrl}/login`;
 
         // Author Notification
-        const authorTemplate = emailTemplates.submissionReceived(
+        const authorTemplate = await emailTemplates.submissionReceived(
             validated.data.authorName,
             validated.data.title,
             result.paperId,
@@ -326,8 +326,8 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         if (validated.data.coAuthors) {
             const coAuthors = JSON.parse(validated.data.coAuthors);
             if (Array.isArray(coAuthors)) {
-                await Promise.allSettled(coAuthors.map((ca: { name: string; email: string }) => {
-                    const coTemplate = emailTemplates.coAuthorNotification(
+                await Promise.allSettled(coAuthors.map(async (ca: { name: string; email: string }) => {
+                    const coTemplate = await emailTemplates.coAuthorNotification(
                         ca.name,
                         validated.data.title,
                         validated.data.authorName,
@@ -352,10 +352,12 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 ? `${baseUrl}/admin/submissions/${result.subId}`
                 : `${baseUrl}/editor/submissions/${result.subId}`;
 
-            const staffTemplate = emailTemplates.staffNotification(
+            const staffTemplate = await emailTemplates.newSubmissionEditorAlert(
                 s.profile.fullName || 'Editor',
-                `New Submission: ${result.paperId}`,
-                `A new manuscript titled <strong>"${validated.data.title}"</strong> has been submitted by <strong>${validated.data.authorName}</strong> and requires initial screening.`,
+                validated.data.title,
+                result.paperId,
+                validated.data.authorName,
+                new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }),
                 dashboardLink
             );
 

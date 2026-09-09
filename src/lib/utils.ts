@@ -31,3 +31,14 @@ export function formatDate(dateInput: Date | string | number | null | undefined)
     const year = d.getUTCFullYear();
     return `${day}/${month}/${year}`;
 }
+
+/**
+ * Replace {{variableName}} placeholders with dynamic runtime values
+ */
+export function renderTemplateText(templateText: string, data: Record<string, string | number | undefined | null>): string {
+    return templateText.replace(/\{\{([a-zA-Z0-9_-]+)\}\}/g, (match, varName) => {
+        const val = data[varName];
+        return val !== undefined && val !== null ? String(val) : match;
+    });
+}
+
