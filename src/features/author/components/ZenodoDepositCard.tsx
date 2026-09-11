@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,15 +12,15 @@ import { depositToZenodo } from "@/actions/doi-registration";
 interface ZenodoDepositCardProps {
     submissionId: number;
     publication?: {
-        doi?: string | null;
-        doiProvider?: string | null;
-        doiRegistrationStatus?: string | null;
-        doiRegistrationBatchId?: string | null;
-    } | null;
+        doi?: string | null | undefined;
+        doiProvider?: string | null | undefined;
+        doiRegistrationStatus?: string | null | undefined;
+        doiRegistrationBatchId?: string | null | undefined;
+    } | null | undefined;
     initialDeposit?: {
         doi: string;
         recordUrl: string;
-    } | null;
+    } | null | undefined;
 }
 
 export function ZenodoDepositCard({

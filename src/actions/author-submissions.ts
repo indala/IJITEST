@@ -171,8 +171,8 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
                 id: publications.id,
                 submissionId: publications.submissionId,
                 issueId: publications.issueId,
-                pageStart: publications.pageStart,
-                pageEnd: publications.pageEnd,
+                startPage: publications.startPage,
+                endPage: publications.endPage,
                 doi: publications.doi,
                 doiProvider: publications.doiProvider,
                 doiRegistrationStatus: publications.doiRegistrationStatus,
@@ -182,7 +182,6 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
                 views: publications.views,
                 downloads: publications.downloads,
                 citations: publications.citations,
-                createdAt: publications.createdAt,
                 volumeNumber: volumesIssues.volumeNumber,
                 issueNumber: volumesIssues.issueNumber,
                 year: volumesIssues.year
@@ -220,15 +219,15 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
         const pub = publicationData[0];
         const zenodoEventMatch = doiEvents?.find((e) => {
             const meta = e.metadata as Record<string, unknown> | null;
-            return !!meta?.recordUrl || e.description.toLowerCase().includes('zenodo');
+            return !!meta?.['recordUrl'] || e.description.toLowerCase().includes('zenodo');
         });
 
         let zenodoDeposit: { doi: string; recordUrl: string } | null = null;
         if (zenodoEventMatch) {
             const meta = zenodoEventMatch.metadata as Record<string, unknown> | null;
             zenodoDeposit = {
-                doi: (meta?.zenodoDoi as string) || (pub?.doiProvider === 'zenodo' ? pub.doi || '' : ''),
-                recordUrl: (meta?.recordUrl as string) || (pub?.doiRegistrationBatchId ? `https://zenodo.org/record/${pub.doiRegistrationBatchId}` : ''),
+                doi: (meta?.['zenodoDoi'] as string) || (pub?.doiProvider === 'zenodo' ? pub.doi || '' : ''),
+                recordUrl: (meta?.['recordUrl'] as string) || (pub?.doiRegistrationBatchId ? `https://zenodo.org/record/${pub.doiRegistrationBatchId}` : ''),
             };
         } else if (pub?.doiProvider === 'zenodo') {
             zenodoDeposit = {

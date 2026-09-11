@@ -2,7 +2,7 @@
 import "server-only";
 
 import { db } from "@/lib/db";
-import { submissions, publications, volumesIssues } from "@/db/schema";
+import { submissions, publications } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";

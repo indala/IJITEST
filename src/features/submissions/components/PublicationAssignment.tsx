@@ -90,7 +90,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                     startPage ? parseInt(startPage) : undefined,
                     endPage ? parseInt(endPage) : undefined,
                     targetDoi,
-                    doiChoice
+                    doiChoice === 'official' ? 'crossref' : doiChoice
                 );
                 if (res.success) {
                     queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
