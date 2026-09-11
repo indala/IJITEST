@@ -29,10 +29,21 @@ function InstagramIcon({ className }: { className?: string }) {
     );
 }
 
+function RssIcon({ className }: { className?: string }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 11a9 9 0 0 1 9 9" />
+            <path d="M4 4a16 16 0 0 1 16 16" />
+            <circle cx="5" cy="19" r="1" />
+        </svg>
+    );
+}
+
 const socialLinks = [
     { icon: FacebookIcon, href: process.env['NEXT_PUBLIC_FACEBOOK_URL'] || '#', label: 'Facebook' },
     { icon: TwitterIcon, href: process.env['NEXT_PUBLIC_TWITTER_URL'] || '#', label: 'Twitter' },
     { icon: InstagramIcon, href: process.env['NEXT_PUBLIC_INSTAGRAM_URL'] || '#', label: 'Instagram' },
+    { icon: RssIcon, href: '/api/feed/rss', label: 'Scholarly RSS Feed' },
 ];
 
 export default async function Footer() {
@@ -56,24 +67,45 @@ export default async function Footer() {
                         </div>
                     </div>
 
-                    {/* Journal Portals — static, zero JS */}
-                    <div className="lg:col-span-2">
-                        <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Journal Portals</h3>
-                        <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-white/80 list-none p-0 text-xs m-0">
+                    {/* Quick Links */}
+                    <div className="lg:col-span-1 space-y-3">
+                        <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Quick Links</h3>
+                        <ul className="space-y-1.5 text-white/80 list-none p-0 text-xs m-0">
+                            <li><Link href="/" className="hover:text-secondary transition-colors">Home Portal</Link></li>
                             <li><Link href="/about" className="hover:text-secondary transition-colors">About Journal</Link></li>
-                            <li><Link href="/open-access" className="hover:text-secondary transition-colors">Open Access Policy</Link></li>
+                            <li><Link href="/current-issue" className="hover:text-secondary transition-colors">Current Issue</Link></li>
+                            <li><Link href="/archives" className="hover:text-secondary transition-colors">Digital Archives</Link></li>
                             <li><Link href="/editorial-board" className="hover:text-secondary transition-colors">Editorial Board</Link></li>
                             <li><Link href="/guidelines" className="hover:text-secondary transition-colors">Author Guidelines</Link></li>
-                            <li><Link href="/peer-review" className="hover:text-secondary transition-colors">Peer Review</Link></li>
-                            <li><Link href="/ethics" className="hover:text-secondary transition-colors">Publication Ethics</Link></li>
-                            <li><Link href="/archives" className="hover:text-secondary transition-colors">Digital Archives</Link></li>
                             <li><Link href="/indexing" className="hover:text-secondary transition-colors">Indexing Hub</Link></li>
-                            <li><Link href="/privacy" className="hover:text-secondary transition-colors">Privacy Policy</Link></li>
-                            <li><Link href="/terms" className="hover:text-secondary transition-colors">Terms of Use</Link></li>
-                            <li><Link href="/track" className="hover:text-secondary transition-colors">Track Manuscript</Link></li>
-                            <li><Link href="/contact" className="hover:text-secondary transition-colors">Contact Office</Link></li>
+                            <li><Link href="/submit" className="hover:text-secondary transition-colors">Submit Manuscript</Link></li>
+                            <li><Link href="/track" className="hover:text-secondary transition-colors">Track Status</Link></li>
+                            <li><Link href="/announcements" className="hover:text-secondary transition-colors">Calls & Announcements</Link></li>
                             <li><Link href="/join-us" className="hover:text-secondary transition-colors">Join As Reviewer</Link></li>
-                            <li><Link href="/login" className="hover:text-secondary transition-colors">Portal Login</Link></li>
+                            <li><Link href="/contact" className="hover:text-secondary transition-colors">Contact Office</Link></li>
+                            <li><Link href="/api/feed/rss" target="_blank" className="hover:text-secondary transition-colors">RSS / Atom Feeds</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Journal Policies (DOAJ Compliant) */}
+                    <div className="lg:col-span-1 space-y-3">
+                        <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Journal Policies</h3>
+                        <ul className="space-y-1.5 text-white/80 list-none p-0 text-xs m-0">
+                            <li><Link href="/pages/aims-scope" className="hover:text-secondary transition-colors">Aims & Scope</Link></li>
+                            <li><Link href="/peer-review" className="hover:text-secondary transition-colors">Peer Review Process</Link></li>
+                            <li><Link href="/ethics" className="hover:text-secondary transition-colors">Publication Ethics</Link></li>
+                            <li><Link href="/open-access" className="hover:text-secondary transition-colors">Open Access Policy</Link></li>
+                            <li><Link href="/pages/copyright-policy" className="hover:text-secondary transition-colors">Copyright & Author Rights</Link></li>
+                            <li><Link href="/pages/licensing-policy" className="hover:text-secondary transition-colors">Licensing Terms (CC-BY 4.0)</Link></li>
+                            <li><Link href="/pages/apc-fees" className="hover:text-secondary transition-colors">APC & Fee Transparency</Link></li>
+                            <li><Link href="/pages/plagiarism-policy" className="hover:text-secondary transition-colors">Plagiarism & Similarity</Link></li>
+                            <li><Link href="/pages/conflict-of-interest" className="hover:text-secondary transition-colors">Conflict of Interest</Link></li>
+                            <li><Link href="/pages/research-misconduct" className="hover:text-secondary transition-colors">Research Misconduct</Link></li>
+                            <li><Link href="/pages/corrections-retractions" className="hover:text-secondary transition-colors">Corrections & Retractions</Link></li>
+                            <li><Link href="/pages/archiving-policy" className="hover:text-secondary transition-colors">Digital Preservation</Link></li>
+                            <li><Link href="/pages/ai-policy" className="hover:text-secondary transition-colors">AI & Generative AI Policy</Link></li>
+                            <li><Link href="/pages/publisher-info" className="hover:text-secondary transition-colors">Publisher Information</Link></li>
+                            <li><Link href="/privacy" className="hover:text-secondary transition-colors">Privacy & Terms</Link></li>
                         </ul>
                     </div>
 

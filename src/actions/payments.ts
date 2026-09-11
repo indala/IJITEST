@@ -7,7 +7,8 @@ import { eq, desc, and, isNull, sql } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { invalidateAuthorActionsCount, createNotification } from "./notifications";
-import { type ActionResponse, type PaymentRow, type UnpaidPaperRow, type PaymentStatus, serverError } from "@/db/types";
+import { type PaymentRow, type UnpaidPaperRow, type PaymentStatus } from "@/db/types";
+import { type ActionResponse, serverError } from "@/lib/action-response";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 

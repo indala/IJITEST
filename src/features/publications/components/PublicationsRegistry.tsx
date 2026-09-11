@@ -16,6 +16,7 @@ import {
     publishIssue,
     unassignPaperFromIssue
 } from '@/actions/publications';
+import { depositToCrossref } from '@/actions/doi-registration';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Issue, ActionResponse } from '@/db/types';
@@ -46,12 +47,31 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState<(Issue & { paperCount: number }) | null>(null);
     const [expandedIssue, setExpandedIssue] = useState<number | null>(null);
+    const [retryingPaperId, setRetryingPaperId] = useState<number | null>(null);
 
     const [isPublishing, startPublish] = useTransition();
     const [isDeleting, startDelete] = useTransition();
     const [isUnassigning, startUnassign] = useTransition();
 
     const { data: issuePapers = [], isLoading: loadingPapers } = usePapersByIssue(expandedIssue);
+
+    async function handleRetryCrossref(submissionId: number) {
+        setRetryingPaperId(submissionId);
+        try {
+            const res = await depositToCrossref(submissionId);
+            if (res.success) {
+                toast.success(`CrossRef deposit queued ✓ (Batch: ${res.data.batchId})`);
+                queryClient.invalidateQueries({ queryKey: ['issue-papers', expandedIssue] });
+                queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+            } else {
+                toast.error(res.error || "Deposit failed");
+            }
+        } catch {
+            toast.error("Failed to retry CrossRef deposit");
+        } finally {
+            setRetryingPaperId(null);
+        }
+    }
 
     const [, createAction, isCreating] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
         const res = await createVolumeIssue(formData);
@@ -325,24 +345,85 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                             </div>
                                                         ) : issuePapers.length > 0 ? (
                                                             <div className="space-y-2">
-                                                                {issuePapers.map((paper) => (
-                                                                    <div key={paper.id} className="p-2.5 bg-card rounded-lg border border-border/70 flex items-center justify-between gap-3 transition-all hover:border-primary/30 shadow-2xs">
-                                                                        <div className="min-w-0">
-                                                                            <p className="text-xs font-semibold text-foreground leading-tight line-clamp-1">{paper.title}</p>
-                                                                            <p className="text-meta mt-0.5">ID: {paper.paperId}</p>
+                                                                {issuePapers.map((paper) => {
+                                                                    const pub = paper.publication;
+                                                                    const doi = pub?.doi;
+                                                                    const provider = pub?.doiProvider || 'none';
+                                                                    const regStatus = pub?.doiRegistrationStatus || 'none';
+                                                                    const isRetrying = retryingPaperId === paper.id;
+
+                                                                    return (
+                                                                        <div key={paper.id} className="p-2.5 bg-card rounded-lg border border-border/70 flex items-center justify-between gap-3 transition-all hover:border-primary/30 shadow-2xs">
+                                                                            <div className="min-w-0 flex-1">
+                                                                                <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                                                                    <p className="text-xs font-semibold text-foreground leading-tight line-clamp-1">{paper.title}</p>
+                                                                                    
+                                                                                    {/* DOI Source & Registration Status Badges */}
+                                                                                    {provider === 'crossref' ? (
+                                                                                        regStatus === 'registered' ? (
+                                                                                            <span className="text-[10px] bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                                CrossRef ✓
+                                                                                            </span>
+                                                                                        ) : regStatus === 'failed' ? (
+                                                                                            <span className="text-[10px] bg-rose-500/15 text-rose-700 dark:text-rose-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                                CrossRef ✗ Failed
+                                                                                            </span>
+                                                                                        ) : (
+                                                                                            <span className="text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                                CrossRef ⏳ Pending
+                                                                                            </span>
+                                                                                        )
+                                                                                    ) : provider === 'zenodo' ? (
+                                                                                        <span className="text-[10px] bg-sky-500/15 text-sky-700 dark:text-sky-400 font-semibold px-1.5 py-0.2 rounded-md">
+                                                                                            Zenodo
+                                                                                        </span>
+                                                                                    ) : doi ? (
+                                                                                        <span className="text-[10px] bg-muted text-muted-foreground font-semibold px-1.5 py-0.2 rounded-md">
+                                                                                            Custom DOI
+                                                                                        </span>
+                                                                                    ) : (
+                                                                                        <span className="text-[10px] bg-muted/60 text-muted-foreground/60 px-1.5 py-0.2 rounded-md">
+                                                                                            No DOI
+                                                                                        </span>
+                                                                                    )}
+                                                                                </div>
+
+                                                                                <div className="flex items-center gap-2 text-meta mt-0.5 flex-wrap">
+                                                                                    <span>ID: {paper.paperId}</span>
+                                                                                    {doi && (
+                                                                                        <>
+                                                                                            <span>•</span>
+                                                                                            <span className="font-mono text-[10px] text-primary/80 truncate max-w-[220px]">{doi}</span>
+                                                                                        </>
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="flex items-center gap-1 shrink-0">
+                                                                                {provider === 'crossref' && regStatus === 'failed' && (
+                                                                                    <Button
+                                                                                        size="sm"
+                                                                                        variant="outline"
+                                                                                        disabled={isRetrying}
+                                                                                        onClick={() => handleRetryCrossref(paper.id)}
+                                                                                        className="h-7 text-[11px] px-2 text-rose-600 hover:text-rose-700 border-rose-200 hover:bg-rose-50 cursor-pointer"
+                                                                                    >
+                                                                                        {isRetrying ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+                                                                                        Retry
+                                                                                    </Button>
+                                                                                )}
+                                                                                <Button asChild variant="ghost" size="icon" className="w-7 h-7 text-muted-foreground hover:text-primary rounded-md">
+                                                                                    <a title='View' href={`/admin/submissions/${paper.id}`} target="_blank">
+                                                                                        <Eye className="w-3.5 h-3.5" />
+                                                                                    </a>
+                                                                                </Button>
+                                                                                <Button disabled={isUnassigning} title='Unlink' onClick={() => handleUnassign(paper.id)} variant="ghost" size="icon" className="w-7 h-7 text-rose-500/70 hover:text-rose-600 rounded-md">
+                                                                                    {isUnassigning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unlink className="w-3.5 h-3.5" />}
+                                                                                </Button>
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="flex items-center gap-1 shrink-0">
-                                                                            <Button asChild variant="ghost" size="icon" className="w-7 h-7 text-muted-foreground hover:text-primary rounded-md">
-                                                                                <a title='View' href={`/admin/submissions/${paper.id}`} target="_blank">
-                                                                                    <Eye className="w-3.5 h-3.5" />
-                                                                                </a>
-                                                                            </Button>
-                                                                            <Button disabled={isUnassigning} title='Unlink' onClick={() => handleUnassign(paper.id)} variant="ghost" size="icon" className="w-7 h-7 text-rose-500/70 hover:text-rose-600 rounded-md">
-                                                                                {isUnassigning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unlink className="w-3.5 h-3.5" />}
-                                                                            </Button>
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
+                                                                    );
+                                                                })}
                                                             </div>
                                                         ) : (
                                                             <div className="py-6 text-center text-xs text-muted-foreground font-medium">No papers assigned yet.</div>
@@ -377,6 +458,24 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                         className="text-label text-emerald-600 hover:underline font-medium cursor-pointer"
                                                     >
                                                         CrossRef XML
+                                                    </a>
+                                                    <span className="w-1 h-1 rounded-full bg-border" />
+                                                    <a
+                                                        href={`/api/export/pubmed/issue/${v.id}`}
+                                                        download
+                                                        title="Download NLM PubMed 2.8 XML batch deposit for this issue"
+                                                        className="text-label text-purple-600 hover:underline font-medium cursor-pointer"
+                                                    >
+                                                        PubMed XML
+                                                    </a>
+                                                    <span className="w-1 h-1 rounded-full bg-border" />
+                                                    <a
+                                                        href={`/api/export/doaj/issue/${v.id}`}
+                                                        download
+                                                        title="Download DOAJ 0.2 XML batch deposit for this issue"
+                                                        className="text-label text-amber-600 hover:underline font-medium cursor-pointer"
+                                                    >
+                                                        DOAJ XML
                                                     </a>
                                                     <span className="w-1 h-1 rounded-full bg-border" />
                                                 </>

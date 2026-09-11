@@ -10,7 +10,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-import { type ActionResponse, actionSuccess, actionError, type ContactMessageRow, serverError } from "@/db/types";
+import { type ContactMessageRow } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError, serverError } from "@/lib/action-response";
 import { insertContactSchema } from "@/db/validation";
 import { invalidateMessagesCount } from "./notifications";
 

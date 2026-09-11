@@ -1,10 +1,9 @@
-import { getPaperById } from "@/actions/archives";
+import { getPaperById, getPublishedPapers, getRelatedArticles } from "@/actions/archives";
 import PageHeader from "@/components/layout/PageHeader";
 import PaperDetailClient from "@/features/archives/components/PaperDetailClient";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
-import { getPublishedPapers } from "@/actions/archives";
 import { JsonLd } from "@/components/shared/JsonLd";
 
 import { type PublishedPaperUI, type PaperDetailParams } from "@/db/types";
@@ -115,6 +114,14 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
         otherMeta['citation_pdf_url'] = pdfFullUrl;
     }
 
+    // CrossMark standard metadata headers
+    otherMeta['crossmark:policy'] = `${baseUrl}/ethics`;
+    otherMeta['crossmark:date'] = formattedDate;
+    otherMeta['crossmark:status'] = paper.retractedAt ? 'retracted' : (paper.status === 'corrigendum' ? 'corrected' : 'current');
+    if (paper.doi) {
+        otherMeta['crossmark:doi'] = paper.doi;
+    }
+
     return {
         title: paper.title,
         description: description,
@@ -144,9 +151,10 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
         redirect(`/archives/${volume}/${issue}/${canonicalPaperId}`);
     }
 
-    const [paperRes, settings] = await Promise.all([
+    const [paperRes, settings, relatedRes] = await Promise.all([
         getPaperById(canonicalPaperId),
-        getSettingsData()
+        getSettingsData(),
+        getRelatedArticles(canonicalPaperId, 4)
     ]);
 
     const paper = paperRes.success ? paperRes.data : null;
@@ -173,6 +181,7 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                     ...paper,
                     coAuthors: paper.coAuthors ?? null
                 }}
+                relatedArticles={relatedRes.success ? (relatedRes.data ?? []) : []}
             />
 
             <JsonLd

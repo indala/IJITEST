@@ -15,8 +15,12 @@ import {
     userProfiles,
     reviews,
     reviewAssignments,
-    submissionEditors
+    submissionEditors,
+    sections,
+    reviewerSuggestions,
+    submissionEventLog
 } from "@/db/schema";
+import { logSubmissionEvent } from "./event-log";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath, updateTag } from "next/cache";
@@ -24,13 +28,15 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import {
-    type ActionResponse,
     type AuthorDashboardSubmission,
-    type AuthorSubmissionDetail,
+    type AuthorSubmissionDetail
+} from "@/db/types";
+import {
+    type ActionResponse,
     actionSuccess,
     actionError,
     serverError
-} from "@/db/types";
+} from "@/lib/action-response";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 
 /**
@@ -124,7 +130,9 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
             title: submissionVersions.title,
             abstract: submissionVersions.abstract,
             keywords: submissionVersions.keywords,
-            changelog: submissionVersions.changelog
+            subjectArea: submissionVersions.subjectArea,
+            changelog: submissionVersions.changelog,
+            section: sections
         })
         .from(submissions)
         .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
@@ -132,6 +140,7 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
             eq(submissions.id, submissionVersions.submissionId),
             eq(submissionVersions.versionNumber, latestVersions.maxVersion)
         ))
+        .leftJoin(sections, eq(submissions.sectionId, sections.id))
         .where(and(
             eq(submissions.id, submissionId),
             eq(submissions.correspondingAuthorId, author.id)
@@ -142,8 +151,8 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
         const sub = subData[0];
         if (!sub) return actionError<AuthorSubmissionDetail>("Submission not found");
 
-        // 2-5. Parallel fetch: files, authors, payment, publication, reviews (all independent)
-        const [files, authorsList, paymentData, publicationData, completedReviews] = await Promise.all([
+        // 2-6. Parallel fetch: files, authors, payment, publication, reviews, suggestions (all independent)
+        const [files, authorsList, paymentData, publicationData, completedReviews, suggestions, doiEvents] = await Promise.all([
             db.select()
                 .from(submissionFiles)
                 .where(and(
@@ -159,9 +168,21 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
                 .where(eq(payments.submissionId, submissionId))
                 .limit(1),
             db.select({
-                finalPdfUrl: publications.finalPdfUrl,
+                id: publications.id,
+                submissionId: publications.submissionId,
+                issueId: publications.issueId,
+                pageStart: publications.pageStart,
+                pageEnd: publications.pageEnd,
                 doi: publications.doi,
+                doiProvider: publications.doiProvider,
+                doiRegistrationStatus: publications.doiRegistrationStatus,
+                doiRegistrationBatchId: publications.doiRegistrationBatchId,
+                finalPdfUrl: publications.finalPdfUrl,
                 publishedAt: publications.publishedAt,
+                views: publications.views,
+                downloads: publications.downloads,
+                citations: publications.citations,
+                createdAt: publications.createdAt,
                 volumeNumber: volumesIssues.volumeNumber,
                 issueNumber: volumesIssues.issueNumber,
                 year: volumesIssues.year
@@ -184,16 +205,50 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
                     eq(reviewAssignments.status, 'completed'),
                     sql`${reviews.commentsToAuthor} IS NOT NULL`
                 )),
+            db.select()
+                .from(reviewerSuggestions)
+                .where(eq(reviewerSuggestions.submissionId, submissionId)),
+            db.select()
+                .from(submissionEventLog)
+                .where(and(
+                    eq(submissionEventLog.submissionId, submissionId),
+                    eq(submissionEventLog.eventType, 'doi_assigned')
+                ))
+                .orderBy(desc(submissionEventLog.createdAt)),
         ]);
+
+        const pub = publicationData[0];
+        const zenodoEventMatch = doiEvents?.find((e) => {
+            const meta = e.metadata as Record<string, unknown> | null;
+            return !!meta?.recordUrl || e.description.toLowerCase().includes('zenodo');
+        });
+
+        let zenodoDeposit: { doi: string; recordUrl: string } | null = null;
+        if (zenodoEventMatch) {
+            const meta = zenodoEventMatch.metadata as Record<string, unknown> | null;
+            zenodoDeposit = {
+                doi: (meta?.zenodoDoi as string) || (pub?.doiProvider === 'zenodo' ? pub.doi || '' : ''),
+                recordUrl: (meta?.recordUrl as string) || (pub?.doiRegistrationBatchId ? `https://zenodo.org/record/${pub.doiRegistrationBatchId}` : ''),
+            };
+        } else if (pub?.doiProvider === 'zenodo') {
+            zenodoDeposit = {
+                doi: pub.doi || '',
+                recordUrl: pub.doiRegistrationBatchId ? `https://zenodo.org/record/${pub.doiRegistrationBatchId}` : '',
+            };
+        }
 
         return actionSuccess({
             ...sub,
+            section: sub.section || null,
+            reviewerSuggestions: suggestions,
             files,
             authors: authorsList,
             reviewComments: completedReviews,
             payment: paymentData[0] || null,
-            publication: publicationData[0] || null
+            publication: pub || null,
+            zenodoDeposit,
         } as AuthorSubmissionDetail);
+
     } catch (error) {
         console.error("Get Author Submission Error:", error);
         return serverError<AuthorSubmissionDetail>(error, "fetch submission details");
@@ -407,6 +462,19 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
             // Non-blocking for the user
         }
 
+        await logSubmissionEvent({
+            submissionId,
+            eventType: 'revision_submitted',
+            userId: author.id,
+            description: `Author submitted revision v${result.nextVersion}`,
+            metadata: {
+                versionNumber: result.nextVersion,
+                changelog: changelog || null,
+                hasRebuttalFile: Boolean(result.rName),
+                hasBlindedFile: Boolean(result.bName),
+            }
+        });
+
         await invalidateSubmittedSubmissionsCount();
         await invalidateAuthorActionsCount(author.id);
         if (submissionId) {
@@ -575,6 +643,14 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
         } catch (mailErr) {
             console.error("Copyright upload email dispatch error:", mailErr);
         }
+
+        await logSubmissionEvent({
+            submissionId,
+            eventType: 'copyright_uploaded',
+            userId: author.id,
+            description: `Author uploaded signed copyright transfer agreement`,
+            metadata: { fileName: copyrightFile.name, fileSize: copyrightFile.size }
+        });
 
         if (submissionId) {
             updateTag(CACHE_TAGS.SUBMISSION(submissionId));

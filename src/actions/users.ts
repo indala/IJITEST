@@ -13,11 +13,13 @@ import {
 import {
     type UserWithProfile,
     type SafeUserWithProfile,
+} from "@/db/types";
+import {
     type ActionResponse,
     actionSuccess,
     actionError,
     serverError,
-} from "@/db/types";
+} from "@/lib/action-response";
 import { eq, and, sql, inArray, isNotNull, not } from "drizzle-orm";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";

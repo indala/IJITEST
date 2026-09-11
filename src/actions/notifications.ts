@@ -6,7 +6,8 @@ import { contactMessages, submissions, reviewAssignments, notifications, pushSub
 import { eq, count, and, inArray, desc } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { type ActionResponse, type Notification, type NotificationType, type PushSubscriptionRow, serverError } from "@/db/types";
+import { type Notification, type NotificationType, type PushSubscriptionRow } from "@/db/types";
+import { type ActionResponse, serverError } from "@/lib/action-response";
 import { updateTag, revalidateTag, cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";

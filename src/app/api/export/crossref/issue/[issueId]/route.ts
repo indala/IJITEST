@@ -24,15 +24,19 @@ export async function GET(
         }
 
         const { issue, papers } = issueRes.data;
-        const papersWithDoi = papers.filter(p => Boolean(p.doi));
+        const prefix = settings['doiPrefix'] ? settings['doiPrefix'].trim() : "10.68139";
+        
+        // Only include papers eligible for official CrossRef deposit
+        const crossrefPapers = papers.filter(p => Boolean(p.doi && (p.doiProvider === 'crossref' || p.doi.startsWith(prefix))));
+        const skippedCount = papers.length - crossrefPapers.length;
 
-        if (papersWithDoi.length === 0) {
-            return new NextResponse("No published papers in this issue have an assigned DOI", { status: 400 });
+        if (crossrefPapers.length === 0) {
+            return new NextResponse("No published papers in this issue have an official CrossRef DOI assigned", { status: 400 });
         }
 
         const xml = generateCrossRefXml({
             settings,
-            papers: papersWithDoi,
+            papers: crossrefPapers,
             issue: {
                 volumeNumber: issue.volumeNumber,
                 issueNumber: issue.issueNumber,
@@ -46,6 +50,8 @@ export async function GET(
             headers: {
                 "Content-Type": "application/xml; charset=utf-8",
                 "Content-Disposition": `attachment; filename="crossref-issue-vol${issue.volumeNumber}-iss${issue.issueNumber}.xml"`,
+                "X-Exported-Papers": String(crossrefPapers.length),
+                "X-Skipped-Papers": String(skippedCount),
                 "Cache-Control": "public, max-age=3600",
             },
         });

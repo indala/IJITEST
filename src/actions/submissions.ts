@@ -15,18 +15,23 @@ import {
     settings,
     volumesIssues,
     publications,
+    sections,
+    reviewerSuggestions,
 } from "@/db/schema";
+import { logSubmissionEvent } from "./event-log";
 import {
     type SubmissionDetail,
     type SubmissionUI,
-    type ActionResponse,
     type UserWithProfile,
     type SubmissionFile,
     type ReviewWithReviewer,
+} from "@/db/types";
+import {
+    type ActionResponse,
     actionSuccess,
     actionError,
     serverError,
-} from "@/db/types";
+} from "@/lib/action-response";
 import { cacheLife, cacheTag, revalidatePath, updateTag } from "next/cache";
 import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount, invalidateReviewerAssignmentsCount, createNotification } from "./notifications";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -48,14 +53,15 @@ const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> 
 
     try {
         cacheLogger.miss(CACHE_TAGS.SUBMISSION(id), `fetchRawSubmissionData id=${id}`);
-        // 1. Fetch Core Submission + Profile + Latest Version + Publication + Issue
+        // 1. Fetch Core Submission + Profile + Latest Version + Publication + Issue + Section
         const submissionRows = await db.select({
             submission: submissions,
             author: users,
             authorProfile: userProfiles,
             issue: volumesIssues,
             publication: publications,
-            payment: payments
+            payment: payments,
+            section: sections
         })
             .from(submissions)
             .where(and(eq(submissions.id, id), isNull(submissions.deletedAt)))
@@ -64,13 +70,14 @@ const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> 
             .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
             .leftJoin(publications, eq(submissions.id, publications.submissionId))
             .leftJoin(payments, eq(submissions.id, payments.submissionId))
+            .leftJoin(sections, eq(submissions.sectionId, sections.id))
             .limit(1);
 
         const row = submissionRows[0];
         if (!row) return null;
 
-        // 2-4. Parallel fetch: version, authors, assignments (independent queries)
-        const [versionRows, authors, assignments] = await Promise.all([
+        // 2-5. Parallel fetch: version, authors, assignments, reviewerSuggestions (independent queries)
+        const [versionRows, authors, assignments, suggestions] = await Promise.all([
             db.select()
                 .from(submissionVersions)
                 .where(eq(submissionVersions.submissionId, id))
@@ -91,6 +98,9 @@ const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> 
                 .leftJoin(users, eq(reviewAssignments.reviewerId, users.id))
                 .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
                 .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId)),
+            db.select()
+                .from(reviewerSuggestions)
+                .where(eq(reviewerSuggestions.submissionId, id)),
         ]);
 
         const latestVersion = versionRows[0];
@@ -112,6 +122,8 @@ const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> 
             correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } as UserWithProfile : undefined,
             versions: latestVersion ? [{ ...latestVersion, files: files as SubmissionFile[] }] : [],
             authors,
+            section: row.section || null,
+            reviewerSuggestions: suggestions,
             payment: row.payment,
             reviewAssignments: typedAssignments,
             issue: row.issue,
@@ -126,6 +138,8 @@ const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> 
 
         const data: SubmissionUI = {
             ...submissionData,
+            section: row.section || null,
+            reviewerSuggestions: suggestions,
             title: latestVersion?.title || "Untitled Manuscript",
             abstract: latestVersion?.abstract || null,
             keywords: latestVersion?.keywords || null,
@@ -363,6 +377,18 @@ export async function decideSubmission(id: number, decision: 'accepted' | 'rejec
             metadata: { submissionId: id, paperId: submission.paperId }
         });
 
+        await logSubmissionEvent({
+            submissionId: id,
+            eventType: decision === 'accepted' ? 'paper_accepted' : 'paper_rejected',
+            userId: session.user.id,
+            description: `Editorial decision: ${decision === 'accepted' ? 'Accepted for publication' : 'Rejected'}.`,
+            metadata: {
+                decision,
+                isFree,
+                apcAmount: decision === 'accepted' ? apcAmount : undefined,
+            }
+        });
+
         await invalidateSubmittedSubmissionsCount();
         await invalidateAuthorActionsCount(submission.correspondingAuthorId);
         revalidatePath('/admin/submissions');
@@ -417,6 +443,14 @@ export async function requestResubmissionWithComments(
             message: `Revision requested for manuscript ${submission.paperId}: please review editorial comments.`,
             actionLink: `/author/submissions/${submissionId}`,
             metadata: { submissionId, paperId: submission.paperId }
+        });
+
+        await logSubmissionEvent({
+            submissionId,
+            eventType: 'revision_requested',
+            userId: session.user.id,
+            description: `Revision requested by editor. Comments provided: "${comments.slice(0, 180)}${comments.length > 180 ? '...' : ''}"`,
+            metadata: { comments }
         });
 
         await invalidateSubmittedSubmissionsCount();
@@ -790,6 +824,13 @@ export async function requestGalleyApproval(submissionId: number): Promise<Actio
             html: proofEmail.html,
         }).catch(e => console.error("Galley proof email failed:", e));
 
+        await logSubmissionEvent({
+            submissionId,
+            eventType: 'galley_requested',
+            userId: session.user.id,
+            description: `Galley proof review requested from corresponding author for ${sub.paperId}.`,
+        });
+
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/author/submissions/${submissionId}`);
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
@@ -878,6 +919,16 @@ export async function respondToGalleyProof(
             console.error("Galley proof response notification failed:", mailErr);
         }
 
+        await logSubmissionEvent({
+            submissionId,
+            eventType: approved ? 'galley_approved' : 'galley_corrections_requested',
+            userId: session.user.id,
+            description: approved 
+                ? 'Galley proof approved by author for final production.' 
+                : `Galley proof corrections requested: "${correctionNote?.slice(0, 180)}${correctionNote && correctionNote.length > 180 ? '...' : ''}"`,
+            metadata: { approved, correctionNote }
+        });
+
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/author/submissions/${submissionId}`);
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
@@ -920,6 +971,14 @@ export async function retractPaper(
                 updatedAt: new Date()
             })
             .where(eq(submissions.id, submissionId));
+
+        await logSubmissionEvent({
+            submissionId,
+            eventType: 'retraction_issued',
+            userId: session.user.id,
+            description: `Manuscript retracted: "${reason.slice(0, 180)}${reason.length > 180 ? '...' : ''}"`,
+            metadata: { reason, noticeUrl }
+        });
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/archives`);
@@ -967,6 +1026,14 @@ export async function issueCorrigendum(
                 updatedAt: new Date()
             })
             .where(eq(submissions.id, submissionId));
+
+        await logSubmissionEvent({
+            submissionId,
+            eventType: 'corrigendum_issued',
+            userId: session.user.id,
+            description: `Corrigendum/Erratum notice issued: "${amendmentDetails.slice(0, 180)}${amendmentDetails.length > 180 ? '...' : ''}"`,
+            metadata: { amendmentDetails, noticeUrl }
+        });
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/archives`);

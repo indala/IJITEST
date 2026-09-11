@@ -19,7 +19,8 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { type ActionResponse, actionSuccess, actionError, type ProfileData, serverError } from "@/db/types";
+import { type ProfileData } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError, serverError } from "@/lib/action-response";
 import { insertProfileSchema } from "@/db/validation";
 
 

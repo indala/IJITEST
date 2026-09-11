@@ -17,7 +17,10 @@ import {
     users,
     userProfiles,
     userInvitations,
+    sections,
+    reviewerSuggestions,
 } from "@/db/schema";
+import { logSubmissionEvent } from "./event-log";
 
 import crypto from "crypto";
 import { getServerSession } from "next-auth/next";
@@ -27,7 +30,8 @@ import {
     triggerDocxToPdfConversion 
 } from "@/lib/fs-utils";
 
-import { type ActionResponse, type ActiveReview, type UnassignedPaper, type ReviewerPerformanceMetrics, serverError } from "@/db/types";
+import { type ActiveReview, type UnassignedPaper, type ReviewerPerformanceMetrics } from "@/db/types";
+import { type ActionResponse, serverError } from "@/lib/action-response";
 
 /**
  * Assign a reviewer to a submission.
@@ -268,6 +272,17 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 actionLink: `/reviewer/reviews`,
                 metadata: { submissionId, paperId: txResult.paper.paperId }
             });
+
+            await logSubmissionEvent({
+                submissionId,
+                eventType: 'reviewer_invited',
+                userId: session.user.id,
+                description: `Reviewer invited: ${txResult.staff?.name || txResult.staff?.email || 'Reviewer'} (Deadline: ${deadline}).`,
+                metadata: {
+                    reviewerId,
+                    deadline,
+                }
+            });
         }
 
         await invalidateReviewerAssignmentsCount(reviewerId);
@@ -456,6 +471,17 @@ export async function submitReview(assignmentId: number, formData: FormData): Pr
                     html: staffAlert.html
                 });
             }));
+            await logSubmissionEvent({
+                submissionId: result.info.submissionId,
+                eventType: 'review_submitted',
+                userId: session.user.id,
+                description: `Peer review evaluation submitted (${label}, Score: ${score}/10).`,
+                metadata: {
+                    decision,
+                    score,
+                    confidence,
+                }
+            });
         }
 
         await invalidateReviewerAssignmentsCount(result.info.reviewerId);
@@ -586,11 +612,13 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<Unas
             paperId: submissions.paperId,
             title: submissionVersions.title,
             pdfUrl: manuscriptPaths.pdfUrl,
-            isBlinded: sql<boolean>`COALESCE(${blindedSubquery.blindedCount}, 0) > 0`
+            isBlinded: sql<boolean>`COALESCE(${blindedSubquery.blindedCount}, 0) > 0`,
+            sectionTitle: sections.title
         })
             .from(submissions)
             .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
             .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
+            .leftJoin(sections, eq(submissions.sectionId, sections.id))
             .leftJoin(manuscriptPaths, eq(submissionVersions.id, manuscriptPaths.versionId))
             .leftJoin(blindedSubquery, eq(submissionVersions.id, blindedSubquery.versionId))
             .where(and(
@@ -598,7 +626,26 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<Unas
                 eq(submissionVersions.versionNumber, latestVersions.maxVersion)
             ));
 
-        return { success: true, data: rows };
+        // Fetch author reviewer suggestions for these papers
+        const subIds = rows.map(r => r.id);
+        const suggestions = subIds.length > 0 
+            ? await db.select().from(reviewerSuggestions).where(inArray(reviewerSuggestions.submissionId, subIds))
+            : [];
+
+        const suggestionsMap = new Map<number, typeof suggestions>();
+        for (const s of suggestions) {
+            const list = suggestionsMap.get(s.submissionId) || [];
+            list.push(s);
+            suggestionsMap.set(s.submissionId, list);
+        }
+
+        const enriched: UnassignedPaper[] = rows.map(r => ({
+            ...r,
+            sectionTitle: r.sectionTitle || null,
+            reviewerSuggestions: suggestionsMap.get(r.id) || []
+        }));
+
+        return { success: true, data: enriched };
     } catch (error) {
         console.error("Get Unassigned Error:", error);
         return serverError(error, "fetch review details");
@@ -655,6 +702,19 @@ export async function respondToReviewInvitation(
                 declineReason: action === 'decline' ? (declineReason || 'Declined by reviewer') : null
             })
             .where(eq(reviewAssignments.id, assignment.id));
+
+        await logSubmissionEvent({
+            submissionId: assignment.submissionId,
+            eventType: action === 'accept' ? 'reviewer_accepted' : 'reviewer_declined',
+            userId: assignment.reviewerId,
+            description: action === 'accept'
+                ? `Reviewer ${assignment.reviewerName || assignment.reviewerEmail} accepted the invitation.`
+                : `Reviewer ${assignment.reviewerName || assignment.reviewerEmail} declined the invitation${declineReason ? `: "${declineReason}"` : '.'}`,
+            metadata: {
+                reviewerId: assignment.reviewerId,
+                declineReason: action === 'decline' ? declineReason : undefined,
+            }
+        });
 
         return {
             success: true,

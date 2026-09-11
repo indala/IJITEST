@@ -1,6 +1,6 @@
 import { 
   mysqlTable, int, mysqlEnum, varchar, timestamp, 
-  text, index, unique, decimal, date, boolean, bigint,
+  text, index, uniqueIndex, unique, decimal, date, boolean, bigint,
   primaryKey, json
 } from "drizzle-orm/mysql-core";
 import { relations } from "drizzle-orm";
@@ -36,6 +36,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     createdNotifications: many(notifications, { relationName: "creator" }),
     activityLogs: many(activityLogs),
     pushSubscriptions: many(pushSubscriptions),
+    reviewerSuggestions: many(reviewerSuggestions),
+    submissionEventLogs: many(submissionEventLog),
 }));
 
 // 👥 2. USER PROFILES
@@ -79,11 +81,36 @@ export const userInvitationsRelations = relations(userInvitations, ({ one }) => 
     }),
 }));
 
+// 📑 3.5 SECTIONS (OJS Parity - Journal Sections Classification)
+export const sections = mysqlTable("sections", {
+    id: int("id").primaryKey().autoincrement().notNull(),
+    title: varchar("title", { length: 255 }).notNull(),
+    abbrev: varchar("abbrev", { length: 50 }).notNull(),
+    policy: text("policy"),
+    identifyType: varchar("identify_type", { length: 255 }),
+    wordCount: int("word_count"),
+    metaIndexed: boolean("meta_indexed").default(true).notNull(),
+    metaReviewed: boolean("meta_reviewed").default(true).notNull(),
+    abstractsNotRequired: boolean("abstracts_not_required").default(false).notNull(),
+    hideTitle: boolean("hide_title").default(false).notNull(),
+    hideAuthor: boolean("hide_author").default(false).notNull(),
+    editorRestricted: boolean("editor_restricted").default(false).notNull(),
+    isInactive: boolean("is_inactive").default(false).notNull(),
+    sequence: int("sequence").default(0).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const sectionsRelations = relations(sections, ({ many }) => ({
+    submissions: many(submissions),
+}));
+
 // 📄 4. SUBMISSIONS (CORE ENTITY)
 export const submissions = mysqlTable("submissions", {
     id: int("id").primaryKey().autoincrement().notNull(),
     paperId: varchar("paper_id", { length: 100 }).notNull().unique(),
     slug: varchar("slug", { length: 255 }).unique(),
+    sectionId: int("section_id").references(() => sections.id, { onDelete: "set null" }),
     
     // Status Flow
     status: mysqlEnum("status", [
@@ -114,6 +141,7 @@ export const submissions = mysqlTable("submissions", {
 }, (table) => [
     index("status_idx").on(table.status),
     index("author_idx").on(table.correspondingAuthorId),
+    index("section_idx").on(table.sectionId),
 ]);
 
 export const submissionsRelations = relations(submissions, ({ one, many }) => ({
@@ -129,10 +157,16 @@ export const submissionsRelations = relations(submissions, ({ one, many }) => ({
         fields: [submissions.issueId],
         references: [volumesIssues.id],
     }),
+    section: one(sections, {
+        fields: [submissions.sectionId],
+        references: [sections.id],
+    }),
     versions: many(submissionVersions),
     authors: many(submissionAuthors),
     assignedEditors: many(submissionEditors),
     reviewAssignments: many(reviewAssignments),
+    reviewerSuggestions: many(reviewerSuggestions),
+    eventLogs: many(submissionEventLog),
     payment: one(payments, {
         fields: [submissions.id],
         references: [payments.submissionId],
@@ -255,6 +289,93 @@ export const submissionEditorsRelations = relations(submissionEditors, ({ one })
     }),
 }));
 
+// 👥 8.5 REVIEWER SUGGESTIONS (Author Preferred & Opposed Reviewers - OJS Parity)
+export const reviewerSuggestions = mysqlTable("reviewer_suggestions", {
+    id: int("id").primaryKey().autoincrement().notNull(),
+    submissionId: int("submission_id").notNull().references(() => submissions.id, { onDelete: "cascade" }),
+    type: mysqlEnum("type", ['suggested', 'opposed']).notNull(),
+    givenName: varchar("given_name", { length: 150 }).notNull(),
+    familyName: varchar("family_name", { length: 150 }),
+    email: varchar("email", { length: 255 }).notNull(),
+    orcidId: varchar("orcid_id", { length: 50 }),
+    affiliation: varchar("affiliation", { length: 500 }),
+    suggestionReason: text("suggestion_reason"),
+    approvedAt: timestamp("approved_at"),
+    mappedReviewerId: varchar("mapped_reviewer_id", { length: 36 }).references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+    index("suggestion_sub_idx").on(table.submissionId),
+    index("suggestion_type_idx").on(table.type),
+]);
+
+export const reviewerSuggestionsRelations = relations(reviewerSuggestions, ({ one }) => ({
+    submission: one(submissions, {
+        fields: [reviewerSuggestions.submissionId],
+        references: [submissions.id],
+    }),
+    mappedReviewer: one(users, {
+        fields: [reviewerSuggestions.mappedReviewerId],
+        references: [users.id],
+    }),
+}));
+
+// 📜 8.6 SUBMISSION EVENT LOG (Typed Editorial Audit Trail - OJS Parity)
+export const SUBMISSION_EVENT_TYPES = [
+    'submission_created',
+    'editor_assigned',
+    'reviewer_invited',
+    'reviewer_accepted',
+    'reviewer_declined',
+    'reviewer_assigned',
+    'review_submitted',
+    'revision_requested',
+    'revision_submitted',
+    'decision_recorded',
+    'galley_requested',
+    'galley_approved',
+    'galley_corrections_requested',
+    'galley_proof_requested',
+    'galley_proof_responded',
+    'copyright_uploaded',
+    'paper_scheduled',
+    'paper_accepted',
+    'paper_rejected',
+    'paper_published',
+    'doi_assigned',
+    'paper_retracted',
+    'retraction_issued',
+    'corrigendum_issued',
+    'payment_verified',
+    'comment_added'
+] as const;
+
+export type SubmissionEventType = typeof SUBMISSION_EVENT_TYPES[number];
+
+export const submissionEventLog = mysqlTable("submission_event_log", {
+    id: int("id").primaryKey().autoincrement().notNull(),
+    submissionId: int("submission_id").notNull().references(() => submissions.id, { onDelete: "cascade" }),
+    eventType: varchar("event_type", { length: 100 }).$type<SubmissionEventType>().notNull(),
+    userId: varchar("user_id", { length: 36 }).references(() => users.id, { onDelete: "set null" }),
+    description: text("description").notNull(),
+    metadata: json("metadata"),
+    createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+    index("event_sub_idx").on(table.submissionId),
+    index("event_type_idx").on(table.eventType),
+    index("event_created_idx").on(table.createdAt),
+]);
+
+export const submissionEventLogRelations = relations(submissionEventLog, ({ one }) => ({
+    submission: one(submissions, {
+        fields: [submissionEventLog.submissionId],
+        references: [submissions.id],
+    }),
+    user: one(users, {
+        fields: [submissionEventLog.userId],
+        references: [users.id],
+    }),
+}));
+
 // 🧪 9. REVIEW ASSIGNMENTS
 export const reviewAssignments = mysqlTable("review_assignments", {
     id: int("id").primaryKey().autoincrement().notNull(),
@@ -356,8 +477,13 @@ export const volumesIssues = mysqlTable("volumes_issues", {
     volumeNumber: int("volume_number").notNull(),
     issueNumber: int("issue_number").notNull(),
     year: int("year").notNull(),
+    title: varchar("title", { length: 255 }),
+    description: text("description"),
     monthRange: varchar("month_range", { length: 100 }),
     fullBookPdfUrl: varchar("full_book_pdf_url", { length: 500 }),
+    coverImageUrl: varchar("cover_image_url", { length: 500 }),
+    coverImageAltText: varchar("cover_image_alt_text", { length: 255 }),
+    datePublished: timestamp("date_published"),
     status: mysqlEnum("status", ['open', 'published']).default('open').notNull(),
     createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
@@ -378,6 +504,9 @@ export const publications = mysqlTable("publications", {
     startPage: int("start_page"),
     endPage: int("end_page"),
     doi: varchar("doi", { length: 100 }).unique(),
+    doiProvider: mysqlEnum("doi_provider", ['none', 'crossref', 'zenodo', 'custom']).default('none').notNull(),
+    doiRegistrationStatus: mysqlEnum("doi_reg_status", ['none', 'pending', 'registered', 'failed']).default('none').notNull(),
+    doiRegistrationBatchId: varchar("doi_reg_batch_id", { length: 100 }),
     publishedAt: timestamp("published_at").defaultNow(),
     views: int("views").default(0).notNull(),
     downloads: int("downloads").default(0).notNull(),
@@ -597,3 +726,67 @@ export const emailTemplates = mysqlTable("email_templates", {
     variables: json("variables").$type<string[]>(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
+
+// 📢 18. ANNOUNCEMENTS (OJS Parity - Journal Announcements & Alerts)
+export const announcements = mysqlTable("announcements", {
+    id: int("id").primaryKey().autoincrement().notNull(),
+    title: varchar("title", { length: 255 }).notNull(),
+    type: mysqlEnum("type", ['call_for_papers', 'news', 'editorial_update', 'event']).default('news').notNull(),
+    descriptionShort: varchar("description_short", { length: 500 }),
+    description: text("description").notNull(),
+    imageUrl: varchar("image_url", { length: 500 }),
+    imageAltText: varchar("image_alt_text", { length: 255 }),
+    dateExpire: timestamp("date_expire"),
+    isActive: boolean("is_active").default(true).notNull(),
+    priority: int("priority").default(0).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+    index("idx_announcement_active").on(table.isActive),
+    index("idx_announcement_type").on(table.type),
+]);
+
+// 📄 19. STATIC PAGES (OJS Parity - Custom CMS Pages Plugin)
+export const staticPages = mysqlTable("static_pages", {
+    id: int("id").primaryKey().autoincrement().notNull(),
+    slug: varchar("slug", { length: 100 }).notNull().unique(),
+    title: varchar("title", { length: 255 }).notNull(),
+    content: text("content").notNull(),
+    isPublished: boolean("is_published").default(true).notNull(),
+    showInNav: boolean("show_in_nav").default(false).notNull(),
+    navLabel: varchar("nav_label", { length: 100 }),
+    navOrder: int("nav_order").default(0).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+    index("idx_static_page_slug").on(table.slug),
+    index("idx_static_page_published").on(table.isPublished),
+]);
+
+// 📈 20. USAGE STATS (OJS Parity - COUNTER Release 5 & SUSHI Institutional Metrics)
+export const usageStats = mysqlTable("usage_stats", {
+    id: int("id").primaryKey().autoincrement().notNull(),
+    publicationId: int("publication_id").notNull().references(() => publications.id, { onDelete: "cascade" }),
+    year: int("year").notNull(),
+    month: int("month").notNull(),
+    metricType: mysqlEnum("metric_type", [
+        'total_item_investigations',
+        'unique_item_investigations',
+        'total_item_requests',
+        'unique_item_requests'
+    ]).notNull(),
+    metricCount: int("metric_count").default(0).notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+    uniqueIndex("idx_usage_bucket").on(table.publicationId, table.year, table.month, table.metricType),
+    index("idx_usage_year_month").on(table.year, table.month),
+]);
+
+export const usageStatsRelations = relations(usageStats, ({ one }) => ({
+    publication: one(publications, {
+        fields: [usageStats.publicationId],
+        references: [publications.id],
+    }),
+}));
+
+

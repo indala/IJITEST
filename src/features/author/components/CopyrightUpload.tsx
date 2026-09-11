@@ -81,7 +81,7 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
                     {copyrightUrl && (
                         <div className="pt-2">
                             <Button asChild variant="outline" size="sm" className="h-9 gap-2 border-primary/20 text-primary hover:bg-primary/5 font-semibold text-xs transition-all">
-                                <a href={copyrightUrl} download target="_blank" rel="noopener noreferrer">
+                                <a href={copyrightUrl} download="IJITEST-Publication-License-Agreement.docx" target="_blank" rel="noopener noreferrer">
                                     <Download className="w-3.5 h-3.5" />
                                     Download Copyright Template
                                 </a>

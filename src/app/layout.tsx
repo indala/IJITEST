@@ -42,6 +42,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: '/',
+    types: {
+      'application/rss+xml': '/api/feed/rss',
+      'application/atom+xml': '/api/feed/atom',
+    },
   },
   openGraph: {
     title: "IJITEST | International Journal of Innovative Trends in Engineering Science and Technology",

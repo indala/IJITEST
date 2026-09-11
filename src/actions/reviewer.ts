@@ -8,7 +8,7 @@ import {
     applicationInterests, 
     masterInterests 
 } from "@/db/schema";
-import { type ActionResponse, actionSuccess, actionError } from "@/db/types";
+import { type ActionResponse, actionSuccess, actionError } from "@/lib/action-response";
 import { insertApplicationSchema } from "@/db/validation";
 import { emailTemplates, sendEmail } from "@/lib/mail";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";

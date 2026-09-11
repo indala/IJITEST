@@ -7,13 +7,24 @@ export default function robots(): MetadataRoute.Robots {
         rules: [
             {
                 userAgent: '*',
-                allow: '/',
+                allow: [
+                    '/',
+                    '/announcements',
+                    '/pages/',
+                    '/api/sushi',
+                    '/api/oai',
+                    '/api/feed',
+                    '/api/export/',
+                    '/api/files/published/',
+                ],
                 disallow: [
-                    '/api/',
                     '/admin/',
                     '/editor/',
                     '/reviewer/',
                     '/author/',
+                    '/api/auth/',
+                    '/api/receipt/',
+                    '/api/certificate/',
                 ],
             },
             {

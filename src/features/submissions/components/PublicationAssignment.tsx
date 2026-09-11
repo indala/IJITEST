@@ -22,6 +22,7 @@ import {
     createVolumeIssue,
     assignPaperToIssue
 } from '@/actions/publications'
+import { depositToCrossref } from '@/actions/doi-registration'
 import { useQueryClient } from '@tanstack/react-query'
 import { type ActionResponse } from '@/db/types'
 import { useSettingsContext } from '@/components/providers/SettingsContext'
@@ -43,8 +44,13 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
     const [selectedIssueId, setSelectedIssueId] = useState<string>(currentIssueId?.toString() || "");
     const [startPage, setStartPage] = useState<string>("");
     const [endPage, setEndPage] = useState<string>("");
-    const [doiChoice, setDoiChoice] = useState<'none' | 'official' | 'custom'>(isAutoMode ? 'official' : 'none');
+    const [doiChoice, setDoiChoice] = useState<'none' | 'official' | 'zenodo' | 'custom'>(isAutoMode ? 'official' : 'none');
     const [customDoiValue, setCustomDoiValue] = useState<string>("");
+    const [depositStatus, setDepositStatus] = useState<{
+        status: 'idle' | 'depositing' | 'success' | 'error';
+        batchId?: string;
+        message?: string;
+    }>({ status: 'idle' });
     const [isAssigning, startAssign] = useTransition();
 
     const [, createAction, isCreating] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
@@ -70,6 +76,8 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
             targetDoi = paperId ? `${doiPrefix}/${paperId}` : doiPrefix;
         } else if (doiChoice === 'custom') {
             targetDoi = customDoiValue.trim() || null;
+        } else if (doiChoice === 'zenodo') {
+            targetDoi = customDoiValue.trim() || null;
         } else {
             targetDoi = null;
         }
@@ -81,12 +89,34 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                     parseInt(selectedIssueId),
                     startPage ? parseInt(startPage) : undefined,
                     endPage ? parseInt(endPage) : undefined,
-                    targetDoi
+                    targetDoi,
+                    doiChoice
                 );
                 if (res.success) {
-                    toast.success("Manuscript committed to archive");
                     queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
                     queryClient.invalidateQueries({ queryKey: ['submissions'] });
+
+                    if (doiChoice === 'official') {
+                        setDepositStatus({ status: 'depositing' });
+                        toast.info("Manuscript archived. Submitting to CrossRef...");
+                        const depRes = await depositToCrossref(submissionId);
+                        if (depRes.success) {
+                            setDepositStatus({
+                                status: 'success',
+                                batchId: depRes.data.batchId,
+                                message: depRes.data.message
+                            });
+                            toast.success(`Registered with CrossRef ✓ (Batch: ${depRes.data.batchId})`);
+                        } else {
+                            setDepositStatus({
+                                status: 'error',
+                                message: depRes.error
+                            });
+                            toast.warning(`Archived, but CrossRef deposit needs review: ${depRes.error}`);
+                        }
+                    } else {
+                        toast.success("Manuscript committed to archive");
+                    }
                 } else {
                     toast.error(res.error || "Failed to assign paper to issue");
                 }
@@ -223,11 +253,11 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                         <label className="text-[11px] font-semibold text-foreground">DOI Assignment</label>
                         <span className="text-[10px] text-muted-foreground font-mono">Prefix: {doiPrefix}</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted/40 rounded-lg border border-border/40 text-xs">
+                    <div className="grid grid-cols-4 gap-1 p-1 bg-muted/40 rounded-lg border border-border/40 text-[11px]">
                         <button
                             type="button"
                             onClick={() => setDoiChoice('none')}
-                            className={`py-1.5 px-2 rounded text-center transition-all cursor-pointer font-medium ${
+                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
                                 doiChoice === 'none' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
                             }`}
                         >
@@ -236,27 +266,47 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                         <button
                             type="button"
                             onClick={() => setDoiChoice('official')}
-                            className={`py-1.5 px-2 rounded text-center transition-all cursor-pointer font-medium ${
+                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
                                 doiChoice === 'official' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
                             }`}
                         >
-                            Official CrossRef
+                            CrossRef
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setDoiChoice('zenodo')}
+                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
+                                doiChoice === 'zenodo' ? 'bg-sky-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                        >
+                            Zenodo
                         </button>
                         <button
                             type="button"
                             onClick={() => setDoiChoice('custom')}
-                            className={`py-1.5 px-2 rounded text-center transition-all cursor-pointer font-medium ${
+                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
                                 doiChoice === 'custom' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
                             }`}
                         >
-                            Zenodo / Custom
+                            Custom
                         </button>
                     </div>
 
                     {doiChoice === 'official' && (
-                        <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs space-y-0.5">
-                            <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Official DOI Target</p>
+                        <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs space-y-1">
+                            <div className="flex items-center justify-between">
+                                <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Official CrossRef DOI</p>
+                                <span className="text-[9px] bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Auto-Deposit</span>
+                            </div>
                             <p className="font-mono text-emerald-900 dark:text-emerald-300 break-all">{doiPrefix}/{paperId || '...'}</p>
+                            <p className="text-[10px] text-muted-foreground">Generates CrossRef Schema 5.3 XML & queues live deposit to CrossRef API.</p>
+                        </div>
+                    )}
+
+                    {doiChoice === 'zenodo' && (
+                        <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 rounded-lg text-xs space-y-1">
+                            <p className="text-[10px] font-bold text-sky-700 dark:text-sky-400 uppercase tracking-wider">Zenodo Self-Archiving</p>
+                            <p className="text-[10px] text-muted-foreground">Paper will be published immediately; authors or editors can deposit directly to Zenodo from the manuscript console.</p>
                         </div>
                     )}
 
@@ -268,7 +318,14 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                                 onChange={(e) => setCustomDoiValue(e.target.value)}
                                 className="h-9 bg-background text-xs font-mono"
                             />
-                            <p className="text-[10px] text-muted-foreground">Enter the persistent digital identifier (Zenodo, DataCite, or external DOI).</p>
+                            <p className="text-[10px] text-muted-foreground">Enter the persistent digital identifier (external registrar or pre-reserved DOI).</p>
+                        </div>
+                    )}
+
+                    {depositStatus.status === 'success' && depositStatus.batchId && (
+                        <div className="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-xs text-emerald-800">
+                            <p className="font-bold">CrossRef Deposit Submitted ✓</p>
+                            <p className="text-[10px] font-mono">Batch ID: {depositStatus.batchId}</p>
                         </div>
                     )}
                 </div>
@@ -284,7 +341,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                 ) : (
                     <Globe className="w-4 h-4 mr-2" />
                 )}
-                {isAssigning ? 'INDEXING...' : 'Commit to Archive'}
+                {isAssigning ? 'ARCHIVING & REGISTERING...' : 'Commit to Archive'}
             </Button>
         </div>
     );

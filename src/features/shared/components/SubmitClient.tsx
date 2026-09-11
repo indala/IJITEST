@@ -3,6 +3,7 @@ import Link from 'next/link';
 import SubmissionForm from '@/features/submissions/components/SubmissionForm';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
+import type { Section } from "@/db/types";
 
 const REQUIREMENTS = [
     { title: "Formatting", desc: "Manuscripts must follow the IEEE standard format." },
@@ -11,7 +12,11 @@ const REQUIREMENTS = [
     { title: "Copyright", desc: "A signed copyright transfer form is required upon acceptance." }
 ];
 
-export default function SubmitClient() {
+interface SubmitClientProps {
+    initialSections?: Section[] | undefined;
+}
+
+export default function SubmitClient({ initialSections }: SubmitClientProps) {
 
     return (
         <section className="container-responsive py-6 sm:py-8">
@@ -28,7 +33,7 @@ export default function SubmitClient() {
                             </div>
                         </div>
                         <div className="p-4 sm:p-6">
-                            <SubmissionForm />
+                            <SubmissionForm initialSections={initialSections} />
                         </div>
                     </section>
                 </div>

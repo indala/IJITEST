@@ -18,10 +18,22 @@ import {
     settings,
     chatMessages,
     pushSubscriptions,
-    emailTemplates
+    emailTemplates,
+    sections,
+    reviewerSuggestions,
+    submissionEventLog,
+    announcements,
+    staticPages,
+    usageStats,
+    SUBMISSION_EVENT_TYPES,
+    type SubmissionEventType
 } from "./schema";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
+
+// 📜 Re-export submission event types
+export { SUBMISSION_EVENT_TYPES };
+export type { SubmissionEventType };
 
 // 🏷️ Global Literal Types (Enums derived from Schema)
 export type UserRole = InferSelectModel<typeof users>['role'];
@@ -37,6 +49,8 @@ export type FileType = InferSelectModel<typeof submissionFiles>['fileType'];
 export type FinalDecision = InferSelectModel<typeof submissions>['finalDecision'];
 export type GalleyStatus = InferSelectModel<typeof submissions>['galleyStatus'];
 export type NotificationType = InferSelectModel<typeof notifications>['type'];
+export type DoiProvider = InferSelectModel<typeof publications>['doiProvider'];
+export type DoiRegistrationStatus = InferSelectModel<typeof publications>['doiRegistrationStatus'];
 
 // 👤 Users & Profiles
 export type User = InferSelectModel<typeof users>;
@@ -94,6 +108,9 @@ export type SubmissionDetail = Submission & {
     correspondingAuthor?: UserWithProfile | undefined;
     versions: (Version & { files: SubmissionFile[] })[];
     authors: Author[];
+    section?: Section | null | undefined;
+    reviewerSuggestions?: ReviewerSuggestion[] | undefined;
+    eventLogs?: (SubmissionEventLogEntry & { user?: UserWithProfile | null })[] | undefined;
     payment?: Payment | null | undefined;
     publication: Publication | null;
     issue: Issue | null;
@@ -187,10 +204,16 @@ export type AuthorSubmissionDetail = Pick<Submission, 'id' | 'paperId' | 'status
         versionId: Pick<Version, 'id'>['id'];
         files: SubmissionFile[];
         authors: Author[];
+        section?: Section | null | undefined;
+        reviewerSuggestions?: ReviewerSuggestion[] | undefined;
         reviewComments: Array<Pick<Review, 'commentsToAuthor' | 'decision' | 'submittedAt'> &
             Pick<ReviewAssignment, 'reviewRound' | 'deadline'>>;
         payment: Payment | null | undefined;
         publication: (Publication & Pick<Issue, 'volumeNumber' | 'issueNumber' | 'year'>) | null | undefined;
+        zenodoDeposit?: {
+            doi: string;
+            recordUrl: string;
+        } | null | undefined;
     };
 
 // 📬 Correspondence
@@ -231,6 +254,12 @@ export type PublishedPaperUI = Pick<Submission, 'status' | 'updatedAt'> &
         retractionReason?: string | null | undefined;
         retractionNoticeUrl?: string | null | undefined;
         retractedAt?: Date | string | null | undefined;
+        submittedAt?: Date | string | null | undefined;
+        acceptedAt?: Date | string | null | undefined;
+        sectionTitle?: string | null | undefined;
+        sectionIdentifyType?: string | null | undefined;
+        issueDatePublished?: Date | string | null | undefined;
+        issueTitle?: string | null | undefined;
     };
 
 // 🗺️ Route Param Types (for Next.js [dynamic] pages — derived from schema)
@@ -299,55 +328,12 @@ export type UnassignedPaper = Pick<Submission, 'id' | 'paperId'> & {
     title: Pick<Version, 'title'>['title'];
     pdfUrl: Pick<SubmissionFile, 'fileUrl'>['fileUrl'] | null;
     isBlinded?: boolean | undefined;
+    reviewerSuggestions?: ReviewerSuggestion[] | undefined;
+    sectionTitle?: string | null | undefined;
 };
 
-// 🧪 Common Return Types (Discriminated Union)
-// 🛡️ Elite: Discriminated union with conditional requirement for 'data'
-export type ActionResponse<T = void> =
-    | (T extends void
-        ? { success: true; data?: T; message?: string }
-        : { success: true; data: T; message?: string })
-    | { success: false; error: string; data?: never; message?: string };
-
-// 🛠️ Utility Helpers
-export type SuccessResponse<T> = Extract<ActionResponse<T>, { success: true }>;
-export type ErrorResponse = Extract<ActionResponse, { success: false }>;
-
-/**
- * 🛡️ Elite: Helper to create a successful ActionResponse
- */
-export function actionSuccess<T = void>(data: T, message?: string): ActionResponse<T>;
-export function actionSuccess(data?: undefined, message?: string): ActionResponse<void>;
-export function actionSuccess<T>(data?: T, message?: string): ActionResponse<T> {
-    return { success: true, data: data as T, message } as ActionResponse<T>;
-}
-
-/**
- * 🛡️ Elite: Helper to create a failed ActionResponse
- */
-export function actionError<T = void>(error: string): ActionResponse<T> {
-    return { success: false, error } as ActionResponse<T>;
-}
-
-/**
- * 🛡️ Elite: Server-safe error helper — logs the real error server-side,
- * returns a sanitized user-safe message to the client.
- */
-export function serverError<T = void>(
-    error: unknown,
-    context?: string
-): ActionResponse<T> {
-    const realMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[Server Error]${context ? ` [${context}]` : ''}:`, realMessage,
-        error instanceof Error ? '\n' + error.stack : '');
-
-    // Provide a generic user-safe message based on context
-    const userMessage = context
-        ? `Failed to ${context.toLowerCase()}. Please try again.`
-        : "An unexpected error occurred. Please try again.";
-
-    return { success: false, error: userMessage, data: undefined } as unknown as ActionResponse<T>;
-}
+// 🧪 Common Return Types (Re-exported from @/lib/action-response)
+export type { ActionResponse, SuccessResponse, ErrorResponse } from "@/lib/action-response";
 
 // ⚙️ Journal Settings
 export interface JournalSettings {
@@ -406,6 +392,110 @@ export interface ClientToServerEvents {
 // 🔀 Web Push Types
 export type PushSubscriptionRow = InferSelectModel<typeof pushSubscriptions>;
 export type NewPushSubscriptionRow = InferInsertModel<typeof pushSubscriptions>;
+
+// 📚 Sections (OJS Parity)
+export type Section = InferSelectModel<typeof sections>;
+export type NewSection = InferInsertModel<typeof sections>;
+
+// 👥 Reviewer Suggestions
+export type ReviewerSuggestion = InferSelectModel<typeof reviewerSuggestions>;
+export type NewReviewerSuggestion = InferInsertModel<typeof reviewerSuggestions>;
+
+// 📜 Submission Event Log
+export type SubmissionEventLogEntry = InferSelectModel<typeof submissionEventLog>;
+export type NewSubmissionEventLogEntry = InferInsertModel<typeof submissionEventLog>;
+export type SubmissionEventWithActor = SubmissionEventLogEntry & {
+    actor: {
+        id: string;
+        fullName: string;
+        role: string;
+        photoUrl?: string | null;
+    } | null;
+};
+
+// 📢 Announcements (OJS Parity)
+export type AnnouncementType = InferSelectModel<typeof announcements>['type'];
+export type Announcement = InferSelectModel<typeof announcements>;
+export type NewAnnouncement = InferInsertModel<typeof announcements>;
+
+// 📄 Static Pages (OJS Parity)
+export type StaticPage = InferSelectModel<typeof staticPages>;
+export type NewStaticPage = InferInsertModel<typeof staticPages>;
+
+// 🔗 Related Articles (OJS Parity - recommendByAuthor / recommendBySimilarity)
+export type RelatedArticle = PublishedPaperUI & {
+    matchReason: string;
+    matchScore: number;
+};
+
+// 📈 Usage Stats & COUNTER Release 5 / SUSHI Types
+export type UsageStat = InferSelectModel<typeof usageStats>;
+export type NewUsageStat = InferInsertModel<typeof usageStats>;
+export type UsageMetricType =
+    | 'total_item_investigations'
+    | 'unique_item_investigations'
+    | 'total_item_requests'
+    | 'unique_item_requests';
+
+export interface SushiStatusResponse {
+    Description: string;
+    Service_Active: boolean;
+    Release: string;
+}
+
+export interface SushiReportDefinition {
+    Report_Name: string;
+    Report_ID: string;
+    Release: string;
+    Report_Description: string;
+    Path: string;
+}
+
+export interface CounterReportHeader {
+    Created: string;
+    Created_By: string;
+    Customer_ID: string;
+    Report_ID: string;
+    Release: string;
+    Report_Name: string;
+    Institution_Name: string;
+    Report_Filters: { Name: string; Value: string }[];
+    Report_Attributes?: { Name: string; Value: string }[] | undefined;
+    Exceptions?: { Code: number; Severity: string; Message: string; Data?: string | undefined }[] | undefined;
+}
+
+export interface CounterPerformanceInstance {
+    Metric_Type: string;
+    Count: number;
+}
+
+export interface CounterPerformancePeriod {
+    Period: {
+        Begin_Date: string;
+        End_Date: string;
+    };
+    Instance: CounterPerformanceInstance[];
+}
+
+export interface CounterReportItem {
+    Title?: string | undefined;
+    Item?: string | undefined;
+    Platform: string;
+    Publisher?: string | undefined;
+    Item_ID: { Type: string; Value: string }[];
+    Item_Contributors?: { Type: string; Name: string; Identifier?: string | undefined }[] | undefined;
+    Item_Dates?: { Type: string; Value: string }[] | undefined;
+    Item_Attributes?: { Type: string; Value: string }[] | undefined;
+    Data_Type?: string | undefined;
+    Section_Type?: string | undefined;
+    YOP?: string | undefined;
+    Performance: CounterPerformancePeriod[];
+}
+
+export interface CounterR5Response {
+    Report_Header: CounterReportHeader;
+    Report_Items: CounterReportItem[];
+}
 
 
 

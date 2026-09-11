@@ -13,14 +13,18 @@ import {
     ExternalLink,
     Loader2,
     CheckCircle2,
-    Mail
+    Mail,
+    Activity,
+    BarChart3,
+    Copy,
+    Check
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from "@/lib/utils";
 import { useSettings } from '@/hooks/queries/useSettings';
 import { useState, useActionState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { updateSettings, togglePromotionStatus } from '@/actions/settings';
+import { updateSettings, togglePromotionStatus, getSystemTelemetry } from '@/actions/settings';
 import type { ActionResponse } from '@/db/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -54,6 +58,8 @@ interface JournalSettings {
     isPromotionActive?: string;
     doiPrefix?: string;
     doiAssignmentMode?: string;
+    sushiPlatformId?: string;
+    sushiCustomerId?: string;
 }
 
 const containerVariants: Variants = {
@@ -82,6 +88,41 @@ export default function SystemSettings() {
     const [selectedCopyright, setSelectedCopyright] = useState<string | null>(null);
     const [isPromotionActive, setIsPromotionActive] = useState<boolean>(true);
     const [isTogglingPromotion, setIsTogglingPromotion] = useState<boolean>(false);
+    const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
+    const [telemetry, setTelemetry] = useState<{
+        counterMetrics: {
+            totalInvestigations: number;
+            uniqueInvestigations: number;
+            totalRequests: number;
+            uniqueRequests: number;
+        };
+        storageStats: {
+            sizeBytes: number;
+            sizeMB: number;
+            fileCount: number;
+        } | null;
+        sushiStatus: {
+            Description: string;
+            Service_Active: boolean;
+            Release: string;
+        };
+    } | null>(null);
+
+    useEffect(() => {
+        getSystemTelemetry().then((res) => {
+            if (res.success && res.data) {
+                setTelemetry(res.data);
+            }
+        });
+    }, []);
+
+    const copyToClipboard = (endpoint: string) => {
+        const fullUrl = `${window.location.origin}${endpoint}`;
+        navigator.clipboard.writeText(fullUrl);
+        setCopiedUrl(endpoint);
+        toast.success("SUSHI Endpoint Copied", { description: fullUrl });
+        setTimeout(() => setCopiedUrl(null), 2500);
+    };
 
     useEffect(() => {
         if (settings.isPromotionActive !== undefined) {
@@ -526,7 +567,7 @@ export default function SystemSettings() {
                                                     <p className="truncate text-xs font-medium text-slate-600">{settings.templateUrl.split('/').pop()}</p>
                                                 </div>
                                                 <Button asChild variant="ghost" size="icon" className="w-7 h-7 rounded-lg hover:bg-blue-50 hover:text-blue-600">
-                                                    <a href={settings.templateUrl} target="_blank" download title="Download Template"><ExternalLink className="w-3.5 h-3.5" /></a>
+                                                    <a href={settings.templateUrl} target="_blank" download="IJITEST-Manuscript-Template.docx" title="Download Template"><ExternalLink className="w-3.5 h-3.5" /></a>
                                                 </Button>
                                             </div>
                                         )}
@@ -592,7 +633,7 @@ export default function SystemSettings() {
                                                     <p className="truncate text-xs font-medium text-slate-600">{settings.copyrightUrl.split('/').pop()}</p>
                                                 </div>
                                                 <Button asChild variant="ghost" size="icon" className="w-7 h-7 rounded-lg hover:bg-indigo-50 hover:text-indigo-600">
-                                                    <a href={settings.copyrightUrl} target="_blank" download title="Download Copyright Form"><ExternalLink className="w-3.5 h-3.5" /></a>
+                                                    <a href={settings.copyrightUrl} target="_blank" download="IJITEST-Publication-License-Agreement.docx" title="Download Copyright Form"><ExternalLink className="w-3.5 h-3.5" /></a>
                                                 </Button>
                                             </div>
                                         )}
@@ -652,6 +693,148 @@ export default function SystemSettings() {
                                 </div>
                                 <input type="hidden" name="isPromotionActive" value={isPromotionActive ? "true" : "false"} />
                             </div>
+                        </Card>
+                    </motion.div>
+
+                    {/* 10. Institutional Metrics & SUSHI / COUNTER R5 Standards */}
+                    <motion.div variants={itemVariants} className="lg:col-span-2">
+                        <Card className="bg-white shadow-xl rounded-2xl border border-slate-200 overflow-hidden">
+                            <CardHeader className="p-6 pb-4 border-b border-slate-50">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
+                                            <BarChart3 className="w-6 h-6" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <div className="flex items-center gap-2">
+                                                <CardTitle className="text-slate-900">Institutional Metrics & SUSHI (COUNTER R5)</CardTitle>
+                                                <Badge className="bg-emerald-100 text-emerald-800 border-none font-bold text-[9px] px-2 py-0.5">
+                                                    Release 5 Compliant
+                                                </Badge>
+                                            </div>
+                                            <CardDescription className="text-slate-500 text-xs">
+                                                Automated harvesting endpoints for university libraries, indexers, and consortium metrics.
+                                            </CardDescription>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 text-xs px-2.5 py-1">
+                                            <Activity className="w-3 h-3 text-emerald-500 mr-1.5 animate-pulse" />
+                                            SUSHI Active
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-6">
+                                {/* Live COUNTER & Storage Metrics Grid */}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                                    <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Investigations</span>
+                                        <p className="text-xl font-black text-slate-800 m-0">
+                                            {telemetry ? telemetry.counterMetrics.totalInvestigations.toLocaleString() : "--"}
+                                        </p>
+                                        <span className="text-[10px] text-slate-400 mt-1 block">Article Page Views</span>
+                                    </div>
+                                    <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Unique Investigations</span>
+                                        <p className="text-xl font-black text-slate-800 m-0">
+                                            {telemetry ? telemetry.counterMetrics.uniqueInvestigations.toLocaleString() : "--"}
+                                        </p>
+                                        <span className="text-[10px] text-slate-400 mt-1 block">Unique Daily Readers</span>
+                                    </div>
+                                    <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Requests</span>
+                                        <p className="text-xl font-black text-emerald-700 m-0">
+                                            {telemetry ? telemetry.counterMetrics.totalRequests.toLocaleString() : "--"}
+                                        </p>
+                                        <span className="text-[10px] text-emerald-600 mt-1 block">Full-Text PDF Downloads</span>
+                                    </div>
+                                    <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Unique Requests</span>
+                                        <p className="text-xl font-black text-emerald-700 m-0">
+                                            {telemetry ? telemetry.counterMetrics.uniqueRequests.toLocaleString() : "--"}
+                                        </p>
+                                        <span className="text-[10px] text-emerald-600 mt-1 block">Unique PDF Downloads</span>
+                                    </div>
+                                    <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 col-span-2 sm:col-span-1">
+                                        <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-wider block mb-1">Storage-Service</span>
+                                        <p className="text-xl font-black text-indigo-900 m-0">
+                                            {telemetry?.storageStats ? `${telemetry.storageStats.sizeMB} MB` : "Connected"}
+                                        </p>
+                                        <span className="text-[10px] text-indigo-600 mt-1 block">
+                                            {telemetry?.storageStats ? `${telemetry.storageStats.fileCount} Managed Files` : "Fastify Backend Active"}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* SUSHI Harvest Endpoints */}
+                                <div className="space-y-3">
+                                    <Label className="text-xs font-bold text-slate-700">Automated Harvesting Endpoints</Label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {[
+                                            { name: "Service Status", path: "/api/sushi/status", desc: "SUSHI protocol operational check" },
+                                            { name: "Reports Catalog", path: "/api/sushi/reports", desc: "List of supported COUNTER R5 reports" },
+                                            { name: "Title Master Report (TR)", path: "/api/sushi/reports/tr", desc: "Journal-level monthly investigations & requests" },
+                                            { name: "Journal Article Requests (IR_A1)", path: "/api/sushi/reports/ir_a1", desc: "Granular article-by-article download counts" },
+                                        ].map((ep) => (
+                                            <div key={ep.path} className="flex items-center justify-between p-3 bg-slate-50/80 rounded-xl border border-slate-200/80 hover:bg-white hover:shadow-xs transition-all">
+                                                <div className="min-w-0 pr-2">
+                                                    <p className="text-xs font-bold text-slate-800 m-0">{ep.name}</p>
+                                                    <code className="text-[11px] text-indigo-600 font-mono block truncate mt-0.5">{ep.path}</code>
+                                                </div>
+                                                <div className="flex items-center gap-1 shrink-0">
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => copyToClipboard(ep.path)}
+                                                        className="h-8 px-2.5 text-xs text-slate-600 hover:text-indigo-600 cursor-pointer"
+                                                        title="Copy endpoint URL"
+                                                    >
+                                                        {copiedUrl === ep.path ? (
+                                                            <Check className="w-3.5 h-3.5 text-emerald-600 mr-1" />
+                                                        ) : (
+                                                            <Copy className="w-3.5 h-3.5 mr-1" />
+                                                        )}
+                                                        {copiedUrl === ep.path ? "Copied" : "Copy"}
+                                                    </Button>
+                                                    <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-xs text-slate-500 hover:text-indigo-600">
+                                                        <a href={ep.path} target="_blank" rel="noreferrer" title="Open in new tab">
+                                                            <ExternalLink className="w-3.5 h-3.5" />
+                                                        </a>
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Configurable Identifiers */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-slate-100">
+                                    <div className="space-y-1.5">
+                                        <Label htmlFor="sushiPlatformId" className="text-xs font-bold text-slate-700">SUSHI Platform Identifier</Label>
+                                        <Input
+                                            id="sushiPlatformId"
+                                            name="sushiPlatformId"
+                                            defaultValue={settings.sushiPlatformId || "ijitest"}
+                                            placeholder="ijitest"
+                                            className="h-10 text-xs"
+                                        />
+                                        <p className="text-[10px] text-slate-400 m-0">Used as the platform identifier in standard COUNTER headers.</p>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <Label htmlFor="sushiCustomerId" className="text-xs font-bold text-slate-700">Default Customer ID</Label>
+                                        <Input
+                                            id="sushiCustomerId"
+                                            name="sushiCustomerId"
+                                            defaultValue={settings.sushiCustomerId || "0"}
+                                            placeholder="0"
+                                            className="h-10 text-xs"
+                                        />
+                                        <p className="text-[10px] text-slate-400 m-0">Use &apos;0&apos; to represent open-access / global public access (The World).</p>
+                                    </div>
+                                </div>
+                            </CardContent>
                         </Card>
                     </motion.div>
 

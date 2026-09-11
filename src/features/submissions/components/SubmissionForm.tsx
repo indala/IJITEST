@@ -1,27 +1,45 @@
 'use client';
 
-import { useCallback, useActionState, useState } from "react";
+import { useCallback, useActionState, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Form } from "@/components/ui/form";
 import { submitPaper } from "@/actions/submit-paper";
-import { type ActionResponse } from "@/db/types";
+import { getSections } from "@/actions/sections";
+import { type ActionResponse, type Section } from "@/db/types";
 import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { formSchema, type FormValues } from "../schemas/submission.schema";
 import { SubmissionSuccessCard } from "./form/SubmissionSuccessCard";
 import { AuthorDetailsFields } from "./form/AuthorDetailsFields";
 import { CoAuthorsSection } from "./form/CoAuthorsSection";
+import { ReviewerSuggestionsSection } from "./form/ReviewerSuggestionsSection";
 import { ManuscriptUploadDropzone } from "./form/ManuscriptUploadDropzone";
 
-export default function SubmissionForm() {
+interface SubmissionFormProps {
+    initialSections?: Section[] | undefined;
+}
+
+export default function SubmissionForm({ initialSections }: SubmissionFormProps) {
     const [manuscriptFile, setManuscriptFile] = useState<File | null>(null);
+    const [sections, setSections] = useState<Section[]>(initialSections || []);
     const settings = useSettingsContext();
+
+    useEffect(() => {
+        if (!initialSections || initialSections.length === 0) {
+            getSections().then((res) => {
+                if (res.success && res.data) {
+                    setSections(res.data);
+                }
+            }).catch(console.error);
+        }
+    }, [initialSections]);
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: "",
+            sectionId: "",
             authorName: "",
             authorEmail: "",
             authorPhone: "",
@@ -30,6 +48,7 @@ export default function SubmissionForm() {
             abstract: "",
             keywords: "",
             coAuthors: [],
+            reviewerSuggestions: [],
             termsAccepted: false,
         },
     });
@@ -65,12 +84,17 @@ export default function SubmissionForm() {
 
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
+            if (value === undefined || value === null || value === "") return;
             if (key === "coAuthors") {
                 formData.append(key, JSON.stringify(value));
+            } else if (key === "reviewerSuggestions") {
+                if (Array.isArray(value) && value.length > 0) {
+                    formData.append(key, JSON.stringify(value));
+                }
             } else if (key === "termsAccepted") {
                 formData.append(key, value ? "on" : "off");
             } else {
-                formData.append(key, value as string);
+                formData.append(key, String(value));
             }
         });
         
@@ -110,8 +134,9 @@ export default function SubmissionForm() {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-8 sm:space-y-12">
-                <AuthorDetailsFields form={form} />
+                <AuthorDetailsFields form={form} sections={sections} />
                 <CoAuthorsSection control={form.control} />
+                <ReviewerSuggestionsSection control={form.control} />
                 <ManuscriptUploadDropzone
                     control={form.control}
                     manuscriptFile={manuscriptFile}

@@ -223,3 +223,39 @@ export async function triggerPdfBranding(
     }
 }
 
+/**
+ * Fetches storage telemetry from the storage-service backend.
+ */
+export async function getStorageStats(): Promise<{
+    success: boolean;
+    sizeBytes: number;
+    sizeMB: number;
+    fileCount: number;
+} | null> {
+    try {
+        const serviceUrl = process.env['STORAGE_SERVICE_URL'];
+        const secret = process.env['STORAGE_SERVICE_SECRET'];
+        if (!serviceUrl || !secret) {
+            return null;
+        }
+
+        const response = await fetch(`${serviceUrl}/storage/stats`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${secret}`
+            },
+            next: { revalidate: 300 }
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.warn("Failed to fetch storage stats from storage-service:", error);
+        return null;
+    }
+}
+
+

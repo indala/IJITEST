@@ -25,7 +25,10 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
 
     const memoizedNavigation = useMemo(() => {
         return navigation.map((item) => {
-            const isActive = pathname === item.href || (item.children?.some(child => pathname === child.href));
+            const isChildActive = (item.children?.some(child => pathname === child.href)) ||
+                (item.columns?.some(col => col.items.some(child => pathname === child.href)));
+            const isActive = pathname === item.href || isChildActive;
+            const hasDropdown = Boolean(item.children?.length || item.columns?.length);
             const isMenuOpen = activeIndex === item.name;
 
             return (
@@ -44,8 +47,8 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                 >
                     <Link
                         href={item.href}
-                        aria-haspopup={item.children ? "true" : undefined}
-                        aria-expanded={item.children ? isMenuOpen : undefined}
+                        aria-haspopup={hasDropdown ? "true" : undefined}
+                        aria-expanded={hasDropdown ? isMenuOpen : undefined}
                         className={`nav-link ${isActive ? 'text-primary' : 'text-foreground/90 hover:text-primary'}`}
                     >
                         <span className="relative z-10 py-0.5">
@@ -61,40 +64,86 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                 />
                             )}
                         </span>
-                        {item.children && (
+                        {hasDropdown && (
                             <ChevronDown className={`w-3 h-3 transition-transform duration-300 text-secondary/50 group-hover:text-secondary ${isMenuOpen ? 'rotate-180' : ''}`} />
                         )}
                     </Link>
 
                     <AnimatePresence>
-                        {item.children && isMenuOpen && (
+                        {hasDropdown && isMenuOpen && (
                             <motion.div
                                 initial={{ opacity: 0, y: 6, scale: 0.97 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 4, scale: 0.98 }}
                                 transition={{ duration: 0.15, ease: "easeOut" }}
-                                className="absolute top-[calc(100%-2px)] left-[-10px] w-64 2xl:w-72 bg-white/95 backdrop-blur-2xl border border-primary/10 rounded-2xl shadow-xl py-2 z-50 overflow-hidden"
+                                className={`absolute top-[calc(100%-2px)] ${
+                                    item.isMegaMenu
+                                        ? "left-1/2 -translate-x-1/2 w-[540px] 2xl:w-[580px] p-3.5"
+                                        : "left-[-10px] w-64 2xl:w-72 py-2"
+                                } bg-white/95 backdrop-blur-2xl border border-primary/10 rounded-2xl shadow-2xl z-50 overflow-hidden`}
                             >
                                 <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-secondary via-secondary/50 to-transparent" />
-                                <ul className="space-y-0.5 list-none p-0 m-0">
-                                    {item.children.map((child) => {
-                                        const isChildActive = pathname === child.href;
-                                        return (
-                                            <li key={child.name}>
-                                                <Link
-                                                    href={child.href}
-                                                    className={`nav-dropdown-item group/child ${isChildActive ? 'text-primary bg-primary/5' : 'text-foreground/90 hover:text-primary'}`}
-                                                >
-                                                    <span className="relative z-10 flex items-center gap-2">
-                                                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isChildActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'}`} />
-                                                        {child.name}
+
+                                {item.isMegaMenu && item.columns ? (
+                                    <div className="grid grid-cols-2 gap-3 divide-x divide-primary/5">
+                                        {item.columns.map((col, idx) => (
+                                            <div key={col.heading} className={`space-y-1.5 ${idx > 0 ? 'pl-3' : 'pr-1'}`}>
+                                                <div className="px-2.5 pb-1 border-b border-primary/5">
+                                                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-primary/60">
+                                                        {col.heading}
                                                     </span>
-                                                    <div className={`absolute inset-0 bg-primary/3 transition-transform duration-300 ${isChildActive ? 'translate-x-0' : '-translate-x-full group-hover/child:translate-x-0'}`} />
-                                                </Link>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
+                                                </div>
+                                                <ul className="space-y-0.5 list-none p-0 m-0">
+                                                    {col.items.map((child) => {
+                                                        const isSubActive = pathname === child.href;
+                                                        const IconComponent = child.icon;
+                                                        return (
+                                                            <li key={child.name}>
+                                                                <Link
+                                                                    href={child.href}
+                                                                    className={`nav-dropdown-item group/child text-xs py-1.5 px-2.5 rounded-lg flex items-center justify-between transition-all ${
+                                                                        isSubActive
+                                                                            ? 'text-primary bg-primary/5 font-semibold'
+                                                                            : 'text-foreground/80 hover:text-primary hover:bg-primary/5'
+                                                                    }`}
+                                                                >
+                                                                    <span className="relative z-10 flex items-center gap-2 truncate">
+                                                                        {IconComponent ? (
+                                                                            <IconComponent className={`w-3.5 h-3.5 shrink-0 ${isSubActive ? 'text-secondary' : 'text-primary/40 group-hover/child:text-secondary'} transition-colors`} />
+                                                                        ) : (
+                                                                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300 ${isSubActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'}`} />
+                                                                        )}
+                                                                        <span className="truncate">{child.name}</span>
+                                                                    </span>
+                                                                </Link>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <ul className="space-y-0.5 list-none p-0 m-0">
+                                        {item.children?.map((child) => {
+                                            const isChildActive = pathname === child.href;
+                                            return (
+                                                <li key={child.name}>
+                                                    <Link
+                                                        href={child.href}
+                                                        className={`nav-dropdown-item group/child ${isChildActive ? 'text-primary bg-primary/5' : 'text-foreground/90 hover:text-primary'}`}
+                                                    >
+                                                        <span className="relative z-10 flex items-center gap-2">
+                                                            <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isChildActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'}`} />
+                                                            {child.name}
+                                                        </span>
+                                                        <div className={`absolute inset-0 bg-primary/3 transition-transform duration-300 ${isChildActive ? 'translate-x-0' : '-translate-x-full group-hover/child:translate-x-0'}`} />
+                                                    </Link>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                )}
                             </motion.div>
                         )}
                     </AnimatePresence>

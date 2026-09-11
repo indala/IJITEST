@@ -9,17 +9,21 @@ import {
     Award,
     ShieldCheck,
     Paperclip,
-    FileSpreadsheet
+    FileSpreadsheet,
+    Code2
 } from "lucide-react";
 import Link from "next/link";
-import type { PublishedPaperUI } from "@/db/types";
+import type { PublishedPaperUI, RelatedArticle } from "@/db/types";
 import CitationSection from "./CitationSection";
 import { PaperViewTracker, DownloadPaperButton } from "./PaperActions";
 import { CrossrefLogo } from "@/features/indexing/components/IndexingLogos";
+import { CrossmarkDialog } from "./CrossmarkDialog";
+import { RelatedArticlesPanel } from "./RelatedArticlesPanel";
 
 interface PaperDetailClientProps {
     paper: PublishedPaperUI;
     mode?: 'current' | 'archive';
+    relatedArticles?: RelatedArticle[];
 }
 
 const OrcidIcon = ({ orcid }: { orcid: string }) => (
@@ -36,7 +40,7 @@ const OrcidIcon = ({ orcid }: { orcid: string }) => (
     </a>
 );
 
-export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDetailClientProps) {
+export default function PaperDetailClient({ paper, mode = 'archive', relatedArticles }: PaperDetailClientProps) {
     const isRetracted = paper.status === 'retracted';
     const isCorrigendum = paper.status === 'corrigendum';
 
@@ -183,6 +187,7 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                         <span>Assignment in Progress</span>
                                     </span>
                                 )}
+                                <CrossmarkDialog paper={paper} />
                                 <a
                                     href={`https://search.crossref.org/?q=${encodeURIComponent(paper.doi || paper.title)}`}
                                     target="_blank"
@@ -329,6 +334,10 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                                 </p>
                             </div>
                         </div>
+
+                        {relatedArticles && relatedArticles.length > 0 && (
+                            <RelatedArticlesPanel articles={relatedArticles} />
+                        )}
                     </div>
                 </div>
 
@@ -372,6 +381,47 @@ export default function PaperDetailClient({ paper, mode = 'archive' }: PaperDeta
                         publicationYear: paper.publicationYear || new Date().getFullYear(),
                         coAuthors: paper.coAuthors || []
                     }} />
+
+                    {/* Scholarly XML & Metadata Export Card */}
+                    <div className="bg-card p-4 sm:p-5 rounded-2xl border border-border/70 shadow-2xs space-y-3">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 shrink-0">
+                                <Code2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-bold text-foreground m-0">Scholarly XML Data</h4>
+                                <p className="text-[11px] text-muted-foreground m-0">Standard indexing downloads</p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <a
+                                href={`/api/export/jats/${paper.paperId}`}
+                                download={`jats-${paper.paperId}.xml`}
+                                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted/60 hover:bg-muted text-foreground text-xs font-semibold border border-border/60 transition-all cursor-pointer"
+                                title="Download NISO JATS 1.3 Full-Text XML"
+                            >
+                                <Download className="w-3 h-3 text-primary" /> JATS 1.3
+                            </a>
+                            <a
+                                href={`/api/export/pubmed/${paper.paperId}`}
+                                download={`pubmed-${paper.paperId}.xml`}
+                                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted/60 hover:bg-muted text-foreground text-xs font-semibold border border-border/60 transition-all cursor-pointer"
+                                title="Download NLM PubMed 2.8 DTD XML"
+                            >
+                                <Download className="w-3 h-3 text-primary" /> PubMed
+                            </a>
+                        </div>
+                        {paper.doi && (
+                            <a
+                                href={`/api/export/crossref/${paper.paperId}`}
+                                download={`crossref-${paper.paperId}.xml`}
+                                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20 transition-all cursor-pointer"
+                                title="Download CrossRef Schema 5.3.1 XML Deposit"
+                            >
+                                <Download className="w-3 h-3" /> CrossRef Schema XML
+                            </a>
+                        )}
+                    </div>
 
                     <div className="flex flex-col gap-4 px-4">
                         <Link

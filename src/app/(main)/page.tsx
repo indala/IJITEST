@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { getSettingsData } from '@/actions/settings';
 import { getLatestPublishedIssue } from '@/actions/publications';
 import { getLatestIssuePapers } from '@/actions/archives';
+import { getAnnouncements } from '@/actions/announcements';
 import type { Metadata } from 'next';
 import HomeCarousel from '@/features/home/components/HomeCarousel';
 import WelcomeSection from '@/features/home/components/WelcomeSection';
@@ -31,9 +32,13 @@ async function AnnouncementBarSection() {
 }
 
 async function AnnouncementsWidgetSection() {
-  const latestIssueRes = await getLatestPublishedIssue();
+  const [latestIssueRes, announcementsRes] = await Promise.all([
+    getLatestPublishedIssue(),
+    getAnnouncements({ limit: 3 }),
+  ]);
   const latestIssue = latestIssueRes.success ? latestIssueRes.data : null;
-  return <AnnouncementsWidget latestIssue={latestIssue} />;
+  const announcements = announcementsRes.success ? (announcementsRes.data ?? []) : [];
+  return <AnnouncementsWidget latestIssue={latestIssue} announcements={announcements} />;
 }
 
 async function HomeCurrentIssueSection() {

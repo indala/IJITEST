@@ -219,12 +219,12 @@ export default function GuidelinesContent({ settings }: GuidelinesContentProps) 
                             <Link href="/submit">Submit Manuscript</Link>
                         </Button>
                         <Button asChild variant="outline" size="lg" className="btn-outline">
-                            <a href={settings['templateUrl'] || "/docs/template.docx"} download>
+                            <a href={settings['templateUrl'] || "/docs/template.docx"} download="IJITEST-Manuscript-Template.docx">
                                 <Download className="w-5 h-5 2xl:w-8 2xl:h-8 mr-2" /> Download Template
                             </a>
                         </Button>
                         <Button asChild variant="outline" size="lg" className="btn-outline">
-                            <a href={settings['copyrightUrl'] || "/docs/copyright-form.docx"} download>
+                            <a href={settings['copyrightUrl'] || "/docs/copyright-form.docx"} download="IJITEST-Publication-License-Agreement.docx">
                                 <Download className="w-5 h-5 2xl:w-8 2xl:h-8 mr-2" /> Copyright Form
                             </a>
                         </Button>

@@ -43,8 +43,8 @@ export async function GET(
 
     const relativePath = `${category}/${filename}`;
 
-    // 0. Published, docs, and profile files are public to all
-    if (category && ['published', 'docs', 'profiles'].includes(category)) {
+    // 0. Published, docs, profile, and announcement banner files are public to all
+    if (category && ['published', 'docs', 'profiles', 'announcements'].includes(category)) {
         return serveFile(relativePath);
     }
 
@@ -87,7 +87,15 @@ export async function GET(
 
 async function serveFile(relativePath: string) {
     try {
-        const fileBuffer = await downloadFileFromStorage(relativePath);
+        let fileBuffer: Buffer;
+        try {
+            fileBuffer = await downloadFileFromStorage(relativePath);
+        } catch (storageErr) {
+            // Fallback for public static assets like docs
+            const localPublicPath = path.resolve(process.cwd(), 'public', relativePath);
+            const fs = await import('fs/promises');
+            fileBuffer = await fs.readFile(localPublicPath);
+        }
         
         const ext = path.extname(relativePath).toLowerCase();
         const mimeTypes: Record<string, string> = {
@@ -96,9 +104,19 @@ async function serveFile(relativePath: string) {
             '.png': 'image/png',
             '.jpg': 'image/jpeg',
             '.jpeg': 'image/jpeg',
+            '.webp': 'image/webp',
+            '.svg': 'image/svg+xml',
+            '.gif': 'image/gif',
         };
 
-        const safeFilename = path.basename(relativePath).replace(/["\r\n]/g, '');
+        let safeFilename = path.basename(relativePath).replace(/["\r\n]/g, '');
+        const lowerName = safeFilename.toLowerCase();
+        if (lowerName.includes('template')) {
+            safeFilename = 'IJITEST-Manuscript-Template.docx';
+        } else if (lowerName.includes('copyright') || lowerName.includes('license') || lowerName.includes('agreement')) {
+            safeFilename = 'IJITEST-Publication-License-Agreement.docx';
+        }
+
         return new NextResponse(new Uint8Array(fileBuffer), {
             headers: {
                 'Content-Type': mimeTypes[ext] || 'application/octet-stream',

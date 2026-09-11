@@ -122,8 +122,9 @@ export function generateCrossRefXml({
         </jats:abstract>`
             : '';
 
-        // Publication date
-        const pubDate = paper.publishedAt ? new Date(paper.publishedAt) : now;
+        // Publication date - prioritize paper.publishedAt, then paper.issueDatePublished
+        const resolvedPubDate = paper.publishedAt || paper.issueDatePublished;
+        const pubDate = resolvedPubDate ? new Date(resolvedPubDate) : now;
         const pubYear = pubDate.getFullYear();
         const pubMonth = String(pubDate.getMonth() + 1).padStart(2, '0');
         const pubDay = String(pubDate.getDate()).padStart(2, '0');

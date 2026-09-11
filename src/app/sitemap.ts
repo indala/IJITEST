@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getPublishedPapers, getLatestIssuePapers } from '@/actions/archives';
+import { getAllPublishedStaticPages } from '@/actions/static-pages';
+import { getAnnouncements } from '@/actions/announcements';
 import type { PublishedPaperUI } from '@/db/types';
 import { cacheLife, cacheTag } from 'next/cache';
 import { CACHE_TAGS } from '@/lib/cache-tags';
@@ -7,7 +9,7 @@ import { CACHE_TAGS } from '@/lib/cache-tags';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   'use cache';
   cacheLife('days');
-  cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES);
+  cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, 'static-pages', 'announcements');
   const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
 
   // 1. Core High-Priority & Informational Routes
@@ -19,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/submit', priority: 0.9, changeFrequency: 'weekly' as const },
     { path: '/guidelines', priority: 0.85, changeFrequency: 'monthly' as const },
     { path: '/editorial-board', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/announcements', priority: 0.85, changeFrequency: 'weekly' as const },
     { path: '/about', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/open-access', priority: 0.85, changeFrequency: 'monthly' as const },
     { path: '/ethics', priority: 0.8, changeFrequency: 'monthly' as const },
@@ -39,11 +42,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: r.priority,
   }));
 
-  // 2. Dynamic Manuscript, Volume, and Issue Directory Routes
+  // 2. Dynamic Manuscript, Volume, Issue, CMS Pages & Announcements Directory Routes
   try {
-    const [res, latestRes] = await Promise.all([
+    const [res, latestRes, pagesRes, announcementsRes] = await Promise.all([
       getPublishedPapers(),
-      getLatestIssuePapers()
+      getLatestIssuePapers(),
+      getAllPublishedStaticPages(),
+      getAnnouncements()
     ]);
 
     const papers = res.success ? res.data ?? [] : [];
@@ -135,6 +140,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           lastModified: new Date(),
           changeFrequency: 'weekly' as const,
           priority: 0.85,
+        });
+      }
+    });
+
+    // Add Dynamic CMS Static Pages
+    const staticPagesList = pagesRes.success ? pagesRes.data ?? [] : [];
+    staticPagesList.forEach((page) => {
+      const pageUrl = `${baseUrl}/pages/${page.slug}`;
+      if (!addedUrls.has(pageUrl)) {
+        addedUrls.add(pageUrl);
+        dynamicRoutes.push({
+          url: pageUrl,
+          lastModified: new Date(page.updatedAt || new Date()),
+          changeFrequency: 'monthly' as const,
+          priority: 0.8,
+        });
+      }
+    });
+
+    // Add Dynamic Announcements
+    const announcementsList = announcementsRes.success ? announcementsRes.data ?? [] : [];
+    announcementsList.forEach((item) => {
+      const annUrl = `${baseUrl}/announcements/${item.id}`;
+      if (!addedUrls.has(annUrl)) {
+        addedUrls.add(annUrl);
+        dynamicRoutes.push({
+          url: annUrl,
+          lastModified: new Date(item.updatedAt || item.createdAt || new Date()),
+          changeFrequency: 'weekly' as const,
+          priority: 0.75,
         });
       }
     });

@@ -2,14 +2,17 @@ import type { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText, User, Mail, Phone, Briefcase, School, BookOpen, Tag } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileText, User, Mail, Phone, Briefcase, School, BookOpen, Tag, Bookmark } from "lucide-react";
 import type { FormValues } from "../../schemas/submission.schema";
+import type { Section } from "@/db/types";
 
 interface AuthorDetailsFieldsProps {
     form: UseFormReturn<FormValues>;
+    sections?: Section[];
 }
 
-export function AuthorDetailsFields({ form }: AuthorDetailsFieldsProps) {
+export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps) {
     return (
         <div className="space-y-6 sm:space-y-8">
             <FormField
@@ -33,6 +36,49 @@ export function AuthorDetailsFields({ form }: AuthorDetailsFieldsProps) {
                     </FormItem>
                 )}
             />
+
+            {sections && sections.length > 0 && (
+                <FormField
+                    control={form.control}
+                    name="sectionId"
+                    render={({ field }) => (
+                        <FormItem className="space-y-2">
+                            <div className="flex items-center gap-2 mb-1">
+                                <Bookmark className="w-4 h-4 text-primary" />
+                                <FormLabel className="form-label-brand">Journal Section / Article Type</FormLabel>
+                            </div>
+                            <Select
+                                onValueChange={(val) => field.onChange(val)}
+                                value={field.value ? String(field.value) : ""}
+                            >
+                                <FormControl>
+                                    <SelectTrigger className="w-full input-standard h-11 bg-card">
+                                        <SelectValue placeholder="Select article classification (e.g. Original Research, Review)" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {sections.map((sec) => (
+                                        <SelectItem key={sec.id} value={String(sec.id)}>
+                                            <div className="flex flex-col text-left py-0.5">
+                                                <span className="font-semibold text-foreground text-sm">{sec.title}</span>
+                                                {sec.policy && (
+                                                    <span className="text-xs text-muted-foreground line-clamp-1 max-w-md">
+                                                        {sec.policy}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormDescription className="text-xs text-muted-foreground">
+                                Selecting the appropriate section directs your manuscript to the relevant editorial board members.
+                            </FormDescription>
+                            <FormMessage className="text-xs font-medium text-destructive px-1" />
+                        </FormItem>
+                    )}
+                />
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <FormField

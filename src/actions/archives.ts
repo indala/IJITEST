@@ -9,12 +9,12 @@ import {
     submissionVersions,
     submissionFiles,
     volumesIssues,
-    userProfiles
+    userProfiles,
+    sections
 } from "@/db/schema";
 import { eq, desc, and, sql, ne, inArray, asc } from "drizzle-orm";
 import {
     type PublishedPaperUI,
-    type ActionResponse,
     type SubmissionStatus,
     type Author,
     type Submission,
@@ -23,10 +23,14 @@ import {
     type Issue,
     type UserProfile,
     type Publication,
+    type RelatedArticle
+} from "@/db/types";
+import {
+    type ActionResponse,
     actionSuccess,
     actionError,
     serverError
-} from "@/db/types";
+} from "@/lib/action-response";
 import { cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";
@@ -47,6 +51,7 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
             publication: publications,
             submission: submissions,
             issue: volumesIssues,
+            section: sections,
         })
             .from(publications)
             .innerJoin(volumesIssues, and(
@@ -57,6 +62,7 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
                 eq(publications.submissionId, submissions.id),
                 eq(submissions.status, 'published')
             ))
+            .leftJoin(sections, eq(submissions.sectionId, sections.id))
             .orderBy(asc(submissions.paperId));
 
         if (!rows.length) return actionSuccess([] as PublishedPaperUI[]);
@@ -82,7 +88,8 @@ export async function getPublishedPapers(): Promise<ActionResponse<PublishedPape
                     versions: paperVersions,
                     authors: paperAuthors
                 },
-                issue: row.issue
+                issue: row.issue,
+                section: row.section
             });
         });
 
@@ -114,6 +121,7 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
             publication: publications,
             submission: submissions,
             issue: volumesIssues,
+            section: sections,
         })
             .from(publications)
             .where(eq(publications.issueId, latestIssue.id))
@@ -122,6 +130,7 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
                 eq(submissions.status, 'published')
             ))
             .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+            .leftJoin(sections, eq(submissions.sectionId, sections.id))
             .orderBy(asc(submissions.paperId));
 
         if (!rows.length) return actionSuccess([] as PublishedPaperUI[]);
@@ -147,7 +156,8 @@ export async function getLatestIssuePapers(): Promise<ActionResponse<PublishedPa
                     versions: paperVersions,
                     authors: paperAuthors
                 },
-                issue: row.issue
+                issue: row.issue,
+                section: row.section
             });
         });
 
@@ -177,6 +187,7 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
             publication: publications,
             submission: submissions,
             issue: volumesIssues,
+            section: sections,
         })
             .from(publications)
             .innerJoin(volumesIssues, and(
@@ -187,6 +198,7 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
                 eq(publications.submissionId, submissions.id),
                 eq(submissions.status, 'published')
             ))
+            .leftJoin(sections, eq(submissions.sectionId, sections.id))
             .where(ne(publications.issueId, latestId))
             .orderBy(asc(submissions.paperId))
             .limit(limit)
@@ -215,7 +227,8 @@ export async function getArchivePapers(limit = 50, offset = 0): Promise<ActionRe
                     versions: paperVersions,
                     authors: paperAuthors
                 },
-                issue: row.issue
+                issue: row.issue,
+                section: row.section
             });
         });
 
@@ -251,7 +264,8 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
             submission: submissions,
             version: submissionVersions,
             issue: volumesIssues,
-            authorProfile: userProfiles
+            authorProfile: userProfiles,
+            section: sections,
         })
             .from(publications)
             .innerJoin(volumesIssues, and(
@@ -268,6 +282,7 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
                 eq(submissionVersions.versionNumber, latestVersions.maxVersion)
             ))
             .leftJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
+            .leftJoin(sections, eq(submissions.sectionId, sections.id))
             .where(whereClause)
             .limit(1);
 
@@ -292,7 +307,8 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
                 authors: authorsList,
                 files: versionFiles
             },
-            issue: row.issue
+            issue: row.issue,
+            section: row.section
         });
         return actionSuccess(data);
     } catch (error) {
@@ -307,16 +323,18 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
 type PublicationInput = Partial<Omit<Publication, 'issueId'>> & {
     submissionId?: Publication['submissionId'] | null;
     submission?: (
-        Partial<Pick<Submission, 'paperId' | 'status' | 'updatedAt' | 'retractionReason' | 'retractionNoticeUrl' | 'retractedAt'>> & {
+        Partial<Pick<Submission, 'paperId' | 'status' | 'updatedAt' | 'submittedAt' | 'retractionReason' | 'retractionNoticeUrl' | 'retractedAt'>> & {
             authors?: Author[];
             versions?: Array<Partial<Pick<Version, 'title' | 'abstract' | 'keywords' | 'competingInterests' | 'fundingStatement' | 'ethicalApproval'>> | null>;
             files?: SubmissionFile[];
             correspondingAuthor?: {
                 profile?: Partial<Pick<UserProfile, 'fullName' | 'institute'>> | null;
             } | null;
+            section?: { title?: string | null; identifyType?: string | null } | null;
         }
     ) | null;
-    issue?: Partial<Pick<Issue, 'volumeNumber' | 'issueNumber' | 'year' | 'monthRange'>> | null;
+    issue?: Partial<Pick<Issue, 'volumeNumber' | 'issueNumber' | 'year' | 'monthRange' | 'title' | 'description' | 'datePublished' | 'coverImageUrl' | 'coverImageAltText'>> | null;
+    section?: { title?: string | null; identifyType?: string | null } | null;
     [key: string]: unknown; // allow Drizzle leftJoin spreads with extra fields
 };
 
@@ -333,6 +351,11 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
     const primaryAuthorName = correspondingAuthor?.name || sortedAuthors[0]?.name || "Anonymous Author";
 
     const supplementaryFiles = pub.submission?.files?.filter(f => f.fileType === 'supplementary') || [];
+
+    const sectionTitle = pub.section?.title || (pub.submission as any)?.section?.title || "Original Research Articles";
+    const sectionIdentifyType = pub.section?.identifyType || (pub.submission as any)?.section?.identifyType || "Research Article";
+    const issueDatePublished = pub.issue?.datePublished || null;
+    const issueTitle = pub.issue?.title || null;
 
     return {
         id: pub.submissionId || 0,
@@ -362,6 +385,12 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         pageRange: pub.startPage && pub.endPage ? `${pub.startPage}-${pub.endPage}` : null,
         publishedAt: pub.publishedAt || null,
         updatedAt: pub.submission?.updatedAt || pub.publishedAt || null,
+        submittedAt: pub.submission?.submittedAt || null,
+        acceptedAt: pub.publishedAt || pub.submission?.updatedAt || null,
+        sectionTitle,
+        sectionIdentifyType,
+        issueDatePublished,
+        issueTitle,
         volumeNumber: pub.issue?.volumeNumber || 0,
         issueNumber: pub.issue?.issueNumber || 0,
         publicationYear: pub.issue?.year || 0,
@@ -395,6 +424,7 @@ export async function getIssuePapersByIssueId(issueId: number): Promise<ActionRe
             publication: publications,
             submission: submissions,
             issue: volumesIssues,
+            section: sections,
         })
             .from(publications)
             .where(eq(publications.issueId, issueId))
@@ -403,6 +433,7 @@ export async function getIssuePapersByIssueId(issueId: number): Promise<ActionRe
                 eq(submissions.status, 'published')
             ))
             .innerJoin(volumesIssues, eq(publications.issueId, volumesIssues.id))
+            .leftJoin(sections, eq(submissions.sectionId, sections.id))
             .orderBy(asc(submissions.paperId));
 
         if (!rows.length) {
@@ -430,7 +461,8 @@ export async function getIssuePapersByIssueId(issueId: number): Promise<ActionRe
                     versions: paperVersions,
                     authors: paperAuthors
                 },
-                issue: row.issue
+                issue: row.issue,
+                section: row.section
             });
         });
 
@@ -455,3 +487,137 @@ export async function getPublishedIssues(): Promise<ActionResponse<Issue[]>> {
         return serverError(error, "fetch published issues");
     }
 }
+
+/**
+ * OJS Parity: recommendByAuthor and recommendBySimilarity
+ * Discovers published articles related to the given paper by matching author names,
+ * journal section, shared keywords, and title tokens.
+ */
+export async function getRelatedArticles(
+    paperId: string,
+    limit: number = 4
+): Promise<ActionResponse<RelatedArticle[]>> {
+    'use cache'
+    cacheLife('archive')
+    cacheTag(CACHE_TAGS.PAPER(paperId), CACHE_TAGS.ARCHIVES)
+
+    try {
+        cacheLogger.miss(CACHE_TAGS.PAPER(paperId), `getRelatedArticles paperId=${paperId}`);
+        const targetRes = await getPaperById(paperId);
+        if (!targetRes.success || !targetRes.data) {
+            return actionSuccess([] as RelatedArticle[]);
+        }
+        const target = targetRes.data;
+
+        const allPublishedRes = await getPublishedPapers();
+        if (!allPublishedRes.success || !allPublishedRes.data || !allPublishedRes.data.length) {
+            return actionSuccess([] as RelatedArticle[]);
+        }
+
+        const otherPapers = allPublishedRes.data.filter(p => p.paperId !== target.paperId);
+        if (!otherPapers.length) {
+            return actionSuccess([] as RelatedArticle[]);
+        }
+
+        // Prepare target tokens for scoring
+        const targetAuthors = [target.authorName, ...(target.coAuthors || []).map(a => a.name)]
+            .filter(Boolean)
+            .map(n => n.toLowerCase().trim());
+        const targetKeywords = (target.keywords || "")
+            .split(/[,;]/)
+            .map(k => k.toLowerCase().trim())
+            .filter(k => k.length > 2);
+
+        const stopWords = new Set(['the', 'and', 'for', 'with', 'using', 'based', 'from', 'into', 'novel', 'study', 'design', 'system', 'systems', 'analysis', 'approach']);
+        const targetTitleWords = (target.title || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9 ]/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length > 3 && !stopWords.has(w));
+
+        const scored: RelatedArticle[] = otherPapers.map(candidate => {
+            let score = 0;
+            const reasons: string[] = [];
+
+            // 1. Author Match (OJS recommendByAuthor)
+            const candidateAuthors = [candidate.authorName, ...(candidate.coAuthors || []).map(a => a.name)]
+                .filter(Boolean)
+                .map(n => n.toLowerCase().trim());
+
+            for (const tAuthor of targetAuthors) {
+                const match = candidateAuthors.find(cAuthor => cAuthor.includes(tAuthor) || tAuthor.includes(cAuthor));
+                if (match) {
+                    score += 50;
+                    reasons.push(`Author: ${candidate.authorName}`);
+                    break;
+                }
+            }
+
+            // 2. Section Match
+            if (target.sectionTitle && candidate.sectionTitle && target.sectionTitle === candidate.sectionTitle) {
+                score += 20;
+                reasons.push(`Section: ${target.sectionTitle}`);
+            }
+
+            // 3. Keyword Match (OJS recommendBySimilarity)
+            if (candidate.keywords && targetKeywords.length) {
+                const candKeywords = candidate.keywords
+                    .split(/[,;]/)
+                    .map(k => k.toLowerCase().trim());
+
+                let matchedKw = 0;
+                for (const tk of targetKeywords) {
+                    if (candKeywords.some(ck => ck.includes(tk) || tk.includes(ck))) {
+                        matchedKw++;
+                        score += 15;
+                    }
+                }
+                if (matchedKw > 0) {
+                    reasons.push(`${matchedKw} matching keyword(s)`);
+                }
+            }
+
+            // 4. Title Term Similarity
+            if (candidate.title && targetTitleWords.length) {
+                const candWords = candidate.title
+                    .toLowerCase()
+                    .replace(/[^a-z0-9 ]/g, ' ')
+                    .split(/\s+/);
+
+                let matchedWords = 0;
+                for (const tw of targetTitleWords) {
+                    if (candWords.includes(tw)) {
+                        matchedWords++;
+                        score += 8;
+                    }
+                }
+                if (matchedWords > 0 && !reasons.some(r => r.includes('keyword'))) {
+                    reasons.push("Related topic");
+                }
+            }
+
+            const primaryReason = reasons.length > 0
+                ? reasons[0]!
+                : (candidate.sectionTitle ? `Section: ${candidate.sectionTitle}` : "Recent publication");
+
+            return {
+                ...candidate,
+                matchReason: primaryReason,
+                matchScore: score,
+            };
+        });
+
+        scored.sort((a, b) => {
+            if (b.matchScore !== a.matchScore) {
+                return b.matchScore - a.matchScore;
+            }
+            return (b.volumeNumber ?? 0) - (a.volumeNumber ?? 0);
+        });
+
+        return actionSuccess(scored.slice(0, limit));
+    } catch (error) {
+        cacheLogger.error(CACHE_TAGS.ARCHIVES, error);
+        return serverError<RelatedArticle[]>(error, "fetch related articles");
+    }
+}
+

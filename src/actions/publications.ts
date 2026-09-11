@@ -10,13 +10,15 @@ import {
     submissionAuthors
 } from "@/db/schema";
 import {
-    type ActionResponse,
     type Issue,
+    type PaperWithPublication
+} from "@/db/types";
+import {
+    type ActionResponse,
     actionSuccess,
     actionError,
-    type PaperWithPublication,
     serverError
-} from "@/db/types";
+} from "@/lib/action-response";
 import { eq, and, sql, desc, count, inArray, asc } from "drizzle-orm";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { getSettingsData } from "./settings";
@@ -26,6 +28,7 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 import { downloadFileFromStorage, triggerPdfBranding } from "@/lib/fs-utils";
 import { getSubmissionById } from "./submissions";
 import { createNotification, invalidateAuthorActionsCount } from "./notifications";
+import { logSubmissionEvent } from "./event-log";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -144,7 +147,8 @@ export async function assignPaperToIssue(
     issueId: number,
     startPage?: number,
     endPage?: number,
-    customDoi?: string | null
+    customDoi?: string | null,
+    doiProviderInput?: 'none' | 'crossref' | 'zenodo' | 'custom'
 ): Promise<ActionResponse> {
     try {
         const session = await getServerSession(authOptions);
@@ -160,20 +164,21 @@ export async function assignPaperToIssue(
         const submission = subRes.data;
 
         // 2. Enforce status gate — only accepted/published papers can be assigned
-        const allowedStatuses = ['accepted', 'published'];
-        if (!allowedStatuses.includes(submission.status)) {
-            return actionError(`Paper status is '${submission.status}'. Only accepted papers can be published.`);
+        if (submission.status !== 'accepted' && submission.status !== 'published') {
+            return actionError("Manuscript must be officially 'Accepted' before issue assignment.");
         }
 
-        const latestPdf = submission.allFiles.find(f => f.fileType === 'pdfVersion');
-        if (!latestPdf) {
-            return actionError("Final styled PDF must be uploaded before publication.");
+        // 3. Resolve PDF & Issue details OUTSIDE transaction
+        const latestPdf = submission.allFiles.find(f => f.fileType === 'pdfVersion') ||
+                          submission.allFiles.find(f => f.fileType === 'mainManuscript');
+        if (!latestPdf?.fileUrl) {
+            return actionError("No valid manuscript file found for publication packaging.");
         }
 
-        // 3. Fetch Issue Details
-        const issueRows = await db.select().from(volumesIssues).where(eq(volumesIssues.id, issueId)).limit(1);
-        const issue = issueRows[0];
-        if (!issue) return actionError("Issue not found");
+        const [issue] = await db.select().from(volumesIssues).where(eq(volumesIssues.id, issueId));
+        if (!issue) {
+            return actionError("Target publication cycle not found.");
+        }
 
         const isIssuePublished = issue.status === 'published';
         const settings = await getSettingsData();
@@ -221,6 +226,21 @@ export async function assignPaperToIssue(
             resolvedDoi = null;
         }
 
+        let resolvedProvider: 'none' | 'crossref' | 'zenodo' | 'custom' = doiProviderInput || 'none';
+        if (doiProviderInput) {
+            resolvedProvider = doiProviderInput;
+        } else if (resolvedDoi) {
+            if (resolvedDoi.startsWith(doiPrefix)) {
+                resolvedProvider = 'crossref';
+            } else if (resolvedDoi.toLowerCase().includes('zenodo')) {
+                resolvedProvider = 'zenodo';
+            } else {
+                resolvedProvider = 'custom';
+            }
+        } else {
+            resolvedProvider = 'none';
+        }
+
         // 6. Generate Branded PDF OUTSIDE transaction (IO operation)
         const brandedFileName = `${submission.paperId}-published.pdf`;
         const brandedRelativePath = `/api/files/published/${brandedFileName}`;
@@ -254,6 +274,8 @@ export async function assignPaperToIssue(
                 startPage: confirmedStartPage,
                 endPage: confirmedEndPage,
                 doi: resolvedDoi,
+                doiProvider: resolvedProvider,
+                doiRegistrationStatus: 'none',
                 publishedAt: publishedDate
             }).onDuplicateKeyUpdate({
                 set: {
@@ -262,6 +284,7 @@ export async function assignPaperToIssue(
                     startPage: confirmedStartPage,
                     endPage: confirmedEndPage,
                     doi: resolvedDoi,
+                    doiProvider: resolvedProvider,
                     publishedAt: publishedDate
                 }
             });
@@ -298,6 +321,19 @@ export async function assignPaperToIssue(
             const paperUrl = `${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${submission.paperId}`;
             submitToIndexNow([paperUrl])
                 .catch((e: unknown) => console.error("IndexNow submission failed:", e));
+
+            await logSubmissionEvent({
+                submissionId,
+                eventType: 'paper_published',
+                userId: session.user.id,
+                description: `Paper published in Volume ${issue.volumeNumber}, Issue ${issue.issueNumber} (pp. ${confirmedStartPage}-${confirmedEndPage})${resolvedDoi ? ` with DOI: ${resolvedDoi}` : ''}.`,
+                metadata: {
+                    volume: issue.volumeNumber,
+                    issue: issue.issueNumber,
+                    doi: resolvedDoi,
+                    pages: `${confirmedStartPage}-${confirmedEndPage}`,
+                }
+            });
         } else {
             createNotification({
                 userId: submission.correspondingAuthorId,
@@ -307,7 +343,19 @@ export async function assignPaperToIssue(
                 message: `Your manuscript ${submission.paperId} has been assigned to Volume ${issue.volumeNumber}, Issue ${issue.issueNumber} and scheduled for publication.`,
                 actionLink: `/admin/submissions/${submissionId}`,
                 metadata: { submissionId, paperId: submission.paperId }
-            }).catch(e => console.error("In-app schedule notification failed:", e));
+            }).catch(e => console.error("In-app publication notification failed:", e));
+
+            await logSubmissionEvent({
+                submissionId,
+                eventType: 'paper_scheduled',
+                userId: session.user.id,
+                description: `Manuscript assigned to Volume ${issue.volumeNumber}, Issue ${issue.issueNumber} (scheduled for issue release).`,
+                metadata: {
+                    volume: issue.volumeNumber,
+                    issue: issue.issueNumber,
+                    pages: `${confirmedStartPage}-${confirmedEndPage}`,
+                }
+            });
         }
 
         if (submission.correspondingAuthorId) {
@@ -651,9 +699,42 @@ export async function incrementPaperViews(submissionId: number): Promise<ActionR
             return actionError("Too many view requests");
         }
 
+        const pubRows = await db.select({ id: publications.id })
+            .from(publications)
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
+
+        const pub = pubRows[0];
+        if (!pub) {
+            return actionError("Publication not found");
+        }
+
+        const pubId = pub.id;
+
         await db.update(publications)
             .set({ views: sql`views + 1` })
             .where(eq(publications.submissionId, submissionId));
+
+        // COUNTER R5: Atomic UPSERT for Total Item Investigations
+        await db.execute(sql`
+            INSERT INTO usage_stats (publication_id, year, month, metric_type, metric_count)
+            VALUES (${pubId}, YEAR(CURRENT_DATE), MONTH(CURRENT_DATE), 'total_item_investigations', 1)
+            ON DUPLICATE KEY UPDATE metric_count = metric_count + 1
+        `);
+
+        // COUNTER R5: Check 24-hour unique investigation window
+        const uniqueLimit = await checkRateLimit({
+            key: `pub:uniq_view:${ip}:${submissionId}`,
+            max: 1,
+            windowMs: 24 * 60 * 60 * 1000
+        });
+        if (uniqueLimit.allowed) {
+            await db.execute(sql`
+                INSERT INTO usage_stats (publication_id, year, month, metric_type, metric_count)
+                VALUES (${pubId}, YEAR(CURRENT_DATE), MONTH(CURRENT_DATE), 'unique_item_investigations', 1)
+                ON DUPLICATE KEY UPDATE metric_count = metric_count + 1
+            `);
+        }
 
         return actionSuccess();
     } catch (error) {
@@ -684,9 +765,42 @@ export async function incrementPaperDownloads(submissionId: number): Promise<Act
             return actionError("Too many download requests");
         }
 
+        const pubRows = await db.select({ id: publications.id })
+            .from(publications)
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
+
+        const pub = pubRows[0];
+        if (!pub) {
+            return actionError("Publication not found");
+        }
+
+        const pubId = pub.id;
+
         await db.update(publications)
             .set({ downloads: sql`downloads + 1` })
             .where(eq(publications.submissionId, submissionId));
+
+        // COUNTER R5: Atomic UPSERT for Total Item Requests
+        await db.execute(sql`
+            INSERT INTO usage_stats (publication_id, year, month, metric_type, metric_count)
+            VALUES (${pubId}, YEAR(CURRENT_DATE), MONTH(CURRENT_DATE), 'total_item_requests', 1)
+            ON DUPLICATE KEY UPDATE metric_count = metric_count + 1
+        `);
+
+        // COUNTER R5: Check 24-hour unique request window
+        const uniqueLimit = await checkRateLimit({
+            key: `pub:uniq_dl:${ip}:${submissionId}`,
+            max: 1,
+            windowMs: 24 * 60 * 60 * 1000
+        });
+        if (uniqueLimit.allowed) {
+            await db.execute(sql`
+                INSERT INTO usage_stats (publication_id, year, month, metric_type, metric_count)
+                VALUES (${pubId}, YEAR(CURRENT_DATE), MONTH(CURRENT_DATE), 'unique_item_requests', 1)
+                ON DUPLICATE KEY UPDATE metric_count = metric_count + 1
+            `);
+        }
 
         return actionSuccess();
     } catch (error) {
@@ -842,6 +956,14 @@ export async function updatePublicationDoi(submissionId: number, doi: string | n
                 }
             }
         }
+
+        await logSubmissionEvent({
+            submissionId,
+            eventType: 'doi_assigned',
+            userId: session.user.id,
+            description: cleanDoi ? `Official DOI assigned / updated: ${cleanDoi}` : 'DOI removed from paper.',
+            metadata: { doi: cleanDoi }
+        });
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');

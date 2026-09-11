@@ -9,8 +9,18 @@ interface ResourceDeskWidgetProps {
 
 function ResourceDeskWidget({ settings }: ResourceDeskWidgetProps) {
     const resources = [
-        { label: "Word Template", type: "DOCX", link: settings?.templateUrl || "/docs/template.docx" },
-        { label: "Copyright Form", type: "DOCX", link: settings?.copyrightUrl || "/docs/copyright-form.docx" }
+        { 
+            label: "Word Template", 
+            type: "DOCX", 
+            link: settings?.templateUrl || "/docs/template.docx",
+            filename: "IJITEST-Manuscript-Template.docx"
+        },
+        { 
+            label: "Copyright Form", 
+            type: "DOCX", 
+            link: settings?.copyrightUrl || "/docs/copyright-form.docx",
+            filename: "IJITEST-Publication-License-Agreement.docx"
+        }
     ];
 
     return (
@@ -21,7 +31,7 @@ function ResourceDeskWidget({ settings }: ResourceDeskWidgetProps) {
                     <a 
                         key={i} 
                         href={doc.link} 
-                        download
+                        download={doc.filename}
                         className="flex items-center justify-between p-2.5 2xl:p-3 bg-muted/40 hover:bg-muted/70 rounded-lg border border-border/40 group transition-all"
                     >
                         <div className="min-w-0">

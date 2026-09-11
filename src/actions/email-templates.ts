@@ -5,12 +5,14 @@ import { db } from "@/lib/db";
 import { emailTemplates } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import {
+    type EmailTemplate
+} from "@/db/types";
+import {
     type ActionResponse,
-    type EmailTemplate,
     actionSuccess,
     actionError,
     serverError
-} from "@/db/types";
+} from "@/lib/action-response";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";

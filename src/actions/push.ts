@@ -6,7 +6,7 @@ import { pushSubscriptions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { type ActionResponse, serverError } from "@/db/types";
+import { type ActionResponse, serverError } from "@/lib/action-response";
 
 /**
  * Saves or updates a device's push subscription for the logged-in user.

@@ -93,7 +93,9 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                             `}} />
                             <ul className="grid grid-cols-1 gap-1.5 list-none p-0">
                                 {navigation.map((item, idx) => {
-                                    const isActive = pathname === item.href || item.children?.some(c => pathname === c.href);
+                                    const isChildActive = (item.children?.some(c => pathname === c.href)) ||
+                                        (item.columns?.some(col => col.items.some(c => pathname === c.href)));
+                                    const isActive = pathname === item.href || isChildActive;
                                     return (
                                         <motion.li
                                             key={item.name}
@@ -152,6 +154,49 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                                             );
                                                         })}
                                                     </ul>
+                                                )}
+
+                                                {item.columns && (
+                                                    <div className="ml-8 space-y-3 border-l border-primary/10 pl-3.5 pb-2 pt-1">
+                                                        {item.columns.map((col) => (
+                                                            <div key={col.heading} className="space-y-1">
+                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-primary/40 block px-1 pt-1">
+                                                                    {col.heading}
+                                                                </span>
+                                                                <ul className="space-y-0.5 list-none p-0">
+                                                                    {col.items.map((child) => {
+                                                                        const isSubActive = pathname === child.href;
+                                                                        const IconComponent = child.icon;
+                                                                        return (
+                                                                            <li key={child.name}>
+                                                                                <Link
+                                                                                    href={child.href}
+                                                                                    onClick={handleClose}
+                                                                                    className={cn(
+                                                                                        "nav-mobile-sublink py-1.5",
+                                                                                        isSubActive ? "text-secondary font-bold" : "text-muted-foreground hover:text-primary"
+                                                                                    )}
+                                                                                >
+                                                                                    {IconComponent ? (
+                                                                                        <IconComponent className={cn(
+                                                                                            "w-3.5 h-3.5 shrink-0 transition-all duration-500",
+                                                                                            isSubActive ? "text-secondary" : "text-primary/30"
+                                                                                        )} />
+                                                                                    ) : (
+                                                                                        <div className={cn(
+                                                                                            "w-1.5 h-1.5 rounded-full transition-all duration-500",
+                                                                                            isSubActive ? "bg-secondary scale-110 shadow-[0_0_8px_rgba(234,179,8,0.5)]" : "bg-primary/10"
+                                                                                        )} />
+                                                                                    )}
+                                                                                    <span className="truncate">{child.name}</span>
+                                                                                </Link>
+                                                                            </li>
+                                                                        );
+                                                                    })}
+                                                                </ul>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 )}
                                             </div>
                                         </motion.li>

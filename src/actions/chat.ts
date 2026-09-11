@@ -7,7 +7,8 @@ import { eq, and, or, asc, like, not, inArray, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import crypto from "crypto";
-import { type ActionResponse, type ChatMessageRow, type ChatUser, serverError } from "@/db/types";
+import { type ChatMessageRow, type ChatUser } from "@/db/types";
+import { type ActionResponse, serverError } from "@/lib/action-response";
 
 /**
  * Signs a short-lived HS256 socket token using Node's built-in crypto module.

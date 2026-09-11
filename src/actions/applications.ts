@@ -11,10 +11,12 @@ import {
     masterInterests
 } from "@/db/schema";
 import {
-    type Application,
+    type Application
+} from "@/db/types";
+import {
     type ActionResponse,
     serverError
-} from "@/db/types";
+} from "@/lib/action-response";
 import { eq, and, desc, SQL, inArray } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";

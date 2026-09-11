@@ -10,16 +10,18 @@ import {
     users,
     userProfiles,
     settings,
-    userInvitations
+    userInvitations,
+    reviewerSuggestions
 } from "@/db/schema";
 import { z } from "zod";
 import { revalidatePath, updateTag } from "next/cache";
 import { invalidateSubmittedSubmissionsCount, createNotification } from "./notifications";
+import { logSubmissionEvent } from "./event-log";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { eq, inArray } from "drizzle-orm";
 import crypto from 'crypto';
-import { type ActionResponse, serverError } from "@/db/types";
+import { type ActionResponse, serverError } from "@/lib/action-response";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
 
@@ -84,6 +86,10 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         const competingInterests = (formData.get("competingInterests") as string || "").trim() || null;
         const fundingStatement = (formData.get("fundingStatement") as string || "").trim() || null;
         const ethicalApproval = (formData.get("ethicalApproval") as string || "").trim() || null;
+        const sectionIdRaw = formData.get("sectionId") as string | null;
+        const sectionId = sectionIdRaw ? parseInt(sectionIdRaw) : null;
+        const validSectionId = sectionId && !isNaN(sectionId) ? sectionId : null;
+        const reviewerSuggestionsRaw = formData.get("reviewerSuggestions") as string | null;
         let authorCreditRoles: string[] | null = null;
         try {
             const rawRoles = formData.get("authorCreditRoles") as string;
@@ -184,6 +190,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const [submissionInsert] = await tx.insert(submissions).values({
                 paperId,
                 slug,
+                sectionId: validSectionId,
                 status: "submitted",
                 correspondingAuthorId: userId,
             });
@@ -241,6 +248,30 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 }
             }
             await tx.insert(submissionAuthors).values(authorsList);
+
+            // E.1 Reviewer Suggestions (Author preferred & opposed reviewers)
+            if (reviewerSuggestionsRaw) {
+                try {
+                    const parsedSuggestions = JSON.parse(reviewerSuggestionsRaw);
+                    if (Array.isArray(parsedSuggestions)) {
+                        for (const sug of parsedSuggestions) {
+                            if (!sug.givenName || !sug.email) continue;
+                            await tx.insert(reviewerSuggestions).values({
+                                submissionId: subId,
+                                type: sug.type === 'opposed' ? 'opposed' : 'suggested',
+                                givenName: String(sug.givenName).trim(),
+                                familyName: sug.familyName ? String(sug.familyName).trim() : null,
+                                email: String(sug.email).trim().toLowerCase(),
+                                orcidId: sug.orcidId ? String(sug.orcidId).trim() : null,
+                                affiliation: sug.affiliation ? String(sug.affiliation).trim() : null,
+                                suggestionReason: sug.suggestionReason ? String(sug.suggestionReason).trim() : null,
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to parse reviewer suggestions:", e);
+                }
+            }
 
             // F. Predictable File URLs (Saved to DB first as requested)
             const timestamp = Date.now();
@@ -382,6 +413,19 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 html: staffTemplate.html
             });
         }));
+
+        // Log Typed Submission Event
+        await logSubmissionEvent({
+            submissionId: result.subId,
+            eventType: 'submission_created',
+            userId: result.userId,
+            description: `Manuscript ${result.paperId} ("${validated.data.title}") submitted by ${validated.data.authorName}.`,
+            metadata: {
+                sectionId: validSectionId,
+                title: validated.data.title,
+                author: validated.data.authorName,
+            }
+        });
 
         await invalidateSubmittedSubmissionsCount();
         updateTag(CACHE_TAGS.SUBMISSIONS);

@@ -2,6 +2,7 @@ import PageHeader from "@/components/layout/PageHeader";
 import SubmitClient from '@/features/shared/components/SubmitClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
+import { getSections } from '@/actions/sections';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
@@ -20,6 +21,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SubmitPaper() {
+    const sectionsRes = await getSections();
+    const sections = sectionsRes.success && sectionsRes.data ? sectionsRes.data : [];
+
     return (
         <div className="bg-background min-h-screen">
             <PageHeader
@@ -30,7 +34,7 @@ export default async function SubmitPaper() {
                     { name: 'Submit Paper', href: '/submit' },
                 ]}
             />
-            <SubmitClient />
+            <SubmitClient initialSections={sections} />
         </div>
     );
 }

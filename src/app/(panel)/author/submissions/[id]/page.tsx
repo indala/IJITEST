@@ -2,15 +2,17 @@ import { getAuthorSubmission, checkResubmissionEligibility } from "@/actions/aut
 import { notFound } from "next/navigation";
 import { ResubmissionForm } from "../_components/ResubmissionForm";
 import { CopyrightUpload } from "@/features/author/components/CopyrightUpload";
+import { ZenodoDepositCard } from "@/features/author/components/ZenodoDepositCard";
 import { getSettingsData } from "@/actions/settings";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Download, AlertTriangle, MessageSquare, CheckCircle } from "lucide-react";
+import { Calendar, Download, AlertTriangle, MessageSquare, CheckCircle, Bookmark, ThumbsUp, ThumbsDown, UserCheck } from "lucide-react";
 import Link from "next/link";
 import dayjs from "@/lib/dayjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getSecureUrl } from "@/lib/utils";
+import { SubmissionTimeline } from "@/features/submissions/components/SubmissionTimeline";
 import type { SubmissionFile, SubmissionIdParam } from "@/db/types";
 
 export default async function AuthorSubmissionDetailsPage({ params }: { params: Promise<SubmissionIdParam> }) {
@@ -57,9 +59,18 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                         <span>Submitted on {dayjs(sub.submittedAt).format("MMMM DD, YYYY")}</span>
                     </div>
                 </div>
-                <Badge className={`px-5 py-2 rounded-xl border text-xs font-black uppercase tracking-widest ${getStatusColor(sub.status)}`}>
-                    {sub.status.replace('_', ' ')}
-                </Badge>
+                <div className="flex flex-wrap items-center gap-2.5">
+                    <Badge className={`px-5 py-2 rounded-xl border text-xs font-black uppercase tracking-widest ${getStatusColor(sub.status)}`}>
+                        {sub.status.replace('_', ' ')}
+                    </Badge>
+                    {sub.section && (
+                        <Badge variant="outline" className="px-3.5 py-1.5 rounded-xl border text-xs font-bold bg-primary/5 text-primary border-primary/20 flex items-center gap-1.5">
+                            <Bookmark className="w-3.5 h-3.5" />
+                            <span>{sub.section.title}</span>
+                            {sub.section.abbrev && <span className="opacity-60 font-mono text-[10px]">({sub.section.abbrev})</span>}
+                        </Badge>
+                    )}
+                </div>
             </div>
 
             <div className="grid lg:grid-cols-3 gap-8">
@@ -208,6 +219,9 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             </AlertDescription>
                         </Alert>
                     )}
+
+                    {/* Submission Event Timeline */}
+                    <SubmissionTimeline submissionId={submissionId} />
                 </div>
 
                 {/* Sidebar (Right Col) */}
@@ -262,6 +276,48 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             ))}
                         </CardContent>
                     </Card>
+
+                    {/* Reviewer Suggestions (if any were submitted) */}
+                    {sub.reviewerSuggestions && sub.reviewerSuggestions.length > 0 && (
+                        <Card className="border-primary/10 shadow-xl shadow-primary/5">
+                            <CardHeader className="bg-primary/1 border-b border-primary/5">
+                                <CardTitle className="text-sm font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                                    <UserCheck className="w-4 h-4 text-primary" />
+                                    Reviewer Preferences
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-6 space-y-3">
+                                {sub.reviewerSuggestions.map((sug, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={`p-3 rounded-xl border text-xs space-y-1 ${
+                                            sug.type === 'opposed'
+                                                ? 'border-rose-200 bg-rose-50/40 dark:bg-rose-950/20'
+                                                : 'border-emerald-200 bg-emerald-50/40 dark:bg-emerald-950/20'
+                                        }`}
+                                    >
+                                        <div className="flex items-center justify-between font-bold">
+                                            <span className="flex items-center gap-1.5">
+                                                {sug.type === 'opposed' ? <ThumbsDown className="w-3.5 h-3.5 text-rose-600" /> : <ThumbsUp className="w-3.5 h-3.5 text-emerald-600" />}
+                                                {sug.givenName} {sug.familyName || ""}
+                                            </span>
+                                            <span className={`text-[8px] uppercase px-1.5 py-0.5 rounded font-black ${
+                                                sug.type === 'opposed' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
+                                            }`}>
+                                                {sug.type}
+                                            </span>
+                                        </div>
+                                        <p className="text-muted-foreground text-[11px] truncate m-0">{sug.email} {sug.affiliation ? `• ${sug.affiliation}` : ''}</p>
+                                        {sug.suggestionReason && (
+                                            <p className="text-muted-foreground italic text-[11px] m-0 border-t border-border/30 pt-1">
+                                                &quot;{sug.suggestionReason}&quot;
+                                            </p>
+                                        )}
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* APC Remittance & Receipt */}
                     {sub.payment && (
@@ -340,6 +396,11 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                     Download Certificate (PDF)
                                 </a>
                             </Button>
+                            <ZenodoDepositCard
+                                submissionId={submissionId}
+                                publication={sub.publication}
+                                initialDeposit={sub.zenodoDeposit}
+                            />
                         </div>
                     )}
                 </div>

@@ -11,7 +11,10 @@ import {
     ExternalLink,
     Tag,
     ChevronLeft,
-    Calendar
+    Calendar,
+    Bookmark,
+    ThumbsUp,
+    ThumbsDown
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -27,6 +30,7 @@ import AdminPdfUpload from "@/features/submissions/components/AdminPdfUpload";
 import PublicationAssignment from "@/features/submissions/components/PublicationAssignment";
 import RebrandPdfButton from "@/features/submissions/components/RebrandPdfButton";
 import EditDoiModal from "@/features/submissions/components/EditDoiModal";
+import { SubmissionTimeline } from "@/features/submissions/components/SubmissionTimeline";
 import { SubmissionDecisionActions } from "@/app/(panel)/admin/submissions/[id]/_components/SubmissionDecisionActions";
 
 interface SubmissionDetailContainerProps {
@@ -69,9 +73,18 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                 <CardHeader className="p-8 bg-muted/20 border-b border-border/50">
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                         <div className="space-y-4 max-w-2xl 2xl:max-w-4xl">
-                            <Badge className={`h-5 2xl:h-9 px-1.5 2xl:px-4 text-[9px] 2xl:text-base font-semibold tracking-widest whitespace-nowrap capitalize ${getStatusVariant(submission.status)}`}>
-                                {submission.status.replace(/([A-Z])/g, ' $1').replace('_', ' ')}
-                            </Badge>
+                            <div className="flex flex-wrap items-center gap-2.5">
+                                <Badge className={`h-5 2xl:h-9 px-2 2xl:px-4 text-[9px] 2xl:text-base font-semibold tracking-widest whitespace-nowrap capitalize ${getStatusVariant(submission.status)}`}>
+                                    {submission.status.replace(/([A-Z])/g, ' $1').replace('_', ' ')}
+                                </Badge>
+                                {submission.section && (
+                                    <Badge variant="outline" className="h-5 2xl:h-9 px-2.5 2xl:px-4 text-[9px] 2xl:text-base font-bold bg-primary/10 text-primary border-primary/20 flex items-center gap-1.5">
+                                        <Bookmark className="w-3 h-3" />
+                                        <span>{submission.section.title}</span>
+                                        {submission.section.abbrev && <span className="opacity-60 font-mono text-[9px]">({submission.section.abbrev})</span>}
+                                    </Badge>
+                                )}
+                            </div>
                             <h1 className="font-serif text-2xl xl:text-3xl 2xl:text-4xl font-semibold text-foreground tracking-tight capitalize leading-none">
                                 {submission.title}
                             </h1>
@@ -170,6 +183,11 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                     </div>
                                 </div>
                             )}
+
+                            {/* Chronological Submission Event Log & Timeline */}
+                            <div className="pt-6 border-t border-border/30">
+                                <SubmissionTimeline submissionId={submission.id} />
+                            </div>
                         </div>
 
                         {/* Sidebar (4 cols) */}
@@ -210,6 +228,42 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                         <span className="text-[8px] 2xl:text-xs font-semibold text-primary/30 uppercase tracking-wider">CO-AUTH {idx + 1}</span>
                                                     </div>
                                                     <p className="text-[9px] 2xl:text-base font-medium text-muted-foreground truncate">{author.institution}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {submission.reviewerSuggestions && submission.reviewerSuggestions.length > 0 && (
+                                    <div className="space-y-3 pt-2">
+                                        <h4 className="text-[9px] 2xl:text-base font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Author Reviewer Preferences</h4>
+                                        <div className="space-y-2">
+                                            {submission.reviewerSuggestions.map((sug, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className={`p-3 rounded-xl border space-y-1.5 shadow-2xs ${
+                                                        sug.type === 'opposed'
+                                                            ? 'bg-rose-500/5 border-rose-300 dark:border-rose-900/40 text-rose-700 dark:text-rose-400'
+                                                            : 'bg-emerald-500/5 border-emerald-300 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-400'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-1.5 font-bold text-xs">
+                                                            {sug.type === 'opposed' ? <ThumbsDown className="w-3.5 h-3.5 text-rose-600" /> : <ThumbsUp className="w-3.5 h-3.5 text-emerald-600" />}
+                                                            <span>{sug.givenName} {sug.familyName || ""}</span>
+                                                        </div>
+                                                        <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                                                            sug.type === 'opposed' ? 'bg-rose-500/10 text-rose-600' : 'bg-emerald-500/10 text-emerald-600'
+                                                        }`}>
+                                                            {sug.type === 'opposed' ? 'Opposed' : 'Preferred'}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[10px] text-muted-foreground truncate m-0">{sug.email} {sug.affiliation ? `• ${sug.affiliation}` : ''}</p>
+                                                    {sug.suggestionReason && (
+                                                        <p className="text-[10px] italic text-muted-foreground m-0 border-t border-border/30 pt-1">
+                                                            &quot;{sug.suggestionReason}&quot;
+                                                        </p>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
@@ -357,6 +411,23 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                                 </a>
                                                             </Button>
                                                         )}
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <Button asChild variant="ghost" className="h-9 gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold text-[10px] tracking-widest border border-blue-500/20 rounded-xl cursor-pointer">
+                                                                <a href={`/api/export/jats/${submission.paperId}`} download={`jats-${submission.paperId}.xml`}>
+                                                                    <Download className="w-3 h-3" /> JATS XML
+                                                                </a>
+                                                            </Button>
+                                                            <Button asChild variant="ghost" className="h-9 gap-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-semibold text-[10px] tracking-widest border border-purple-500/20 rounded-xl cursor-pointer">
+                                                                <a href={`/api/export/pubmed/${submission.paperId}`} download={`pubmed-${submission.paperId}.xml`}>
+                                                                    <Download className="w-3 h-3" /> PubMed XML
+                                                                </a>
+                                                            </Button>
+                                                        </div>
+                                                        <Button asChild variant="ghost" className="w-full h-9 gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-semibold text-[10px] tracking-widest border border-amber-500/20 rounded-xl cursor-pointer">
+                                                            <a href={`/api/export/doaj/${submission.paperId}`} download={`doaj-${submission.paperId}.xml`}>
+                                                                <Download className="w-3 h-3" /> DOAJ 0.2 XML
+                                                            </a>
+                                                        </Button>
                                                         {role === 'admin' && <RebrandPdfButton submissionId={submission.id} />}
                                                     </div>
                                                 </CardContent>

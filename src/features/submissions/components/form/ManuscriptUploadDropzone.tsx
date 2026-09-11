@@ -38,7 +38,7 @@ export function ManuscriptUploadDropzone({
                         </div>
                         {templateUrl && (
                             <Button asChild variant="ghost" size="sm" className="h-8 text-primary font-bold text-label hover:bg-primary/5">
-                                <a href={templateUrl} download>
+                                <a href={templateUrl} download="IJITEST-Manuscript-Template.docx">
                                     <Download className="w-3 h-3 mr-2" />
                                     Template
                                 </a>
