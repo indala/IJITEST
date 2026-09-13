@@ -1,5 +1,6 @@
 "use server";
 import "server-only";
+import { cache } from "react";
 
 import { db } from "@/lib/db";
 import { sections, submissions } from "@/db/schema";
@@ -16,7 +17,9 @@ import {
 } from "@/lib/action-response";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
+import { cacheLogger } from "@/lib/cache-logger";
 
 const DEFAULT_SECTIONS: Omit<NewSection, 'id' | 'createdAt' | 'updatedAt'>[] = [
     {
@@ -91,6 +94,8 @@ export async function seedDefaultSections(): Promise<ActionResponse<Section[]>> 
             for (const item of DEFAULT_SECTIONS) {
                 await db.insert(sections).values(item);
             }
+            cacheLogger.invalidation(CACHE_TAGS.SECTIONS, "seedDefaultSections");
+            updateTag(CACHE_TAGS.SECTIONS);
         }
         const allSections = await db.select().from(sections).orderBy(asc(sections.sequence));
         return actionSuccess(allSections);
@@ -104,23 +109,52 @@ export async function seedDefaultSections(): Promise<ActionResponse<Section[]>> 
  * Public query: Fetch all active sections for author submission dropdown and public browsing.
  */
 export async function getSections(): Promise<ActionResponse<Section[]>> {
-    try {
-        // Auto-seed if empty
-        const countRes = await db.select({ val: count() }).from(sections);
-        if ((countRes[0]?.val ?? 0) === 0) {
-            await seedDefaultSections();
-        }
+    'use cache';
+    cacheLife('settings');
+    cacheTag(CACHE_TAGS.SECTIONS);
 
+    try {
+        cacheLogger.miss(CACHE_TAGS.SECTIONS, "sections");
         const rows = await db.select()
             .from(sections)
             .where(eq(sections.isInactive, false))
             .orderBy(asc(sections.sequence), asc(sections.title));
 
+        if (rows.length === 0) {
+            const countRes = await db.select({ val: count() }).from(sections);
+            if ((countRes[0]?.val ?? 0) === 0) {
+                await seedDefaultSections();
+                const rechecked = await db.select()
+                    .from(sections)
+                    .where(eq(sections.isInactive, false))
+                    .orderBy(asc(sections.sequence), asc(sections.title));
+                return actionSuccess(rechecked);
+            }
+        }
+
         return actionSuccess(rows);
     } catch (error) {
+        cacheLogger.error(CACHE_TAGS.SECTIONS, error);
         console.error("Get sections error:", error);
         return serverError(error, "fetch journal sections");
     }
+}
+
+const getCachedSectionsData = cache(async (): Promise<Section[]> => {
+    try {
+        const res = await getSections();
+        return res.success && res.data ? res.data : [];
+    } catch {
+        return [];
+    }
+});
+
+/**
+ * Utility for Server Components to get raw sections directly.
+ * Deduplicated per-request via React.cache.
+ */
+export async function getSectionsData(): Promise<Section[]> {
+    return getCachedSectionsData();
 }
 
 /**
@@ -215,6 +249,8 @@ export async function createSection(data: {
         });
 
         const [created] = await db.select().from(sections).where(eq(sections.id, result.insertId));
+        cacheLogger.invalidation(CACHE_TAGS.SECTIONS, "createSection");
+        updateTag(CACHE_TAGS.SECTIONS);
         revalidatePath('/submit');
         revalidatePath('/admin/settings/sections');
         return actionSuccess(created, "Section created successfully.");
@@ -271,6 +307,8 @@ export async function updateSection(id: number, data: {
         await db.update(sections).set(updateData).where(eq(sections.id, id));
 
         const [updated] = await db.select().from(sections).where(eq(sections.id, id));
+        cacheLogger.invalidation(CACHE_TAGS.SECTIONS, "updateSection");
+        updateTag(CACHE_TAGS.SECTIONS);
         revalidatePath('/submit');
         revalidatePath('/admin/settings/sections');
         return actionSuccess(updated, "Section updated successfully.");
@@ -303,6 +341,8 @@ export async function deleteSection(id: number): Promise<ActionResponse> {
         }
 
         await db.delete(sections).where(eq(sections.id, id));
+        cacheLogger.invalidation(CACHE_TAGS.SECTIONS, "deleteSection");
+        updateTag(CACHE_TAGS.SECTIONS);
         revalidatePath('/submit');
         revalidatePath('/admin/settings/sections');
         return actionSuccess(undefined, "Section deleted successfully.");

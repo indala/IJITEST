@@ -1,7 +1,6 @@
-import { Megaphone, ChevronRight, Calendar } from 'lucide-react';
+import { Megaphone, ChevronRight, Calendar, Bell } from 'lucide-react';
 import Link from 'next/link';
-import { Card, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { memo } from 'react';
 import type { Issue, Announcement } from '@/db/types';
 
 interface AnnouncementsWidgetProps {
@@ -9,14 +8,26 @@ interface AnnouncementsWidgetProps {
     announcements?: Announcement[] | null;
 }
 
-const TYPE_TAGS: Record<string, { label: string; color: string }> = {
-    call_for_papers: { label: "Call for Papers", color: "bg-purple-100 text-purple-800 dark:bg-purple-950/40 dark:text-purple-300" },
-    news: { label: "News", color: "bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300" },
-    editorial_update: { label: "Notice", color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300" },
-    event: { label: "Event", color: "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300" },
+const TYPE_TAGS: Record<string, { label: string; badgeClass: string }> = {
+    call_for_papers: {
+        label: "Call for Papers",
+        badgeClass: "bg-secondary/10 text-secondary border-secondary/25",
+    },
+    news: {
+        label: "Journal News",
+        badgeClass: "bg-primary/10 text-primary border-primary/20",
+    },
+    editorial_update: {
+        label: "Notice",
+        badgeClass: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
+    },
+    event: {
+        label: "Event",
+        badgeClass: "bg-amber-500/10 text-amber-700 border-amber-500/20",
+    },
 };
 
-export default function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidgetProps) {
+function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidgetProps) {
     const hasCustomAnnouncements = announcements && announcements.length > 0;
 
     const currentStatus = latestIssue ? {
@@ -30,85 +41,114 @@ export default function AnnouncementsWidget({ latestIssue, announcements }: Anno
     };
 
     return (
-        <div>
-            <Card className="border border-border/70 bg-card rounded-xl p-3.5 sm:p-4 2xl:p-5 space-y-3 shadow-2xs">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 2xl:w-10 2xl:h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                            <Megaphone className="w-4 h-4 2xl:w-5 2xl:h-5" />
-                        </div>
-                        <CardTitle className="text-primary m-0 text-base 2xl:text-lg">Announcements</CardTitle>
+        <div className="bg-card p-3.5 sm:p-4 2xl:p-5 rounded-xl border border-border/70 shadow-2xs space-y-3 2xl:space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 2xl:w-10 2xl:h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                        <Megaphone className="w-4 h-4 2xl:w-5 2xl:h-5" />
                     </div>
-                    <Badge variant="outline" className="h-5 2xl:h-6 px-1.5 2xl:px-2 py-0 text-primary border-primary/20 bg-primary/5 flex items-center gap-1 text-[10px] 2xl:text-xs">
-                        <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                        </span>
-                        <span>Live</span>
-                    </Badge>
+                    <h3 className="text-primary m-0 font-sans font-bold text-base 2xl:text-lg tracking-tight">
+                        Announcements
+                    </h3>
                 </div>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-3xs 2xl:text-2xs font-semibold bg-primary/5 text-primary border border-primary/15">
+                    <span className="relative flex h-1.5 w-1.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                    </span>
+                    <span className="font-bold uppercase tracking-wider">Live</span>
+                </span>
+            </div>
 
-                {hasCustomAnnouncements ? (
-                    <div className="space-y-2.5">
-                        {announcements.slice(0, 3).map((item) => {
-                            const tag = TYPE_TAGS[item.type] || TYPE_TAGS["news"]!;
-                            return (
-                                <div
-                                    key={item.id}
-                                    className="p-2.5 bg-muted/40 rounded-lg border border-border/50 hover:bg-muted/70 transition-colors space-y-1 group"
-                                >
-                                    <div className="flex items-center justify-between gap-1">
-                                        <Badge variant="secondary" className={`text-[9px] px-1.5 py-0 font-medium ${tag.color}`}>
-                                            {tag.label}
-                                        </Badge>
-                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                            <Calendar className="w-2.5 h-2.5" />
-                                            {new Date(item.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                                        </span>
-                                    </div>
-                                    <Link
-                                        href={`/announcements/${item.id}`}
-                                        className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 block"
-                                    >
-                                        {item.title}
-                                    </Link>
-                                    {item.descriptionShort && (
-                                        <p className="text-[11px] text-muted-foreground line-clamp-1">
-                                            {item.descriptionShort}
-                                        </p>
-                                    )}
+            {/* Content */}
+            {hasCustomAnnouncements ? (
+                <div className="space-y-2 2xl:space-y-2.5">
+                    {announcements.slice(0, 3).map((item) => {
+                        const tag = TYPE_TAGS[item.type] || TYPE_TAGS["news"]!;
+                        const formattedDate = new Date(item.createdAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                        });
+
+                        return (
+                            <Link
+                                key={item.id}
+                                href={`/announcements/${item.id}`}
+                                className="block p-2.5 2xl:p-3 bg-muted/40 hover:bg-muted/70 rounded-lg border border-border/50 hover:border-primary/20 transition-all space-y-1.5 group no-underline"
+                            >
+                                <div className="flex items-center justify-between gap-1.5">
+                                    <span className={`inline-block px-1.5 py-0.5 rounded border text-3xs font-semibold uppercase tracking-wider ${tag.badgeClass}`}>
+                                        {tag.label}
+                                    </span>
+                                    <span className="text-meta text-muted-foreground flex items-center gap-1 shrink-0">
+                                        <Calendar className="w-3 h-3 text-muted-foreground/70" />
+                                        <span>{formattedDate}</span>
+                                    </span>
                                 </div>
-                            );
-                        })}
+                                <h4 className="text-xs sm:text-13 2xl:text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 m-0 leading-snug">
+                                    {item.title}
+                                </h4>
+                                {item.descriptionShort && (
+                                    <p className="text-2xs sm:text-xs-plus 2xl:text-xs text-muted-foreground line-clamp-1 m-0 leading-normal">
+                                        {item.descriptionShort}
+                                    </p>
+                                )}
+                            </Link>
+                        );
+                    })}
 
-                        <div className="pt-1 flex items-center justify-between border-t border-border/40 text-xs">
-                            <Link
-                                href="/announcements"
-                                className="font-semibold text-primary hover:underline flex items-center gap-1"
-                            >
-                                <span>View all notices</span>
-                                <ChevronRight className="w-3 h-3" />
-                            </Link>
-                            <Link
-                                href="/author/submissions/submit"
-                                className="text-muted-foreground hover:text-foreground text-[11px]"
-                            >
-                                Submit paper
-                            </Link>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="p-2.5 2xl:p-3.5 bg-muted/40 rounded-lg border border-border/50 space-y-1.5 2xl:space-y-2">
-                        <p className="text-foreground/80 leading-snug m-0 text-xs 2xl:text-sm">
-                            Volume {currentStatus.volume}, Issue {currentStatus.issue} ({currentStatus.date}) is currently accepting manuscripts.
-                        </p>
-                        <Link href="/author/submissions/submit" className="text-xs 2xl:text-sm font-bold text-secondary flex items-center gap-1 hover:text-primary transition-colors no-underline">
-                            <span>Submit Online</span>
-                            <ChevronRight className="w-3 h-3" />
+                    {/* Footer Links */}
+                    <div className="pt-2 flex items-center justify-between border-t border-border/50 text-xs 2xl:text-13">
+                        <Link
+                            href="/announcements"
+                            className="font-semibold text-primary hover:text-secondary transition-colors inline-flex items-center gap-1 group no-underline text-xs 2xl:text-13"
+                        >
+                            <span>View all notices</span>
+                            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        </Link>
+                        <Link
+                            href="/submit"
+                            className="text-muted-foreground hover:text-primary text-2xs sm:text-xs-plus 2xl:text-xs font-medium transition-colors no-underline"
+                        >
+                            Submit paper
                         </Link>
                     </div>
-                )}
-            </Card>
+                </div>
+            ) : (
+                <div className="p-3 2xl:p-4 bg-muted/40 rounded-lg border border-border/50 space-y-2.5">
+                    <div className="flex items-start gap-2.5">
+                        <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                            <Bell className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-foreground font-medium leading-snug m-0 text-xs 2xl:text-sm">
+                                Volume {currentStatus.volume}, Issue {currentStatus.issue} ({currentStatus.date})
+                            </p>
+                            <p className="text-muted-foreground m-0 text-2xs 2xl:text-xs">
+                                Submissions are currently open for peer review and publication.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="pt-1.5 flex items-center justify-between border-t border-border/40">
+                        <Link
+                            href="/submit"
+                            className="text-xs 2xl:text-13 font-bold text-secondary hover:text-primary transition-colors inline-flex items-center gap-1 no-underline group"
+                        >
+                            <span>Submit Manuscript</span>
+                            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        </Link>
+                        <Link
+                            href="/announcements"
+                            className="text-muted-foreground hover:text-primary text-2xs 2xl:text-xs font-medium transition-colors no-underline"
+                        >
+                            All Notices
+                        </Link>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
+export default memo(AnnouncementsWidget);

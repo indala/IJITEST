@@ -3,6 +3,7 @@ import "server-only";
 export const CACHE_TAGS = {
     // Global Configs & Settings
     SETTINGS: "settings",
+    SECTIONS: "sections",
     
     // Public Facing Pages & Data
     PUBLIC_DATA: "public-data",
