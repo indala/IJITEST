@@ -40,8 +40,8 @@ export default async function EditorialBoard() {
                 scrollOnComplete={true}
             />
 
-            <section className="container-responsive py-6 sm:py-8 flex justify-center">
-                <div className="space-y-6 w-full max-w-6xl">
+            <section className="container-responsive section-vertical flex justify-center">
+                <div className="space-y-6 2xl:space-y-8 w-full max-w-6xl 2xl:max-w-7xl">
                     {/* Main Content */}
                     <EditorialBoardClient settings={settings} initialMembers={initialMembers} />
 

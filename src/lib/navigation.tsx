@@ -11,8 +11,7 @@ import {
     FileText,
     Mail,
     Bookmark,
-    Megaphone,
-    Globe
+    Megaphone
 } from 'lucide-react';
 import React from 'react';
 
@@ -41,7 +40,6 @@ export const sidebarItems: NavigationItem[] = [
     { name: 'Peer Review', icon: <ShieldAlert />, href: 'reviews', roles: ['admin', 'editor', 'reviewer'] },
     { name: 'Journal Sections', icon: <Bookmark />, href: 'settings/sections', roles: ['admin'] },
     { name: 'Announcements', icon: <Megaphone />, href: 'announcements', roles: ['admin', 'editor'] },
-    { name: 'Custom Pages', icon: <Globe />, href: 'pages', roles: ['admin'] },
     { name: 'Payments', icon: <CreditCard />, href: 'payments', roles: ['admin', 'author'] },
     { name: 'Messages', icon: <MessageSquare />, href: 'messages', roles: ['admin', 'editor', 'reviewer'] },
     { name: 'Users & Roles', icon: <Users />, href: 'users', roles: ['admin'] },

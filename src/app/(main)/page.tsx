@@ -15,7 +15,6 @@ import AuthorQuickLinks from '@/features/home/components/AuthorQuickLinks';
 import CallForPapersWidget from '@/features/shared/widgets/CallForPapersWidget';
 import ResourceDeskWidget from '@/features/shared/widgets/ResourceDeskWidget';
 import EthicsWidget from '@/features/shared/widgets/EthicsWidget';
-import ApcFeeWidget from '@/features/shared/widgets/ApcFeeWidget';
 import AnnouncementBar from '@/features/home/components/AnnouncementBar';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
@@ -110,7 +109,6 @@ export default async function Home() {
                 </Suspense>
                 <AuthorQuickLinks />
                 <ResourceDeskWidget settings={settings} />
-                <ApcFeeWidget />
                 <EthicsWidget />
               </div>
             </>

@@ -85,10 +85,10 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                     </Badge>
                                 )}
                             </div>
-                            <h1 className="font-serif text-2xl xl:text-3xl 2xl:text-4xl font-semibold text-foreground tracking-tight capitalize leading-none">
+                            <h1 className="heading-academic capitalize leading-none">
                                 {submission.title}
                             </h1>
-                            <div className="flex flex-wrap items-center gap-6 2xl:gap-10 text-[9px] xl:text-xs 2xl:text-base font-semibold text-muted-foreground tracking-widest capitalize">
+                            <div className="flex flex-wrap items-center gap-6 2xl:gap-10 text-meta tracking-widest capitalize">
                                 <div className="flex items-center gap-2 2xl:gap-4">
                                     <Calendar className="w-3.5 h-3.5 2xl:w-5 2xl:h-5 opacity-50" />
                                     <span>{submission.submittedAt ? new Date(submission.submittedAt).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'Unknown Date'}</span>
@@ -473,7 +473,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                             <p className="text-[10px] font-medium text-muted-foreground ">Payment Verified / Waived</p>
                                                         </div>
                                                     </div>
-                                                    <p className="text-[10px] font-semibold text-[#000066] leading-relaxed uppercase tracking-wider pl-1 border-l-2 border-[#000066]/20">
+                                                    <p className="text-label text-primary leading-relaxed pl-1 border-l-2 border-primary/20">
                                                         {"This manuscript is awaiting administrative assignment and publication in a journal volume/issue."}
                                                     </p>
                                                 </div>

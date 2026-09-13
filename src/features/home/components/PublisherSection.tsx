@@ -11,7 +11,7 @@ export default function PublisherSection({ settings }: PublisherSectionProps) {
     const supportEmail = settings['supportEmail'] || "support@ijitest.org";
 
     return (
-        <section className="section-padding bg-background relative overflow-hidden border-t border-primary/5 my-2">
+        <section className="section-vertical bg-background relative overflow-hidden border-t border-primary/5 my-2">
             <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 pointer-events-none animate-pulse" />
 
             <div className="container-responsive text-center sm:text-left relative z-10">

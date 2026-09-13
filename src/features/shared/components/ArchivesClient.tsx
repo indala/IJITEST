@@ -104,9 +104,9 @@ export default function ArchivesClient({ mode = 'archive', initialPapers }: Arch
     }, [hierarchy, effectiveIssueKey]);
 
     return (
-        <section className="container-responsive py-6 sm:py-8">
+        <section className="container-responsive section-vertical">
             <div className="mb-4">
-                <div className="max-w-4xl mx-auto space-y-3">
+                <div className="max-w-4xl 2xl:max-w-6xl mx-auto space-y-3 2xl:space-y-4">
                     <InputGroup className="h-10 rounded-xl border-border bg-card shadow-2xs focus-within:ring-primary/20 transition-all">
                         <InputGroupAddon align="inline-start" className="pl-3.5">
                             <Search className="w-4 h-4 text-primary/40" />

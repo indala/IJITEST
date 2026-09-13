@@ -88,7 +88,7 @@ export default async function FaqsPage() {
                 ]}
                 scrollOnComplete={true}
             />
-            <section className="container-responsive py-6 sm:py-8 flex justify-center">
+            <section className="container-responsive section-vertical flex justify-center">
                 <FaqsClient apcInr={apcInr} apcUsd={apcUsd} />
             </section>
         </div>

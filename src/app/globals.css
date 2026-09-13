@@ -12,8 +12,37 @@
   --color-background: oklch(0.995 0.002 255);
   --color-foreground: oklch(0.18 0.02 255);
 
-  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
-  --font-serif: var(--font-crimson), "Crimson Pro", serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-crimson), "Crimson Pro", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Typography Scale Tokens (Micro & Sub-XS to 2XL scale) */
+  --text-4xs: 0.5rem;
+  --text-4xs--line-height: 0.75rem;
+
+  --text-3xs: 0.5625rem;
+  --text-3xs--line-height: 0.75rem;
+
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
+
+  --text-xs-plus: 0.6875rem;
+  --text-xs-plus--line-height: 1rem;
+
+  --text-13: 0.8125rem;
+  --text-13--line-height: 1.25rem;
+
+  --text-15: 0.9375rem;
+  --text-15--line-height: 1.5rem;
+
+  --text-2.5xl: 1.75rem;
+  --text-2.5xl--line-height: 2.125rem;
+
+  --text-3.5xl: 2rem;
+  --text-3.5xl--line-height: 2.375rem;
+
+  --text-4.5xl: 2.5rem;
+  --text-4.5xl--line-height: 2.875rem;
 
   --shadow-vip: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
   --shadow-vip-hover: 0 25px 50px -12px rgb(0 0 0 / 0.1);
@@ -156,7 +185,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    @apply font-sans antialiased bg-background text-foreground tracking-tight text-[13px] sm:text-[14px] lg:text-[15px] 2xl:text-[16px];
+    @apply font-sans antialiased bg-background text-foreground tracking-tight text-13 sm:text-sm lg:text-15 2xl:text-base;
   }
 
   /* --------------------------------------------------------------------------
@@ -165,37 +194,37 @@
   h1 {
     color: var(--color-primary);
     @apply font-sans font-semibold text-primary leading-tight tracking-tight mb-2.5;
-    @apply text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl;
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-4.5xl 2xl:text-5xl;
   }
 
   h2 {
     color: var(--color-foreground);
     @apply font-sans font-semibold text-foreground leading-snug tracking-tight mb-2;
-    @apply text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-2xl;
+    @apply text-lg sm:text-xl md:text-2xl lg:text-2.5xl xl:text-3xl 2xl:text-4xl;
   }
 
   h3 {
     color: var(--color-foreground);
     @apply font-sans font-medium text-foreground/90 leading-snug tracking-normal mb-1.5;
-    @apply text-base sm:text-lg md:text-lg lg:text-xl;
+    @apply text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl 2xl:text-3xl;
   }
 
   h4 {
     color: var(--color-foreground);
     @apply font-sans font-medium text-foreground/85 leading-normal mb-1;
-    @apply text-sm sm:text-base md:text-base lg:text-lg;
+    @apply text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl;
   }
 
   h5 {
     color: var(--color-foreground);
     @apply font-sans font-medium text-foreground/80 leading-normal mb-1;
-    @apply text-xs sm:text-sm md:text-sm;
+    @apply text-xs sm:text-sm md:text-base lg:text-base xl:text-lg 2xl:text-xl;
   }
 
   h6 {
     color: var(--color-primary);
     @apply font-sans font-semibold text-primary uppercase tracking-wider mb-0.5;
-    @apply text-[11px] sm:text-xs;
+    @apply text-xs-plus sm:text-xs md:text-sm xl:text-sm 2xl:text-base;
   }
 
 
@@ -204,7 +233,7 @@
      -------------------------------------------------------------------------- */
   p {
     @apply text-foreground/80 font-normal leading-relaxed mb-2.5;
-    @apply text-xs sm:text-sm lg:text-[15px] xl:text-base 2xl:text-[16px];
+    @apply text-xs sm:text-sm lg:text-15 xl:text-base 2xl:text-lg;
   }
 
   ul, ol {
@@ -216,7 +245,7 @@
   }
 
   code, pre, kbd {
-    @apply font-mono text-[11px] sm:text-xs xl:text-[13px] 2xl:text-sm;
+    @apply font-mono text-xs-plus sm:text-xs xl:text-13 2xl:text-sm;
   }
 
   * {
@@ -225,13 +254,34 @@
 }
 
 @layer components {
-  /* Semantic Typography Utilities */
+  /* Semantic Font Family Utilities */
+  .font-academic {
+    @apply font-serif;
+  }
+
+  .font-ui {
+    @apply font-sans;
+  }
+
+  /* Semantic Typography & Heading Utilities */
+  .heading-hero {
+    @apply font-sans font-bold tracking-tight text-3xl sm:text-4xl md:text-5xl xl:text-6xl 2xl:text-7xl text-foreground;
+  }
+
+  .heading-academic {
+    @apply font-serif font-semibold tracking-tight text-xl sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl text-foreground;
+  }
+
+  .heading-card {
+    @apply font-sans font-semibold tracking-tight text-base sm:text-lg xl:text-xl 2xl:text-2xl text-foreground;
+  }
+
   .text-lead {
     @apply font-normal leading-relaxed text-foreground/85 text-sm sm:text-base md:text-lg xl:text-xl 2xl:text-2xl;
   }
 
   .text-body {
-    @apply font-normal leading-relaxed text-foreground/80 text-xs sm:text-sm lg:text-[15px] xl:text-base 2xl:text-[16px];
+    @apply font-normal leading-relaxed text-foreground/80 text-xs sm:text-sm lg:text-15 xl:text-base 2xl:text-lg;
   }
 
   .text-body-sm {
@@ -239,16 +289,20 @@
   }
 
   .text-meta {
-    @apply font-mono font-medium tracking-normal text-muted-foreground text-[10px] sm:text-[11px] md:text-xs xl:text-xs 2xl:text-[13px];
+    @apply font-mono font-medium tracking-normal text-muted-foreground text-2xs sm:text-xs-plus md:text-xs xl:text-xs 2xl:text-sm;
   }
 
   .text-label {
-    @apply font-sans font-bold uppercase tracking-wider text-[10px] sm:text-[11px] md:text-xs xl:text-xs 2xl:text-sm;
+    @apply font-sans font-bold uppercase tracking-wider text-2xs sm:text-xs-plus md:text-xs xl:text-xs 2xl:text-sm;
+  }
+
+  .text-badge {
+    @apply font-sans font-bold uppercase tracking-wider text-2xs 2xl:text-xs;
   }
 
   /* Standardized Form & Field Utilities */
   .form-label-brand {
-    @apply text-primary font-bold uppercase tracking-wider text-[10px] sm:text-[11px] md:text-xs xl:text-xs 2xl:text-sm;
+    @apply text-primary font-bold uppercase tracking-wider text-xs-plus 2xl:text-xs;
   }
 
   .input-standard {
@@ -259,7 +313,7 @@
 
   /* Standardized Panel & Card Utilities */
   .panel-title {
-    @apply font-bold tracking-tight text-foreground text-lg sm:text-xl md:text-2xl xl:text-3xl 2xl:text-4xl;
+    @apply font-bold tracking-tight text-primary text-xl sm:text-2xl md:text-3xl xl:text-3xl 2xl:text-4xl;
   }
 
   .panel-subtitle {
@@ -290,7 +344,7 @@
 
   .btn-sm {
     @apply font-semibold rounded-lg;
-    @apply text-[11px] sm:text-xs md:text-xs xl:text-xs 2xl:text-sm;
+    @apply text-xs-plus sm:text-xs md:text-xs xl:text-xs 2xl:text-sm;
     @apply px-2.5 py-1 sm:px-3 sm:py-1.5 xl:px-3.5 xl:py-1.5 2xl:px-4 2xl:py-2;
   }
 
@@ -302,16 +356,57 @@
 
   .badge-brand {
     @apply bg-primary/5 text-primary border border-primary/10 font-semibold rounded-md uppercase tracking-wider;
-    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-xs 2xl:text-xs;
+    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
     @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
   }
 
-  .section-padding {
-    @apply py-6 sm:py-8 px-4 md:px-6 xl:px-8;
+  /* --------------------------------------------------------------------------
+     Responsive Container System (Single Source of Truth)
+     -------------------------------------------------------------------------- */
+  .container-responsive {
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-14 2xl:px-16;
   }
 
-  .container-responsive {
-    @apply px-4 md:px-6 xl:px-8 2xl:px-12 2xl:max-w-[1680px] 2xl:mx-auto;
+  .container-narrow {
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12;
+  }
+
+  .container-fluid {
+    @apply w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12;
+  }
+
+  /* --------------------------------------------------------------------------
+     Responsive Section Spacing (sm, md, lg, xl, 2xl)
+     -------------------------------------------------------------------------- */
+  .section-padding {
+    @apply py-6 sm:py-8 md:py-10 lg:py-12 xl:py-14 2xl:py-16 px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12;
+  }
+
+  .section-vertical {
+    @apply py-6 sm:py-8 md:py-10 lg:py-12 xl:py-14 2xl:py-16;
+  }
+
+  .section-vertical-sm {
+    @apply py-4 sm:py-6 md:py-8 lg:py-10 2xl:py-12;
+  }
+
+  /* --------------------------------------------------------------------------
+     Responsive Grid Utilities (sm, md, lg, xl, 2xl)
+     -------------------------------------------------------------------------- */
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 2xl:gap-8;
+  }
+
+  .grid-responsive-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 2xl:gap-8;
+  }
+
+  .grid-responsive-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 2xl:gap-8;
+  }
+
+  .layout-content-sidebar {
+    @apply grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 2xl:gap-12;
   }
 
   /* --------------------------------------------------------------------------
@@ -474,34 +569,6 @@ html {
   }
 }
 
-/* Panel-specific Typography (Scoped to Panel Shell) */
-.panel-shell h1 {
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--color-foreground);
-}
-.panel-shell h2 {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--color-foreground);
-}
-.panel-shell h3 {
-  font-size: 1.125rem;
-  line-height: 1.5rem;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  color: var(--color-foreground);
-}
-.panel-shell h4 {
-  font-size: 0.9375rem;
-  line-height: 1.375rem;
-  font-weight: 600;
-  color: var(--color-foreground);
-}
 
 /* Hide native browser password reveal icon (Edge / Chromium) to avoid duplicate toggle icons */
 input::-ms-reveal,

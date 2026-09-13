@@ -68,7 +68,7 @@ export default function TrackClient({ journalShortName }: TrackClientProps) {
     }, [isSuccess, isError]);
 
     return (
-        <section className="container-responsive py-6 sm:py-8">
+        <section className="container-responsive section-vertical">
             <TrackSearchForm
                 paperIdInput={paperIdInput}
                 emailInput={emailInput}

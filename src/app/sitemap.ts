@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next';
 import { getPublishedPapers, getLatestIssuePapers } from '@/actions/archives';
-import { getAllPublishedStaticPages } from '@/actions/static-pages';
 import { getAnnouncements } from '@/actions/announcements';
 import type { PublishedPaperUI } from '@/db/types';
 import { cacheLife, cacheTag } from 'next/cache';
@@ -9,7 +8,7 @@ import { CACHE_TAGS } from '@/lib/cache-tags';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   'use cache';
   cacheLife('days');
-  cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, 'static-pages', 'announcements');
+  cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, 'announcements');
   const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
 
   // 1. Core High-Priority & Informational Routes
@@ -25,8 +24,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/about', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/open-access', priority: 0.85, changeFrequency: 'monthly' as const },
     { path: '/ethics', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/faqs', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/peer-review', priority: 0.8, changeFrequency: 'monthly' as const },
+    { path: '/aims-scope', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/copyright-policy', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/licensing-policy', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/apc-fees', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/plagiarism-policy', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/conflict-of-interest', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/research-misconduct', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/corrections-retractions', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/archiving-policy', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/ai-policy', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/publisher-info', priority: 0.85, changeFrequency: 'monthly' as const },
+    { path: '/faqs', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/reviewer-guidelines', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/join-us', priority: 0.75, changeFrequency: 'monthly' as const },
     { path: '/track', priority: 0.75, changeFrequency: 'monthly' as const },
@@ -42,12 +52,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: r.priority,
   }));
 
-  // 2. Dynamic Manuscript, Volume, Issue, CMS Pages & Announcements Directory Routes
+  // 2. Dynamic Manuscript, Volume, Issue & Announcements Directory Routes
   try {
-    const [res, latestRes, pagesRes, announcementsRes] = await Promise.all([
+    const [res, latestRes, announcementsRes] = await Promise.all([
       getPublishedPapers(),
       getLatestIssuePapers(),
-      getAllPublishedStaticPages(),
       getAnnouncements()
     ]);
 
@@ -140,21 +149,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           lastModified: new Date(),
           changeFrequency: 'weekly' as const,
           priority: 0.85,
-        });
-      }
-    });
-
-    // Add Dynamic CMS Static Pages
-    const staticPagesList = pagesRes.success ? pagesRes.data ?? [] : [];
-    staticPagesList.forEach((page) => {
-      const pageUrl = `${baseUrl}/pages/${page.slug}`;
-      if (!addedUrls.has(pageUrl)) {
-        addedUrls.add(pageUrl);
-        dynamicRoutes.push({
-          url: pageUrl,
-          lastModified: new Date(page.updatedAt || new Date()),
-          changeFrequency: 'monthly' as const,
-          priority: 0.8,
         });
       }
     });

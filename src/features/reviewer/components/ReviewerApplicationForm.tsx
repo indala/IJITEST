@@ -52,7 +52,7 @@ function FileInput({
 
     return (
         <div className="space-y-2">
-            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">
+            <Label className="form-label-brand pl-1">
                 {label} <span className="text-destructive">*</span>
             </Label>
             <div
@@ -62,8 +62,8 @@ function FileInput({
                     border-2 border-dashed rounded-xl p-6
                     transition-all duration-200
                     ${value
-                        ? 'border-[#000066]/50 bg-[#000066]/5'
-                        : 'border-border/50 bg-card hover:border-[#000066]/30 hover:bg-[#000066]/5'
+                        ? 'border-primary/50 bg-primary/5'
+                        : 'border-border/50 bg-card hover:border-primary/30 hover:bg-primary/5'
                     }
                 `}
             >
@@ -80,16 +80,16 @@ function FileInput({
                 <div className="flex flex-col items-center gap-4 relative z-10 text-center">
                     <div className={`
                         w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-sm border
-                        ${value ? 'bg-[#000066] text-white border-[#000066]' : 'bg-muted/20 text-[#000066]/40 border-border/50'}
+                        ${value ? 'bg-primary text-white border-primary' : 'bg-muted/20 text-primary/40 border-border/50'}
                     `}>
                         {value ? <CheckCircle2 className="w-6 h-6" /> : <Icon className="w-5 h-5" />}
                     </div>
 
                     <div className="space-y-1">
-                        <p className={`text-xs font-semibold truncate max-w-[200px] ${value ? 'text-[#000066]' : 'text-foreground'}`}>
+                        <p className={`text-xs font-semibold truncate max-w-[200px] ${value ? 'text-primary' : 'text-foreground'}`}>
                             {value ? value.name : `Select ${label}`}
                         </p>
-                        <p className="text-[10px] font-bold uppercase tracking-tight text-muted-foreground/60">
+                        <p className="text-badge text-muted-foreground/60">
                             {value ? "File selected" : accept.replace(/\./g, ' ')}
                         </p>
                     </div>
@@ -259,7 +259,7 @@ export default function ReviewerApplicationForm() {
     if (state?.success) {
         return (
             <div className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden p-8 text-center space-y-6">
-                <div className="w-16 h-16 bg-[#000066]/5 text-[#000066] rounded-xl flex items-center justify-center border border-[#000066]/10 mx-auto">
+                <div className="w-16 h-16 bg-primary/5 text-primary rounded-xl flex items-center justify-center border border-primary/10 mx-auto">
                     <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div className="space-y-2 text-center">
@@ -271,16 +271,16 @@ export default function ReviewerApplicationForm() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
                     <div className="p-4 bg-muted/20 rounded-lg border border-border/50 text-left">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Applicant</p>
-                        <p className="text-xs font-semibold text-[#000066] truncate">{formData.fullName}</p>
+                        <p className="text-label text-muted-foreground mb-1">Applicant</p>
+                        <p className="text-xs font-semibold text-primary truncate">{formData.fullName}</p>
                     </div>
                     <div className="p-4 bg-muted/20 rounded-lg border border-border/50 text-left">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Status</p>
-                        <p className="text-xs font-semibold text-[#000066]">Under Review</p>
+                        <p className="text-label text-muted-foreground mb-1">Status</p>
+                        <p className="text-xs font-semibold text-primary">Under Review</p>
                     </div>
                 </div>
 
-                <Button onClick={() => router.refresh()} variant="outline" className="h-10 px-6 rounded-lg border-border/50 text-[#000066] hover:bg-[#000066]/5 font-semibold text-xs transition-all">
+                <Button onClick={() => router.refresh()} variant="outline" className="h-10 px-6 rounded-lg border-border/50 text-primary hover:bg-primary/5 font-semibold text-xs transition-all">
                     Return
                 </Button>
             </div>
@@ -290,7 +290,7 @@ export default function ReviewerApplicationForm() {
     return (
         <div className="bg-card border border-border/50 rounded-xl shadow-sm transition-all flex flex-col min-h-[550px] overflow-hidden">
             {/* Header Stepper */}
-            <div className="bg-[#000066] p-6 text-white relative">
+            <div className="bg-primary p-6 text-white relative">
                 <div className="flex flex-col items-center">
                     <h2 className="text-lg font-semibold text-white mb-6">Reviewer Application</h2>
 
@@ -299,12 +299,12 @@ export default function ReviewerApplicationForm() {
                         {[1, 2, 3].map((s) => (
                             <div key={s} className="relative z-10 flex flex-col items-center gap-1.5">
                                 <div className={`
-                                    w-7 h-7 rounded-lg flex items-center justify-center border text-[11px] font-bold transition-all
-                                    ${step >= s ? 'bg-white text-[#000066] border-white' : 'bg-[#000066] border-white/20 text-white/40'}
+                                    w-7 h-7 rounded-lg flex items-center justify-center border text-xs-plus font-bold transition-all
+                                    ${step >= s ? 'bg-white text-primary border-white' : 'bg-primary border-white/20 text-white/40'}
                                 `}>
                                     {step > s ? <CheckCircle2 className="w-3.5 h-3.5" /> : s}
                                 </div>
-                                <span className={`text-[9px] font-bold uppercase tracking-wider ${step >= s ? 'text-white' : 'text-white/30'}`}>
+                                <span className={`text-3xs font-bold uppercase tracking-wider ${step >= s ? 'text-white' : 'text-white/30'}`}>
                                     {s === 1 ? 'Info' : s === 2 ? 'Research' : 'Files'}
                                 </span>
                             </div>
@@ -330,14 +330,14 @@ export default function ReviewerApplicationForm() {
                                 <div className="space-y-6">
                                     <header className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <Badge className="bg-[#000066]/5 text-[#000066] border-[#000066]/10 text-[10px] font-bold uppercase py-0 px-2 rounded-md">Phase 01</Badge>
+                                            <Badge className="badge-brand">Phase 01</Badge>
                                             <h3 className="text-base font-semibold text-gray-900">Personal Information</h3>
                                         </div>
                                     </header>
 
                                     <div className="grid grid-cols-1 gap-5">
                                         <div className="space-y-2">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Full Name <span className="text-destructive">*</span></Label>
+                                            <Label className="form-label-brand pl-1">Full Name <span className="text-destructive">*</span></Label>
                                             <Input
                                                 value={formData.fullName}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
@@ -348,7 +348,7 @@ export default function ReviewerApplicationForm() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Designation <span className="text-destructive">*</span></Label>
+                                            <Label className="form-label-brand pl-1">Designation <span className="text-destructive">*</span></Label>
                                             <Input
                                                 value={formData.designation}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
@@ -360,8 +360,8 @@ export default function ReviewerApplicationForm() {
 
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between px-1">
-                                                <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider">Email Address <span className="text-destructive">*</span></Label>
-                                                {emailStatus.loading && <Loader2 className="w-3 h-3 animate-spin text-[#000066]" />}
+                                                <Label className="form-label-brand">Email Address <span className="text-destructive">*</span></Label>
+                                                {emailStatus.loading && <Loader2 className="w-3 h-3 animate-spin text-primary" />}
                                             </div>
                                             <div className="relative">
                                                 <Input
@@ -372,7 +372,7 @@ export default function ReviewerApplicationForm() {
                                                     placeholder="vance@university.edu"
                                                 />
                                                 {emailStatus.exists && (
-                                                    <p className="text-[10px] font-bold text-destructive uppercase px-1 mt-1 flex items-center gap-1">
+                                                    <p className="text-badge text-destructive px-1 mt-1 flex items-center gap-1">
                                                         Email already registered. <Link href="/login" className="underline hover:text-destructive/80 cursor-pointer">Please log in</Link>
                                                     </p>
                                                 )}
@@ -386,16 +386,16 @@ export default function ReviewerApplicationForm() {
                                 <div className="space-y-6">
                                     <header className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <Badge className="bg-[#000066]/5 text-[#000066] border-[#000066]/10 text-[10px] font-bold uppercase py-0 px-2 rounded-md">Phase 02</Badge>
+                                            <Badge className="badge-brand">Phase 02</Badge>
                                             <h3 className="text-base font-semibold text-gray-900">Academic Context</h3>
                                         </div>
                                     </header>
 
                                     <div className="grid grid-cols-1 gap-5">
                                         <div className="space-y-2">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Institution <span className="text-destructive">*</span></Label>
+                                            <Label className="form-label-brand pl-1">Institution <span className="text-destructive">*</span></Label>
                                             <div className="relative group">
-                                                <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30 group-focus-within:text-[#000066] transition-colors" />
+                                                <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30 group-focus-within:text-primary transition-colors" />
                                                 <Input
                                                     value={formData.institute}
                                                     onChange={(e) => setFormData(prev => ({ ...prev, institute: e.target.value }))}
@@ -407,7 +407,7 @@ export default function ReviewerApplicationForm() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Nationality <span className="text-destructive">*</span></Label>
+                                            <Label className="form-label-brand pl-1">Nationality <span className="text-destructive">*</span></Label>
                                             <Select value={formData.nationality} onValueChange={(val: string) => setFormData(prev => ({ ...prev, nationality: val }))}>
                                                 <SelectTrigger className="h-11 bg-muted/20 border-border/50 rounded-lg text-foreground px-4 text-xs xl:text-sm">
                                                     <SelectValue />
@@ -432,7 +432,7 @@ export default function ReviewerApplicationForm() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <Label className="text-[#000066] text-[11px] font-bold uppercase tracking-wider pl-1">Research Interests <span className="text-destructive">*</span></Label>
+                                            <Label className="form-label-brand pl-1">Research Interests <span className="text-destructive">*</span></Label>
 
                                             <div className="flex flex-wrap gap-1.5 mb-3">
                                                 {PREDEFINED_INTERESTS.map(tag => (
@@ -441,10 +441,10 @@ export default function ReviewerApplicationForm() {
                                                         onClick={() => toggleInterest(tag)}
                                                         variant="outline"
                                                         className={`
-                                                            cursor-pointer py-1.5 px-3 rounded-lg transition-all text-[10px] font-bold uppercase tracking-tight
+                                                            cursor-pointer py-1.5 px-3 rounded-lg transition-all text-badge
                                                             ${formData.researchInterests.includes(tag)
-                                                                ? 'bg-[#000066] text-white border-[#000066] shadow-sm'
-                                                                : 'bg-muted/30 text-muted-foreground border-border/50 hover:border-[#000066]/30 hover:text-[#000066]'}
+                                                                ? 'bg-primary text-white border-primary shadow-sm'
+                                                                : 'bg-muted/30 text-muted-foreground border-border/50 hover:border-primary/30 hover:text-primary'}
                                                         `}
                                                     >
                                                         {tag}
@@ -464,7 +464,7 @@ export default function ReviewerApplicationForm() {
                                                 <Button
                                                     type="button"
                                                     onClick={() => addCustomInterest()}
-                                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 bg-[#000066] text-white px-4 rounded-md text-[10px] font-bold uppercase"
+                                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 bg-primary text-white px-4 rounded-md text-badge"
                                                 >
                                                     Add
                                                 </Button>
@@ -472,7 +472,7 @@ export default function ReviewerApplicationForm() {
 
                                             <div className="flex flex-wrap gap-2 mt-2">
                                                 {formData.researchInterests.filter(i => !PREDEFINED_INTERESTS.includes(i)).map(tag => (
-                                                    <Badge key={tag} className="bg-[#000066]/5 text-[#000066] border border-[#000066]/10 flex items-center gap-2 py-1 px-3 rounded-lg text-[10px] font-bold uppercase">
+                                                    <Badge key={tag} className="badge-brand flex items-center gap-2 py-1 px-3 rounded-lg">
                                                         {tag} <X className="w-3 h-3 cursor-pointer" onClick={() => toggleInterest(tag)} />
                                                     </Badge>
                                                 ))}
@@ -486,7 +486,7 @@ export default function ReviewerApplicationForm() {
                                 <div className="space-y-6">
                                     <header className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <Badge className="bg-[#000066]/5 text-[#000066] border-[#000066]/10 text-[10px] font-bold uppercase py-0 px-2 rounded-md">Phase 03</Badge>
+                                            <Badge className="badge-brand">Phase 03</Badge>
                                             <h3 className="text-base font-semibold text-gray-900">Documents</h3>
                                         </div>
                                     </header>
@@ -517,10 +517,10 @@ export default function ReviewerApplicationForm() {
                                     </div>
 
                                     <aside className="p-4 bg-muted/20 border border-border/50 rounded-lg flex gap-3">
-                                        <AlertCircle className="w-4 h-4 text-[#000066]/40 shrink-0 mt-0.5" />
+                                        <AlertCircle className="w-4 h-4 text-primary/40 shrink-0 mt-0.5" />
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold text-[#000066] uppercase">Verification</p>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60 leading-relaxed">
+                                            <p className="text-label text-primary">Verification</p>
+                                            <p className="text-label text-muted-foreground opacity-60 leading-relaxed">
                                                 I verify the authenticity of the documents provided.
                                             </p>
                                         </div>
@@ -537,7 +537,7 @@ export default function ReviewerApplicationForm() {
                         <Button
                             onClick={handleBack}
                             variant="ghost"
-                            className="h-10 px-6 rounded-lg text-muted-foreground/60 hover:text-[#000066] font-bold text-[10px] uppercase tracking-wider transition-all"
+                            className="h-10 px-6 rounded-lg text-muted-foreground/60 hover:text-primary text-label transition-all"
                         >
                             <ChevronLeft className="w-4 h-4 mr-2" /> Back
                         </Button>
@@ -548,7 +548,7 @@ export default function ReviewerApplicationForm() {
                     {step < 3 ? (
                         <Button
                             onClick={handleNext}
-                            className="h-10 px-8 bg-[#000066] text-white rounded-lg shadow-sm hover:bg-[#000088] font-bold text-[10px] uppercase tracking-wider transition-all"
+                            className="btn-primary"
                         >
                             Continue <ChevronRight className="w-3.5 h-3.5 ml-1" />
                         </Button>
@@ -556,7 +556,7 @@ export default function ReviewerApplicationForm() {
                         <Button
                             onClick={handleSubmit}
                             disabled={isPending}
-                            className="h-10 px-8 bg-[#000066] text-white rounded-lg shadow-md hover:bg-[#000088] font-bold text-[10px] uppercase tracking-wider transition-all"
+                            className="btn-primary"
                         >
                             {isPending ? (
                                 <>

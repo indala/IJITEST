@@ -49,14 +49,14 @@ const socialLinks = [
 export default async function Footer() {
     const settings = await getSettingsData();
     return (
-        <footer className="bg-slate-950 text-white pt-10 pb-5 font-sans relative overflow-hidden">
+        <footer className="bg-slate-950 text-white pt-10 pb-5 2xl:pt-16 2xl:pb-10 font-sans relative overflow-hidden">
             {/* Background decorative glow */}
             <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-secondary/50 to-transparent opacity-30" />
             <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute top-1/4 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="container-responsive">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 2xl:gap-12 mb-6 2xl:mb-10">
 
                     <div className="lg:col-span-1 space-y-3">
                         <div>
@@ -83,6 +83,7 @@ export default async function Footer() {
                             <li><Link href="/announcements" className="hover:text-secondary transition-colors">Calls & Announcements</Link></li>
                             <li><Link href="/join-us" className="hover:text-secondary transition-colors">Join As Reviewer</Link></li>
                             <li><Link href="/contact" className="hover:text-secondary transition-colors">Contact Office</Link></li>
+                            <li><Link href="/login" className="hover:text-secondary transition-colors">Portal Login</Link></li>
                             <li><Link href="/api/feed/rss" target="_blank" className="hover:text-secondary transition-colors">RSS / Atom Feeds</Link></li>
                         </ul>
                     </div>
@@ -91,20 +92,20 @@ export default async function Footer() {
                     <div className="lg:col-span-1 space-y-3">
                         <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Journal Policies</h3>
                         <ul className="space-y-1.5 text-white/80 list-none p-0 text-xs m-0">
-                            <li><Link href="/pages/aims-scope" className="hover:text-secondary transition-colors">Aims & Scope</Link></li>
+                            <li><Link href="/aims-scope" className="hover:text-secondary transition-colors">Aims & Scope</Link></li>
                             <li><Link href="/peer-review" className="hover:text-secondary transition-colors">Peer Review Process</Link></li>
                             <li><Link href="/ethics" className="hover:text-secondary transition-colors">Publication Ethics</Link></li>
                             <li><Link href="/open-access" className="hover:text-secondary transition-colors">Open Access Policy</Link></li>
-                            <li><Link href="/pages/copyright-policy" className="hover:text-secondary transition-colors">Copyright & Author Rights</Link></li>
-                            <li><Link href="/pages/licensing-policy" className="hover:text-secondary transition-colors">Licensing Terms (CC-BY 4.0)</Link></li>
-                            <li><Link href="/pages/apc-fees" className="hover:text-secondary transition-colors">APC & Fee Transparency</Link></li>
-                            <li><Link href="/pages/plagiarism-policy" className="hover:text-secondary transition-colors">Plagiarism & Similarity</Link></li>
-                            <li><Link href="/pages/conflict-of-interest" className="hover:text-secondary transition-colors">Conflict of Interest</Link></li>
-                            <li><Link href="/pages/research-misconduct" className="hover:text-secondary transition-colors">Research Misconduct</Link></li>
-                            <li><Link href="/pages/corrections-retractions" className="hover:text-secondary transition-colors">Corrections & Retractions</Link></li>
-                            <li><Link href="/pages/archiving-policy" className="hover:text-secondary transition-colors">Digital Preservation</Link></li>
-                            <li><Link href="/pages/ai-policy" className="hover:text-secondary transition-colors">AI & Generative AI Policy</Link></li>
-                            <li><Link href="/pages/publisher-info" className="hover:text-secondary transition-colors">Publisher Information</Link></li>
+                            <li><Link href="/copyright-policy" className="hover:text-secondary transition-colors">Copyright & Author Rights</Link></li>
+                            <li><Link href="/licensing-policy" className="hover:text-secondary transition-colors">Licensing Terms (CC-BY 4.0)</Link></li>
+                            <li><Link href="/apc-fees" className="hover:text-secondary transition-colors">APC & Fee Transparency</Link></li>
+                            <li><Link href="/plagiarism-policy" className="hover:text-secondary transition-colors">Plagiarism & Similarity</Link></li>
+                            <li><Link href="/conflict-of-interest" className="hover:text-secondary transition-colors">Conflict of Interest</Link></li>
+                            <li><Link href="/research-misconduct" className="hover:text-secondary transition-colors">Research Misconduct</Link></li>
+                            <li><Link href="/corrections-retractions" className="hover:text-secondary transition-colors">Corrections & Retractions</Link></li>
+                            <li><Link href="/archiving-policy" className="hover:text-secondary transition-colors">Digital Preservation</Link></li>
+                            <li><Link href="/ai-policy" className="hover:text-secondary transition-colors">AI & Generative AI Policy</Link></li>
+                            <li><Link href="/publisher-info" className="hover:text-secondary transition-colors">Publisher Information</Link></li>
                             <li><Link href="/privacy" className="hover:text-secondary transition-colors">Privacy & Terms</Link></li>
                         </ul>
                     </div>

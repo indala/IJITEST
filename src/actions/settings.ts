@@ -163,6 +163,78 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
 }
 
 
+export async function updateSingleSetting(key: string, value: string): Promise<ActionResponse<{ key: string; value: string }>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'admin') {
+            return actionError("Unauthorized");
+        }
+
+        if (!ALLOWED_SETTING_KEYS.has(key)) {
+            return actionError(`Invalid setting key: ${key}`);
+        }
+
+        let stringVal = String(value ?? "").trim();
+        if (key === 'issnNumber') {
+            stringVal = stringVal
+                .replace(/^(e-?issn:\s*)/i, '')
+                .replace(/\s*\(online\)/i, '')
+                .trim();
+        }
+
+        await db.insert(settings)
+            .values({ settingKey: key, settingValue: stringVal })
+            .onDuplicateKeyUpdate({ set: { settingValue: stringVal } });
+
+        cacheLogger.invalidation(CACHE_TAGS.SETTINGS, `setting [${key}] updated`);
+        updateTag(CACHE_TAGS.SETTINGS);
+        revalidatePath('/', 'layout');
+
+        return actionSuccess({ key, value: stringVal });
+    } catch (error) {
+        console.error(`Update Single Setting [${key}] Error:`, error);
+        return serverError(error, `update setting ${key}`);
+    }
+}
+
+export async function uploadSettingFile(key: string, formData: FormData): Promise<ActionResponse<{ key: string; fileUrl: string }>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'admin') {
+            return actionError("Unauthorized");
+        }
+
+        if (!ALLOWED_SETTING_KEYS.has(key)) {
+            return actionError(`Invalid setting key: ${key}`);
+        }
+
+        const file = formData.get(key);
+        if (!(file instanceof File) || file.size === 0) {
+            return actionError("No valid file provided");
+        }
+
+        const bytes = await file.arrayBuffer();
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${kebabCase(key)}.${fileExt}`;
+        const relativeDocsPath = `docs/${fileName}`;
+        await uploadFileToStorage(relativeDocsPath, Buffer.from(bytes), file.name);
+        const fileUrl = `/api/files/docs/${fileName}`;
+
+        await db.insert(settings)
+            .values({ settingKey: key, settingValue: fileUrl })
+            .onDuplicateKeyUpdate({ set: { settingValue: fileUrl } });
+
+        cacheLogger.invalidation(CACHE_TAGS.SETTINGS, `file asset [${key}] updated`);
+        updateTag(CACHE_TAGS.SETTINGS);
+        revalidatePath('/', 'layout');
+
+        return actionSuccess({ key, fileUrl });
+    } catch (error) {
+        console.error(`Upload Setting File [${key}] Error:`, error);
+        return serverError(error, `upload file for ${key}`);
+    }
+}
+
 export async function togglePromotionStatus(isActive: boolean): Promise<ActionResponse<{ isPromotionActive: string }>> {
     try {
         const session = await getServerSession(authOptions);

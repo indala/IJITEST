@@ -74,25 +74,25 @@ export const navigation: NavItem[] = [
             {
                 heading: 'Editorial & Quality Policies',
                 items: [
-                    { name: 'Aims & Scope', href: '/pages/aims-scope', icon: Target },
+                    { name: 'Aims & Scope', href: '/aims-scope', icon: Target },
                     { name: 'Peer Review Process', href: '/peer-review', icon: GitBranch },
                     { name: 'Publication Ethics', href: '/ethics', icon: ShieldCheck },
-                    { name: 'Plagiarism & Similarity', href: '/pages/plagiarism-policy', icon: SearchCheck },
-                    { name: 'Conflict of Interest', href: '/pages/conflict-of-interest', icon: AlertTriangle },
-                    { name: 'Research Misconduct', href: '/pages/research-misconduct', icon: Scale },
-                    { name: 'Corrections & Retractions', href: '/pages/corrections-retractions', icon: RefreshCw },
+                    { name: 'Plagiarism & Similarity', href: '/plagiarism-policy', icon: SearchCheck },
+                    { name: 'Conflict of Interest', href: '/conflict-of-interest', icon: AlertTriangle },
+                    { name: 'Research Misconduct', href: '/research-misconduct', icon: Scale },
+                    { name: 'Corrections & Retractions', href: '/corrections-retractions', icon: RefreshCw },
                 ]
             },
             {
                 heading: 'Access, Rights & Governance',
                 items: [
                     { name: 'Open Access Policy', href: '/open-access', icon: LockOpen },
-                    { name: 'Copyright & Author Rights', href: '/pages/copyright-policy', icon: Copyright },
-                    { name: 'Licensing Terms (CC-BY 4.0)', href: '/pages/licensing-policy', icon: FileCheck },
-                    { name: 'APC & Fee Disclosure', href: '/pages/apc-fees', icon: CreditCard },
-                    { name: 'Digital Archiving & Preservation', href: '/pages/archiving-policy', icon: Archive },
-                    { name: 'AI & Generative AI Policy', href: '/pages/ai-policy', icon: Sparkles },
-                    { name: 'Publisher Information', href: '/pages/publisher-info', icon: Building2 },
+                    { name: 'Copyright & Author Rights', href: '/copyright-policy', icon: Copyright },
+                    { name: 'Licensing Terms (CC-BY 4.0)', href: '/licensing-policy', icon: FileCheck },
+                    { name: 'APC & Fee Disclosure', href: '/apc-fees', icon: CreditCard },
+                    { name: 'Digital Archiving & Preservation', href: '/archiving-policy', icon: Archive },
+                    { name: 'AI & Generative AI Policy', href: '/ai-policy', icon: Sparkles },
+                    { name: 'Publisher Information', href: '/publisher-info', icon: Building2 },
                 ]
             }
         ]

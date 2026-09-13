@@ -37,8 +37,8 @@ interface JoinUsClientProps {
 
 export default function JoinUsClient({ settings: _settings }: JoinUsClientProps) {
     return (
-        <section className="container-responsive py-6 sm:py-8" aria-labelledby="join-us-heading">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <section className="container-responsive section-vertical" aria-labelledby="join-us-heading">
+            <div className="layout-content-sidebar items-start">
                 {/* Left Column: Benefits & Requirements */}
                 <div className="lg:col-span-12 xl:col-span-5 space-y-4 sm:space-y-5">
                     <header className="space-y-1">

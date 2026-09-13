@@ -84,12 +84,12 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
     ];
 
     return (
-        <section className="container-responsive py-6 sm:py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <section className="container-responsive section-vertical">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 2xl:gap-12">
                 {/* Main Content Area */}
-                <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+                <div className="lg:col-span-2 space-y-6 sm:space-y-8 2xl:space-y-10">
                     {/* Vision Statement */}
-                    <Card className="bg-[#000066] p-5 sm:p-6 rounded-2xl text-white relative overflow-hidden shadow-vip">
+                    <Card className="bg-primary p-5 sm:p-6 rounded-2xl text-white relative overflow-hidden shadow-vip">
                         <div className="relative z-10 flex flex-col md:flex-row items-center gap-5">
                             <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/20 shrink-0">
                                 <Search className="w-6 h-6 text-white" />

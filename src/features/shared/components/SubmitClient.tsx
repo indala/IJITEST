@@ -19,12 +19,12 @@ interface SubmitClientProps {
 export default function SubmitClient({ initialSections }: SubmitClientProps) {
 
     return (
-        <section className="container-responsive py-6 sm:py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+        <section className="container-responsive section-vertical">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 2xl:gap-12 items-start">
                 {/* Main Submission Form */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-6 2xl:space-y-8">
                     <section className="bg-card border border-border/70 rounded-xl overflow-hidden shadow-2xs">
-                        <div className="bg-[#000066] p-4 sm:p-6 text-white relative overflow-hidden">
+                        <div className="bg-primary p-4 sm:p-6 text-white relative overflow-hidden">
                             <div className="relative z-10 space-y-1.5">
                                 <h2 className="m-0 text-white">Submit Research Manuscript</h2>
                                 <p className="text-white/70 m-0 border-l-2 border-white/30 pl-3.5">

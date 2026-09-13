@@ -9,7 +9,7 @@ export function TopBarDynamic({ settings }: TopBarDynamicProps) {
     const cleanIssn = (issnNumber || '3139-6887').replace(/\s*\(online\)/i, '').trim();
 
     return (
-        <div className="container-responsive 2xl:max-w-screen-2xl mx-auto py-1">
+        <div className="container-responsive py-1">
             <div className="flex flex-col md:flex-row items-center justify-between gap-2 sm:gap-4 2xl:gap-6">
                 {/* Left: Scholarly Status */}
                 <div className="hidden lg:flex items-center gap-2 text-xs 2xl:text-sm font-medium text-white/80 shrink-0">

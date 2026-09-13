@@ -33,12 +33,12 @@ export default function ContactClient({ settings }: ContactClientProps) {
     ];
 
     return (
-        <section className="container-responsive py-6 sm:py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+        <section className="container-responsive section-vertical">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 2xl:gap-12 items-start">
                 {/* Main Contact Section */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-6 2xl:space-y-8">
                     {/* Contact Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <div className="grid-responsive-2 gap-3.5 sm:gap-4 2xl:gap-6">
                         {contactMethods.map((method, idx) => (
                             <Card key={idx} className="p-4 border-border/70 bg-card rounded-xl hover:border-primary/20 transition-all shadow-2xs">
                                 <div className="flex items-center gap-3.5">

@@ -23,10 +23,10 @@ export default function ReviewerGuidelinesClient({ settings }: ReviewerGuideline
     ];
 
     return (
-        <section className="container-responsive py-6 sm:py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+        <section className="container-responsive section-vertical">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 2xl:gap-12 items-start">
                 {/* Main Content */}
-                <div className="lg:col-span-2 space-y-5 sm:space-y-6">
+                <div className="lg:col-span-2 space-y-5 sm:space-y-6 2xl:space-y-8">
                     <section className="space-y-2">
                         <h2 className="font-semibold m-0">
                             &quot;Peer reviewers are fundamental to scientific discourse, ensuring the rigorous validation and ethical integrity of published research.&quot;

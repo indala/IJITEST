@@ -31,7 +31,7 @@ export function UserNav({ user, handleLogout }: UserNavProps) {
                 <Button variant="ghost" className="h-10 px-2.5 gap-3 hover:bg-muted rounded-lg outline-none transition-all group cursor-pointer">
                     <div className="text-right hidden sm:block">
                         <p className="text-xs font-semibold text-foreground leading-none mb-1 capitalize group-hover:text-primary transition-colors">{user?.name || 'Loading...'}</p>
-                        <p className="text-[10px] font-medium text-muted-foreground tracking-wider leading-none capitalize">{user?.role || 'Staff'}</p>
+                        <p className="text-meta leading-none capitalize">{user?.role || 'Staff'}</p>
                     </div>
                     <Avatar className="size-8 2xl:size-12 border border-primary/20 shadow-xs">
                         <AvatarImage src="" />

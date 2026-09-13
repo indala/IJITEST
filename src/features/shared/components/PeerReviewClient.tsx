@@ -34,10 +34,10 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
     ];
 
     return (
-        <section className="container-responsive py-6 sm:py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <section className="container-responsive section-vertical">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 2xl:gap-12">
                 {/* Main Content */}
-                <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+                <div className="lg:col-span-2 space-y-6 sm:space-y-8 2xl:space-y-10">
                     {/* Hero Statement */}
                     <motion.section
                         initial={{ opacity: 0, y: 15 }}
