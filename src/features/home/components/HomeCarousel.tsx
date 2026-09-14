@@ -96,14 +96,14 @@ export default function HomeCarousel() {
                             >
                                 <Link
                                     href="/submit"
-                                    className="btn-secondary text-xs sm:text-sm 2xl:text-base py-2 px-4 2xl:py-2.5 2xl:px-6"
+                                    className="btn-secondary"
                                 >
                                     Submit Manuscript
                                 </Link>
                             </motion.div>
                             <Link
                                 href="/archives"
-                                className="btn-outline border-white/20 text-white hover:bg-white/10 text-xs sm:text-sm 2xl:text-base py-2 px-4 2xl:py-2.5 2xl:px-6"
+                                className="btn-outline border-white/20 text-white hover:bg-white/10"
                             >
                                 Explore Archives
                             </Link>

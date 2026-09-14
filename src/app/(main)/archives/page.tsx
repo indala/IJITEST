@@ -96,11 +96,11 @@ export default async function Archives() {
                                     <Rss className="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <h4 className="text-xs font-bold text-foreground m-0">Scholarly Web Feeds</h4>
-                                    <p className="text-[11px] text-muted-foreground m-0">Syndicate latest research</p>
+                                    <h4 className="font-bold text-foreground m-0">Scholarly Web Feeds</h4>
+                                    <p className="text-caption text-muted-foreground m-0">Syndicate latest research</p>
                                 </div>
                             </div>
-                            <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                            <p className="text-caption text-muted-foreground leading-relaxed m-0">
                                 Real-time RSS &amp; Atom feeds of all published open-access articles for reference managers and feed readers.
                             </p>
                             <div className="grid grid-cols-2 gap-2 pt-1">
@@ -108,7 +108,7 @@ export default async function Archives() {
                                     href="/api/feed/rss"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-700 dark:text-orange-400 font-bold text-xs border border-orange-500/20 transition-all cursor-pointer"
+                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-700 dark:text-orange-400 font-bold border border-orange-500/20 transition-all cursor-pointer"
                                 >
                                     <Rss className="w-3.5 h-3.5" /> RSS 2.0
                                 </a>
@@ -116,7 +116,7 @@ export default async function Archives() {
                                     href="/api/feed/atom"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-400 font-bold text-xs border border-blue-500/20 transition-all cursor-pointer"
+                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-400 font-bold border border-blue-500/20 transition-all cursor-pointer"
                                 >
                                     <Radio className="w-3.5 h-3.5" /> Atom 1.0
                                 </a>

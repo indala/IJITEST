@@ -33,7 +33,7 @@ function highlightText(text: string, search: string): React.ReactNode {
     <>
       {parts.map((part, index) => 
         regex.test(part) ? (
-          <mark key={index} className="bg-yellow-100 text-[#000066] font-semibold rounded-xs px-0.5">
+          <mark key={index} className="bg-yellow-100 text-primary font-semibold rounded-xs px-0.5">
             {part}
           </mark>
         ) : (
@@ -81,7 +81,7 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
       answer: (
         <span>
           Authors should ensure their manuscripts follow our standard template, include an abstract, keywords, and properly formatted references. Detailed guidelines are available in our{" "}
-          <Link href="/guidelines" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+          <Link href="/guidelines" className="text-primary font-semibold underline hover:text-primary/90 transition-colors">
             Author Resource Desk
           </Link>.
         </span>
@@ -94,7 +94,7 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
       answer: (
         <span>
           Upon submission, you can access your dedicated{" "}
-          <Link href="/login" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+          <Link href="/login" className="text-primary font-semibold underline hover:text-primary/90 transition-colors">
             Author Dashboard Panel
           </Link>{" "}
           using your registered email. Inside, you can track peer-review status in real-time, view generated PDF drafts, upload revisions, and make APC payments.
@@ -114,7 +114,7 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
       answer: (
         <span>
           We welcome experts from various engineering and science disciplines. You can apply through our{" "}
-          <Link href="/join-us" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+          <Link href="/join-us" className="text-primary font-semibold underline hover:text-primary/90 transition-colors">
             Join Us
           </Link>{" "}
           page by submitting your CV and area of expertise.
@@ -134,7 +134,7 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
       answer: (
         <span>
           You can track your paper in real-time on our{" "}
-          <Link href="/track" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+          <Link href="/track" className="text-primary font-semibold underline hover:text-primary/90 transition-colors">
             Track Manuscript
           </Link>{" "}
           portal using your Submission ID and registered email.
@@ -171,7 +171,7 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           aria-label="Search FAQs"
-          className="pl-10 h-10 bg-white rounded-lg border border-border/70 shadow-2xs text-xs focus-visible:ring-[#000066]/20 focus-visible:border-[#000066]"
+          className="pl-10 h-10 bg-white rounded-lg border border-border/70 shadow-2xs text-body-sm focus-visible:ring-[#000066]/20 focus-visible:border-primary"
         />
       </div>
 
@@ -185,10 +185,10 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
               variant={activeTab === cat.id ? 'default' : 'ghost'}
               onClick={() => setActiveTab(cat.id)}
               className={cn(
-                "h-8 px-3 rounded-lg text-xs font-semibold tracking-wider gap-1.5 cursor-pointer transition-all",
+                "h-8 px-3 rounded-lg font-semibold tracking-wider gap-1.5 cursor-pointer transition-all",
                 activeTab === cat.id 
-                  ? "bg-[#000066] text-white shadow-xs" 
-                  : "text-muted-foreground hover:text-[#000066] hover:bg-muted/40"
+                  ? "bg-primary text-white shadow-xs" 
+                  : "text-muted-foreground hover:text-primary hover:bg-muted/40"
               )}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -205,11 +205,11 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
             <AccordionItem
               key={faq.question}
               value={`item-${index}`}
-              className="border border-border/70 rounded-xl bg-card px-4 md:px-5 transition-all hover:border-[#000066]/30 shadow-2xs overflow-hidden"
+              className="border border-border/70 rounded-xl bg-card px-4 md:px-5 transition-all hover:border-primary/30 shadow-2xs overflow-hidden"
             >
-              <AccordionTrigger className="text-left py-3.5 font-semibold text-foreground hover:no-underline hover:text-[#000066] transition-colors">
+              <AccordionTrigger className="text-left py-3.5 font-semibold text-foreground hover:no-underline hover:text-primary transition-colors">
                 <div className="flex items-center gap-2.5">
-                  <HelpCircle className="w-4 h-4 text-[#000066]/70 shrink-0" />
+                  <HelpCircle className="w-4 h-4 text-primary/70 shrink-0" />
                   {highlightText(faq.question, searchQuery)}
                 </div>
               </AccordionTrigger>
@@ -232,7 +232,7 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
           <h4 className="m-0 text-primary">Still have questions?</h4>
           <p className="text-muted-foreground m-0">If you couldn&apos;t find an answer to your query, please reach out to our editorial desk.</p>
         </div>
-        <Button asChild size="sm" className="h-8 px-4 bg-[#000066] hover:bg-[#000088] text-white rounded-lg shadow-xs cursor-pointer transition-all shrink-0 font-bold text-xs">
+        <Button asChild size="sm" className="h-8 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg shadow-xs cursor-pointer transition-all shrink-0 font-bold">
           <Link href="/contact">Contact Support</Link>
         </Button>
       </div>

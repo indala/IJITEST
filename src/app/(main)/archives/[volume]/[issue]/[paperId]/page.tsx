@@ -165,14 +165,15 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
     const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl.replace(/\/$/, '') : `https://${rawBaseUrl.replace(/\/$/, '')}`;
 
     return (
-        <div className="bg-white min-h-screen pb-8">
+        <div className="bg-muted/15 min-h-screen pb-12">
             <PageHeader
                 disableBreadcrumbJsonLd
-                title="Research Article"
-                description={paper.paperId}
+                title="Article Details"
+                description={`Volume ${paper.volumeNumber || 1}, Issue ${paper.issueNumber || 1} • ${settings['journalShortName'] || 'IJITEST'}`}
                 breadcrumbs={[
                     { name: 'Home', href: '/' },
                     { name: 'Archives', href: '/archives' },
+                    { name: `Vol. ${paper.volumeNumber || 1}, Issue ${paper.issueNumber || 1}`, href: `/archives/${volume}/${issue}` },
                     { name: paper.paperId, href: `/archives/${volume}/${issue}/${paperId}` },
                 ]}
             />

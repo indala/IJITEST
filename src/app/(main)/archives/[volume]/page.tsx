@@ -121,7 +121,7 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                                                         <div className="w-9 h-9 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
                                                             <FileText className="size-4" />
                                                         </div>
-                                                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/15 text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/15 text-badge font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
                                                             <Calendar className="size-3" />
                                                             {iss.monthRange}
                                                         </Badge>
@@ -137,12 +137,12 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                                                     </div>
                                                 </div>
 
-                                                <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-xs">
+                                                <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-body-sm">
                                                     <span className="flex items-center gap-1 text-muted-foreground font-medium">
                                                         <BookOpen className="size-3.5 text-primary/40" />
                                                         {iss.papersCount} {iss.papersCount === 1 ? 'Paper' : 'Papers'}
                                                     </span>
-                                                    <span className="text-primary font-bold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform text-xs">
+                                                    <span className="text-primary font-bold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform text-body-sm">
                                                         View Papers <ChevronRight className="size-3.5" />
                                                     </span>
                                                 </div>

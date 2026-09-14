@@ -95,14 +95,8 @@ export default async function Home() {
         <SidebarLayout
           className="my-6 sm:my-8"
           sidebar={
-            <>
-              <div className="p-1 rounded-2xl bg-linear-to-br from-primary/10 to-transparent border border-primary/10 shadow-2xs">
-                <div className="bg-primary/5 backdrop-blur-xs p-1.5 rounded-xl">
-                  <TrackManuscriptWidget />
-                </div>
-              </div>
-
               <div className="space-y-4 sm:space-y-5">
+                <TrackManuscriptWidget />
                 <CallForPapersWidget />
                 <Suspense fallback={<AnnouncementsWidgetSkeleton />}>
                   <AnnouncementsWidgetSection />
@@ -111,7 +105,6 @@ export default async function Home() {
                 <ResourceDeskWidget settings={settings} />
                 <EthicsWidget />
               </div>
-            </>
           }
         >
           <WelcomeSection settings={settings} />

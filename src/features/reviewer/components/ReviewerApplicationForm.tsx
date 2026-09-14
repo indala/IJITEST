@@ -57,15 +57,10 @@ function FileInput({
             </Label>
             <div
                 onClick={() => inputRef.current?.click()}
-                className={`
-                    relative group cursor-pointer overflow-hidden
-                    border-2 border-dashed rounded-xl p-6
-                    transition-all duration-200
-                    ${value
+                className={`relative group cursor-pointer overflow-hidden border-2 border-dashed rounded-xl p-6 transition-all duration-200 ${value
                         ? 'border-primary/50 bg-primary/5'
                         : 'border-border/50 bg-card hover:border-primary/30 hover:bg-primary/5'
-                    }
-                `}
+                    } `}
             >
                 <input
                     title='application file'
@@ -78,15 +73,12 @@ function FileInput({
                 />
 
                 <div className="flex flex-col items-center gap-4 relative z-10 text-center">
-                    <div className={`
-                        w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-sm border
-                        ${value ? 'bg-primary text-white border-primary' : 'bg-muted/20 text-primary/40 border-border/50'}
-                    `}>
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-sm border ${value ? 'bg-primary text-white border-primary' : 'bg-muted/20 text-primary/40 border-border/50'} `}>
                         {value ? <CheckCircle2 className="w-6 h-6" /> : <Icon className="w-5 h-5" />}
                     </div>
 
                     <div className="space-y-1">
-                        <p className={`text-xs font-semibold truncate max-w-[200px] ${value ? 'text-primary' : 'text-foreground'}`}>
+                        <p className={`font-semibold truncate max-w-[200px] ${value ? 'text-primary' : 'text-foreground'} `}>
                             {value ? value.name : `Select ${label}`}
                         </p>
                         <p className="text-badge text-muted-foreground/60">
@@ -263,8 +255,8 @@ export default function ReviewerApplicationForm() {
                     <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div className="space-y-2 text-center">
-                    <h2 className="text-xl font-semibold text-gray-900">Application Received</h2>
-                    <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                    <h2 className="font-semibold text-gray-900">Application Received</h2>
+                    <p className="text-caption text-muted-foreground max-w-sm mx-auto leading-relaxed">
                         Thank you for your interest. Our editorial team will review your credentials and contact you soon.
                     </p>
                 </div>
@@ -272,15 +264,15 @@ export default function ReviewerApplicationForm() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
                     <div className="p-4 bg-muted/20 rounded-lg border border-border/50 text-left">
                         <p className="text-label text-muted-foreground mb-1">Applicant</p>
-                        <p className="text-xs font-semibold text-primary truncate">{formData.fullName}</p>
+                        <p className="font-semibold text-primary truncate">{formData.fullName}</p>
                     </div>
                     <div className="p-4 bg-muted/20 rounded-lg border border-border/50 text-left">
                         <p className="text-label text-muted-foreground mb-1">Status</p>
-                        <p className="text-xs font-semibold text-primary">Under Review</p>
+                        <p className="font-semibold text-primary">Under Review</p>
                     </div>
                 </div>
 
-                <Button onClick={() => router.refresh()} variant="outline" className="h-10 px-6 rounded-lg border-border/50 text-primary hover:bg-primary/5 font-semibold text-xs transition-all">
+                <Button onClick={() => router.refresh()} variant="outline" className="h-10 px-6 rounded-lg border-border/50 text-primary hover:bg-primary/5 font-semibold transition-all">
                     Return
                 </Button>
             </div>
@@ -292,19 +284,16 @@ export default function ReviewerApplicationForm() {
             {/* Header Stepper */}
             <div className="bg-primary p-6 text-white relative">
                 <div className="flex flex-col items-center">
-                    <h2 className="text-lg font-semibold text-white mb-6">Reviewer Application</h2>
+                    <h2 className="font-semibold text-white mb-6">Reviewer Application</h2>
 
                     <div className="w-full max-w-xs flex items-center justify-between relative px-2">
                         <div className="absolute top-1/2 left-0 w-full h-px bg-white/10 -translate-y-1/2 z-0" />
                         {[1, 2, 3].map((s) => (
                             <div key={s} className="relative z-10 flex flex-col items-center gap-1.5">
-                                <div className={`
-                                    w-7 h-7 rounded-lg flex items-center justify-center border text-xs-plus font-bold transition-all
-                                    ${step >= s ? 'bg-white text-primary border-white' : 'bg-primary border-white/20 text-white/40'}
-                                `}>
+                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center border text-body-sm font-bold transition-all ${step >= s ? 'bg-white text-primary border-white' : 'bg-primary border-white/20 text-white/40'} `}>
                                     {step > s ? <CheckCircle2 className="w-3.5 h-3.5" /> : s}
                                 </div>
-                                <span className={`text-3xs font-bold uppercase tracking-wider ${step >= s ? 'text-white' : 'text-white/30'}`}>
+                                <span className={`text-label font-bold uppercase tracking-wider ${step >= s ? 'text-white' : 'text-white/30'} `}>
                                     {s === 1 ? 'Info' : s === 2 ? 'Research' : 'Files'}
                                 </span>
                             </div>
@@ -331,7 +320,7 @@ export default function ReviewerApplicationForm() {
                                     <header className="space-y-1">
                                         <div className="flex items-center gap-2">
                                             <Badge className="badge-brand">Phase 01</Badge>
-                                            <h3 className="text-base font-semibold text-gray-900">Personal Information</h3>
+                                            <h3 className="font-semibold text-gray-900">Personal Information</h3>
                                         </div>
                                     </header>
 
@@ -342,7 +331,7 @@ export default function ReviewerApplicationForm() {
                                                 value={formData.fullName}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
                                                 required
-                                                className="h-11 bg-muted/20 border-border/50 rounded-lg text-foreground px-4 text-xs xl:text-sm"
+                                                className="h-11 bg-muted/20 border-border/50 rounded-lg text-foreground px-4 text-body-sm"
                                                 placeholder="e.g. Dr. Alexander Vance"
                                             />
                                         </div>
@@ -353,7 +342,7 @@ export default function ReviewerApplicationForm() {
                                                 value={formData.designation}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
                                                 required
-                                                className="h-11 bg-muted/20 border-border/50 rounded-lg text-foreground px-4 text-xs xl:text-sm"
+                                                className="h-11 bg-muted/20 border-border/50 rounded-lg text-foreground px-4 text-body-sm"
                                                 placeholder="e.g. Associate Professor"
                                             />
                                         </div>
@@ -368,7 +357,7 @@ export default function ReviewerApplicationForm() {
                                                     type="email"
                                                     value={formData.email}
                                                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                                    className={`h-11 rounded-lg px-4 bg-muted/20 text-xs xl:text-sm ${emailStatus.exists ? 'border-destructive/50 bg-destructive/5' : 'border-border/50'}`}
+                                                    className={`h-11 rounded-lg px-4 bg-muted/20 text-body-sm ${emailStatus.exists ? 'border-destructive/50 bg-destructive/5' : 'border-border/50'} `}
                                                     placeholder="vance@university.edu"
                                                 />
                                                 {emailStatus.exists && (
@@ -387,7 +376,7 @@ export default function ReviewerApplicationForm() {
                                     <header className="space-y-1">
                                         <div className="flex items-center gap-2">
                                             <Badge className="badge-brand">Phase 02</Badge>
-                                            <h3 className="text-base font-semibold text-gray-900">Academic Context</h3>
+                                            <h3 className="font-semibold text-gray-900">Academic Context</h3>
                                         </div>
                                     </header>
 
@@ -400,7 +389,7 @@ export default function ReviewerApplicationForm() {
                                                     value={formData.institute}
                                                     onChange={(e) => setFormData(prev => ({ ...prev, institute: e.target.value }))}
                                                     required
-                                                    className="h-11 bg-muted/20 border-border/50 pl-11 pr-4 rounded-lg text-foreground text-xs xl:text-sm"
+                                                    className="h-11 bg-muted/20 border-border/50 pl-11 pr-4 rounded-lg text-foreground text-body-sm"
                                                     placeholder="University Name"
                                                 />
                                             </div>
@@ -409,12 +398,12 @@ export default function ReviewerApplicationForm() {
                                         <div className="space-y-2">
                                             <Label className="form-label-brand pl-1">Nationality <span className="text-destructive">*</span></Label>
                                             <Select value={formData.nationality} onValueChange={(val: string) => setFormData(prev => ({ ...prev, nationality: val }))}>
-                                                <SelectTrigger className="h-11 bg-muted/20 border-border/50 rounded-lg text-foreground px-4 text-xs xl:text-sm">
+                                                <SelectTrigger className="h-11 bg-muted/20 border-border/50 rounded-lg text-foreground px-4 text-body-sm">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent className="max-h-80 rounded-xl">
                                                     {countries.map(c => (
-                                                        <SelectItem key={c.code} value={c.name} className="py-2.5 rounded-lg text-xs">
+                                                        <SelectItem key={c.code} value={c.name} className="py-2.5 rounded-lg">
                                                             <div className="flex items-center gap-3">
                                                                 <Image
                                                                     src={getFlagUrl(c.name)}
@@ -440,12 +429,9 @@ export default function ReviewerApplicationForm() {
                                                         key={tag}
                                                         onClick={() => toggleInterest(tag)}
                                                         variant="outline"
-                                                        className={`
-                                                            cursor-pointer py-1.5 px-3 rounded-lg transition-all text-badge
-                                                            ${formData.researchInterests.includes(tag)
+                                                        className={`cursor-pointer py-1.5 px-3 rounded-lg transition-all text-badge ${formData.researchInterests.includes(tag)
                                                                 ? 'bg-primary text-white border-primary shadow-sm'
-                                                                : 'bg-muted/30 text-muted-foreground border-border/50 hover:border-primary/30 hover:text-primary'}
-                                                        `}
+                                                                : 'bg-muted/30 text-muted-foreground border-border/50 hover:border-primary/30 hover:text-primary'} `}
                                                     >
                                                         {tag}
                                                     </Badge>
@@ -459,7 +445,7 @@ export default function ReviewerApplicationForm() {
                                                     onChange={(e) => setCustomInterest(e.target.value)}
                                                     onKeyDown={(e) => e.key === 'Enter' && addCustomInterest(e)}
                                                     placeholder="Other interests..."
-                                                    className="h-11 bg-muted/20 border-border/50 pl-11 pr-28 rounded-lg text-foreground text-xs xl:text-sm"
+                                                    className="h-11 bg-muted/20 border-border/50 pl-11 pr-28 rounded-lg text-foreground text-body-sm"
                                                 />
                                                 <Button
                                                     type="button"
@@ -487,7 +473,7 @@ export default function ReviewerApplicationForm() {
                                     <header className="space-y-1">
                                         <div className="flex items-center gap-2">
                                             <Badge className="badge-brand">Phase 03</Badge>
-                                            <h3 className="text-base font-semibold text-gray-900">Documents</h3>
+                                            <h3 className="font-semibold text-gray-900">Documents</h3>
                                         </div>
                                     </header>
 

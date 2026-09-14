@@ -60,8 +60,8 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
             <Card className="border-emerald-200 bg-emerald-50/50">
                 <CardContent className="p-10 flex flex-col items-center gap-4 text-center">
                     <CheckCircle className="w-12 h-12 text-emerald-500" />
-                    <h3 className="font-black text-xl uppercase tracking-widest text-foreground">Resubmission Received</h3>
-                    <p className="text-sm text-muted-foreground max-w-sm">
+                    <h3 className="font-black uppercase tracking-widest text-foreground">Resubmission Received</h3>
+                    <p className="text-caption text-muted-foreground max-w-sm">
                         Your revised manuscript has been submitted. The editorial team will be notified. Redirecting…
                     </p>
                 </CardContent>
@@ -72,9 +72,9 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
     return (
         <form action={formAction} className="space-y-6">
             {/* Urgency Banner */}
-            <div className={`flex items-start gap-3 px-4 py-3 rounded-xl text-sm font-medium border ${isUrgent
+            <div className={`flex items-start gap-3 px-4 py-3 rounded-xl text-body-sm font-medium border ${isUrgent
                 ? 'bg-orange-50  border-orange-200  text-orange-700 '
-                : 'bg-amber-50  border-amber-200  text-amber-700 '}`}>
+                : 'bg-amber-50  border-amber-200  text-amber-700 '} `}>
                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                 <span>
                     <span className="font-black">{daysRemaining} day{daysRemaining === 1 ? '' : 's'} remaining</span> to submit your revision.
@@ -85,11 +85,11 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
             {/* Paper info */}
             <Card className="border-border/50 bg-muted/10">
                 <CardContent className="p-5 space-y-2">
-                    <p className="text-[9px] font-black tracking-widest uppercase text-muted-foreground">Revising Submission</p>
+                    <p className="text-label font-black tracking-widest uppercase text-muted-foreground">Revising Submission</p>
                     <p className="font-bold text-foreground line-clamp-2">{title}</p>
                     <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-[9px] font-mono">{paperId}</Badge>
-                        <Badge className="text-[9px] bg-orange-500/10 text-orange-600 border-none capitalize">
+                        <Badge variant="outline" className="text-badge font-mono">{paperId}</Badge>
+                        <Badge className="text-badge bg-orange-500/10 text-orange-600 border-none capitalize">
                             {currentStatus.replace('_', ' ')}
                         </Badge>
                     </div>
@@ -98,11 +98,11 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
 
             {/* Manuscript Upload */}
             <div className="space-y-2">
-                <Label htmlFor="manuscript-upload" className="text-xs font-bold uppercase tracking-widest text-foreground/80">
+                <Label htmlFor="manuscript-upload" className="form-label-brand font-bold uppercase tracking-widest text-foreground/80">
                     Revised Manuscript <span className="text-rose-500">*</span>
                 </Label>
                 <div
-                    className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${manuscript ? 'border-emerald-400 bg-emerald-50/30 ' : 'border-border hover:border-primary/40 bg-muted/10'}`}
+                    className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${manuscript ? 'border-emerald-400 bg-emerald-50/30 ' : 'border-border hover:border-primary/40 bg-muted/10'} `}
                     onClick={() => !isPending && document.getElementById('manuscript-upload')?.click()}
                 >
                     <input
@@ -117,14 +117,14 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
                     {manuscript ? (
                         <>
                             <FileText className="w-8 h-8 text-emerald-500 mb-2" />
-                            <p className="text-sm font-bold text-foreground">{manuscript.name}</p>
-                            <p className="text-[10px] text-muted-foreground">{(manuscript.size / 1024).toFixed(0)} KB</p>
+                            <p className="font-bold text-foreground">{manuscript.name}</p>
+                            <p className="text-caption text-muted-foreground">{(manuscript.size / 1024).toFixed(0)} KB</p>
                         </>
                     ) : (
                         <>
                             <Upload className="w-8 h-8 text-muted-foreground/50 mb-2" />
-                            <p className="text-sm font-bold text-muted-foreground">Click to upload revised manuscript</p>
-                            <p className="text-[10px] text-muted-foreground/70">Strict Policy: .DOCX only (max 20MB)</p>
+                            <p className="text-caption font-bold text-muted-foreground">Click to upload revised manuscript</p>
+                            <p className="text-caption text-muted-foreground/70">Strict Policy: .DOCX only (max 20MB)</p>
                         </>
                     )}
                 </div>
@@ -132,21 +132,21 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
 
             {/* Changelog / Cover Letter */}
             <div className="space-y-2">
-                <Label htmlFor="changelog" className="text-xs font-bold uppercase tracking-widest text-foreground/80">
+                <Label htmlFor="changelog" className="form-label-brand font-bold uppercase tracking-widest text-foreground/80">
                     Response to Reviewers / Cover Letter <span className="text-muted-foreground">(optional)</span>
                 </Label>
                 <Textarea
                     id="changelog"
                     name="changelog"
                     placeholder="Summarize the changes made in response to reviewer comments..."
-                    className="min-h-35 text-sm resize-none border-border/60 focus:border-primary/40 rounded-xl"
+                    className="min-h-35 text-body-sm resize-none border-border/60 focus:border-primary/40 rounded-xl"
                     disabled={isPending}
                 />
             </div>
 
             {/* Error */}
             {error && (
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-sm font-medium">
+                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-body-sm font-medium">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     {error}
                 </div>
@@ -155,7 +155,7 @@ export function ResubmitForm({ submissionId, paperId, title, daysRemaining, curr
             <Button
                 type="submit"
                 disabled={isPending}
-                className="w-full h-12 bg-primary text-white hover:bg-primary/90 font-black uppercase tracking-widest text-sm rounded-xl shadow cursor-pointer"
+                className="w-full h-12 bg-primary text-white hover:bg-primary/90 font-black uppercase tracking-widest rounded-xl shadow cursor-pointer"
             >
                 {isPending ? (
                     <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Submitting…</span>

@@ -70,7 +70,7 @@ function SetupContent() {
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
             <div className="flex flex-col items-center gap-4">
                 <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Validating Credentials</p>
+                <p className="text-label font-bold text-muted-foreground uppercase tracking-widest">Validating Credentials</p>
             </div>
         </div>
     );
@@ -102,7 +102,7 @@ function SetupContent() {
                         ? 'Your password has been reset successfully. You can now log in with your new credentials.'
                         : 'Your password has been set successfully. You are now being redirected to the login portal.'}
                 </p>
-                <Button asChild variant="ghost" className="text-primary hover:text-primary/80 hover:bg-transparent font-bold text-xs uppercase tracking-widest gap-2">
+                <Button asChild variant="ghost" className="text-primary hover:text-primary/80 hover:bg-transparent font-bold uppercase tracking-widest gap-2">
                     <Link href="/login">Go to Login <ArrowRight className="w-4 h-4" /></Link>
                 </Button>
             </div>
@@ -119,7 +119,7 @@ function SetupContent() {
                     <h1 className="mb-1">
                         {ctx === 'reset' ? 'Password Recovery' : 'Secure Your Account'}
                     </h1>
-                    <p className="text-[10px] 2xl:text-xs font-bold text-primary uppercase tracking-widest leading-relaxed">
+                    <p className="text-label font-bold text-primary uppercase tracking-widest leading-relaxed">
                         International Journal of Innovative Trends
                     </p>
                 </section>
@@ -130,10 +130,10 @@ function SetupContent() {
                             <Mail className="w-5 h-5" />
                         </div>
                         <div className="min-w-0">
-                            <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase mb-0.5">Account Identity</p>
-                            <p className="text-xs font-bold text-gray-900 truncate">{info.email}</p>
+                            <p className="text-label font-bold tracking-widest text-muted-foreground uppercase mb-0.5">Account Identity</p>
+                            <p className="font-bold text-gray-900 truncate">{info.email}</p>
                         </div>
-                        <div className="ml-auto px-3 py-1 bg-primary/10 text-primary rounded-md text-[10px] font-bold tracking-widest uppercase">
+                        <div className="ml-auto px-3 py-1 bg-primary/10 text-primary rounded-md text-label font-bold tracking-widest uppercase">
                             {info.role}
                         </div>
                     </div>
@@ -142,7 +142,7 @@ function SetupContent() {
                         <input type="hidden" name="token" value={token!} />
                         
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Create Password</label>
+                            <label className="form-label-brand font-bold text-muted-foreground uppercase tracking-widest ml-1">Create Password</label>
                             <InputGroup className="h-11 rounded-lg border-border/50 bg-muted/20">
                                 <InputGroupAddon align="inline-start" className="pl-3">
                                     <Lock className="w-4 h-4 text-muted-foreground/60" />
@@ -152,7 +152,7 @@ function SetupContent() {
                                     type={showPassword ? "text" : "password"}
                                     required
                                     placeholder="••••••••"
-                                    className="text-xs font-medium"
+                                    className="text-body-sm font-medium"
                                 />
                                 <InputGroupAddon align="inline-end" className="pr-1">
                                     <Button
@@ -170,7 +170,7 @@ function SetupContent() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Confirm Password</label>
+                            <label className="form-label-brand font-bold text-muted-foreground uppercase tracking-widest ml-1">Confirm Password</label>
                             <InputGroup className="h-11 rounded-lg border-border/50 bg-muted/20">
                                 <InputGroupAddon align="inline-start" className="pl-3">
                                     <CheckCircle2 className="w-4 h-4 text-muted-foreground/60" />
@@ -180,13 +180,13 @@ function SetupContent() {
                                     type={showPassword ? "text" : "password"}
                                     required
                                     placeholder="••••••••"
-                                    className="text-xs font-medium"
+                                    className="text-body-sm font-medium"
                                 />
                             </InputGroup>
                         </div>
 
                         {state && !state.success && (
-                            <div className="p-4 bg-destructive/5 border border-destructive/10 text-destructive rounded-lg text-xs font-semibold flex items-center gap-3">
+                            <div className="p-4 bg-destructive/5 border border-destructive/10 text-destructive rounded-lg text-caption font-semibold flex items-center gap-3">
                                 <ShieldCheck className="w-4 h-4" />
                                 {state.error || "Failed to setup password"}
                             </div>
@@ -196,7 +196,7 @@ function SetupContent() {
                     </form>
                 </div>
 
-                <span className="text-center mt-8 text-[10px] text-muted-foreground font-semibold tracking-widest uppercase opacity-40 block">
+                <span className="text-center mt-8 text-label text-muted-foreground font-semibold tracking-widest uppercase opacity-40 block">
                     Secure Setup Link • 128-bit Encryption
                 </span>
             </div>

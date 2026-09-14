@@ -118,14 +118,15 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
     const allAuthors = paper.authorsList || [];
 
     return (
-        <div className="bg-white min-h-screen pb-8">
+        <div className="bg-muted/15 min-h-screen pb-12">
             <PageHeader
                 disableBreadcrumbJsonLd
-                title="Current Issue Article"
-                description={paper.paperId}
+                title="Article Details"
+                description={`Volume ${paper.volumeNumber || 1}, Issue ${paper.issueNumber || 1} • Current Issue`}
                 breadcrumbs={[
                     { name: 'Home', href: '/' },
                     { name: 'Current Issue', href: '/current-issue' },
+                    { name: `Vol. ${paper.volumeNumber || 1}, Issue ${paper.issueNumber || 1}`, href: `/current-issue/${volume}/${issue}` },
                     { name: paper.paperId, href: `/current-issue/${volume}/${issue}/${paperId}` },
                 ]}
             />

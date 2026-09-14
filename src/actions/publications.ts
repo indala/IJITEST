@@ -968,6 +968,8 @@ export async function updatePublicationDoi(submissionId: number, doi: string | n
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');
         revalidatePath('/admin/publications');
+        revalidatePath(`/editor/submissions/${submissionId}`);
+        revalidatePath('/editor/submissions');
         cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), `updatePublicationDoi ${submissionId}`);
 
         if (sub.paperId) {

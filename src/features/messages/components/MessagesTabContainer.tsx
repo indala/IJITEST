@@ -39,7 +39,7 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
                 <button
                     onClick={() => setActiveTab('inquiry')}
                     className={cn(
-                        "flex items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase rounded-xl transition-all duration-300 cursor-pointer",
+                        "flex items-center gap-2 px-5 py-2 font-bold tracking-widest uppercase rounded-xl transition-all duration-300 cursor-pointer",
                         activeTab === 'inquiry'
                             ? "bg-card text-foreground shadow-lg shadow-black/10 border border-white/5"
                             : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/10 border border-transparent"
@@ -48,7 +48,7 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
                     <MessageSquare className="w-3.5 h-3.5 text-primary" />
                     <span>Inquiry Messages</span>
                     {inquiryUnread > 0 && (
-                        <span className="ml-2 bg-secondary text-secondary-foreground text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-4 text-center leading-none">
+                        <span className="ml-2 bg-secondary text-secondary-foreground text-badge font-black px-1.5 py-0.5 rounded-full min-w-4 text-center leading-none">
                             {inquiryUnread}
                         </span>
                     )}
@@ -56,7 +56,7 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
                 <button
                     onClick={() => setActiveTab('chat')}
                     className={cn(
-                        "flex items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase rounded-xl transition-all duration-300 cursor-pointer",
+                        "flex items-center gap-2 px-5 py-2 font-bold tracking-widest uppercase rounded-xl transition-all duration-300 cursor-pointer",
                         activeTab === 'chat'
                             ? "bg-card text-foreground shadow-lg shadow-black/10 border border-white/5"
                             : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/10 border border-transparent"
@@ -65,7 +65,7 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
                     <MessageCircle className="w-3.5 h-3.5 text-primary" />
                     <span>Live Chat</span>
                     {unreadCount > 0 && (
-                        <span className="ml-2 bg-secondary text-secondary-foreground text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-4 text-center leading-none animate-pulse">
+                        <span className="ml-2 bg-secondary text-secondary-foreground text-badge font-black px-1.5 py-0.5 rounded-full min-w-4 text-center leading-none animate-pulse">
                             {unreadCount}
                         </span>
                     )}

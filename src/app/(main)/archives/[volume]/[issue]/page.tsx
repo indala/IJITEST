@@ -96,15 +96,15 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
                                     <BookOpen className="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xs font-bold text-foreground m-0">Complete Issue</h3>
-                                    <p className="text-[11px] text-muted-foreground m-0">Full Book with Table of Contents</p>
+                                    <h3 className="font-bold text-foreground m-0">Complete Issue</h3>
+                                    <p className="text-caption text-muted-foreground m-0">Full Book with Table of Contents</p>
                                 </div>
                             </div>
                             <a
                                 href={`/api/files/issues/volume-${volNumber}-issue-${issueNumber}-fullbook.pdf`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-xs transition-all"
+                                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-2.5 px-4 rounded-xl font-bold text-body-sm shadow-xs transition-all"
                             >
                                 <Download className="w-3.5 h-3.5" /> Download Complete Issue (PDF)
                             </a>

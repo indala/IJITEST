@@ -239,7 +239,7 @@ export default function AdminSectionsPage() {
             {/* Header & Back Link */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                    <div className="flex items-center gap-2 text-caption text-muted-foreground mb-1">
                         <Link href="/admin/settings" className="hover:text-primary flex items-center gap-1 transition-colors">
                             <ArrowLeft className="w-3.5 h-3.5" />
                             <span>System Settings</span>
@@ -247,17 +247,17 @@ export default function AdminSectionsPage() {
                         <span>/</span>
                         <span className="font-semibold text-foreground">Journal Sections</span>
                     </div>
-                    <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground flex items-center gap-2.5">
+                    <h2 className="font-black tracking-tight text-foreground flex items-center gap-2.5">
                         <Bookmark className="w-6 h-6 text-primary" />
                         Journal Sections Management
                     </h2>
-                    <p className="text-xs sm:text-sm text-muted-foreground">
+                    <p className="text-caption text-muted-foreground">
                         Configure manuscript classifications, word count restrictions, peer-review mandates, and indexing metadata (OJS Section Classification).
                     </p>
                 </div>
                 <Button
                     onClick={handleOpenCreate}
-                    className="bg-primary hover:bg-[#000088] text-white font-bold h-10 px-4 rounded-xl shadow-sm transition-all"
+                    className="bg-primary hover:bg-primary/90 text-white font-bold h-10 px-4 rounded-xl shadow-sm transition-all"
                 >
                     <Plus className="w-4 h-4 mr-2" />
                     Create Section
@@ -269,8 +269,8 @@ export default function AdminSectionsPage() {
                 <Card className="border-border/60 shadow-2xs">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Total Sections</p>
-                            <p className="text-2xl font-black text-foreground mt-0.5">{sectionsList.length}</p>
+                            <p className="text-label font-bold text-muted-foreground uppercase tracking-wider">Total Sections</p>
+                            <p className="font-black text-foreground mt-0.5">{sectionsList.length}</p>
                         </div>
                         <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                             <Layers className="w-5 h-5" />
@@ -280,8 +280,8 @@ export default function AdminSectionsPage() {
                 <Card className="border-border/60 shadow-2xs">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Active for Submissions</p>
-                            <p className="text-2xl font-black text-emerald-600 mt-0.5">{activeCount}</p>
+                            <p className="text-label font-bold text-muted-foreground uppercase tracking-wider">Active for Submissions</p>
+                            <p className="font-black text-emerald-600 mt-0.5">{activeCount}</p>
                         </div>
                         <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
                             <CheckCircle2 className="w-5 h-5" />
@@ -291,8 +291,8 @@ export default function AdminSectionsPage() {
                 <Card className="border-border/60 shadow-2xs">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Inactive / Hidden</p>
-                            <p className="text-2xl font-black text-muted-foreground mt-0.5">{inactiveCount}</p>
+                            <p className="text-label font-bold text-muted-foreground uppercase tracking-wider">Inactive / Hidden</p>
+                            <p className="text-caption font-black text-muted-foreground mt-0.5">{inactiveCount}</p>
                         </div>
                         <div className="w-10 h-10 rounded-xl bg-muted/30 text-muted-foreground flex items-center justify-center">
                             <EyeOff className="w-5 h-5" />
@@ -318,13 +318,13 @@ export default function AdminSectionsPage() {
             {isLoading ? (
                 <div className="py-20 flex flex-col items-center justify-center text-muted-foreground gap-3">
                     <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                    <p className="text-xs font-semibold">Loading journal sections...</p>
+                    <p className="font-semibold">Loading journal sections...</p>
                 </div>
             ) : filteredSections.length === 0 ? (
                 <div className="py-16 text-center border-2 border-dashed border-border/70 rounded-2xl bg-card p-6">
                     <Bookmark className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-                    <h3 className="text-sm font-bold text-foreground">No Journal Sections Found</h3>
-                    <p className="text-xs text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
+                    <h3 className="font-bold text-foreground">No Journal Sections Found</h3>
+                    <p className="text-caption text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
                         {searchQuery ? "No sections match your search query." : "No sections have been created yet. Click below to add one."}
                     </p>
                     <Button onClick={handleOpenCreate} size="sm">
@@ -337,49 +337,49 @@ export default function AdminSectionsPage() {
                     {filteredSections.map((sec) => (
                         <Card key={sec.id} className={`border transition-all ${
                             sec.isInactive ? "opacity-70 bg-muted/20 border-border/40" : "border-border/70 bg-card shadow-2xs hover:border-primary/30"
-                        }`}>
+                        } `}>
                             <CardContent className="p-5 sm:p-6">
                                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                                     <div className="space-y-2 flex-1 min-w-0">
                                         <div className="flex flex-wrap items-center gap-2.5">
-                                            <span className="font-mono text-xs px-2 py-0.5 rounded bg-primary/10 text-primary font-bold">
+                                            <span className="font-mono text-meta px-2 py-0.5 rounded bg-primary/10 text-primary font-bold">
                                                 #{sec.sequence}
                                             </span>
-                                            <span className="font-mono text-xs px-2.5 py-0.5 rounded bg-secondary/10 text-secondary-foreground font-black tracking-wide border border-secondary/20">
+                                            <span className="font-mono text-meta px-2.5 py-0.5 rounded bg-secondary/10 text-secondary-foreground font-black tracking-wide border border-secondary/20">
                                                 {sec.abbrev}
                                             </span>
-                                            <h3 className="text-base font-bold text-foreground m-0">
+                                            <h3 className="font-bold text-foreground m-0">
                                                 {sec.title}
                                             </h3>
                                             {sec.identifyType && (
-                                                <Badge variant="secondary" className="text-xs font-medium bg-primary/10 text-primary border-primary/20">
+                                                <Badge variant="secondary" className="text-badge font-medium bg-primary/10 text-primary border-primary/20">
                                                     {sec.identifyType}
                                                 </Badge>
                                             )}
                                             {sec.isInactive && (
-                                                <Badge variant="outline" className="text-xs text-destructive border-destructive/30 bg-destructive/5">
+                                                <Badge variant="outline" className="text-badge text-destructive border-destructive/30 bg-destructive/5">
                                                     Inactive
                                                 </Badge>
                                             )}
                                             {sec.editorRestricted && (
-                                                <Badge variant="outline" className="text-xs text-amber-700 dark:text-amber-400 border-amber-500/30 bg-amber-500/5">
+                                                <Badge variant="outline" className="text-badge text-amber-700 dark:text-amber-400 border-amber-500/30 bg-amber-500/5">
                                                     Editor Restricted
                                                 </Badge>
                                             )}
                                         </div>
 
                                         {sec.policy ? (
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                                            <p className="text-caption text-muted-foreground line-clamp-2 leading-relaxed">
                                                 {sec.policy}
                                             </p>
                                         ) : (
-                                            <p className="text-xs italic text-muted-foreground/60">
+                                            <p className="text-caption italic text-muted-foreground/60">
                                                 No specific editorial policy defined.
                                             </p>
                                         )}
 
                                         {/* Policy flags & specs */}
-                                        <div className="flex flex-wrap items-center gap-2 pt-2 text-xs">
+                                        <div className="flex flex-wrap items-center gap-2 pt-2 text-body-sm">
                                             {sec.wordCount ? (
                                                 <span className="inline-flex items-center gap-1 text-muted-foreground px-2 py-1 rounded bg-muted/40 font-medium">
                                                     <FileText className="w-3.5 h-3.5 text-primary" />
@@ -394,14 +394,14 @@ export default function AdminSectionsPage() {
 
                                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${
                                                 sec.metaReviewed ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-muted/40 text-muted-foreground"
-                                            }`}>
+                                            } `}>
                                                 <ShieldCheck className="w-3.5 h-3.5" />
                                                 {sec.metaReviewed ? "Peer Reviewed" : "Not Peer Reviewed"}
                                             </span>
 
                                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${
                                                 sec.metaIndexed ? "bg-blue-500/10 text-blue-700 dark:text-blue-400" : "bg-muted/40 text-muted-foreground"
-                                            }`}>
+                                            } `}>
                                                 <Hash className="w-3.5 h-3.5" />
                                                 {sec.metaIndexed ? "Indexed in Feeds & DOI" : "Not Indexed"}
                                             </span>
@@ -420,7 +420,7 @@ export default function AdminSectionsPage() {
                                             size="sm"
                                             onClick={() => handleQuickToggleActive(sec)}
                                             disabled={isPending}
-                                            className="h-8 text-xs font-semibold"
+                                            className="h-8 text-body-sm font-semibold"
                                         >
                                             {sec.isInactive ? "Activate" : "Deactivate"}
                                         </Button>
@@ -428,7 +428,7 @@ export default function AdminSectionsPage() {
                                             variant="outline"
                                             size="sm"
                                             onClick={() => handleOpenEdit(sec)}
-                                            className="h-8 text-xs font-semibold"
+                                            className="h-8 text-body-sm font-semibold"
                                         >
                                             <Edit2 className="w-3.5 h-3.5 mr-1" />
                                             Edit
@@ -437,7 +437,7 @@ export default function AdminSectionsPage() {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => setDeleteTarget(sec)}
-                                            className="h-8 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                            className="h-8 text-caption text-destructive hover:bg-destructive/10 hover:text-destructive"
                                         >
                                             <Trash2 className="w-3.5 h-3.5" />
                                         </Button>
@@ -454,11 +454,11 @@ export default function AdminSectionsPage() {
                 <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                     <form onSubmit={handleSave} className="space-y-5">
                         <DialogHeader>
-                            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+                            <DialogTitle className="font-bold flex items-center gap-2">
                                 <Bookmark className="w-5 h-5 text-primary" />
                                 {editingSection ? "Edit Journal Section" : "Create New Journal Section"}
                             </DialogTitle>
-                            <DialogDescription className="text-xs">
+                            <DialogDescription className="">
                                 Manage classification details, word limitations, and editorial review requirements.
                             </DialogDescription>
                         </DialogHeader>
@@ -466,7 +466,7 @@ export default function AdminSectionsPage() {
                         <div className="space-y-4 py-2">
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div className="sm:col-span-2 space-y-1.5">
-                                    <Label htmlFor="sec-title" className="text-xs font-semibold">
+                                    <Label htmlFor="sec-title" className="font-semibold">
                                         Section Title *
                                     </Label>
                                     <Input
@@ -474,12 +474,12 @@ export default function AdminSectionsPage() {
                                         placeholder="e.g. Original Research Articles"
                                         value={formState.title}
                                         onChange={(e) => setFormState(prev => ({ ...prev, title: e.target.value }))}
-                                        className="h-9 text-xs"
+                                        className="h-9 text-body-sm"
                                         required
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="sec-abbrev" className="text-xs font-semibold">
+                                    <Label htmlFor="sec-abbrev" className="font-semibold">
                                         Abbreviation *
                                     </Label>
                                     <Input
@@ -488,14 +488,14 @@ export default function AdminSectionsPage() {
                                         maxLength={10}
                                         value={formState.abbrev}
                                         onChange={(e) => setFormState(prev => ({ ...prev, abbrev: e.target.value.toUpperCase() }))}
-                                        className="h-9 text-xs font-mono uppercase"
+                                        className="h-9 text-meta font-mono uppercase"
                                         required
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label htmlFor="sec-policy" className="text-xs font-semibold">
+                                <Label htmlFor="sec-policy" className="font-semibold">
                                     Section Policy & Scope
                                 </Label>
                                 <Textarea
@@ -504,29 +504,29 @@ export default function AdminSectionsPage() {
                                     rows={3}
                                     value={formState.policy}
                                     onChange={(e) => setFormState(prev => ({ ...prev, policy: e.target.value }))}
-                                    className="text-xs leading-relaxed"
+                                    className="text-body-sm leading-relaxed"
                                 />
                             </div>
 
                             <div className="space-y-1.5">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="sec-identify-type" className="text-xs font-semibold">
+                                    <Label htmlFor="sec-identify-type" className="font-semibold">
                                         Content Identification Genre (OJS identifyType)
                                     </Label>
-                                    <span className="text-[10px] text-muted-foreground">Used in JATS & CrossRef metadata</span>
+                                    <span className="text-caption text-muted-foreground">Used in JATS & CrossRef metadata</span>
                                 </div>
                                 <Input
                                     id="sec-identify-type"
                                     placeholder="e.g. Research Article, Review Article, Short Communication, Case Study"
                                     value={formState.identifyType}
                                     onChange={(e) => setFormState(prev => ({ ...prev, identifyType: e.target.value }))}
-                                    className="h-9 text-xs"
+                                    className="h-9 text-body-sm"
                                 />
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="sec-wordcount" className="text-xs font-semibold">
+                                    <Label htmlFor="sec-wordcount" className="font-semibold">
                                         Word Count Limit
                                     </Label>
                                     <Input
@@ -535,11 +535,11 @@ export default function AdminSectionsPage() {
                                         placeholder="e.g. 8000 (leave blank for unlimited)"
                                         value={formState.wordCount}
                                         onChange={(e) => setFormState(prev => ({ ...prev, wordCount: e.target.value }))}
-                                        className="h-9 text-xs"
+                                        className="h-9 text-body-sm"
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="sec-sequence" className="text-xs font-semibold">
+                                    <Label htmlFor="sec-sequence" className="font-semibold">
                                         Display Sequence Order
                                     </Label>
                                     <Input
@@ -548,7 +548,7 @@ export default function AdminSectionsPage() {
                                         placeholder="1, 2, 3..."
                                         value={formState.sequence}
                                         onChange={(e) => setFormState(prev => ({ ...prev, sequence: Number(e.target.value) || 0 }))}
-                                        className="h-9 text-xs"
+                                        className="h-9 text-body-sm"
                                     />
                                 </div>
                             </div>
@@ -557,8 +557,8 @@ export default function AdminSectionsPage() {
                             <div className="pt-2 border-t border-border/50 space-y-3">
                                 <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
                                     <div className="space-y-0.5">
-                                        <p className="text-xs font-bold text-foreground">Active for Submissions</p>
-                                        <p className="text-[11px] text-muted-foreground">
+                                        <p className="font-bold text-foreground">Active for Submissions</p>
+                                        <p className="text-caption text-muted-foreground">
                                             Allow authors to select this section when submitting manuscripts.
                                         </p>
                                     </div>
@@ -570,8 +570,8 @@ export default function AdminSectionsPage() {
 
                                 <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
                                     <div className="space-y-0.5">
-                                        <p className="text-xs font-bold text-foreground">Peer Reviewed</p>
-                                        <p className="text-[11px] text-muted-foreground">
+                                        <p className="font-bold text-foreground">Peer Reviewed</p>
+                                        <p className="text-caption text-muted-foreground">
                                             Manuscripts submitted to this section require formal peer review before acceptance.
                                         </p>
                                     </div>
@@ -583,8 +583,8 @@ export default function AdminSectionsPage() {
 
                                 <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
                                     <div className="space-y-0.5">
-                                        <p className="text-xs font-bold text-foreground">Indexing & Metadata Feeds</p>
-                                        <p className="text-[11px] text-muted-foreground">
+                                        <p className="font-bold text-foreground">Indexing & Metadata Feeds</p>
+                                        <p className="text-caption text-muted-foreground">
                                             Include papers in this section in journal search indexing, DOAJ, and Crossref DOI feeds.
                                         </p>
                                     </div>
@@ -596,8 +596,8 @@ export default function AdminSectionsPage() {
 
                                 <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
                                     <div className="space-y-0.5">
-                                        <p className="text-xs font-bold text-foreground">Editor-Restricted Section</p>
-                                        <p className="text-[11px] text-muted-foreground">
+                                        <p className="font-bold text-foreground">Editor-Restricted Section</p>
+                                        <p className="text-caption text-muted-foreground">
                                             Items can only be submitted by Editors (e.g., Editorials, Retractions, Announcements).
                                         </p>
                                     </div>
@@ -615,14 +615,14 @@ export default function AdminSectionsPage() {
                                 variant="outline"
                                 onClick={() => setIsDialogOpen(false)}
                                 disabled={isSaving}
-                                className="h-9 text-xs"
+                                className="h-9 text-body-sm"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={isSaving}
-                                className="bg-primary hover:bg-[#000088] text-white font-bold h-9 text-xs px-5"
+                                className="bg-primary hover:bg-primary/90 text-white font-bold h-9 text-body-sm px-5"
                             >
                                 {isSaving ? (
                                     <>
@@ -642,11 +642,11 @@ export default function AdminSectionsPage() {
             <Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="text-base font-bold flex items-center gap-2 text-destructive">
+                        <DialogTitle className="font-bold flex items-center gap-2 text-destructive">
                             <AlertTriangle className="w-5 h-5" />
                             Delete Journal Section
                         </DialogTitle>
-                        <DialogDescription className="text-xs">
+                        <DialogDescription className="">
                             Are you sure you want to delete <span className="font-bold text-foreground">"{deleteTarget?.title}"</span>?
                             {deleteTarget?.submissionCount && deleteTarget.submissionCount > 0 ? (
                                 <span className="block mt-2 font-semibold text-destructive">
@@ -661,7 +661,7 @@ export default function AdminSectionsPage() {
                             variant="outline"
                             onClick={() => setDeleteTarget(null)}
                             disabled={isDeleting}
-                            className="h-9 text-xs"
+                            className="h-9 text-body-sm"
                         >
                             Cancel
                         </Button>
@@ -670,7 +670,7 @@ export default function AdminSectionsPage() {
                             variant="destructive"
                             onClick={handleDelete}
                             disabled={isDeleting}
-                            className="h-9 text-xs font-bold"
+                            className="h-9 text-body-sm font-bold"
                         >
                             {isDeleting ? (
                                 <>

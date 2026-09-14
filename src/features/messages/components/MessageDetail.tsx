@@ -50,8 +50,8 @@ export function MessageDetail({
                     <Mail className="w-6 h-6 text-primary/20" />
                 </div>
                 <div className="space-y-1">
-                    <h3 className="text-sm font-bold tracking-tight">select message</h3>
-                    <p className="text-[10px] text-muted-foreground leading-relaxed max-w-[180px]">
+                    <h3 className="font-bold tracking-tight">select message</h3>
+                    <p className="text-muted-foreground leading-relaxed max-w-[180px]">
                         choose a message to read its contents.
                     </p>
                 </div>
@@ -112,13 +112,13 @@ export function MessageDetail({
                             <User className="w-4.5 h-4.5 text-muted-foreground/30" />
                         </div>
                         <div className="space-y-0.5 min-w-0">
-                            <h2 className="text-sm font-bold tracking-tight leading-none lowercase truncate max-w-[150px] sm:max-w-[250px]">{message.name}</h2>
+                            <h2 className="font-bold tracking-tight leading-none lowercase truncate max-w-[150px] sm:max-w-[250px]">{message.name}</h2>
                             <div className="flex flex-col gap-0.5 pt-0.5">
-                                <a href={`mailto:${message.email}`} className="text-[10px] text-muted-foreground/60 hover:text-primary flex items-center gap-1.5 transition-colors truncate max-w-[200px] sm:max-w-[300px]">
+                                <a href={`mailto:${message.email}`} className="text-caption text-muted-foreground/60 hover:text-primary flex items-center gap-1.5 transition-colors truncate max-w-[200px] sm:max-w-[300px]">
                                     <Mail className="w-2.5 h-2.5 opacity-40 shrink-0" />
                                     {message.email}
                                 </a>
-                                <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground/40">
+                                <div className="flex items-center gap-1.5 text-caption text-muted-foreground/40">
                                     <Clock className="w-2.5 h-2.5 opacity-40" />
                                     {dayjs(message.createdAt).format("MMM D, YYYY [at] HH:mm")}
                                 </div>
@@ -167,7 +167,7 @@ export function MessageDetail({
                             </Button>
                         )}
                         <Badge variant="outline" className={cn(
-                            "px-1.5 py-0.5 text-[9px] lowercase border-none shadow-none",
+                            "px-1.5 py-0.5 text-body-sm lowercase border-none shadow-none",
                             isPending ? "bg-amber-500/10 text-amber-600" :
                             isResolved ? "bg-emerald-500/10 text-emerald-600" : "bg-slate-500/10 text-slate-500"
                         )}>
@@ -177,7 +177,7 @@ export function MessageDetail({
                 </div>
 
                 <div className="space-y-1">
-                    <h3 className="text-sm font-semibold tracking-tight text-foreground lowercase line-clamp-2">
+                    <h3 className="font-semibold tracking-tight text-foreground lowercase line-clamp-2">
                         {message.subject || "no subject"}
                     </h3>
                 </div>
@@ -186,11 +186,11 @@ export function MessageDetail({
             <ScrollArea data-lenis-prevent className="flex-1">
                 <div className="px-4 max-w-3xl mx-auto w-full space-y-4 pb-20">
                     <div className="space-y-2.5">
-                        <div className="flex items-center gap-2 text-[9px] text-muted-foreground/40 lowercase tracking-tight pl-2 border-l-2 border-primary/20">
+                        <div className="flex items-center gap-2 text-label text-muted-foreground/40 lowercase tracking-tight pl-2 border-l-2 border-primary/20">
                             message
                         </div>
                         <div className="p-3 bg-muted/5 border border-white/5 rounded-xl">
-                            <p className="text-sm font-medium text-foreground/90 leading-relaxed whitespace-pre-wrap lowercase">
+                            <p className="font-medium text-foreground/90 leading-relaxed whitespace-pre-wrap lowercase">
                                 {message.message}
                             </p>
                         </div>
@@ -198,11 +198,11 @@ export function MessageDetail({
 
                     {(isResolved || isArchived) && (
                         <div className="p-4 border border-emerald-500/10 bg-emerald-500/5 rounded-xl space-y-3">
-                            <div className="flex items-center gap-2 text-[10px] text-emerald-600 leading-none lowercase">
+                            <div className="flex items-center gap-2 text-body-sm text-emerald-600 leading-none lowercase">
                                 <CheckCircle className="w-3.5 h-3.5" /> 
                                 verification details
                             </div>
-                            <div className="grid grid-cols-2 gap-4 font-mono text-[10px]">
+                            <div className="grid grid-cols-2 gap-4 font-mono text-meta">
                                 <div className="space-y-0.5 text-muted-foreground/60 lowercase">
                                     <p className="opacity-40">status</p>
                                     <p className="font-bold text-foreground">{message.status}</p>
@@ -226,13 +226,13 @@ export function MessageDetail({
                         placeholder="write your reply here..."
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
-                        className="min-h-[80px] p-3 bg-muted/5 border-border focus:border-primary/50 text-sm resize-none rounded-xl transition-all"
+                        className="min-h-[80px] p-3 bg-muted/5 border-border focus:border-primary/50 text-body-sm resize-none rounded-xl transition-all"
                     />
                     <div className="flex justify-end">
                         <Button 
                             onClick={handleReply}
                             disabled={isActionLoading || !replyText.trim()}
-                            className="h-9 px-5 bg-primary text-white font-bold text-[9px] uppercase tracking-widest rounded-lg hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                            className="h-9 px-5 bg-primary text-white font-bold uppercase tracking-widest rounded-lg hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                         >
                             {replyMutation.isPending ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />

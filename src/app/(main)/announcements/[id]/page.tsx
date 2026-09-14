@@ -106,18 +106,18 @@ export default async function AnnouncementDetailPage({
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-2">
                     <Link
                         href="/announcements"
-                        className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-primary hover:text-secondary transition-colors group no-underline"
+                        className="inline-flex items-center gap-2 text-body-sm font-semibold text-primary hover:text-secondary transition-colors group no-underline"
                     >
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         <span>All Announcements</span>
                     </Link>
 
                     <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider border ${typeInfo.badgeClass}`}>
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-label font-semibold uppercase tracking-wider border ${typeInfo.badgeClass} `}>
                             {typeInfo.label}
                         </span>
                         {item.priority > 0 && (
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-secondary/10 text-secondary border border-secondary/25">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-label font-bold uppercase tracking-wider bg-secondary/10 text-secondary border border-secondary/25">
                                 Featured Notice
                             </span>
                         )}
@@ -159,7 +159,7 @@ export default async function AnnouncementDetailPage({
                             )}
                         </div>
 
-                        <span className="text-2xs font-mono uppercase tracking-wider text-muted-foreground bg-muted/40 px-2.5 py-1 rounded border border-border/40">
+                        <span className="text-meta font-mono uppercase tracking-wider text-muted-foreground bg-muted/40 px-2.5 py-1 rounded border border-border/40">
                             Notice #{item.id}
                         </span>
                     </div>
@@ -167,7 +167,7 @@ export default async function AnnouncementDetailPage({
                     {/* Short Summary Lead Box */}
                     {item.descriptionShort && (
                         <div className="bg-primary/5 p-4 sm:p-5 rounded-xl border-l-4 border-primary space-y-1">
-                            <span className="text-label text-primary block text-3xs sm:text-2xs">Overview</span>
+                            <span className="text-label text-primary block text-body-sm">Overview</span>
                             <p className="text-lead m-0 text-foreground/90 font-medium">
                                 {item.descriptionShort}
                             </p>
@@ -175,7 +175,7 @@ export default async function AnnouncementDetailPage({
                     )}
 
                     {/* Body Content */}
-                    <div className="whitespace-pre-wrap font-sans text-foreground/85 leading-relaxed text-sm sm:text-15 2xl:text-base space-y-4">
+                    <div className="whitespace-pre-wrap font-sans text-foreground/85 leading-relaxed text-body-sm space-y-4">
                         {item.description}
                     </div>
 
@@ -183,21 +183,21 @@ export default async function AnnouncementDetailPage({
                     {item.type === "call_for_papers" && (
                         <div className="mt-8 p-5 sm:p-6 rounded-xl bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent border border-primary/15 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
                             <div className="space-y-1 text-center sm:text-left">
-                                <h4 className="font-sans font-bold text-primary text-base sm:text-lg m-0">
+                                <h4 className="font-sans font-bold text-primary m-0">
                                     Ready to submit your research?
                                 </h4>
-                                <p className="text-xs sm:text-sm text-muted-foreground m-0">
+                                <p className="text-caption text-muted-foreground m-0">
                                     Submissions undergo double-blind peer review with fast-track editorial feedback.
                                 </p>
                             </div>
                             <div className="flex flex-wrap items-center justify-center gap-2.5 shrink-0">
-                                <Button asChild size="sm" className="bg-secondary hover:bg-secondary/90 text-white font-bold text-xs sm:text-sm rounded-lg shadow-xs h-9 px-4">
+                                <Button asChild size="sm" className="bg-secondary hover:bg-secondary/90 text-white font-bold rounded-lg shadow-xs h-9 px-4">
                                     <Link href="/submit" className="flex items-center gap-1.5 no-underline">
                                         <Send className="w-3.5 h-3.5" />
                                         <span>Submit Manuscript</span>
                                     </Link>
                                 </Button>
-                                <Button asChild variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/5 font-semibold text-xs sm:text-sm rounded-lg h-9 px-4">
+                                <Button asChild variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/5 font-semibold rounded-lg h-9 px-4">
                                     <Link href="/guidelines" className="flex items-center gap-1.5 no-underline">
                                         <FileText className="w-3.5 h-3.5" />
                                         <span>Guidelines</span>

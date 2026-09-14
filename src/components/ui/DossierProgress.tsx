@@ -42,14 +42,14 @@ export function DossierProgress({
                         {percentage === 100 ? <CheckCircle2 className="w-5 h-5 2xl:w-8 2xl:h-8" /> : <AlertCircle className="w-5 h-5 2xl:w-8 2xl:h-8" />}
                     </div>
                     <div>
-                        <h4 className="font-serif text-xl 2xl:text-3xl font-black">{percentage}% COMPLETE</h4>
-                        <p className="text-[10px] 2xl:text-xs font-mono uppercase tracking-widest text-muted-foreground opacity-60">Dossier Integrity Scan</p>
+                        <h4 className="font-serif font-black">{percentage}% COMPLETE</h4>
+                        <p className="text-meta font-mono uppercase tracking-widest text-muted-foreground opacity-60">Dossier Integrity Scan</p>
                     </div>
                 </div>
                 {percentage === 100 && (
                     <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-emerald-500/5 text-emerald-500 rounded-full border border-emerald-500/20 animate-in fade-in zoom-in duration-500">
                         <CheckCircle2 className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">PROFILE CERTIFIED</span>
+                        <span className="text-label font-black uppercase tracking-widest">PROFILE CERTIFIED</span>
                     </div>
                 )}
             </div>
@@ -63,19 +63,19 @@ export function DossierProgress({
 
             {missing.length > 0 ? (
                 <div className="flex flex-wrap gap-2 animate-in slide-in-from-top-2 duration-500">
-                    <span className="text-[10px] 2xl:text-sm font-black text-muted-foreground uppercase py-2 pr-2">Awaiting:</span>
+                    <span className="text-label font-black text-muted-foreground uppercase py-2 pr-2">Awaiting:</span>
                     {missing.map((field) => (
                         <button
                             key={field}
                             onClick={() => onChipClick(field)}
-                            className="bg-muted hover:bg-primary/10 hover:text-primary border border-white/10 px-3 2xl:px-5 py-1.5 2xl:py-2.5 rounded-full text-[9px] 2xl:text-sm font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                            className="bg-muted hover:bg-primary/10 hover:text-primary border border-white/10 px-3 2xl:px-5 py-1.5 2xl:py-2.5 rounded-full text-badge font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         >
                             {field}
                         </button>
                     ))}
                 </div>
             ) : (
-                <div className="flex items-center gap-2 text-emerald-600 font-mono text-[10px] uppercase tracking-[0.2em] animate-pulse">
+                <div className="flex items-center gap-2 text-emerald-600 font-mono text-meta uppercase tracking-[0.2em] animate-pulse">
                     <span className="w-2 h-2 rounded-full bg-emerald-600 shadow-lg shadow-emerald-600/40" /> All Identity Requirements Fulfilled
                 </div>
             )}

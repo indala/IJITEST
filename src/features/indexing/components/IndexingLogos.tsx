@@ -213,9 +213,9 @@ export function NowIndexingGrid() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-border/50">
                 <div>
                     <span className="text-meta uppercase font-bold text-primary tracking-wider">Global Indexing Portfolio</span>
-                    <h3 className="text-lg font-bold text-foreground m-0">Now Indexing & Digital Repositories</h3>
+                    <h3 className="font-bold text-foreground m-0">Now Indexing & Digital Repositories</h3>
                 </div>
-                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full w-fit">
+                <span className="text-badge font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full w-fit">
                     ● Active Indexing & Discovery
                 </span>
             </div>
@@ -226,7 +226,7 @@ export function NowIndexingGrid() {
                     const cardContent = (
                         <div className="h-20 sm:h-24 p-3 bg-muted/20 hover:bg-muted/40 border border-border/60 hover:border-primary/30 rounded-xl transition-all flex flex-col items-center justify-center text-center group">
                             <Logo className="h-8 sm:h-9 w-auto max-w-full object-contain transition-transform group-hover:scale-105" />
-                            <span className="text-[10px] text-muted-foreground mt-1.5 line-clamp-1 font-medium">{partner.name}</span>
+                            <span className="text-caption text-muted-foreground mt-1.5 line-clamp-1 font-medium">{partner.name}</span>
                         </div>
                     );
 

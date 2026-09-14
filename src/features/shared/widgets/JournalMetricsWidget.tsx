@@ -14,10 +14,10 @@ function JournalMetricsWidget() {
                 </div>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="space-y-2 text-body-sm">
                 <div className="flex items-center justify-between p-2 rounded-lg bg-muted/40 border border-border/40">
                     <span className="font-semibold text-foreground/80">Access Model</span>
-                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold text-[10px] uppercase flex items-center gap-1">
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold text-label uppercase flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
                         100% Gold OA
                     </span>
@@ -25,17 +25,17 @@ function JournalMetricsWidget() {
 
                 <div className="flex items-center justify-between p-2 rounded-lg bg-muted/40 border border-border/40">
                     <span className="font-semibold text-foreground/80">Digital Archiving</span>
-                    <span className="font-mono text-secondary font-bold text-[11px]">Open Science Repository</span>
+                    <span className="font-mono text-secondary font-bold text-meta">Open Science Repository</span>
                 </div>
 
                 <div className="flex items-center justify-between p-2 rounded-lg bg-muted/40 border border-border/40">
                     <span className="font-semibold text-foreground/80">Peer Review</span>
-                    <span className="text-foreground/90 font-bold text-[11px]">Double-Blind</span>
+                    <span className="text-foreground/90 font-bold text-body-sm">Double-Blind</span>
                 </div>
 
                 <div className="flex items-center justify-between p-2 rounded-lg bg-muted/40 border border-border/40">
                     <span className="font-semibold text-foreground/80">Frequency</span>
-                    <span className="text-foreground/90 font-bold text-[11px]">Monthly (12/yr)</span>
+                    <span className="text-foreground/90 font-bold text-body-sm">Monthly (12/yr)</span>
                 </div>
             </div>
         </div>

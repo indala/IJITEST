@@ -73,8 +73,8 @@ export function PanelSidebar({
                     </div>
                     {!isCollapsed && (
                         <div className="space-y-0.5 whitespace-nowrap opacity-100 transition-opacity duration-300">
-                            <span className="font-serif font-bold text-primary text-base leading-none block tracking-tight">IJITEST</span>
-                            <span className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground block">Portal</span>
+                            <span className="font-serif font-bold text-primary text-label leading-none block tracking-tight">IJITEST</span>
+                            <span className="text-label uppercase font-semibold tracking-wider text-muted-foreground block">Portal</span>
                         </div>
                     )}
                 </Link>
@@ -125,10 +125,10 @@ export function PanelSidebar({
                                             )}
                                         </div>
                                         {!isCollapsed && (
-                                            <span className="font-medium text-sm flex-1 flex items-center justify-between">
+                                            <span className="font-medium text-body-sm flex-1 flex items-center justify-between">
                                                 <span>{item.labelOverrides?.[user?.role || ''] || item.name}</span>
                                                 {item.name === 'Messages' && unreadCount > 0 && (
-                                                    <span className="bg-secondary text-secondary-foreground text-[10px] font-black tracking-normal px-2 py-0.5 rounded-full shrink-0 min-w-5 text-center mr-2 shadow-xs">
+                                                    <span className="bg-secondary text-secondary-foreground text-badge font-black tracking-normal px-2 py-0.5 rounded-full shrink-0 min-w-5 text-center mr-2 shadow-xs">
                                                         {unreadCount}
                                                     </span>
                                                 )}
@@ -148,7 +148,7 @@ export function PanelSidebar({
                         <Button
                             variant="ghost"
                             className={cn(
-                                "w-full justify-start gap-4 h-12 px-4 text-rose-600 hover:bg-rose-500/10 rounded-lg transition-all font-medium text-sm cursor-pointer",
+                                "w-full justify-start gap-4 h-12 px-4 text-rose-600 hover:bg-rose-500/10 rounded-lg transition-all font-medium cursor-pointer",
                                 isCollapsed && "justify-center px-0"
                             )}
                             onClick={handleLogout}

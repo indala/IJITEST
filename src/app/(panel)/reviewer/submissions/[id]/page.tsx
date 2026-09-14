@@ -67,7 +67,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                     <p className="opacity-60 max-w-sm mb-10">
                         This manuscript has not been assigned to your profile for technical evaluation.
                     </p>
-                    <Button asChild variant="outline" className="h-12 px-8 gap-3 font-bold text-[11px] tracking-widest rounded-xl transition-all uppercase shadow-sm cursor-pointer">
+                    <Button asChild variant="outline" className="h-12 px-8 gap-3 font-bold tracking-widest rounded-xl transition-all uppercase shadow-sm cursor-pointer">
                         <Link className="cursor-pointer" href="/reviewer/reviews">
                             <ArrowLeft className="w-4 h-4" /> Back to My Assignments
                         </Link>
@@ -81,7 +81,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
         <section className="space-y-6 pb-20">
             {/* Breadcrumb / Top Bar */}
             <div className="flex items-center justify-between gap-4">
-                <Button asChild variant="ghost" size="sm" className="h-9 px-3 gap-2 text-muted-foreground font-bold text-[10px] uppercase tracking-widest -ml-2 rounded-lg transition-all cursor-pointer">
+                <Button asChild variant="ghost" size="sm" className="h-9 px-3 gap-2 text-muted-foreground font-bold uppercase tracking-widest -ml-2 rounded-lg transition-all cursor-pointer">
                     <Link className="cursor-pointer" href="/reviewer/reviews">
                         <ChevronLeft className="w-4 h-4" /> Back to My Assignments
                     </Link>
@@ -94,13 +94,13 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                     <Card className="border-primary/5 shadow-vip overflow-hidden sticky top-24 rounded-xl pb-10 2xl:rounded-3xl bg-white">
                         <CardHeader className="p-6 bg-primary/5 border-b border-primary/10">
                             <div className="space-y-3">
-                                <Badge className="h-6 px-2.5 text-xs font-bold tracking-wide bg-emerald-600 text-white border-none shadow-xs rounded-md uppercase w-fit">
+                                <Badge className="h-6 px-2.5 text-badge font-bold tracking-wide bg-emerald-600 text-white border-none shadow-xs rounded-md uppercase w-fit">
                                     Assigned for Review
                                 </Badge>
-                                <CardTitle className="text-lg sm:text-xl font-bold tracking-tight text-foreground leading-snug">
+                                <CardTitle className="font-bold tracking-tight text-foreground leading-snug">
                                     {submission.title}
                                 </CardTitle>
-                                <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground">
+                                <div className="flex flex-wrap items-center gap-4 text-caption font-medium text-muted-foreground">
                                     <div className="flex items-center gap-1.5 font-semibold text-primary">
                                         <Shield className="w-4 h-4" />
                                         <span>{submission.paperId}</span>
@@ -131,7 +131,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
                                         {submission.keywords.split(',').map((k: string) => (
-                                            <Badge key={k} variant="outline" className="h-auto py-1 px-3 text-xs font-semibold border-primary/10 bg-primary/5 text-primary rounded-lg">
+                                            <Badge key={k} variant="outline" className="h-auto py-1 px-3 text-badge font-semibold border-primary/10 bg-primary/5 text-primary rounded-lg">
                                                 {k.trim()}
                                             </Badge>
                                         ))}
@@ -158,12 +158,12 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                             <div className="pt-4 2xl:pt-8">
                                 {submission.pdfUrl ? (
                                     <>
-                                        <Button asChild className="w-full h-11 gap-2.5 font-bold text-xs uppercase tracking-wider shadow-md rounded-lg bg-primary hover:bg-primary/90 transition-all cursor-pointer text-white">
+                                        <Button asChild className="w-full h-11 gap-2.5 font-bold uppercase tracking-wider shadow-md rounded-lg bg-primary hover:bg-primary/90 transition-all cursor-pointer text-white">
                                             <a href={getSecureUrl(submission.pdfUrl)} download>
                                                 <Download className="w-4 h-4" /> Download PDF
                                             </a>
                                         </Button>
-                                        <p className="text-xs text-muted-foreground text-center mt-2.5 font-medium">
+                                        <p className="text-caption text-muted-foreground text-center mt-2.5 font-medium">
                                             Official Review Version (Protected)
                                         </p>
                                     </>
@@ -202,7 +202,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                     </div>
                                     <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-lg border border-border">
                                         <History className="w-3.5 h-3.5 text-muted-foreground animate-spin-slow" />
-                                        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Synchronization in Progress</span>
+                                        <span className="text-label font-bold text-muted-foreground uppercase tracking-[0.2em]">Synchronization in Progress</span>
                                     </div>
                                 </div>
                             )}

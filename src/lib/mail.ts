@@ -119,16 +119,17 @@ export const emailTemplates = {
         });
     },
 
-    reviewAssignment: async (reviewerName: string, paperTitle: string, deadline: string, paperId: string, setupUrl?: string) => {
+    reviewAssignment: async (reviewerName: string, paperTitle: string, deadline: string, paperId: string, setupUrl?: string, invitationToken?: string) => {
         const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const formattedDeadline = new Date(deadline).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+        const targetUrl = setupUrl || (invitationToken ? `${baseUrl}/review/invitation/${invitationToken}` : `${baseUrl}/reviewer`);
         return getCompiledEmailTemplate("REVIEW_INVITATION", {
             reviewerName,
             paperTitle,
             paperId,
             reviewDeadline: formattedDeadline,
-            portalUrl: setupUrl || `${baseUrl}/reviewer`,
-        }, setupUrl ? { text: 'Activate Reviewer Account', url: setupUrl } : { text: 'Access Reviewer Dashboard', url: `${baseUrl}/reviewer` });
+            portalUrl: targetUrl,
+        }, setupUrl ? { text: 'Activate Reviewer Account', url: setupUrl } : { text: 'Review Manuscript & Respond', url: targetUrl });
     },
 
     manuscriptAcceptance: async (authorName: string, paperTitle: string, paperId: string, isFree: boolean = false) => {

@@ -76,7 +76,7 @@ async function AdminStatsSection() {
         return <DashboardStatsGrid stats={stats} />;
     } catch (err) {
         console.error("AdminStatsSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load metrics</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load metrics</div>;
     }
 }
 
@@ -132,7 +132,7 @@ async function AdminRecentSubmissionsSection() {
         );
     } catch (err) {
         console.error("AdminRecentSubmissionsSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load submissions</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load submissions</div>;
     }
 }
 
@@ -159,7 +159,7 @@ async function AdminMySubmissionsSection() {
         return <DashboardMySubmissionsGrid mySubmissions={mySubmissions as DashboardSubmission[]} />;
     } catch (err) {
         console.error("AdminMySubmissionsSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load personal papers</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load personal papers</div>;
     }
 }
 
@@ -195,7 +195,7 @@ async function AdminHealthSection() {
         );
     } catch (err) {
         console.error("AdminHealthSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load system health</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load system health</div>;
     }
 }
 
@@ -276,8 +276,8 @@ async function AdminDashboardContent() {
         >
             <div className="p-4 border-primary/10 bg-card/30 border-dashed border-2 flex flex-col items-center justify-center text-center rounded-xl">
                 <TrendingUp className="w-7 h-7 text-primary/30 mb-2" />
-                <h4 className="text-xs font-semibold mb-0.5">Add Editor</h4>
-                <p className="text-[11px] text-muted-foreground mb-3">Invite a new editor to the team.</p>
+                <h4 className="font-semibold mb-0.5">Add Editor</h4>
+                <p className="text-muted-foreground mb-3">Invite a new editor to the team.</p>
                 <InviteEditorModal />
             </div>
         </DashboardRegistry>

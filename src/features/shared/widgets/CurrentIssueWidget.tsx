@@ -32,19 +32,19 @@ export default function CurrentIssueWidget({ latestIssue }: CurrentIssueWidgetPr
                             <p className="text-meta text-muted-foreground m-0">{currentStatus.date}</p>
                         </div>
                     </div>
-                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono font-bold text-[10px] 2xl:text-xs uppercase">
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono font-bold text-meta uppercase">
                         Vol {currentStatus.volume} · Iss {currentStatus.issue}
                     </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button asChild size="sm" className="h-7 px-3 2xl:h-8 2xl:px-4 text-xs 2xl:text-sm bg-primary hover:bg-primary/90 rounded-md flex-1">
+                    <Button asChild size="sm" className="h-7 px-3 2xl:h-8 2xl:px-4 bg-primary hover:bg-primary/90 rounded-md flex-1">
                         <Link href="/current-issue" className="flex items-center justify-center gap-1.5 no-underline">
                             <span>Read Issue</span>
                             <ChevronRight className="w-3 h-3" />
                         </Link>
                     </Button>
-                    <Button asChild variant="outline" size="sm" className="h-7 px-2.5 2xl:h-8 2xl:px-3 text-xs 2xl:text-sm border-border/60 rounded-md">
+                    <Button asChild variant="outline" size="sm" className="h-7 px-2.5 2xl:h-8 2xl:px-3 border-border/60 rounded-md">
                         <Link href="/archives" className="no-underline">
                             Archives
                         </Link>

@@ -33,7 +33,7 @@ const FAQS: FAQ[] = [
     answer: (
       <span>
         Authors should ensure their manuscripts follow our standard template, include an abstract, keywords, and properly formatted references. Detailed guidelines are available in our{" "}
-        <Link href="/guidelines" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+        <Link href="/guidelines" className="text-primary font-semibold underline hover:text-primary/90 transition-colors">
           Author Resource Desk
         </Link>.
       </span>
@@ -44,7 +44,7 @@ const FAQS: FAQ[] = [
     answer: (
       <span>
         Upon submission, you can access your dedicated{" "}
-        <Link href="/login" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+        <Link href="/login" className="text-primary font-semibold underline hover:text-primary/90 transition-colors">
           Author Dashboard Panel
         </Link>{" "}
         using your registered email. Inside, you can track peer-review status in real-time, view generated PDF drafts, upload revisions, and make APC payments.
@@ -60,7 +60,7 @@ const FAQS: FAQ[] = [
     answer: (
       <span>
         We welcome experts from various engineering and science disciplines. You can apply through our{" "}
-        <Link href="/join-us" className="text-[#000066] font-semibold underline hover:text-[#000088] transition-colors">
+        <Link href="/join-us" className="text-primary font-semibold underline hover:text-primary/90 transition-colors">
           Join Us
         </Link>{" "}
         page by submitting your CV and area of expertise.

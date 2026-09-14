@@ -31,10 +31,12 @@ export default function CitationSection({ paper }: CitationSectionProps) {
 
     const journalName = settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
     const journalShortName = settings['journalShortName'] || 'IJITEST';
+    const baseUrl = settings['journalWebsite'] || (typeof window !== 'undefined' ? window.location.origin : 'https://ijitest.org');
     const year = paper.publicationYear || new Date().getFullYear();
     const vol = paper.volumeNumber || 1;
     const iss = paper.issueNumber || 1;
-    const doi = paper.doi ? `https://doi.org/${paper.doi}` : `https://ijitest.org/archives/${paper.paperId}`;
+    const canonicalPaperUrl = `${baseUrl}/archives/volume${vol}/issue${iss}/${paper.paperId}`;
+    const doiUrl = paper.doi ? (paper.doi.startsWith('http') ? paper.doi : `https://doi.org/${paper.doi}`) : canonicalPaperUrl;
     const pagesStr = paper.pageRange
         ? paper.pageRange
         : paper.startPage && paper.endPage
@@ -61,17 +63,17 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                         ? `${authorsList[0]}, & ${authorsList[1]}`
                         : `${authorsList.slice(0, -1).join(', ')}, & ${authorsList[authorsList.length - 1]}`;
                 const pagesPart = pagesStr ? `, ${pagesStr}` : '';
-                return `${authorsStr} (${year}). ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. ${doi}`;
+                return `${authorsStr} (${year}). ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. ${doiUrl}`;
             }
             case 'ieee': {
                 const authorsStr = authorsList.join(', ');
                 const pagesPart = pagesStr ? `, pp. ${pagesStr}` : '';
-                return `${authorsStr}, "${paper.title}," ${journalShortName}, vol. ${vol}, no. ${iss}${pagesPart}, ${year}. [Online]. Available: ${doi}`;
+                return `${authorsStr}, "${paper.title}," ${journalShortName}, vol. ${vol}, no. ${iss}${pagesPart}, ${year}. [Online]. Available: ${doiUrl}`;
             }
             case 'harvard': {
                 const authorsStr = authorsList.join(', ');
                 const pagesPart = pagesStr ? `, pp. ${pagesStr}` : '';
-                return `${authorsStr}, ${year}. ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. Available at: <${doi}>.`;
+                return `${authorsStr}, ${year}. ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. Available at: <${doiUrl}>.`;
             }
             case 'mla': {
                 const authorsStr = authorsList.length === 1
@@ -80,12 +82,12 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                         ? `${authorsList[0]}, and ${authorsList[1]}`
                         : `${authorsList[0]}, et al.`;
                 const pagesPart = pagesStr ? `, pp. ${pagesStr}` : '';
-                return `${authorsStr}. "${paper.title}." ${journalName}, vol. ${vol}, no. ${iss}, ${year}${pagesPart}, ${doi}.`;
+                return `${authorsStr}. "${paper.title}." ${journalName}, vol. ${vol}, no. ${iss}, ${year}${pagesPart}, ${doiUrl}.`;
             }
             case 'chicago': {
                 const authorsStr = authorsList.join(', ');
                 const pagesPart = pagesStr ? `: ${pagesStr}` : '';
-                return `${authorsStr}. ${year}. "${paper.title}." ${journalName} ${vol} (${iss})${pagesPart}. ${doi}.`;
+                return `${authorsStr}. ${year}. "${paper.title}." ${journalName} ${vol} (${iss})${pagesPart}. ${doiUrl}.`;
             }
             case 'bibtex': {
                 const citeKey = `${(authorsList[0] || 'author').toLowerCase().replace(/[^a-z]/g, '')}${year}${paper.paperId.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
@@ -99,7 +101,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
   volume={${vol}},
   number={${iss}},${pagesField}${doiField}
   year={${year}},
-  url={${doi}}
+  url={${doiUrl}}
 }`;
             }
         }
@@ -108,16 +110,10 @@ export default function CitationSection({ paper }: CitationSectionProps) {
     const currentCitation = generateCitation(style);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(currentCitation)
-            .then(() => {
-                setCopied(true);
-                toast.success(`${style.toUpperCase()} citation copied to clipboard!`);
-                setTimeout(() => setCopied(false), 2000);
-            })
-            .catch((err) => {
-                console.error("Failed to copy citation:", err);
-                toast.error("Failed to copy citation");
-            });
+        navigator.clipboard.writeText(currentCitation);
+        setCopied(true);
+        toast.success(`Copied ${style.toUpperCase()} citation to clipboard!`);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     const handleDownloadBib = () => {
@@ -135,16 +131,19 @@ export default function CitationSection({ paper }: CitationSectionProps) {
     };
 
     const handleDownloadRis = () => {
+        const effectiveStartPage = paper.startPage ?? (pagesStr && pagesStr.includes('-') ? pagesStr.split('-')[0]?.trim() : null);
+        const effectiveEndPage = paper.endPage ?? (pagesStr && pagesStr.includes('-') ? pagesStr.split('-')[1]?.trim() : null);
+
         const risContent = `TY  - JOUR
 TI  - ${paper.title}
 ${authorsList.map((a) => `AU  - ${a}`).join('\n')}
 T2  - ${journalName}
 JA  - ${journalShortName}
 VL  - ${vol}
-IS  - ${iss}${paper.startPage ? `\nSP  - ${paper.startPage}` : ''}${paper.endPage ? `\nEP  - ${paper.endPage}` : ''}
+IS  - ${iss}${effectiveStartPage ? `\nSP  - ${effectiveStartPage}` : ''}${effectiveEndPage ? `\nEP  - ${effectiveEndPage}` : ''}
 PY  - ${year}${paper.doi ? `\nDO  - ${paper.doi}` : ''}
-UR  - ${doi}
-ER  - `;
+UR  - ${doiUrl}
+ER  - \n`;
 
         const blob = new Blob([risContent], { type: 'application/x-research-info-systems' });
         const url = URL.createObjectURL(blob);
@@ -159,7 +158,7 @@ ER  - `;
     };
 
     return (
-        <div className="bg-card p-4 sm:p-5 rounded-2xl border border-border/70 shadow-2xs space-y-4 sticky top-24">
+        <div className="bg-card p-4 sm:p-5 rounded-2xl border border-border/70 shadow-2xs space-y-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-primary">
                     <Quote className="w-4 h-4 rotate-180 text-secondary" />
@@ -177,11 +176,11 @@ ER  - `;
                         key={s}
                         type="button"
                         onClick={() => setStyle(s)}
-                        className={`py-1 rounded text-center text-[11px] uppercase transition-all cursor-pointer ${
+                        className={`py-1 rounded text-center uppercase transition-all cursor-pointer ${
                             style === s
                                 ? 'bg-white text-primary shadow-xs font-bold'
                                 : 'text-muted-foreground hover:text-foreground'
-                        }`}
+                        } `}
                     >
                         {s}
                     </button>

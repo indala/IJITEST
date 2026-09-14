@@ -57,8 +57,8 @@ export default async function AnnouncementsPage() {
                 {announcements.length === 0 ? (
                     <div className="max-w-xl mx-auto text-center py-12 px-6 bg-card rounded-xl border border-border/70 shadow-2xs space-y-3">
                         <Bell className="h-12 w-12 mx-auto text-muted-foreground/40" />
-                        <h3 className="text-primary text-lg font-bold m-0">No active announcements</h3>
-                        <p className="text-sm text-muted-foreground m-0">
+                        <h3 className="text-primary font-bold m-0">No active announcements</h3>
+                        <p className="text-caption text-muted-foreground m-0">
                             There are currently no active public announcements or alerts. Please check back soon.
                         </p>
                         <div className="pt-2">
@@ -92,23 +92,23 @@ export default async function AnnouncementsPage() {
                                     <div className="flex-1 p-5 2xl:p-6 flex flex-col justify-between space-y-4">
                                         <div className="space-y-2.5">
                                             <div className="flex items-center justify-between gap-2">
-                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-3xs font-semibold uppercase tracking-wider border ${typeInfo.badgeClass}`}>
+                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-label font-semibold uppercase tracking-wider border ${typeInfo.badgeClass} `}>
                                                     {typeInfo.label}
                                                 </span>
                                                 {item.priority > 0 && (
-                                                    <span className="text-3xs font-bold tracking-wider uppercase text-secondary bg-secondary/10 px-2 py-0.5 rounded border border-secondary/20">
+                                                    <span className="text-label font-bold tracking-wider uppercase text-secondary bg-secondary/10 px-2 py-0.5 rounded border border-secondary/20">
                                                         Featured
                                                     </span>
                                                 )}
                                             </div>
 
-                                            <h2 className="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 m-0 leading-snug">
+                                            <h2 className="font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 m-0 leading-snug">
                                                 <Link href={`/announcements/${item.id}`} className="no-underline">
                                                     {item.title}
                                                 </Link>
                                             </h2>
 
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed m-0">
+                                            <p className="text-caption text-muted-foreground line-clamp-3 leading-relaxed m-0">
                                                 {item.descriptionShort || item.description.replace(/[#*`_]/g, "").slice(0, 160)}
                                             </p>
                                         </div>
@@ -136,7 +136,7 @@ export default async function AnnouncementsPage() {
 
                                             <Link
                                                 href={`/announcements/${item.id}`}
-                                                className="w-full flex items-center justify-between text-xs font-bold text-primary group-hover:text-secondary transition-colors no-underline pt-1"
+                                                className="w-full flex items-center justify-between text-body-sm font-bold text-primary group-hover:text-secondary transition-colors no-underline pt-1"
                                             >
                                                 <span>Read full notice</span>
                                                 <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />

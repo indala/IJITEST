@@ -33,7 +33,7 @@ export default function SubmissionRegistry({
                         <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 text-primary shadow-xs">
                             <Plus className="w-4 h-4" />
                         </div>
-                        <h1 className="panel-title m-0 text-xl xl:text-2xl font-bold text-primary">
+                        <h1 className="panel-title m-0 font-bold text-primary">
                             {role === 'admin' ? 'Manuscript Registry' : 'Editorial Hub'}
                         </h1>
                     </div>

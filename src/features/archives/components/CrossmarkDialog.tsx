@@ -30,7 +30,7 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sky-50 hover:bg-sky-100 border border-sky-200 text-label font-bold text-sky-900 transition-colors shadow-2xs cursor-pointer"
                 title="CrossMark: Check for updates and verify scholarly record status"
             >
-                <div className="w-3.5 h-3.5 rounded-full bg-sky-600 text-white flex items-center justify-center text-[9px] font-black leading-none">
+                <div className="w-3.5 h-3.5 rounded-full bg-sky-600 text-white flex items-center justify-center text-badge font-black leading-none">
                     ✚
                 </div>
                 <span>Check for updates</span>
@@ -44,10 +44,10 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                                 <RefreshCw className="w-5 h-5" />
                             </div>
                             <div>
-                                <DialogTitle className="text-base font-bold text-foreground">
+                                <DialogTitle className="font-bold text-foreground">
                                     CrossMark Publication Record
                                 </DialogTitle>
-                                <DialogDescription className="text-xs text-muted-foreground">
+                                <DialogDescription className="text-caption text-muted-foreground">
                                     Verified scholarly record &amp; publication integrity status
                                 </DialogDescription>
                             </div>
@@ -60,10 +60,10 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                             <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-start gap-3">
                                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 m-0">
+                                    <p className="font-bold text-emerald-800 dark:text-emerald-300 m-0">
                                         Record Status: Current &amp; Active
                                     </p>
-                                    <p className="text-[11px] text-emerald-700/90 dark:text-emerald-400 m-0 mt-0.5 leading-relaxed">
+                                    <p className="text-emerald-700/90 dark:text-emerald-400 m-0 mt-0.5 leading-relaxed">
                                         No updates, retractions, or corrigenda have been reported for this publication.
                                     </p>
                                 </div>
@@ -74,10 +74,10 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                             <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3">
                                 <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-xs font-bold text-amber-800 dark:text-amber-300 m-0">
+                                    <p className="font-bold text-amber-800 dark:text-amber-300 m-0">
                                         Notice: Corrigendum / Correction Issued
                                     </p>
-                                    <p className="text-[11px] text-amber-700/90 dark:text-amber-400 m-0 mt-0.5 leading-relaxed">
+                                    <p className="text-amber-700/90 dark:text-amber-400 m-0 mt-0.5 leading-relaxed">
                                         An editorial amendment has been issued for this published article.
                                     </p>
                                 </div>
@@ -88,10 +88,10 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                             <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-start gap-3">
                                 <AlertOctagon className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-xs font-bold text-rose-800 dark:text-rose-300 m-0">
+                                    <p className="font-bold text-rose-800 dark:text-rose-300 m-0">
                                         Notice: Formally Retracted
                                     </p>
-                                    <p className="text-[11px] text-rose-700/90 dark:text-rose-400 m-0 mt-0.5 leading-relaxed">
+                                    <p className="text-rose-700/90 dark:text-rose-400 m-0 mt-0.5 leading-relaxed">
                                         {paper.retractionReason || "This article has been formally retracted in accordance with COPE publishing guidelines."}
                                     </p>
                                 </div>
@@ -99,12 +99,12 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                         )}
 
                         {/* Paper Details Summary */}
-                        <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 space-y-2 text-xs">
+                        <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 space-y-2 text-body-sm">
                             <div>
                                 <span className="text-muted-foreground font-medium">Article Title:</span>
                                 <p className="font-semibold text-foreground mt-0.5 leading-snug">{paper.title}</p>
                             </div>
-                            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50 text-[11px]">
+                            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50 text-body-sm">
                                 <div>
                                     <span className="text-muted-foreground">Publication Date:</span>
                                     <p className="font-medium text-foreground">{pubDateStr}</p>
@@ -125,14 +125,18 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                         </div>
 
                         {/* Scholarly Integrity Checklist */}
-                        <div className="space-y-1.5 text-xs">
+                        <div className="space-y-1.5 text-body-sm">
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                                 <span>Published under official peer-review and COPE standards</span>
                             </div>
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                                <span>Crossref permanent DOI registration and crawler archiving</span>
+                                <span>
+                                    {paper.doi 
+                                        ? "Crossref permanent DOI registration and crawler archiving"
+                                        : "Permanent open-access digital archival preservation"}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -141,19 +145,19 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                         <Link
                             href="/ethics"
                             target="_blank"
-                            className="text-xs text-primary hover:underline font-semibold"
+                            className="text-body-sm text-primary hover:underline font-semibold"
                         >
                             Editorial &amp; Retraction Policies &rarr;
                         </Link>
 
                         {paper.doi ? (
-                            <Button asChild size="sm" variant="outline" className="gap-1.5 text-xs">
+                            <Button asChild size="sm" variant="outline" className="gap-1.5">
                                 <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer">
                                     <ExternalLink className="w-3.5 h-3.5" /> Resolve DOI
                                 </a>
                             </Button>
                         ) : (
-                            <Button size="sm" variant="ghost" onClick={() => setIsOpen(false)} className="text-xs">
+                            <Button size="sm" variant="ghost" onClick={() => setIsOpen(false)} className="">
                                 Close
                             </Button>
                         )}

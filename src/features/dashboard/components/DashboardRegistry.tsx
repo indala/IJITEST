@@ -104,7 +104,7 @@ export function DashboardStatsGrid({ stats }: { stats: Stat[] }) {
                         <div className="flex items-center justify-between mb-3">
                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center border border-border/5 ${
                                 stat.variant === 'primary' ? 'bg-primary/5 text-primary' : 'bg-muted/50 text-muted-foreground'
-                            }`}>
+                            } `}>
                                 <div className="[&>svg]:w-5 [&>svg]:h-5">
                                     {(() => {
                                         const Icon = ICON_MAP[stat.icon] || Box;
@@ -114,8 +114,8 @@ export function DashboardStatsGrid({ stats }: { stats: Stat[] }) {
                             </div>
                         </div>
                         <div className="space-y-0.5">
-                            <p className="text-xs font-medium text-muted-foreground">{stat.label}</p>
-                            <h3 className="text-xl lg:text-2xl font-bold text-foreground">
+                            <p className="text-caption font-medium text-muted-foreground">{stat.label}</p>
+                            <h3 className="font-bold text-foreground">
                                 {typeof stat.value === 'number' ? <NumberTicker value={stat.value} prefix={stat.prefix || ""} /> : stat.value}
                             </h3>
                         </div>
@@ -141,7 +141,7 @@ export function DashboardRecentSubmissionsCard({
                 <CardTitle className="card-title-brand">
                     {recentSubmissionsTitle}
                 </CardTitle>
-                <Button asChild variant="ghost" size="sm" className="text-primary hover:bg-primary/10 rounded-lg text-xs font-semibold h-8 px-2.5">
+                <Button asChild variant="ghost" size="sm" className="text-primary hover:bg-primary/10 rounded-lg font-semibold h-8 px-2.5">
                     <Link href={`/${role}/submissions`} className="flex items-center gap-1">
                         View all <ArrowRight className="w-3.5 h-3.5 ml-1" />
                     </Link>
@@ -150,7 +150,7 @@ export function DashboardRecentSubmissionsCard({
             <CardContent className="p-0">
                 <div className="divide-y divide-border/50">
                     {recentSubmissions.length === 0 ? (
-                        <div className="p-8 text-center text-xs text-muted-foreground/50">No submissions found.</div>
+                        <div className="p-8 text-center text-caption text-muted-foreground/50">No submissions found.</div>
                     ) : recentSubmissions.map((sub) => (
                         <Link
                             href={`/${role}/submissions/${sub.id}`}
@@ -158,20 +158,20 @@ export function DashboardRecentSubmissionsCard({
                             className="flex items-center justify-between px-3.5 py-2.5 sm:py-3 hover:bg-muted/30 transition-all group"
                         >
                             <div className="flex items-center gap-3 min-w-0">
-                                <div className="w-9 h-7 rounded bg-muted/60 flex flex-col items-center justify-center text-[9px] font-bold text-muted-foreground border border-border/60 shrink-0">
+                                <div className="w-9 h-7 rounded bg-muted/60 flex flex-col items-center justify-center text-caption font-bold text-muted-foreground border border-border/60 shrink-0">
                                     <span className="text-primary">{sub.paperId?.split('-').pop()}</span>
                                 </div>
                                 <div className="min-w-0">
-                                    <h4 className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors mb-0.5">{sub.title}</h4>
+                                    <h4 className="font-medium text-foreground truncate group-hover:text-primary transition-colors mb-0.5">{sub.title}</h4>
                                     <p className="text-meta">
                                         {sub.authorName} • {formatDate(sub.submittedAt)}
                                     </p>
                                 </div>
                             </div>
-                            <Badge className={`px-2 py-0.5 text-[10px] font-semibold rounded-md border-none ${
+                            <Badge className={`px-2 py-0.5 text-badge font-semibold rounded-md border-none ${
                                 sub.status === 'published' ? 'bg-emerald-50 text-emerald-600' :
                                 sub.status === 'rejected' ? 'bg-rose-50 text-rose-600' :
-                                'badge-brand'}`}>
+                                'badge-brand'} `}>
                                 {sub.status?.replace('_', ' ')}
                             </Badge>
                         </Link>
@@ -187,7 +187,7 @@ export function DashboardApplicationsCard({ pendingApplications }: { pendingAppl
     return (
         <Card className="border-border/70 shadow-2xs bg-card rounded-xl">
             <CardHeader className="p-3.5 sm:p-4 border-b border-border/70 bg-muted/20">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                <CardTitle className="font-semibold flex items-center gap-2">
                     <ClipboardList className="w-4 h-4 text-primary" /> Pending Applications
                 </CardTitle>
             </CardHeader>
@@ -196,11 +196,11 @@ export function DashboardApplicationsCard({ pendingApplications }: { pendingAppl
                     {pendingApplications.map((app) => (
                         <div key={app.id} className="p-3.5 space-y-2">
                             <div className="flex items-center justify-between">
-                                <Badge variant="outline" className="badge-brand text-[10px] font-medium h-5 rounded px-2">{app.type}</Badge>
+                                <Badge variant="outline" className="badge-brand font-medium h-5 rounded px-2">{app.type}</Badge>
                                 <span className="text-meta">{app.createdAt ? new Date(app.createdAt).toLocaleDateString() : ''}</span>
                             </div>
-                            <h5 className="text-sm font-medium">{app.fullName}</h5>
-                            <Button asChild size="sm" variant="outline" className="w-full h-8 text-xs rounded-lg hover:bg-muted font-medium">
+                            <h5 className="font-medium">{app.fullName}</h5>
+                            <Button asChild size="sm" variant="outline" className="w-full h-8 rounded-lg hover:bg-muted font-medium">
                                 <Link href="/admin/reviewer-applications">Review</Link>
                             </Button>
                         </div>
@@ -220,7 +220,7 @@ export function DashboardMySubmissionsGrid({ mySubmissions }: { mySubmissions: D
                         <div className="w-12 h-12 rounded-xl bg-card border border-border/70 flex items-center justify-center mx-auto">
                             <FileText className="w-6 h-6 text-muted-foreground/40" />
                         </div>
-                        <p className="text-sm text-muted-foreground px-6">Submit and track your own manuscripts from the portal.</p>
+                        <p className="text-caption text-muted-foreground px-6">Submit and track your own manuscripts from the portal.</p>
                         <Button asChild className="btn-primary">
                             <Link href="/submit">Submit Paper</Link>
                         </Button>
@@ -235,14 +235,14 @@ export function DashboardMySubmissionsGrid({ mySubmissions }: { mySubmissions: D
                                     paper.status === 'published' ? 'bg-emerald-50 text-emerald-600' :
                                     paper.status === 'rejected' ? 'bg-rose-50 text-rose-600' :
                                     'badge-brand'
-                                }`}>
+                                } `}>
                                 {paper.status}
                             </Badge>
                         </div>
-                        <h3 className="text-sm font-semibold text-foreground line-clamp-2 h-10 group-hover:text-primary transition-colors leading-snug">{paper.title}</h3>
+                        <h3 className="font-semibold text-foreground line-clamp-2 h-10 group-hover:text-primary transition-colors leading-snug">{paper.title}</h3>
                         <div className="flex items-center justify-between pt-3 border-t border-border/50">
                             <span className="text-meta flex items-center gap-1.5"><Clock className="w-3 h-3" /> {formatDate(paper.submittedAt)}</span>
-                            <Button asChild variant="ghost" size="sm" className="h-8 px-3 text-primary hover:bg-primary/10 rounded-lg text-xs font-semibold">
+                            <Button asChild variant="ghost" size="sm" className="h-8 px-3 text-primary hover:bg-primary/10 rounded-lg font-semibold">
                                 <Link href={`/track?id=${paper.paperId}`} className="flex items-center gap-1.5">
                                     Track <ExternalLink className="w-3 h-3" />
                                 </Link>
@@ -316,7 +316,7 @@ export function DashboardHealthSectionView({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card className="lg:col-span-2 border-border/70 shadow-2xs bg-card overflow-hidden rounded-xl">
                 <CardHeader className="p-4 border-b border-border/70 flex flex-row items-center justify-between bg-muted/20">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                    <CardTitle className="font-semibold flex items-center gap-2 text-foreground">
                         <Users className="w-4 h-4 text-primary" /> Active Users
                     </CardTitle>
                     {role === 'admin' && (
@@ -327,17 +327,17 @@ export function DashboardHealthSectionView({
                 </CardHeader>
                 <CardContent className="p-0">
                     {allStaff.length === 0 ? (
-                        <div className="p-12 text-center text-xs text-muted-foreground/40">No users found.</div>
+                        <div className="p-12 text-center text-caption text-muted-foreground/40">No users found.</div>
                     ) : (
                         <div className="divide-y divide-border/50">
                             {allStaff.map((staff) => (
                                 <div key={staff.id} className="p-3 px-4 flex items-center justify-between hover:bg-muted/30 transition-all">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-primary/5 text-primary flex items-center justify-center font-bold text-xs border border-primary/10">
+                                        <div className="w-8 h-8 rounded-lg bg-primary/5 text-primary flex items-center justify-center font-bold text-body-sm border border-primary/10">
                                             {staff.fullName?.charAt(0) || staff.email?.charAt(0) || 'U'}
                                         </div>
                                         <div>
-                                            <h5 className="text-sm font-medium text-foreground leading-none mb-1">{staff.fullName || staff.email}</h5>
+                                            <h5 className="font-medium text-foreground leading-none mb-1">{staff.fullName || staff.email}</h5>
                                             <p className="text-meta">{staff.role}</p>
                                         </div>
                                     </div>
@@ -345,7 +345,7 @@ export function DashboardHealthSectionView({
                                             staff.role === 'admin' ? 'bg-rose-50 text-rose-600' :
                                             staff.role === 'editor' ? 'badge-brand' :
                                             'bg-emerald-50 text-emerald-600'
-                                        }`}>
+                                        } `}>
                                         {staff.role}
                                     </Badge>
                                 </div>
@@ -357,12 +357,12 @@ export function DashboardHealthSectionView({
 
             <Card className="border-border/70 shadow-2xs bg-card rounded-xl">
                 <CardHeader className="p-4 border-b border-border/70 bg-muted/20">
-                    <CardTitle className="text-sm font-semibold">System Health</CardTitle>
+                    <CardTitle className="font-semibold">System Health</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-2">
                     {healthMetrics.map((metric) => (
                         <div key={metric.label} className="p-3 rounded-lg bg-muted/20 border border-border/50 space-y-0.5 hover:bg-muted/30 transition-all">
-                            <div className="flex justify-between items-center text-[10px] font-semibold text-muted-foreground">
+                            <div className="flex justify-between items-center text-caption font-semibold text-muted-foreground">
                                 <span className="flex items-center gap-1.5">
                                     {(() => {
                                         const Icon = ICON_MAP[metric.icon] || Box;
@@ -372,7 +372,7 @@ export function DashboardHealthSectionView({
                                 </span>
                                 <span className={metric.status === 'Optimal' || metric.status === 'Healthy' || metric.status === 'Excellent' ? 'text-emerald-500' : 'text-amber-500'}>{metric.status}</span>
                             </div>
-                            <p className="text-sm font-medium text-foreground">{metric.value}</p>
+                            <p className="font-medium text-foreground">{metric.value}</p>
                         </div>
                     ))}
                 </CardContent>
@@ -410,7 +410,7 @@ export function DashboardRegistry({
             <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-3 sm:pb-4 border-b border-border/70">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2.5">
-                        <Badge variant="outline" className="badge-brand text-[10px] font-medium px-2.5 py-0.5 rounded-md capitalize">
+                        <Badge variant="outline" className="badge-brand font-medium px-2.5 py-0.5 rounded-md capitalize">
                             {role}
                         </Badge>
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -418,7 +418,7 @@ export function DashboardRegistry({
                             {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric', day: 'numeric' })}
                         </span>
                     </div>
-                    <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">
+                    <h1 className="panel-title font-bold text-primary">
                         {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard
                     </h1>
                     <p className="text-body-sm text-muted-foreground">
@@ -439,9 +439,9 @@ export function DashboardRegistry({
 
             <Tabs defaultValue="overview" className="space-y-3 sm:space-y-4">
                 <TabsList className="bg-muted/50 flex flex-wrap sm:inline-flex justify-start h-auto gap-1 rounded-xl border border-border/70 p-1">
-                    <TabsTrigger value="overview" className="px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-xs sm:text-sm">Overview</TabsTrigger>
-                    <TabsTrigger value="my-papers" className="px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-xs sm:text-sm">My Papers</TabsTrigger>
-                    <TabsTrigger value="infrastructure" className="px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-xs sm:text-sm">Health</TabsTrigger>
+                    <TabsTrigger value="overview" className="px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-body-sm">Overview</TabsTrigger>
+                    <TabsTrigger value="my-papers" className="px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-body-sm">My Papers</TabsTrigger>
+                    <TabsTrigger value="infrastructure" className="px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-body-sm">Health</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-3 sm:space-y-4">
@@ -485,7 +485,7 @@ export function DashboardRegistry({
                             {role === 'editor' && (
                                 <Card className="border-border/70 shadow-2xs bg-card h-full rounded-xl">
                                     <CardHeader className="p-3.5 sm:p-4 border-b border-border/70 bg-muted/20">
-                                        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                        <CardTitle className="font-semibold flex items-center gap-2">
                                             <ClipboardList className="w-4 h-4 text-primary" /> Active Tasks
                                         </CardTitle>
                                     </CardHeader>
@@ -495,7 +495,7 @@ export function DashboardRegistry({
                                             { icon: <ShieldCheck className="w-4 h-4" />, label: 'Peer Review Oversight' },
                                             { icon: <AlertCircle className="w-4 h-4" />, label: 'Workflow Deadlines' }
                                         ].map((task, i) => (
-                                            <div key={i} className="flex items-center gap-3 text-sm text-muted-foreground group">
+                                            <div key={i} className="flex items-center gap-3 text-caption text-muted-foreground group">
                                                 <div className="group-hover:text-primary transition-colors">
                                                     {task.icon}
                                                 </div>

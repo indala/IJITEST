@@ -49,11 +49,11 @@ export default function ContactClient({ settings }: ContactClientProps) {
                                         <p className="text-label text-muted-foreground m-0">{method.title}</p>
                                         <a
                                             href={method.href}
-                                            className="text-sm font-semibold text-primary hover:underline transition-all block truncate"
+                                            className="text-body-sm font-semibold text-primary hover:underline transition-all block truncate"
                                         >
                                             {method.value}
                                         </a>
-                                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                        <div className="flex items-center gap-1 text-caption text-muted-foreground">
                                             <Clock className="w-3 h-3 opacity-50" />
                                             <span>{method.subtext}</span>
                                         </div>
@@ -97,7 +97,7 @@ export default function ContactClient({ settings }: ContactClientProps) {
                         <TrackManuscriptWidget />
                     </div>
 
-                    <div className="bg-[#000066] p-4 rounded-xl text-white space-y-2 shadow-md">
+                    <div className="bg-primary p-4 rounded-xl text-white space-y-2 shadow-md">
                         <div className="flex items-center gap-2">
                             <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center text-white">
                                 <ShieldAlert className="w-4 h-4" />
@@ -106,7 +106,7 @@ export default function ContactClient({ settings }: ContactClientProps) {
                         </div>
                         <p className="text-white/70 m-0 leading-relaxed">IJITEST strictly adheres to COPE guidelines for scientific integrity and peer-review ethics.</p>
                         <div className="pt-1">
-                            <Link href="/ethics" className="inline-flex items-center gap-1 text-xs font-bold text-secondary hover:text-white transition-colors">
+                            <Link href="/ethics" className="inline-flex items-center gap-1 text-body-sm font-bold text-secondary hover:text-white transition-colors">
                                 <span>View Policy</span>
                                 <ChevronRight className="w-3.5 h-3.5" />
                             </Link>

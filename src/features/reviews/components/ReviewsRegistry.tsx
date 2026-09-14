@@ -252,7 +252,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
         return (
             <div className="p-32 text-center space-y-6">
                 <div className="w-14 h-14 border-[3px] border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
-                <p className="font-semibold text-muted-foreground text-xs animate-pulse">Loading reviews...</p>
+                <p className="font-semibold text-muted-foreground text-caption animate-pulse">Loading reviews...</p>
             </div>
         );
     }
@@ -262,7 +262,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
             {/* Header Section */}
             <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/70 pb-3 sm:pb-4">
                 <div className="space-y-1">
-                    <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">
+                    <h1 className="panel-title font-bold text-primary">
                         {role === 'reviewer' ? 'Reviews' : 'Manage Reviews'}
                     </h1>
                     <p className="panel-subtitle text-body-sm text-muted-foreground max-w-2xl leading-relaxed">
@@ -300,7 +300,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
             <div className="space-y-4">
                 <div className="flex items-center gap-2 px-1">
                     <h2 className="text-label text-muted-foreground uppercase">Registry Queue</h2>
-                    <Badge variant="outline" className="badge-brand text-[10px] font-medium h-5 px-2 rounded-md">
+                    <Badge variant="outline" className="badge-brand font-medium h-5 px-2 rounded-md">
                         {isInternalStaff ? groupedReviews.length : filteredReviews.length}
                     </Badge>
                 </div>
@@ -344,7 +344,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
 
 export default function ReviewsRegistrySuspense(props: { role: 'admin' | 'editor' | 'reviewer' }) {
     return (
-        <Suspense fallback={<div className="p-20 text-center text-[10px] font-bold text-primary/20 tracking-widest animate-pulse">SYNCHRONIZING INTERFACE...</div>}>
+        <Suspense fallback={<div className="p-20 text-center text-label font-bold text-primary/20 tracking-widest animate-pulse">SYNCHRONIZING INTERFACE...</div>}>
             <ReviewsRegistry {...props} />
         </Suspense>
     );

@@ -5,7 +5,7 @@ import { Menu, X } from 'lucide-react';
 import { NavbarBrand } from './NavbarBrand';
 import { NavbarLinks } from './NavbarLinks';
 import { MobileMenu } from './MobileMenu';
-import Link from 'next/link';
+import SubmitPaperDropdown from './SubmitPaperDropdown';
 
 import { useSettingsContext } from '@/components/providers/SettingsContext';
 
@@ -46,13 +46,7 @@ export default function Navbar() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 lg:gap-3 xl:gap-4 2xl:gap-6">
-                        <Link
-                            href="/submit"
-                            className="nav-btn-action"
-                        >
-                            <span className="relative z-20 hidden sm:inline lg:hidden xl:inline">Submit Paper</span>
-                            <span className="relative z-20 sm:hidden lg:inline xl:hidden">Submit</span>
-                        </Link>
+                        <SubmitPaperDropdown />
 
                         {/* Mobile menu button */}
                         <div className="lg:hidden flex items-center">

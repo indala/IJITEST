@@ -148,7 +148,7 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                         </div>
                     </div>
 
-                    <div className="p-4 bg-[#000066] rounded-xl shadow-md text-white space-y-2.5">
+                    <div className="p-4 bg-primary rounded-xl shadow-md text-white space-y-2.5">
                         <h3 className="m-0 text-white">Join as Reviewer</h3>
                         <p className="text-white/70 leading-relaxed m-0">Interested in joining our global panel? Share your technical profile with our board.</p>
                         <Button asChild size="sm" className="w-full h-8 bg-white text-primary border-none hover:bg-white/90 font-bold text-xs rounded-lg transition-all">

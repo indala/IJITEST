@@ -166,7 +166,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
         return (
             <div className="p-32 flex flex-col items-center justify-center gap-6">
                 <div className="w-14 h-14 border-[3px] border-primary/10 border-t-primary rounded-full animate-spin" />
-                <p className="font-bold text-[10px] tracking-[0.3em] uppercase animate-pulse text-muted-foreground">Accessing vetting pipeline...</p>
+                <p className="font-bold text-label tracking-[0.3em] uppercase animate-pulse text-muted-foreground">Accessing vetting pipeline...</p>
             </div>
         );
     }
@@ -243,7 +243,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
 
 export default function ApplicationsRegistrySuspense(props: { role: ApplicationsRegistryRole }) {
     return (
-        <Suspense fallback={<div className="p-32 text-center text-[10px] font-black text-primary/20 tracking-[0.3em] animate-pulse">SYNCHRONIZING VETTING PIPELINE...</div>}>
+        <Suspense fallback={<div className="p-32 text-center text-label font-black text-primary/20 tracking-[0.3em] animate-pulse">SYNCHRONIZING VETTING PIPELINE...</div>}>
             <ApplicationsRegistry {...props} />
         </Suspense>
     );

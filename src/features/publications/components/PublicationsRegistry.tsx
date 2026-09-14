@@ -167,7 +167,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
         return (
             <div className="p-20 text-center space-y-4">
                 <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
-                <p className="font-semibold text-primary/40 text-xs">Loading publications...</p>
+                <p className="font-semibold text-primary/40">Loading publications...</p>
             </div>
         );
     }
@@ -181,7 +181,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                         <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 text-primary shadow-xs">
                             <BookOpen className="w-4 h-4" />
                         </div>
-                        <h1 className="panel-title m-0 text-xl xl:text-2xl font-bold text-primary">
+                        <h1 className="panel-title m-0 font-bold text-primary">
                             Manage Publications
                         </h1>
                     </div>
@@ -202,8 +202,8 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                 <Plus className="w-5 h-5" />
                             </div>
                             <div className="space-y-1">
-                                <DialogTitle className="text-xl font-semibold text-foreground tracking-tight">New Publication Issue</DialogTitle>
-                                <DialogDescription className="text-sm text-muted-foreground">
+                                <DialogTitle className="font-semibold text-foreground tracking-tight">New Publication Issue</DialogTitle>
+                                <DialogDescription className="text-caption text-muted-foreground">
                                     Define a new volume or issue to start collecting papers.
                                 </DialogDescription>
                             </div>
@@ -216,7 +216,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                         name="volume"
                                         type="number"
                                         required
-                                        className="h-10 bg-background border-border/70 focus-visible:ring-1 text-sm rounded-lg px-3"
+                                        className="h-10 bg-background border-border/70 focus-visible:ring-1 text-body-sm rounded-lg px-3"
                                         placeholder="e.g. 1"
                                     />
                                 </div>
@@ -226,7 +226,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                         name="issue"
                                         type="number"
                                         required
-                                        className="h-10 bg-background border-border/70 focus-visible:ring-1 text-sm rounded-lg px-3"
+                                        className="h-10 bg-background border-border/70 focus-visible:ring-1 text-body-sm rounded-lg px-3"
                                         placeholder="e.g. 1"
                                     />
                                 </div>
@@ -238,7 +238,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                     type="number"
                                     required
                                     defaultValue={new Date().getFullYear()}
-                                    className="h-10 bg-background border-border/70 focus-visible:ring-1 text-sm rounded-lg px-3"
+                                    className="h-10 bg-background border-border/70 focus-visible:ring-1 text-body-sm rounded-lg px-3"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -246,7 +246,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                 <Input
                                     name="monthRange"
                                     placeholder="e.g. Jan - Mar"
-                                    className="h-10 bg-background border-border/70 focus-visible:ring-1 text-sm rounded-lg px-3"
+                                    className="h-10 bg-background border-border/70 focus-visible:ring-1 text-body-sm rounded-lg px-3"
                                 />
                             </div>
                             <DialogFooter className="pt-4">
@@ -274,7 +274,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                         <div className="flex items-center justify-between">
                             <div className="space-y-0.5">
                                 <p className="text-label text-muted-foreground uppercase">{item.label}</p>
-                                <h3 className="text-xl lg:text-2xl font-bold text-foreground">{item.value}</h3>
+                                <h3 className="font-bold text-foreground">{item.value}</h3>
                             </div>
                             <div className={`w-9 h-9 rounded-lg ${item.colors} flex items-center justify-center border shadow-xs`}>
                                 <item.icon className="w-4 h-4" />
@@ -294,11 +294,11 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="space-y-0.5">
                                             <p className="text-meta uppercase">Volume {v.volumeNumber}</p>
-                                            <h3 className="font-semibold text-foreground leading-tight text-base">
+                                            <h3 className="font-semibold text-foreground leading-tight">
                                                 Issue {v.issueNumber}
                                             </h3>
                                         </div>
-                                        <Badge className={`h-5 px-2 text-[10px] font-semibold rounded-md border-none ${v.status === 'published' ? 'bg-emerald-50 text-emerald-600' : 'badge-brand'}`}>
+                                        <Badge className={`h-5 px-2 text-badge font-semibold rounded-md border-none ${v.status === 'published' ? 'bg-emerald-50 text-emerald-600' : 'badge-brand'} `}>
                                             {v.status === 'published' ? 'Published' : 'Open'}
                                         </Badge>
                                     </div>
@@ -306,11 +306,11 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="bg-muted/30 p-3 rounded-lg border border-border/70">
                                             <p className="text-meta mb-0.5">Year</p>
-                                            <p className="text-base font-bold text-foreground">{v.year}</p>
+                                            <p className="font-bold text-foreground">{v.year}</p>
                                         </div>
                                         <div className="bg-muted/30 p-3 rounded-lg border border-border/70">
                                             <p className="text-meta mb-0.5">Duration</p>
-                                            <p className="text-sm font-bold text-foreground truncate">{v.monthRange}</p>
+                                            <p className="font-bold text-foreground truncate">{v.monthRange}</p>
                                         </div>
                                     </div>
 
@@ -319,13 +319,13 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                             <Button
                                                 variant="outline"
                                                 onClick={() => toggleExpand(v.id)}
-                                                className="w-full h-9 gap-2 border-border/70 text-primary font-semibold text-xs rounded-lg hover:bg-primary/10"
+                                                className="w-full h-9 gap-2 border-border/70 text-primary font-semibold text-body-sm rounded-lg hover:bg-primary/10"
                                             >
                                                 {expandedIssue === v.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDownIcon className="w-3.5 h-3.5" />}
                                                 {expandedIssue === v.id ? 'Hide Manuscripts' : `View Manuscripts (${v.paperCount || 0})`}
                                             </Button>
                                         ) : (
-                                            <div className="w-full h-9 flex items-center justify-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/20 rounded-lg border border-border/70">
+                                            <div className="w-full h-9 flex items-center justify-center text-label font-bold uppercase tracking-wider text-muted-foreground bg-muted/20 rounded-lg border border-border/70">
                                                 {v.paperCount || 0} Linked
                                             </div>
                                         )}
@@ -356,33 +356,33 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                                         <div key={paper.id} className="p-2.5 bg-card rounded-lg border border-border/70 flex items-center justify-between gap-3 transition-all hover:border-primary/30 shadow-2xs">
                                                                             <div className="min-w-0 flex-1">
                                                                                 <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                                                                                    <p className="text-xs font-semibold text-foreground leading-tight line-clamp-1">{paper.title}</p>
+                                                                                    <p className="font-semibold text-foreground leading-tight line-clamp-1">{paper.title}</p>
                                                                                     
                                                                                     {/* DOI Source & Registration Status Badges */}
                                                                                     {provider === 'crossref' ? (
                                                                                         regStatus === 'registered' ? (
-                                                                                            <span className="text-[10px] bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                            <span className="text-body-sm bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
                                                                                                 CrossRef ✓
                                                                                             </span>
                                                                                         ) : regStatus === 'failed' ? (
-                                                                                            <span className="text-[10px] bg-rose-500/15 text-rose-700 dark:text-rose-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                            <span className="text-body-sm bg-rose-500/15 text-rose-700 dark:text-rose-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
                                                                                                 CrossRef ✗ Failed
                                                                                             </span>
                                                                                         ) : (
-                                                                                            <span className="text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                            <span className="text-body-sm bg-amber-500/15 text-amber-700 dark:text-amber-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
                                                                                                 CrossRef ⏳ Pending
                                                                                             </span>
                                                                                         )
                                                                                     ) : provider === 'zenodo' ? (
-                                                                                        <span className="text-[10px] bg-sky-500/15 text-sky-700 dark:text-sky-400 font-semibold px-1.5 py-0.2 rounded-md">
+                                                                                        <span className="text-body-sm bg-sky-500/15 text-sky-700 dark:text-sky-400 font-semibold px-1.5 py-0.2 rounded-md">
                                                                                             Zenodo
                                                                                         </span>
                                                                                     ) : doi ? (
-                                                                                        <span className="text-[10px] bg-muted text-muted-foreground font-semibold px-1.5 py-0.2 rounded-md">
+                                                                                        <span className="text-caption bg-muted text-muted-foreground font-semibold px-1.5 py-0.2 rounded-md">
                                                                                             Custom DOI
                                                                                         </span>
                                                                                     ) : (
-                                                                                        <span className="text-[10px] bg-muted/60 text-muted-foreground/60 px-1.5 py-0.2 rounded-md">
+                                                                                        <span className="text-caption bg-muted/60 text-muted-foreground/60 px-1.5 py-0.2 rounded-md">
                                                                                             No DOI
                                                                                         </span>
                                                                                     )}
@@ -393,7 +393,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                                                     {doi && (
                                                                                         <>
                                                                                             <span>•</span>
-                                                                                            <span className="font-mono text-[10px] text-primary/80 truncate max-w-[220px]">{doi}</span>
+                                                                                            <span className="font-mono text-meta text-primary/80 truncate max-w-[220px]">{doi}</span>
                                                                                         </>
                                                                                     )}
                                                                                 </div>
@@ -406,7 +406,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                                                         variant="outline"
                                                                                         disabled={isRetrying}
                                                                                         onClick={() => handleRetryCrossref(paper.id)}
-                                                                                        className="h-7 text-[11px] px-2 text-rose-600 hover:text-rose-700 border-rose-200 hover:bg-rose-50 cursor-pointer"
+                                                                                        className="h-7 px-2 text-rose-600 hover:text-rose-700 border-rose-200 hover:bg-rose-50 cursor-pointer"
                                                                                     >
                                                                                         {isRetrying ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
                                                                                         Retry
@@ -426,7 +426,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                                 })}
                                                             </div>
                                                         ) : (
-                                                            <div className="py-6 text-center text-xs text-muted-foreground font-medium">No papers assigned yet.</div>
+                                                            <div className="py-6 text-center text-caption text-muted-foreground font-medium">No papers assigned yet.</div>
                                                         )}
                                                     </div>
                                                 </motion.div>
@@ -437,13 +437,13 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                             <Button
                                                 onClick={() => handlePublish(v.id)}
                                                 disabled={isPublishing}
-                                                className="w-full h-10 bg-emerald-600 text-white font-semibold text-xs rounded-lg shadow-sm hover:bg-emerald-700 transition-all active:scale-[0.98]"
+                                                className="w-full h-10 bg-emerald-600 text-white font-semibold text-body-sm rounded-lg shadow-sm hover:bg-emerald-700 transition-all active:scale-[0.98]"
                                             >
                                                 {isPublishing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                                                 Publish Issue
                                             </Button>
                                         ) : (
-                                            <div className="w-full h-10 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 border border-emerald-200/60">
+                                            <div className="w-full h-10 bg-emerald-50 text-emerald-600 rounded-lg text-body-sm font-semibold flex items-center justify-center gap-2 border border-emerald-200/60">
                                                 <CheckCircle2 className="w-4 h-4" /> Published
                                             </div>
                                         )}
@@ -497,8 +497,8 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                             <BookOpen className="w-6 h-6" />
                         </div>
                         <div className="space-y-1">
-                            <h3 className="font-semibold text-foreground text-lg">No Issues Found</h3>
-                            <p className="text-sm text-muted-foreground max-w-md mx-auto px-6">There are no publication issues in the registry. Create your first volume and issue to begin.</p>
+                            <h3 className="font-semibold text-foreground">No Issues Found</h3>
+                            <p className="text-caption text-muted-foreground max-w-md mx-auto px-6">There are no publication issues in the registry. Create your first volume and issue to begin.</p>
                         </div>
                     </div>
                 )}
@@ -511,8 +511,8 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                             <Save className="w-6 h-6" />
                         </div>
                         <div className="space-y-1">
-                            <DialogTitle className="text-xl font-semibold text-foreground tracking-tight">Update Metadata</DialogTitle>
-                            <DialogDescription className="text-sm text-muted-foreground">
+                            <DialogTitle className="font-semibold text-foreground tracking-tight">Update Metadata</DialogTitle>
+                            <DialogDescription className="text-caption text-muted-foreground">
                                 Modify the volume and issue details.
                             </DialogDescription>
                         </div>
@@ -527,7 +527,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                         type="number"
                                         required
                                         defaultValue={showEditModal.volumeNumber}
-                                        className="h-10 bg-background border-border/70 text-sm"
+                                        className="h-10 bg-background border-border/70 text-body-sm"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -537,7 +537,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                         type="number"
                                         required
                                         defaultValue={showEditModal.issueNumber}
-                                        className="h-10 bg-background border-border/70 text-sm"
+                                        className="h-10 bg-background border-border/70 text-body-sm"
                                     />
                                 </div>
                             </div>
@@ -549,7 +549,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                     type="number"
                                     required
                                     defaultValue={showEditModal.year}
-                                    className="h-10 bg-background border-border/70 text-sm"
+                                    className="h-10 bg-background border-border/70 text-body-sm"
                                 />
                             </div>
 
@@ -560,7 +560,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                     type="text"
                                     required
                                     defaultValue={showEditModal.monthRange || ""}
-                                    className="h-10 bg-background border-border/70 text-sm"
+                                    className="h-10 bg-background border-border/70 text-body-sm"
                                 />
                             </div>
 

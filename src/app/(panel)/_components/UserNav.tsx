@@ -42,16 +42,16 @@ export function UserNav({ user, handleLogout }: UserNavProps) {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5 shadow-xl border-border/50">
-                <DropdownMenuLabel className="text-xs text-muted-foreground font-semibold px-3 py-2 capitalize">Account Operations</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-caption font-semibold px-3 py-2 capitalize">Account Operations</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-border/40" />
                 <Link className="cursor-pointer" href={`/${user?.role || 'reviewer'}/profile`}>
-                    <DropdownMenuItem className="rounded-lg h-9 gap-2.5 cursor-pointer px-3 font-medium text-xs sm:text-sm hover:bg-primary/10 transition-colors">
+                    <DropdownMenuItem className="rounded-lg h-9 gap-2.5 cursor-pointer px-3 font-medium hover:bg-primary/10 transition-colors">
                         <UserIcon className="w-4 h-4 text-primary" />
                         <span>Profile settings</span>
                     </DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator className="bg-border/40" />
-                <DropdownMenuItem className="rounded-lg h-9 gap-2.5 cursor-pointer text-destructive focus:bg-destructive focus:text-white px-3 font-medium text-xs sm:text-sm" onClick={handleLogout}>
+                <DropdownMenuItem className="rounded-lg h-9 gap-2.5 cursor-pointer text-destructive focus:bg-destructive focus:text-white px-3 font-medium" onClick={handleLogout}>
                     <LogOut className="w-4 h-4" />
                     <span>Sign out</span>
                 </DropdownMenuItem>

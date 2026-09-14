@@ -84,30 +84,30 @@ export function AssignReviewerDialog({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogTrigger asChild>
-                <Button className="h-10 px-6 gap-3 bg-primary text-white font-semibold text-[10px] rounded-xl shadow-lg transition-all cursor-pointer">
+                <Button className="h-10 px-6 gap-3 bg-primary text-white font-semibold rounded-xl shadow-lg transition-all cursor-pointer">
                     <Plus className="w-4 h-4" />Assign Reviewer
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl rounded-xl p-5 bg-card border-none shadow-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-semibold text-foreground">Assign Reviewer</DialogTitle>
-                    <DialogDescription className="text-xs text-muted-foreground">
+                    <DialogTitle className="font-semibold text-foreground">Assign Reviewer</DialogTitle>
+                    <DialogDescription className="text-caption text-muted-foreground">
                         Assign manuscripts to technical staff with conflict-of-interest checks.
                     </DialogDescription>
                 </DialogHeader>
                 <form action={handleSubmit} className="space-y-5 pt-4">
                     <div className="space-y-2">
                         <div className="flex items-center justify-between px-1">
-                            <label className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">Manuscript</label>
+                            <label className="form-label-brand font-bold text-muted-foreground tracking-widest uppercase">Manuscript</label>
                             <div className="flex items-center gap-1.5">
                                 {selectedPaper?.sectionTitle && (
-                                    <span className="text-[8px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20 flex items-center gap-1">
+                                    <span className="text-badge font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20 flex items-center gap-1">
                                         <Bookmark className="w-2.5 h-2.5" />
                                         {selectedPaper.sectionTitle}
                                     </span>
                                 )}
                                 {selectedPaper?.isBlinded && (
-                                    <span className="text-[8px] font-bold bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded-full border border-blue-500/20">
+                                    <span className="text-badge font-bold bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded-full border border-blue-500/20">
                                         🔒 Blinded
                                     </span>
                                 )}
@@ -136,8 +136,8 @@ export function AssignReviewerDialog({
 
                         {/* Author Reviewer Suggestions Widget */}
                         {suggestions.length > 0 && (
-                            <div className="p-3 bg-muted/20 border border-border/50 rounded-xl space-y-2 text-xs">
-                                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground m-0">
+                            <div className="p-3 bg-muted/20 border border-border/50 rounded-xl space-y-2 text-body-sm">
+                                <p className="text-label font-bold uppercase tracking-wider text-muted-foreground m-0">
                                     Author Reviewer Preferences:
                                 </p>
                                 <div className="space-y-1">
@@ -165,7 +165,7 @@ export function AssignReviewerDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase px-1">Reviewer</label>
+                        <label className="form-label-brand font-bold text-muted-foreground tracking-widest uppercase px-1">Reviewer</label>
                         <Select 
                             name="reviewerId" 
                             required 
@@ -195,15 +195,15 @@ export function AssignReviewerDialog({
                                         <SelectItem key={r.id} value={r.id.toString()}>
                                             <span className="flex items-center gap-1.5 flex-wrap">
                                                 <span>{r.profile?.fullName || r.email}</span>
-                                                <span className="text-xs text-muted-foreground">[{ratingBadge}]</span>
-                                                <span className="text-[10px] text-muted-foreground/70">({formatLastActive(r.lastActiveAt)})</span>
+                                                <span className="text-caption text-muted-foreground">[{ratingBadge}]</span>
+                                                <span className="text-caption text-muted-foreground/70">({formatLastActive(r.lastActiveAt)})</span>
                                                 {isSuggested && (
-                                                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-bold border border-emerald-500/20">
+                                                    <span className="text-body-sm px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-bold border border-emerald-500/20">
                                                         👍 Author Preferred
                                                     </span>
                                                 )}
                                                 {isOpposed && (
-                                                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-600 font-bold border border-rose-500/20">
+                                                    <span className="text-body-sm px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-600 font-bold border border-rose-500/20">
                                                         ⚠️ Author Opposed
                                                     </span>
                                                 )}
@@ -218,7 +218,7 @@ export function AssignReviewerDialog({
                         {selectedIsOpposed && (
                             <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2.5 text-rose-700 dark:text-rose-400">
                                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                                <div className="text-xs space-y-0.5">
+                                <div className="text-body-sm space-y-0.5">
                                     <p className="font-bold m-0">Author Conflict of Interest Warning</p>
                                     <p className="m-0 text-muted-foreground leading-snug">
                                         The author explicitly requested not to assign this reviewer:
@@ -231,7 +231,7 @@ export function AssignReviewerDialog({
                         )}
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase px-1">Deadline</label>
+                        <label className="form-label-brand font-bold text-muted-foreground tracking-widest uppercase px-1">Deadline</label>
                         <Input
                             name="deadline"
                             type="date"
@@ -242,13 +242,13 @@ export function AssignReviewerDialog({
                     </div>
                     <div className="space-y-3">
                         <div className="flex items-center justify-between px-1">
-                            <label className="text-[10px] font-bold text-primary tracking-widest uppercase">
+                            <label className="form-label-brand font-bold text-primary tracking-widest uppercase">
                                 Manuscript PDF {hasExistingPdf ? '(Verified)' : '(Required)'}
                             </label>
                             {hasExistingPdf && (
                                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 animate-pulse">
                                     <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                                    <span className="text-[8px] font-black uppercase">System Asset Ready</span>
+                                    <span className="text-label font-black uppercase">System Asset Ready</span>
                                 </div>
                             )}
                         </div>
@@ -259,7 +259,7 @@ export function AssignReviewerDialog({
                                 onClick={onAutoConvert}
                                 disabled={isConverting}
                                 variant="outline"
-                                className="w-full h-14 gap-3 border-primary/20 bg-primary/5 text-primary font-black text-[10px] tracking-widest rounded-xl hover:bg-primary hover:text-white transition-all shadow-xl shadow-primary/5 cursor-pointer group"
+                                className="w-full h-14 gap-3 border-primary/20 bg-primary/5 text-primary font-black tracking-widest rounded-xl hover:bg-primary hover:text-white transition-all shadow-xl shadow-primary/5 cursor-pointer group"
                             >
                                 {isConverting ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-700" />}
                                 <span>Upload using PDF Converter</span>
@@ -280,12 +280,12 @@ export function AssignReviewerDialog({
                                 {assignFile ? (
                                     <>
                                         <CheckCircle className="w-5 h-5 text-emerald-500" />
-                                        <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-widest truncate max-w-[200px]">{assignFile.name}</p>
+                                        <p className="text-label font-semibold text-emerald-600 uppercase tracking-widest truncate max-w-[200px]">{assignFile.name}</p>
                                     </>
                                 ) : (
                                     <>
                                         <FileUp className="w-5 h-5 text-primary/40 group-hover:scale-110 transition-all" />
-                                        <p className="text-[10px] font-semibold text-primary/60 uppercase tracking-widest">
+                                        <p className="text-label font-semibold text-primary/60 uppercase tracking-widest">
                                             {hasExistingPdf ? 'Overwrite existing PDF' : 'Select manuscript PDF'}
                                         </p>
                                     </>
@@ -297,7 +297,7 @@ export function AssignReviewerDialog({
                         <Button 
                             type="submit" 
                             disabled={isAssigning || isConverting} 
-                            className="w-full h-16 bg-primary text-white font-semibold text-[10px] tracking-[0.3em] rounded-xl shadow-2xl shadow-primary/20 hover:scale-[1.01] transition-all cursor-pointer"
+                            className="w-full h-16 bg-primary text-white font-semibold tracking-[0.3em] rounded-xl shadow-2xl shadow-primary/20 hover:scale-[1.01] transition-all cursor-pointer"
                         >
                             {isAssigning ? 'SYNCHRONIZING...' : 'COMMIT ASSIGNMENT'}
                         </Button>

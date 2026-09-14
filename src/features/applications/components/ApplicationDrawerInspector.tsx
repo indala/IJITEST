@@ -64,8 +64,8 @@ export function ApplicationDrawerInspector({
                                             )}
                                         </div>
                                         <div className="space-y-1">
-                                            <h2 className="text-3xl font-black uppercase tracking-tight">{inspectApp.fullName}</h2>
-                                            <p className="text-xs font-black text-primary uppercase tracking-[0.2em] opacity-60">{inspectApp.designation}</p>
+                                            <h2 className="font-black uppercase tracking-tight">{inspectApp.fullName}</h2>
+                                            <p className="text-label font-black text-primary uppercase tracking-[0.2em] opacity-60">{inspectApp.designation}</p>
                                         </div>
                                     </div>
 
@@ -79,16 +79,16 @@ export function ApplicationDrawerInspector({
                                             { label: 'Status', value: inspectApp.status, color: inspectApp.status === 'approved' ? 'text-emerald-500' : inspectApp.status === 'rejected' ? 'text-rose-500' : 'text-amber-500' }
                                         ].map(item => (
                                             <div key={item.label} className="space-y-1">
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-40">{item.label}</span>
-                                                <p className={`text-[11px] font-black uppercase tracking-widest ${item.color || 'text-foreground'}`}>{item.value}</p>
+                                                <span className="text-label font-black uppercase tracking-widest text-muted-foreground opacity-40">{item.label}</span>
+                                                <p className={`text-label font-black uppercase tracking-widest ${item.color || 'text-foreground'} `}>{item.value}</p>
                                             </div>
                                         ))}
 
                                         <div className="space-y-3">
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-40">Core Expertise</span>
+                                            <span className="text-label font-black uppercase tracking-widest text-muted-foreground opacity-40">Core Expertise</span>
                                             <div className="flex flex-wrap gap-2">
                                                 {inspectApp.researchInterests?.map((tag: string) => (
-                                                    <span key={tag} className="text-[9px] font-black uppercase text-primary px-3 py-1 bg-primary/5 rounded-lg border border-primary/10">
+                                                    <span key={tag} className="text-label font-black uppercase text-primary px-3 py-1 bg-primary/5 rounded-lg border border-primary/10">
                                                         {tag}
                                                     </span>
                                                 ))}
@@ -101,10 +101,10 @@ export function ApplicationDrawerInspector({
                                     <div className="p-6 border-b border-primary/5 flex items-center justify-between bg-primary/2">
                                         <div className="flex items-center gap-4">
                                             <FileText className="text-primary w-5 h-5" />
-                                            <span className="font-bold text-xs uppercase tracking-[0.2em]">Candidacy Dossier</span>
+                                            <span className="font-bold text-label uppercase tracking-[0.2em]">Candidacy Dossier</span>
                                         </div>
                                         {inspectApp.cvUrl && (
-                                            <Button variant="outline" size="sm" asChild className="h-9 px-5 rounded-xl border-primary/10 text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                            <Button variant="outline" size="sm" asChild className="h-9 px-5 rounded-xl border-primary/10 font-black uppercase tracking-widest shadow-sm">
                                                 <a href={inspectApp.cvUrl || undefined} download>
                                                     <Download className="w-4 h-4 mr-2" /> Download Document
                                                 </a>
@@ -116,14 +116,14 @@ export function ApplicationDrawerInspector({
                                         {!inspectApp.cvUrl ? (
                                             <div className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center space-y-6">
                                                 <AlertCircle className="w-16 h-16 opacity-20" />
-                                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">No CV document uploaded.</p>
+                                                <p className="text-label font-black text-muted-foreground uppercase tracking-widest">No CV document uploaded.</p>
                                             </div>
                                         ) : inspectApp.cvUrl?.toLowerCase().endsWith('.pdf') ? (
                                             <iframe src={inspectApp.cvUrl || undefined} title="Preview" className="w-full h-full border-none" />
                                         ) : (
                                             <div className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center space-y-6">
                                                 <FileText className="w-16 h-16 opacity-20" />
-                                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Document format requires local viewing.</p>
+                                                <p className="text-label font-black text-muted-foreground uppercase tracking-widest">Document format requires local viewing.</p>
                                                 <Button asChild className="rounded-2xl h-14 px-10 bg-primary text-white font-black uppercase tracking-widest">
                                                     <a href={inspectApp.cvUrl || undefined} download>Initialize Download</a>
                                                 </Button>
@@ -138,15 +138,15 @@ export function ApplicationDrawerInspector({
                                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                                                         <div className="space-y-3">
                                                             <div className="flex justify-between items-end">
-                                                                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Rejection Rationale (Audit Log)</label>
-                                                                <span className={`text-[10px] font-black ${rejectionReason.length < 20 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                                                                <label className="form-label-brand font-black uppercase tracking-widest text-muted-foreground">Rejection Rationale (Audit Log)</label>
+                                                                <span className={`text-body-sm font-black ${rejectionReason.length < 20 ? 'text-rose-500' : 'text-emerald-500'} `}>
                                                                     {rejectionReason.length}/20 chars
                                                                 </span>
                                                             </div>
                                                             <textarea
                                                                 value={rejectionReason}
                                                                 onChange={(e) => setRejectionReason(e.target.value)}
-                                                                className="w-full h-32 bg-background border-2 border-rose-500/20 rounded-2xl p-4 text-sm focus:border-rose-500 outline-none transition-all resize-none font-medium"
+                                                                className="w-full h-32 bg-background border-2 border-rose-500/20 rounded-2xl p-4 text-body-sm focus:border-rose-500 outline-none transition-all resize-none font-medium"
                                                                 placeholder="Describe the grounds for declining this proposal..."
                                                             />
                                                         </div>
@@ -163,7 +163,7 @@ export function ApplicationDrawerInspector({
                                                     </motion.div>
                                                 ) : approveConfirm ? (
                                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-center">
-                                                        <h4 className="text-xl font-black uppercase">Authorize Personnel?</h4>
+                                                        <h4 className="font-black uppercase">Authorize Personnel?</h4>
                                                         <div className="flex gap-4">
                                                             <Button variant="ghost" onClick={() => setApproveConfirm(false)} className="flex-1 h-14 rounded-2xl font-black uppercase">Abort</Button>
                                                             <Button 

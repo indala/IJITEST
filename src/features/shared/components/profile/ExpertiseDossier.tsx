@@ -13,12 +13,12 @@ export const ExpertiseDossier = React.memo(({ bio }: ExpertiseDossierProps) => {
         <div>
             <Card className="border-border/50 shadow-sm bg-card overflow-hidden">
                 <CardHeader className="pb-4">
-                    <CardTitle className="text-lg font-semibold flex items-center gap-2 text-gray-900">
-                        <FileText className="w-5 h-5 text-[#000066]" /> Bio & Expertise
+                    <CardTitle className="font-semibold flex items-center gap-2 text-gray-900">
+                        <FileText className="w-5 h-5 text-primary" /> Bio & Expertise
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <Label htmlFor="bio" className="text-[10px] font-bold uppercase tracking-wider text-[#000066] ml-1">Professional Biography</Label>
+                    <Label htmlFor="bio" className="form-label-brand font-bold uppercase tracking-wider text-primary ml-1">Professional Biography</Label>
                     <div className="relative">
                         <Textarea
                             id="bio"
@@ -26,7 +26,7 @@ export const ExpertiseDossier = React.memo(({ bio }: ExpertiseDossierProps) => {
                             defaultValue={bio}
                             placeholder="Tell us about your research expertise and background..."
                             rows={6}
-                            className="bg-muted/20 border-border/50 resize-none focus-visible:ring-primary shadow-sm rounded-lg p-6 leading-relaxed text-xs xl:text-sm"
+                            className="bg-muted/20 border-border/50 resize-none focus-visible:ring-primary shadow-sm rounded-lg p-6 leading-relaxed text-body-sm"
                         />
                     </div>
                 </CardContent>

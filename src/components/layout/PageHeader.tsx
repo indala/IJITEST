@@ -69,7 +69,7 @@ export default function PageHeader({
                                         <Link
                                             href={crumb.href}
                                             aria-current={isLast ? "page" : undefined}
-                                            className={`text-[11px] sm:text-xs font-medium tracking-tight transition-all duration-200 ${isLast ? "text-white font-semibold" : "text-white/60 hover:text-white"}`}
+                                            className={`text-label font-medium tracking-tight transition-all duration-200 ${isLast ? "text-white font-semibold" : "text-white/60 hover:text-white"} `}
                                         >
                                             {crumb.name}
                                         </Link>

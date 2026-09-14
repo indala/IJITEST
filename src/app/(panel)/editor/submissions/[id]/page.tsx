@@ -36,9 +36,9 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
                 <AlertCircle className="w-12 h-12 text-muted-foreground/20 mb-4" />
-                <h2 className=" font-semibold text-foreground tracking-wider mb-2">Invalid Identification</h2>
-                <p className="text-xs font-medium text-muted-foreground mb-6">The manuscript reference provided is not in a valid numerical format.</p>
-                <Button asChild variant="outline" className="h-10 px-6 font-semibold text-[10px]  tracking-widest rounded-xl cursor-pointer">
+                <h2 className="font-semibold text-foreground tracking-wider mb-2">Invalid Identification</h2>
+                <p className="text-caption font-medium text-muted-foreground mb-6">The manuscript reference provided is not in a valid numerical format.</p>
+                <Button asChild variant="outline" className="h-10 px-6 font-semibold tracking-widest rounded-xl cursor-pointer">
                     <Link className="cursor-pointer" href="/editor/submissions">Return to Queue</Link>
                 </Button>
             </div>
@@ -54,9 +54,9 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
                 <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6">
                     <FileText className="w-8 h-8 text-muted-foreground/30" />
                 </div>
-                <h2 className=" font-semibold text-foreground tracking-wider mb-2">Manuscript Not Found</h2>
-                <p className="text-xs font-medium text-muted-foreground mb-6 max-w-sm">The requested manuscript (Ref: {id}) could not be located in the current sector.</p>
-                <Button asChild variant="outline" className="h-10 px-6 font-semibold text-[10px]  tracking-widest rounded-xl cursor-pointer">
+                <h2 className="font-semibold text-foreground tracking-wider mb-2">Manuscript Not Found</h2>
+                <p className="text-caption font-medium text-muted-foreground mb-6 max-w-sm">The requested manuscript (Ref: {id}) could not be located in the current sector.</p>
+                <Button asChild variant="outline" className="h-10 px-6 font-semibold tracking-widest rounded-xl cursor-pointer">
                     <Link className="cursor-pointer" href="/editor/submissions">Back to Queue</Link>
                 </Button>
             </div>

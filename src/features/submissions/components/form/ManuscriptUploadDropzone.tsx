@@ -60,23 +60,23 @@ export function ManuscriptUploadDropzone({
                                 manuscriptFile
                                     ? "border-primary/50 bg-primary/5"
                                     : "border-border/50 bg-card hover:border-primary/30 hover:bg-primary/5"
-                            }`}
+                            } `}
                         >
                             {manuscriptFile ? (
                                 <div className="text-center px-4">
                                     <div className="w-12 h-12 bg-primary text-primary-foreground rounded-lg flex items-center justify-center mx-auto mb-3 shadow-md">
                                         <Check className="w-6 h-6" />
                                     </div>
-                                    <p className="text-xs font-semibold text-gray-900 truncate max-w-[200px]">{manuscriptFile.name}</p>
-                                    <p className="text-[10px] font-bold text-primary/60 uppercase mt-1">Ready to upload</p>
+                                    <p className="font-semibold text-gray-900 truncate max-w-[200px]">{manuscriptFile.name}</p>
+                                    <p className="text-label font-bold text-primary/60 uppercase mt-1">Ready to upload</p>
                                 </div>
                             ) : (
                                 <div className="text-center">
                                     <div className="w-12 h-12 bg-muted/20 border border-border/50 rounded-lg flex items-center justify-center mx-auto mb-3">
                                         <Upload className="w-5 h-5 text-primary/40" />
                                     </div>
-                                    <p className="text-xs font-semibold text-gray-900">Upload Research Paper</p>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">DOCX Only</p>
+                                    <p className="font-semibold text-gray-900">Upload Research Paper</p>
+                                    <p className="text-label font-bold text-muted-foreground uppercase mt-1">DOCX Only</p>
                                 </div>
                             )}
                         </label>
@@ -99,7 +99,7 @@ export function ManuscriptUploadDropzone({
                                 />
                             </FormControl>
                             <div className="space-y-1 m-0!">
-                                <div className="flex flex-wrap items-center gap-x-1.5 text-xs font-medium text-foreground">
+                                <div className="flex flex-wrap items-center gap-x-1.5 text-body-sm font-medium text-foreground">
                                     <span>I verify that I have read the</span>
                                     <Link href="/guidelines" target="_blank" className="text-primary font-bold hover:underline">
                                         Guidelines
@@ -109,11 +109,11 @@ export function ManuscriptUploadDropzone({
                                         Terms of Use
                                     </Link>
                                 </div>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">
+                                <p className="text-label font-bold text-muted-foreground uppercase opacity-60">
                                     Mandatory verification for all research submissions.
                                 </p>
                             </div>
-                            <FormMessage className="text-[10px] font-bold text-destructive px-2" />
+                            <FormMessage className="text-caption font-bold text-destructive px-2" />
                         </FormItem>
                     )}
                 />

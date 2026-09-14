@@ -25,12 +25,12 @@ export default function PublisherSection({ settings }: PublisherSectionProps) {
                             <div className="w-8 h-8 2xl:w-10 2xl:h-10 bg-primary/5 rounded-lg flex items-center justify-center text-primary shrink-0">
                                 <Mail className="w-4 h-4 2xl:w-5 2xl:h-5" />
                             </div>
-                            <div className="text-left text-xs 2xl:text-sm">
+                            <div className="text-left">
                                 <p className="text-label text-muted-foreground mb-0.5 m-0">Support Desk</p>
                                 <p className="text-primary font-semibold m-0">{supportEmail}</p>
                             </div>
                         </div>
-                        <Link href="/guidelines" className="text-xs 2xl:text-sm font-semibold text-primary hover:text-secondary flex items-center gap-2 transition-all">
+                        <Link href="/guidelines" className="font-semibold text-primary hover:text-secondary flex items-center gap-2 transition-all">
                             <span className="h-[2px] w-5 bg-secondary" />
                             Author Submission Guidelines
                         </Link>

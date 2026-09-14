@@ -1,7 +1,5 @@
 import Link from 'next/link';
 import { BookOpen, Download, Eye, ExternalLink, ChevronRight, ShieldCheck, Sparkles } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import type { PublishedPaperUI, Issue } from '@/db/types';
 
 interface HomeCurrentIssueProps {
@@ -38,13 +36,13 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200 text-[11px] font-semibold flex items-center gap-1">
+                    <span className="badge-success flex items-center gap-1">
                         <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                        Gold Open Access
-                    </Badge>
+                        <span>Gold Open Access</span>
+                    </span>
                     <Link
                         href="/current-issue"
-                        className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-secondary transition-colors"
+                        className="inline-flex items-center gap-1 font-bold text-primary hover:text-secondary transition-colors"
                     >
                         <span>View Issue Table</span>
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -68,8 +66,8 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
                             <div className="flex flex-col gap-2">
                                 {/* Title & Paper ID Badge */}
                                 <div className="flex items-start justify-between gap-3">
-                                    <Link href={articleUrl} className="flex-1">
-                                        <h3 className="group-hover:text-secondary transition-colors leading-snug m-0 text-sm sm:text-base font-serif font-semibold">
+                                    <Link href={articleUrl} className="flex-1 no-underline">
+                                        <h3 className="group-hover:text-secondary transition-colors leading-snug m-0 font-serif font-semibold">
                                             {paper.title}
                                         </h3>
                                     </Link>
@@ -79,7 +77,7 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
                                 </div>
 
                                 {/* Authors & Page Info */}
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-foreground/80">
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-body-sm">
                                     <div className="flex items-center gap-1">
                                         <span className="font-medium text-primary">Authors:</span>
                                         <span className="text-foreground/90">{authors}</span>
@@ -94,7 +92,7 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
 
                                 {/* Abstract Snippet */}
                                 {paper.abstract && (
-                                    <p className="text-muted-foreground text-xs line-clamp-2 leading-relaxed m-0">
+                                    <p className="text-caption line-clamp-2 leading-relaxed m-0">
                                         {paper.abstract}
                                     </p>
                                 )}
@@ -102,20 +100,16 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
                                 {/* Action Buttons Strip */}
                                 <div className="pt-2 border-t border-border/30 flex flex-wrap items-center justify-between gap-2">
                                     <div className="flex items-center gap-2">
-                                        <Button asChild size="sm" variant="default" className="h-7 px-3 text-xs bg-primary hover:bg-primary/90 rounded-md">
-                                            <Link href={articleUrl} className="flex items-center gap-1.5">
-                                                <Eye className="w-3.5 h-3.5" />
-                                                <span>Read Article</span>
-                                            </Link>
-                                        </Button>
+                                        <Link href={articleUrl} className="btn-primary btn-sm flex items-center gap-1.5 no-underline">
+                                            <Eye className="w-3.5 h-3.5" />
+                                            <span>Read Article</span>
+                                        </Link>
 
                                         {paper.filePath && (
-                                            <Button asChild size="sm" variant="outline" className="h-7 px-3 text-xs border-primary/20 text-primary hover:bg-primary/5 rounded-md">
-                                                <a href={paper.filePath} download target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
-                                                    <Download className="w-3.5 h-3.5 text-emerald-600" />
-                                                    <span>PDF</span>
-                                                </a>
-                                            </Button>
+                                            <a href={paper.filePath} download target="_blank" rel="noopener noreferrer" className="btn-outline btn-sm flex items-center gap-1.5 no-underline">
+                                                <Download className="w-3.5 h-3.5 text-emerald-600" />
+                                                <span>PDF</span>
+                                            </a>
                                         )}
                                     </div>
 
@@ -125,7 +119,7 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
                                             href={`https://doi.org/${paper.doi}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 text-[11px] font-mono text-muted-foreground hover:text-primary transition-colors"
+                                            className="inline-flex items-center gap-1 text-meta hover:text-primary transition-colors no-underline"
                                         >
                                             <span>DOI: {paper.doi}</span>
                                             <ExternalLink className="w-2.5 h-2.5 opacity-60" />
@@ -139,16 +133,15 @@ export default function HomeCurrentIssue({ latestIssue, papers }: HomeCurrentIss
             </div>
 
             {/* Bottom Repository Link */}
-            <div className="p-3 sm:p-3.5 rounded-lg bg-primary/5 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="p-3 sm:p-3.5 rounded-lg bg-primary/5 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-body-sm">
                 <div className="flex items-center gap-2 text-primary font-medium text-center sm:text-left">
                     <Sparkles className="w-4 h-4 text-secondary shrink-0" />
                     <span>All published articles are assigned permanent DOIs and persistent digital preservation.</span>
                 </div>
-                <Button asChild size="sm" variant="outline" className="h-7 px-3 text-xs border-primary/20 text-primary hover:bg-primary/5 shrink-0">
-                    <Link href="/archives">Browse All Volumes ({year})</Link>
-                </Button>
+                <Link href="/archives" className="btn-outline btn-sm shrink-0 no-underline">
+                    Browse All Volumes ({year})
+                </Link>
             </div>
         </section>
     );
 }
-

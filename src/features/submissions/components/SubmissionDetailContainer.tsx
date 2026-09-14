@@ -62,7 +62,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
         <section className="space-y-6 pb-20">
             {/* Breadcrumb / Top Bar */}
             <div className="flex items-center justify-between gap-4">
-                <Button asChild variant="ghost" size="sm" className="h-9 gap-2 text-muted-foreground hover:text-primary font-semibold text-[10px] tracking-widest -ml-2 cursor-pointer capitalize">
+                <Button asChild variant="ghost" size="sm" className="h-9 gap-2 text-muted-foreground hover:text-primary font-semibold tracking-widest -ml-2 cursor-pointer capitalize">
                     <Link className="cursor-pointer" href={role === 'admin' ? "/admin/submissions" : "/editor/submissions"}>
                         <ChevronLeft className="w-4 h-4" /> {role === 'admin' ? "Submissions Console" : "Editorial queue"}
                     </Link>
@@ -74,14 +74,14 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                         <div className="space-y-4 max-w-2xl 2xl:max-w-4xl">
                             <div className="flex flex-wrap items-center gap-2.5">
-                                <Badge className={`h-5 2xl:h-9 px-2 2xl:px-4 text-[9px] 2xl:text-base font-semibold tracking-widest whitespace-nowrap capitalize ${getStatusVariant(submission.status)}`}>
+                                <Badge className={`h-5 2xl:h-9 px-2 2xl:px-4 text-badge font-semibold tracking-widest whitespace-nowrap capitalize ${getStatusVariant(submission.status)} `}>
                                     {submission.status.replace(/([A-Z])/g, ' $1').replace('_', ' ')}
                                 </Badge>
                                 {submission.section && (
-                                    <Badge variant="outline" className="h-5 2xl:h-9 px-2.5 2xl:px-4 text-[9px] 2xl:text-base font-bold bg-primary/10 text-primary border-primary/20 flex items-center gap-1.5">
+                                    <Badge variant="outline" className="h-5 2xl:h-9 px-2.5 2xl:px-4 text-badge font-bold bg-primary/10 text-primary border-primary/20 flex items-center gap-1.5">
                                         <Bookmark className="w-3 h-3" />
                                         <span>{submission.section.title}</span>
-                                        {submission.section.abbrev && <span className="opacity-60 font-mono text-[9px]">({submission.section.abbrev})</span>}
+                                        {submission.section.abbrev && <span className="opacity-60 font-mono text-meta">({submission.section.abbrev})</span>}
                                     </Badge>
                                 )}
                             </div>
@@ -107,13 +107,13 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                         </div>
                         <div className="flex flex-col gap-2 2xl:gap-4 shrink-0">
                             {submission.filePath && (
-                                <Button asChild className="h-10 xl:h-12 2xl:h-14 px-6 gap-2 bg-primary text-white font-semibold text-[9px] xl:text-xs 2xl:text-sm capitalize tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.05] hover:opacity-90 transition-all cursor-pointer">
+                                <Button asChild className="h-10 xl:h-12 2xl:h-14 px-6 gap-2 bg-primary text-white font-semibold capitalize tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.05] hover:opacity-90 transition-all cursor-pointer">
                                     <a href={getSecureUrl(submission.filePath)} download>
                                         <Download className="w-4 h-4 2xl:w-6 2xl:h-6" /> Download manuscript
                                     </a>
                                 </Button>
                             )}
-                            <p className="text-[9px] sm:text-[10px] xl:text-[11px] 2xl:text-base font-semibold text-muted-foreground text-center tracking-widest opacity-60">Authored by {submission.authorName}</p>
+                            <p className="text-label font-semibold text-muted-foreground text-center tracking-widest opacity-60">Authored by {submission.authorName}</p>
                         </div>
                     </div>
                 </CardHeader>
@@ -123,11 +123,11 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                         {/* Main Content (8 cols) */}
                         <div className="lg:col-span-8 p-8 space-y-12">
                             <div className="space-y-4 2xl:space-y-6">
-                                <div className="flex items-center gap-2 2xl:gap-4 text-[9px] xl:text-xs 2xl:text-base font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
+                                <div className="flex items-center gap-2 2xl:gap-4 text-label font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
                                     <FileText className="w-3.5 h-3.5 2xl:w-5 2xl:h-5" /> Abstract overview
                                 </div>
                                 <div className="p-6 bg-muted/5 rounded-xl 2xl:rounded-3xl border border-border/30">
-                                    <p className="text-sm 2xl:text-lg text-foreground leading-relaxed text-justify font-medium selection:bg-primary/20 ">
+                                    <p className="text-foreground leading-relaxed text-justify font-medium selection:bg-primary/20">
                                         {submission.abstract || "No abstract provided."}
                                     </p>
                                 </div>
@@ -135,7 +135,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                             {submission.pdfUrl && (
                                 <div className="space-y-4 pt-4 border-t border-border/30">
-                                    <div className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
+                                    <div className="flex items-center gap-2 text-label font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
                                         <Shield className="w-4 h-4" /> Secure manuscript preview
                                     </div>
                                     <div className="rounded-2xl border border-border/50 overflow-hidden shadow-vip-hover h-screen bg-muted/10 relative group">
@@ -153,14 +153,14 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 2xl:gap-4">
                                             <MessageSquare className="w-3.5 h-3.5 2xl:w-5 2xl:h-5 text-primary/40" />
-                                            <span className="text-[9px] xl:text-xs 2xl:text-base font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">Reviewer intelligence</span>
+                                            <span className="text-label font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">Reviewer intelligence</span>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 gap-4">
                                         {submission.allReviews && submission.allReviews.filter((r: ReviewWithReviewer) => r.status === 'completed').length === 0 ? (
                                             <div className="p-12 2xl:p-20 text-center bg-muted/10 rounded-xl 2xl:rounded-3xl border border-dashed border-border/50 flex flex-col items-center gap-4 2xl:gap-8">
                                                 <History className="w-8 h-8 2xl:w-14 2xl:h-14 text-muted-foreground/10" />
-                                                <p className="text-[9px] sm:text-[10px] xl:text-[11px] 2xl:text-lg font-semibold text-muted-foreground tracking-widest ">Awaiting technical evaluation from assigned reviewers</p>
+                                                <p className="text-label font-semibold text-muted-foreground tracking-widest">Awaiting technical evaluation from assigned reviewers</p>
                                             </div>
                                         ) : (
                                             submission.allReviews && submission.allReviews
@@ -169,13 +169,13 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                     <Card key={r.id} className="border-border/50 shadow-none bg-muted/5 overflow-hidden 2xl:rounded-3xl">
                                                         <CardHeader className="p-4 2xl:p-8 bg-muted/20 border-b border-border/30 flex flex-row items-center justify-between">
                                                             <div className="flex items-center gap-2 2xl:gap-4">
-                                                                <Badge variant="outline" className="h-5 2xl:h-8 px-1.5 2xl:px-4 text-[8px] 2xl:text-sm font-semibold tracking-widest bg-background border-border text-primary uppercase">Technical Reviewer {i + 1}</Badge>
-                                                                <span className="text-[10px] 2xl:text-base font-semibold text-muted-foreground tracking-widest opacity-60">{r.reviewer?.profile?.fullName || "Assigned Reviewer"}</span>
+                                                                <Badge variant="outline" className="h-5 2xl:h-8 px-1.5 2xl:px-4 text-badge font-semibold tracking-widest bg-background border-border text-primary uppercase">Technical Reviewer {i + 1}</Badge>
+                                                                <span className="text-label font-semibold text-muted-foreground tracking-widest opacity-60">{r.reviewer?.profile?.fullName || "Assigned Reviewer"}</span>
                                                             </div>
                                                             <CheckCircle className="w-4 h-4 2xl:w-7 2xl:h-7 text-emerald-500" />
                                                         </CardHeader>
                                                         <CardContent className="p-4 2xl:p-8">
-                                                            <p className="text-xs 2xl:text-lg text-muted-foreground font-medium leading-relaxed whitespace-pre-wrap">&quot;{r.review?.commentsToAuthor || "Feedback in progress..."}&quot;</p>
+                                                            <p className="text-caption text-muted-foreground font-medium leading-relaxed whitespace-pre-wrap">&quot;{r.review?.commentsToAuthor || "Feedback in progress..."}&quot;</p>
                                                         </CardContent>
                                                     </Card>
                                                 ))
@@ -193,7 +193,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                         {/* Sidebar (4 cols) */}
                         <div className="lg:col-span-4 p-8 bg-muted/20 space-y-10">
                             <div className="space-y-4 2xl:space-y-6">
-                                <h3 className="font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase 2xl:text-lg">Author Credentials</h3>
+                                <h3 className="font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Author Credentials</h3>
                                 <Card className="border-border/50 shadow-sm bg-background 2xl:rounded-3xl">
                                     <CardContent className="p-5 space-y-4 2xl:space-y-8">
                                         <div className="flex items-start gap-3 2xl:gap-6">
@@ -201,8 +201,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                 <User className="w-4 h-4 2xl:w-8 2xl:h-8 text-primary" />
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-[9px] font-semibold tracking-widest text-muted-foreground opacity-60 mb-0.5 uppercase">Corresponding Author</p>
-                                                <p className="font-semibold text-xs 2xl:text-lg text-foreground tracking-wider">{submission.authorName}</p>
+                                                <p className="text-label font-semibold tracking-widest text-muted-foreground opacity-60 mb-0.5 uppercase">Corresponding Author</p>
+                                                <p className="font-semibold text-label text-foreground tracking-wider">{submission.authorName}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3 2xl:gap-6">
@@ -210,8 +210,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                 <Mail className="w-4 h-4 2xl:w-8 2xl:h-8 text-primary" />
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-[9px] font-semibold tracking-widest text-muted-foreground opacity-60 mb-0.5 uppercase">Email Address</p>
-                                                <p className="font-semibold text-xs 2xl:text-lg text-foreground tracking-wider truncate">{submission.authorEmail}</p>
+                                                <p className="text-label font-semibold tracking-widest text-muted-foreground opacity-60 mb-0.5 uppercase">Email Address</p>
+                                                <p className="font-semibold text-label text-foreground tracking-wider truncate">{submission.authorEmail}</p>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -219,15 +219,15 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                                 {submission.coAuthors && submission.coAuthors.length > 0 && (
                                     <div className="space-y-3 pt-2">
-                                        <h4 className="text-[9px] 2xl:text-base font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Collaborating Authors</h4>
+                                        <h4 className="font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Collaborating Authors</h4>
                                         <div className="space-y-2">
                                             {submission.coAuthors.filter((a) => !a.isCorresponding).map((author, idx: number) => (
                                                 <div key={idx} className="p-3 bg-white border border-border/50 rounded-xl space-y-1 shadow-sm">
                                                     <div className="flex items-center justify-between">
-                                                        <p className="font-semibold text-[10px] 2xl:text-lg text-foreground tracking-wider">{author.name}</p>
-                                                        <span className="text-[8px] 2xl:text-xs font-semibold text-primary/30 uppercase tracking-wider">CO-AUTH {idx + 1}</span>
+                                                        <p className="font-semibold text-label text-foreground tracking-wider">{author.name}</p>
+                                                        <span className="text-label font-semibold text-primary/30 uppercase tracking-wider">CO-AUTH {idx + 1}</span>
                                                     </div>
-                                                    <p className="text-[9px] 2xl:text-base font-medium text-muted-foreground truncate">{author.institution}</p>
+                                                    <p className="text-caption font-medium text-muted-foreground truncate">{author.institution}</p>
                                                 </div>
                                             ))}
                                         </div>
@@ -236,7 +236,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                                 {submission.reviewerSuggestions && submission.reviewerSuggestions.length > 0 && (
                                     <div className="space-y-3 pt-2">
-                                        <h4 className="text-[9px] 2xl:text-base font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Author Reviewer Preferences</h4>
+                                        <h4 className="font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Author Reviewer Preferences</h4>
                                         <div className="space-y-2">
                                             {submission.reviewerSuggestions.map((sug, idx) => (
                                                 <div
@@ -245,22 +245,22 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                         sug.type === 'opposed'
                                                             ? 'bg-rose-500/5 border-rose-300 dark:border-rose-900/40 text-rose-700 dark:text-rose-400'
                                                             : 'bg-emerald-500/5 border-emerald-300 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-400'
-                                                    }`}
+                                                    } `}
                                                 >
                                                     <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 font-bold text-xs">
+                                                        <div className="flex items-center gap-1.5 font-bold text-body-sm">
                                                             {sug.type === 'opposed' ? <ThumbsDown className="w-3.5 h-3.5 text-rose-600" /> : <ThumbsUp className="w-3.5 h-3.5 text-emerald-600" />}
                                                             <span>{sug.givenName} {sug.familyName || ""}</span>
                                                         </div>
-                                                        <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                                                        <span className={`text-label font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
                                                             sug.type === 'opposed' ? 'bg-rose-500/10 text-rose-600' : 'bg-emerald-500/10 text-emerald-600'
-                                                        }`}>
+                                                        } `}>
                                                             {sug.type === 'opposed' ? 'Opposed' : 'Preferred'}
                                                         </span>
                                                     </div>
-                                                    <p className="text-[10px] text-muted-foreground truncate m-0">{sug.email} {sug.affiliation ? `• ${sug.affiliation}` : ''}</p>
+                                                    <p className="text-caption text-muted-foreground truncate m-0">{sug.email} {sug.affiliation ? `• ${sug.affiliation}` : ''}</p>
                                                     {sug.suggestionReason && (
-                                                        <p className="text-[10px] italic text-muted-foreground m-0 border-t border-border/30 pt-1">
+                                                        <p className="text-caption italic text-muted-foreground m-0 border-t border-border/30 pt-1">
                                                             &quot;{sug.suggestionReason}&quot;
                                                         </p>
                                                     )}
@@ -275,8 +275,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                             <div className="space-y-6">
                                 <div className="flex flex-col gap-1.5">
-                                    <h3 className=" font-semibold text-muted-foreground uppercase tracking-[0.2em] opacity-60 2xl:text-lg">Manuscript Processing</h3>
-                                    <p className="text-[9px] 2xl:text-base font-semibold text-muted-foreground/40 leading-relaxed uppercase tracking-widest">
+                                    <h3 className="font-semibold text-muted-foreground uppercase tracking-[0.2em] opacity-60">Manuscript Processing</h3>
+                                    <p className="text-label font-semibold text-muted-foreground/40 leading-relaxed uppercase tracking-widest">
                                         Finalize publication assets and formatting oversight.
                                     </p>
                                 </div>
@@ -294,16 +294,16 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                         <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 relative" />
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-widest">Active Secure Asset</span>
-                                                        <span className="text-[8px] font-semibold text-emerald-600/50 uppercase tracking-wider">Verified for Publication</span>
+                                                        <span className="text-label font-semibold text-emerald-600 uppercase tracking-widest">Active Secure Asset</span>
+                                                        <span className="text-label font-semibold text-emerald-600/50 uppercase tracking-wider">Verified for Publication</span>
                                                     </div>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-500/3 border border-rose-500/10">
                                                     <div className="w-2.5 h-2.5 rounded-full bg-rose-500 opacity-40" />
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] font-semibold text-rose-600 uppercase tracking-widest">Missing Review Asset</span>
-                                                        <span className="text-[8px] font-semibold text-rose-600/50 uppercase tracking-wider">Requires Technical Sync</span>
+                                                        <span className="text-label font-semibold text-rose-600 uppercase tracking-widest">Missing Review Asset</span>
+                                                        <span className="text-label font-semibold text-rose-600/50 uppercase tracking-wider">Requires Technical Sync</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -315,15 +315,15 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                             <Separator className="bg-border/50" />
 
                             <div className="space-y-4">
-                                <h3 className=" font-semibold text-muted-foreground tracking-[0.2em] opacity-60">Decision Pipeline</h3>
+                                <h3 className="font-semibold text-muted-foreground tracking-[0.2em] opacity-60">Decision Pipeline</h3>
                                 <div className="space-y-3">
                                     {submission.status === 'submitted' && (
                                         <div className="space-y-3">
                                             <div className="p-4 bg-orange-500/5 border border-orange-500/20 rounded-xl space-y-2">
-                                                <p className="text-[10px] font-semibold  text-orange-600 tracking-widest">Initial Assessment</p>
-                                                <p className="text-[10px] font-medium text-orange-600/70">Manuscript is ready for reviewer assignment.</p>
+                                                <p className="text-label font-semibold text-orange-600 tracking-widest">Initial Assessment</p>
+                                                <p className="font-medium text-orange-600/70">Manuscript is ready for reviewer assignment.</p>
                                             </div>
-                                            <Button asChild className="w-full h-11 gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-[11px]  tracking-widest rounded-xl shadow-lg shadow-orange-600/10 cursor-pointer">
+                                            <Button asChild className="w-full h-11 gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold tracking-widest rounded-xl shadow-lg shadow-orange-600/10 cursor-pointer">
                                                 <Link className="cursor-pointer" href={role === 'admin' ? `/admin/reviews?assign=${submission.id}` : `/editor/reviews?assign=${submission.id}`}>
                                                     Assign to Reviewer
                                                 </Link>
@@ -335,8 +335,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                         <div className="space-y-4">
                                             {submission.status === 'underReview' && (
                                                 <div className="p-4 2xl:p-6 bg-primary/5 border border-primary/20 rounded-xl 2xl:rounded-2xl space-y-1 2xl:space-y-3">
-                                                    <p className="text-[10px] 2xl:text-base font-semibold  text-primary tracking-widest">Editorial Threshold</p>
-                                                    <p className="text-[10px] 2xl:text-lg font-medium text-primary/70 ">Final authorization required</p>
+                                                    <p className="text-label font-semibold text-primary tracking-widest">Editorial Threshold</p>
+                                                    <p className="font-medium text-primary/70">Final authorization required</p>
                                                 </div>
                                             )}
                                             {submission.status === 'accepted' && (
@@ -345,8 +345,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                         <CheckCircle className="w-5 h-5 text-emerald-600" />
                                                     </div>
                                                     <div className="space-y-1">
-                                                        <p className="text-[10px] font-semibold  text-emerald-600 tracking-widest">Authorized</p>
-                                                        <p className="text-[10px] font-medium text-muted-foreground  tracking-widest ">Awaiting author remittance...</p>
+                                                        <p className="text-label font-semibold text-emerald-600 tracking-widest">Authorized</p>
+                                                        <p className="text-label font-medium text-muted-foreground tracking-widest">Awaiting author remittance...</p>
                                                     </div>
                                                 </div>
                                             )}
@@ -371,24 +371,24 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                             <Globe className="w-5 h-5 text-emerald-400" />
                                                         </div>
                                                         <div className="space-y-0.5">
-                                                            <p className="text-[9px] font-semibold text-emerald-400  tracking-widest">In Archive</p>
-                                                            <h3 className=" font-semibold tracking-wider ">Live Index</h3>
+                                                            <p className="text-label font-semibold text-emerald-400 tracking-widest">In Archive</p>
+                                                            <h3 className="font-semibold tracking-wider">Live Index</h3>
                                                         </div>
                                                     </div>
                                                     <Separator className="bg-white/10" />
                                                     <div className="space-y-3">
                                                         <div className="flex items-center justify-between">
-                                                            <p className="text-[10px] font-semibold text-white/40 tracking-widest uppercase">Archive Node</p>
-                                                            <p className="text-xs font-semibold">
+                                                            <p className="text-label font-semibold text-white/40 tracking-widest uppercase">Archive Node</p>
+                                                            <p className="font-semibold">
                                                                 {submission.volumeNumber && `Vol ${submission.volumeNumber}, Issue ${submission.issueNumber}`}
                                                                 {submission.startPage && `, pp. ${submission.startPage}-${submission.endPage}`}
                                                             </p>
                                                         </div>
                                                         <div className="flex items-center justify-between pt-2 border-t border-white/10">
                                                             <div className="space-y-0.5 max-w-[65%]">
-                                                                <p className="text-[10px] font-semibold text-white/40 tracking-widest uppercase">DOI Allocation</p>
-                                                                <p className="text-xs font-mono font-medium text-emerald-300 break-all">
-                                                                    {submission.doi || <span className="text-white/40 italic font-sans text-[11px]">Unassigned (No DOI)</span>}
+                                                                <p className="text-label font-semibold text-white/40 tracking-widest uppercase">DOI Allocation</p>
+                                                                <p className="text-meta font-mono font-medium text-emerald-300 break-all">
+                                                                    {submission.doi || <span className="text-white/40 italic font-sans text-caption">Unassigned (No DOI)</span>}
                                                                 </p>
                                                             </div>
                                                             {role === 'admin' && (
@@ -399,31 +399,31 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                                 />
                                                             )}
                                                         </div>
-                                                        <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-white/5 hover:bg-white/10 text-white font-semibold text-[10px] tracking-widest border border-white/10 rounded-xl cursor-pointer">
+                                                        <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-white/5 hover:bg-white/10 text-white font-semibold tracking-widest border border-white/10 rounded-xl cursor-pointer">
                                                             <Link className="cursor-pointer" href={publicArchiveUrl}>
                                                                 <ExternalLink className="w-3.5 h-3.5" /> View Public Archive
                                                             </Link>
                                                         </Button>
                                                         {submission.doi && (
-                                                            <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold text-[10px] tracking-widest border border-emerald-500/20 rounded-xl cursor-pointer">
+                                                            <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold tracking-widest border border-emerald-500/20 rounded-xl cursor-pointer">
                                                                 <a href={`/api/export/crossref/${submission.paperId}`} download={`crossref-${submission.paperId}.xml`}>
                                                                     <Download className="w-3.5 h-3.5" /> Export CrossRef XML
                                                                 </a>
                                                             </Button>
                                                         )}
                                                         <div className="grid grid-cols-2 gap-2">
-                                                            <Button asChild variant="ghost" className="h-9 gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold text-[10px] tracking-widest border border-blue-500/20 rounded-xl cursor-pointer">
+                                                            <Button asChild variant="ghost" className="h-9 gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold tracking-widest border border-blue-500/20 rounded-xl cursor-pointer">
                                                                 <a href={`/api/export/jats/${submission.paperId}`} download={`jats-${submission.paperId}.xml`}>
                                                                     <Download className="w-3 h-3" /> JATS XML
                                                                 </a>
                                                             </Button>
-                                                            <Button asChild variant="ghost" className="h-9 gap-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-semibold text-[10px] tracking-widest border border-purple-500/20 rounded-xl cursor-pointer">
+                                                            <Button asChild variant="ghost" className="h-9 gap-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-semibold tracking-widest border border-purple-500/20 rounded-xl cursor-pointer">
                                                                 <a href={`/api/export/pubmed/${submission.paperId}`} download={`pubmed-${submission.paperId}.xml`}>
                                                                     <Download className="w-3 h-3" /> PubMed XML
                                                                 </a>
                                                             </Button>
                                                         </div>
-                                                        <Button asChild variant="ghost" className="w-full h-9 gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-semibold text-[10px] tracking-widest border border-amber-500/20 rounded-xl cursor-pointer">
+                                                        <Button asChild variant="ghost" className="w-full h-9 gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-semibold tracking-widest border border-amber-500/20 rounded-xl cursor-pointer">
                                                             <a href={`/api/export/doaj/${submission.paperId}`} download={`doaj-${submission.paperId}.xml`}>
                                                                 <Download className="w-3 h-3" /> DOAJ 0.2 XML
                                                             </a>
@@ -444,8 +444,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                             <CheckCircle className="w-5 h-5 text-emerald-600" />
                                                         </div>
                                                         <div className="space-y-0.5">
-                                                            <p className="text-[10px] font-semibold text-emerald-600 tracking-widest">Ready for Indexing</p>
-                                                            <p className="text-[10px] font-medium text-muted-foreground">Payment Verified / Waived</p>
+                                                            <p className="text-label font-semibold text-emerald-600 tracking-widest">Ready for Indexing</p>
+                                                            <p className="text-caption font-medium text-muted-foreground">Payment Verified / Waived</p>
                                                         </div>
                                                     </div>
 
@@ -457,7 +457,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                                                     <Link
                                                         href="/admin/publications"
-                                                        className="block text-[9px] font-semibold text-center text-emerald-600 hover:underline  tracking-widest opacity-60 pt-4"
+                                                        className="block text-label font-semibold text-center text-emerald-600 hover:underline tracking-widest opacity-60 pt-4"
                                                     >
                                                         Access Volumes Terminal
                                                     </Link>
@@ -469,8 +469,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                             <CheckCircle className="w-5 h-5 text-emerald-600" />
                                                         </div>
                                                         <div className="space-y-0.5">
-                                                            <p className="text-[10px] font-semibold text-emerald-600  tracking-widest">Ready for Indexing</p>
-                                                            <p className="text-[10px] font-medium text-muted-foreground ">Payment Verified / Waived</p>
+                                                            <p className="text-label font-semibold text-emerald-600 tracking-widest">Ready for Indexing</p>
+                                                            <p className="text-caption font-medium text-muted-foreground">Payment Verified / Waived</p>
                                                         </div>
                                                     </div>
                                                     <p className="text-label text-primary leading-relaxed pl-1 border-l-2 border-primary/20">
@@ -484,13 +484,13 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                     <div className="pt-4 mt-6 border-t border-border/50">
                                         {!['paid', 'verified', 'waived'].includes(submission.payment?.status || '') && submission.status !== 'published' ? (
                                             <div className="space-y-3">
-                                                <h4 className="text-[10px] font-semibold text-muted-foreground tracking-widest opacity-50 px-1">
+                                                <h4 className="font-semibold text-muted-foreground tracking-widest opacity-50 px-1">
                                                     {role === 'admin' ? "Dangerous Territory" : "Infrastructure Control"}
                                                 </h4>
                                                 <DeleteSubmissionButton submissionId={submission.id} status={submission.status} variant="full" />
                                             </div>
                                         ) : (
-                                            <div className="bg-muted p-4 rounded-xl border border-border/50  text-[9px] text-muted-foreground/60 font-semibold  tracking-widest text-center">
+                                            <div className="bg-muted p-4 rounded-xl border border-border/50 text-label text-muted-foreground/60 font-semibold tracking-widest text-center">
                                                 Records Locked (Archived)
                                             </div>
                                         )}

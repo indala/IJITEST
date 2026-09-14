@@ -6,7 +6,6 @@ import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { type ActionResponse, type Submission } from "@/db/types";
 
 function TrackManuscriptWidget() {
@@ -26,29 +25,32 @@ function TrackManuscriptWidget() {
     );
 
     return (
-        <Card className="border-border/50 bg-card rounded-xl shadow-xs transition-all group">
-            <CardHeader className="p-3.5 pb-1">
-                <CardTitle className="text-primary m-0">Track Manuscript</CardTitle>
-            </CardHeader>
-            <CardContent className="p-3.5 pt-2">
-                <form action={formAction} className="space-y-3">
-                    <div className="space-y-1">
-                        <Input
-                            type="text"
-                            name="paperId"
-                            placeholder="Manuscript ID"
-                            value={paperId}
-                            onChange={(e) => setPaperId(e.target.value)}
-                            className="h-10 2xl:h-11 bg-muted/20 border-border/50 text-xs 2xl:text-sm focus-visible:ring-1 focus-visible:ring-primary/20 transition-all"
-                        />
-                        {state && !state.success && (
-                            <p className="text-meta text-destructive pl-1 font-semibold m-0">{state.error}</p>
-                        )}
-                    </div>
-                    <TrackButton />
-                </form>
-            </CardContent>
-        </Card>
+        <div className="bg-card p-3.5 sm:p-4 2xl:p-5 rounded-xl border border-border/70 shadow-2xs space-y-3 2xl:space-y-4">
+            <div className="flex items-center gap-2">
+                <div className="w-8 h-8 2xl:w-10 2xl:h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <Search className="w-4 h-4 2xl:w-5 2xl:h-5" />
+                </div>
+                <h3 className="card-title-brand m-0">
+                    Track Manuscript
+                </h3>
+            </div>
+            <form action={formAction} className="space-y-3">
+                <div className="space-y-1">
+                    <Input
+                        type="text"
+                        name="paperId"
+                        placeholder="Manuscript ID (e.g. IJITEST-2026-001)"
+                        value={paperId}
+                        onChange={(e) => setPaperId(e.target.value)}
+                        className="input-standard w-full"
+                    />
+                    {state && !state.success && (
+                        <p className="text-meta text-destructive pl-1 font-semibold m-0">{state.error}</p>
+                    )}
+                </div>
+                <TrackButton />
+            </form>
+        </div>
     );
 }
 
@@ -58,7 +60,7 @@ function TrackButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full h-10 2xl:h-11 bg-[#000066] hover:bg-[#000088] text-white font-bold text-[10px] 2xl:text-xs tracking-wider rounded-lg transition-all shadow-sm uppercase gap-2"
+            className="btn-primary w-full flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
         >
             {pending ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />

@@ -29,11 +29,11 @@ export function ApplicationFilterBar({
                     placeholder="Search candidates by name or domain..."
                     value={interest}
                     onChange={(e) => onFilterChange({ interest: e.target.value })}
-                    className="h-14 pl-14 bg-primary/5 border-none font-semibold text-sm rounded-2xl focus-visible:ring-4 focus-visible:ring-primary/5"
+                    className="h-14 pl-14 bg-primary/5 border-none font-semibold text-body-sm rounded-2xl focus-visible:ring-4 focus-visible:ring-primary/5"
                 />
             </div>
             <Select value={role} onValueChange={(val) => onFilterChange({ role: val })}>
-                <SelectTrigger className="h-14 bg-primary/5 border-none font-semibold text-sm rounded-2xl px-6 min-w-[160px]">
+                <SelectTrigger className="h-14 bg-primary/5 border-none font-semibold rounded-2xl px-6 min-w-[160px]">
                     <SelectValue placeholder="All Roles" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-primary/5 bg-card">
@@ -43,7 +43,7 @@ export function ApplicationFilterBar({
                 </SelectContent>
             </Select>
             <Select value={status} onValueChange={(val) => onFilterChange({ status: val })}>
-                <SelectTrigger className="h-14 bg-primary/5 border-none font-semibold text-sm rounded-2xl px-6 min-w-[160px]">
+                <SelectTrigger className="h-14 bg-primary/5 border-none font-semibold rounded-2xl px-6 min-w-[160px]">
                     <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-primary/5 bg-card">

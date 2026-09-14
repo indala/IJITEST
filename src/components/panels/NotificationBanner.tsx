@@ -147,10 +147,10 @@ export function NotificationBanner() {
 
         {/* Text Details */}
         <div className="flex-1 space-y-1">
-          <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 leading-none">
+          <h4 className="font-bold text-foreground flex items-center gap-1.5 leading-none">
             Enable Live Updates
           </h4>
-          <p className="text-[10px] text-muted-foreground leading-normal">
+          <p className="text-caption text-muted-foreground leading-normal">
             Opt-in to push notifications to get real‑time updates on reviewer assignments, decisions, and chat messages.
           </p>
           
@@ -159,7 +159,7 @@ export function NotificationBanner() {
               size="sm"
               disabled={isLoading}
               onClick={handleEnableNotifications}
-              className="h-7 px-3 bg-primary text-white text-[10px] font-bold uppercase tracking-widest rounded-lg cursor-pointer flex items-center gap-1 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              className="h-7 px-3 bg-primary text-white font-bold uppercase tracking-widest rounded-lg cursor-pointer flex items-center gap-1 hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
               {isLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -174,7 +174,7 @@ export function NotificationBanner() {
             <button
               onClick={handleClose}
               disabled={isLoading}
-              className="h-7 px-3 text-[10px] font-bold text-muted-foreground/60 hover:text-foreground transition-colors cursor-pointer"
+              className="h-7 px-3 font-bold text-muted-foreground/60 hover:text-foreground transition-colors cursor-pointer"
             >
               Later
             </button>

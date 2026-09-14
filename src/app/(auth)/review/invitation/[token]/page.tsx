@@ -52,10 +52,10 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                     <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary">
                         <Shield className="w-6 h-6" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-foreground tracking-tight">
+                    <CardTitle className="font-bold text-foreground tracking-tight">
                         Peer Review Invitation
                     </CardTitle>
-                    <CardDescription className="text-sm text-muted-foreground">
+                    <CardDescription className="text-caption text-muted-foreground">
                         International Journal of Innovative Trends in Engineering Science and Technology
                     </CardDescription>
                 </CardHeader>
@@ -63,7 +63,7 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                 <CardContent className="p-6 sm:p-8 space-y-6">
                     {status === "idle" && (
                         <div className="space-y-6">
-                            <p className="text-sm text-muted-foreground leading-relaxed">
+                            <p className="text-caption text-muted-foreground leading-relaxed">
                                 You have been formally invited by the editorial board to evaluate a submitted research manuscript.
                                 Please confirm your availability below.
                             </p>
@@ -73,7 +73,7 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                                     <Button
                                         onClick={() => handleAction("accept")}
                                         disabled={isPending}
-                                        className="w-full h-12 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl cursor-pointer shadow-md"
+                                        className="w-full h-12 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl cursor-pointer shadow-md"
                                     >
                                         {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                                         Accept Review Assignment
@@ -83,7 +83,7 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                                         variant="outline"
                                         onClick={() => setShowDeclineForm(true)}
                                         disabled={isPending}
-                                        className="w-full h-12 gap-2 border-border/70 text-rose-600 hover:bg-rose-500/10 font-semibold text-sm rounded-xl cursor-pointer"
+                                        className="w-full h-12 gap-2 border-border/70 text-rose-600 hover:bg-rose-500/10 font-semibold rounded-xl cursor-pointer"
                                     >
                                         <XCircle className="w-4 h-4" />
                                         Decline Invitation
@@ -91,7 +91,7 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                                 </div>
                             ) : (
                                 <div className="space-y-4 pt-2 border-t border-border/60">
-                                    <label className="text-xs font-semibold text-muted-foreground">
+                                    <label className="form-label-brand font-semibold text-muted-foreground">
                                         Reason for Declining (Optional)
                                     </label>
                                     <Textarea
@@ -99,21 +99,21 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                                         onChange={(e) => setDeclineReason(e.target.value)}
                                         placeholder="e.g. Schedule conflicts, conflict of interest, or outside area of expertise..."
                                         rows={3}
-                                        className="text-sm rounded-xl resize-none"
+                                        className="text-body-sm rounded-xl resize-none"
                                     />
                                     <div className="flex gap-2">
                                         <Button
                                             variant="ghost"
                                             onClick={() => setShowDeclineForm(false)}
                                             disabled={isPending}
-                                            className="flex-1 h-11 rounded-xl text-xs font-semibold cursor-pointer"
+                                            className="flex-1 h-11 rounded-xl font-semibold cursor-pointer"
                                         >
                                             Back
                                         </Button>
                                         <Button
                                             onClick={() => handleAction("decline")}
                                             disabled={isPending}
-                                            className="flex-1 h-11 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold cursor-pointer"
+                                            className="flex-1 h-11 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-semibold cursor-pointer"
                                         >
                                             {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
                                             Confirm Decline
@@ -130,19 +130,19 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                                 <CheckCircle className="w-8 h-8" />
                             </div>
                             <div className="space-y-1">
-                                <h3 className="text-lg font-bold text-foreground">Invitation Accepted!</h3>
-                                <p className="text-xs text-muted-foreground">
+                                <h3 className="font-bold text-foreground">Invitation Accepted!</h3>
+                                <p className="text-caption text-muted-foreground">
                                     Thank you for agreeing to review manuscript <span className="font-semibold text-foreground">{paperInfo?.paperId}</span>.
                                 </p>
                             </div>
                             {paperInfo?.deadline && (
-                                <div className="bg-muted/30 p-3 rounded-xl border border-border/60 inline-flex items-center gap-2 text-xs text-muted-foreground">
+                                <div className="bg-muted/30 p-3 rounded-xl border border-border/60 inline-flex items-center gap-2 text-caption text-muted-foreground">
                                     <Clock className="w-4 h-4 text-amber-600" />
                                     <span>Evaluation due by: <strong className="text-foreground">{new Date(paperInfo.deadline).toLocaleDateString()}</strong></span>
                                 </div>
                             )}
                             <div className="pt-4">
-                                <Button asChild className="w-full h-11 rounded-xl font-semibold text-xs btn-primary">
+                                <Button asChild className="w-full h-11 rounded-xl font-semibold btn-primary">
                                     <Link href="/reviewer/reviews">
                                         Open Reviewer Dashboard <ArrowRight className="w-4 h-4 ml-1" />
                                     </Link>
@@ -157,13 +157,13 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                                 <XCircle className="w-8 h-8" />
                             </div>
                             <div className="space-y-1">
-                                <h3 className="text-lg font-bold text-foreground">Invitation Declined</h3>
-                                <p className="text-xs text-muted-foreground">
+                                <h3 className="font-bold text-foreground">Invitation Declined</h3>
+                                <p className="text-caption text-muted-foreground">
                                     We have notified the editorial office. Thank you for your response.
                                 </p>
                             </div>
                             <div className="pt-4">
-                                <Button asChild variant="outline" className="w-full h-11 rounded-xl font-semibold text-xs">
+                                <Button asChild variant="outline" className="w-full h-11 rounded-xl font-semibold">
                                     <Link href="/">
                                         Return to Journal Home
                                     </Link>
@@ -178,13 +178,13 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                                 <XCircle className="w-8 h-8" />
                             </div>
                             <div className="space-y-1">
-                                <h3 className="text-lg font-bold text-rose-600">Action Could Not Be Completed</h3>
-                                <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                                <h3 className="font-bold text-rose-600">Action Could Not Be Completed</h3>
+                                <p className="text-caption text-muted-foreground max-w-sm mx-auto">
                                     {errorMessage || "The invitation token is invalid or has already been used."}
                                 </p>
                             </div>
                             <div className="pt-4">
-                                <Button asChild variant="outline" className="w-full h-11 rounded-xl font-semibold text-xs">
+                                <Button asChild variant="outline" className="w-full h-11 rounded-xl font-semibold">
                                     <Link href="/">
                                         Return to Home
                                     </Link>

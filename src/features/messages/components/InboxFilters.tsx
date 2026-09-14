@@ -42,7 +42,7 @@ export function InboxFilters({
                             key={tab.id}
                             onClick={() => onStatusChange(tab.id)}
                             className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200 group text-[11px] xl:text-xs whitespace-nowrap shrink-0",
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200 group text-body-sm whitespace-nowrap shrink-0",
                                 isActive 
                                     ? "bg-primary text-white  font-bold shadow-sm" 
                                     : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground"
@@ -54,7 +54,7 @@ export function InboxFilters({
                             )} />
                             <span className="lowercase">{tab.label}</span>
                             <span className={cn(
-                                "ml-1 px-1.5 py-0.5 rounded-md text-[10px]",
+                                "ml-1 px-1.5 py-0.5 rounded-md text-body-sm",
                                 isActive ? "bg-white/20" : "bg-muted text-muted-foreground/40"
                             )}>
                                 {tab.count}
@@ -70,7 +70,7 @@ export function InboxFilters({
                     placeholder="search messages" 
                     value={search}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    className="pl-9 h-9 bg-muted/20 border-border rounded-lg text-xs placeholder:opacity-50 focus:border-primary/50 transition-colors"
+                    className="pl-9 h-9 bg-muted/20 border-border rounded-lg text-caption placeholder:opacity-50 focus:border-primary/50 transition-colors"
                 />
             </div>
         </div>

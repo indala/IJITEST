@@ -39,19 +39,19 @@ const MessageItem = memo(({
             <div className="flex-1 min-w-0 space-y-0.5">
                 <div className="flex items-center justify-between gap-2">
                     <h3 className={cn(
-                        "text-sm tracking-tight truncate lowercase",
+                        "text-label tracking-tight truncate lowercase",
                         isPending ? "font-bold text-foreground" : "font-medium text-muted-foreground"
                     )}>
                         {message.name}
                     </h3>
-                    <span className="text-[9px] text-muted-foreground/40 lowercase shrink-0">
+                    <span className="text-caption text-muted-foreground/40 lowercase shrink-0">
                         {dayjs(message.createdAt || new Date()).fromNow()}
                     </span>
                 </div>
 
                 <div className="flex items-center gap-1.5 overflow-hidden">
                     <p className={cn(
-                        "text-[10px] tracking-tight truncate font-medium lowercase",
+                        "text-label tracking-tight truncate font-medium lowercase",
                         isPending ? "text-primary/70" : "text-muted-foreground/30"
                     )}>
                         {message.subject || "no subject"}
@@ -63,7 +63,7 @@ const MessageItem = memo(({
                     )} />
                 </div>
 
-                <p className="text-[11px] text-muted-foreground/60 line-clamp-1 leading-normal lowercase">
+                <p className="text-caption text-muted-foreground/60 line-clamp-1 leading-normal lowercase">
                     {message.message}
                 </p>
             </div>
@@ -102,8 +102,8 @@ export function MessageList({
     if (messages.length === 0) {
         return (
             <div className="h-full flex flex-col items-center justify-center p-8 text-center opacity-40">
-                <h3 className="text-sm font-bold mb-1 lowercase">no messages</h3>
-                <p className="text-[10px] lowercase max-w-[150px]">
+                <h3 className="font-bold mb-1 lowercase">no messages</h3>
+                <p className="lowercase max-w-[150px]">
                     no records found matching your selection.
                 </p>
             </div>

@@ -118,7 +118,7 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                                     Verified scholarly indexing databases, repositories, and academic identifiers.
                                 </p>
                             </div>
-                            <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200 self-start sm:self-auto flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold">
+                            <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200 self-start sm:self-auto flex items-center gap-1 px-2.5 py-0.5 text-badge font-semibold">
                                 <ShieldCheck className="size-3.5 text-emerald-600" />
                                 Verified Open Access
                             </Badge>
@@ -140,7 +140,7 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                                                     {agency.name}
                                                 </h3>
                                             </div>
-                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-label border shadow-2xs ${agency.badgeColor}`}>
+                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-label border shadow-2xs ${agency.badgeColor} `}>
                                                 {agency.isCompleted && <CheckCircle2 className="w-3 h-3 text-emerald-600" />}
                                                 {agency.status}
                                             </span>
@@ -160,13 +160,13 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                                                 href={agency.link}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-1 text-xs font-bold text-[#000066] hover:text-secondary transition-colors"
+                                                className="inline-flex items-center gap-1 text-body-sm font-bold text-primary hover:text-secondary transition-colors"
                                             >
                                                 <span>Verify Record</span>
                                                 <ExternalLink className="w-3 h-3" />
                                             </a>
                                         ) : (
-                                            <span className="text-[10px] text-muted-foreground/60 italic">In Process</span>
+                                            <span className="text-caption text-muted-foreground/60 italic">In Process</span>
                                         )}
                                     </div>
                                 </Card>
@@ -220,18 +220,18 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                         <p className="text-muted-foreground leading-relaxed m-0">
                             Submissions are open. All accepted manuscripts receive rapid double-blind peer review, permanent digital DOI assignment, and international repository indexing.
                         </p>
-                        <Button asChild size="sm" className="w-full h-8 bg-[#000066] hover:bg-[#000088] text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-all shadow-xs">
+                        <Button asChild size="sm" className="w-full h-8 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider rounded-lg transition-all shadow-xs">
                             <Link href="/submit">Submit Manuscript</Link>
                         </Button>
                     </Card>
 
-                    <Card className="p-4 bg-[#000066] rounded-xl text-white space-y-2 shadow-md">
+                    <Card className="p-4 bg-primary rounded-xl text-white space-y-2 shadow-md">
                         <h3 className="text-white m-0">COPE Publication Ethics</h3>
                         <p className="text-white/80 leading-relaxed m-0">
                             Our editorial process adheres strictly to the Committee on Publication Ethics (COPE) standards to safeguard research integrity.
                         </p>
                         <div className="pt-1">
-                            <Link href="/ethics" className="inline-flex items-center gap-1 text-xs font-bold text-secondary hover:text-white transition-colors">
+                            <Link href="/ethics" className="inline-flex items-center gap-1 text-body-sm font-bold text-secondary hover:text-white transition-colors">
                                 <span>View Ethics Guide</span>
                                 <ChevronRight className="w-3.5 h-3.5" />
                             </Link>

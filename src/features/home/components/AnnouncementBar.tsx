@@ -36,7 +36,7 @@ export default function AnnouncementBar({ latestPaper }: AnnouncementBarProps) {
 
                 <Link 
                     href="/current-issue" 
-                    className="group/link flex items-center gap-2 text-white/90 hover:text-white transition-colors py-1 px-4 2xl:py-1.5 2xl:px-5 text-xs 2xl:text-sm rounded-full bg-white/5 border border-white/10 hover:bg-white/10 no-underline"
+                    className="group/link flex items-center gap-2 text-white/90 hover:text-white transition-colors py-1 px-4 2xl:py-1.5 2xl:px-5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 no-underline"
                 >
                     View All Articles
                     <ChevronRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />

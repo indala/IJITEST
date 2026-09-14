@@ -43,7 +43,7 @@ export function PdfViewer({ pdfUrl, title }: PdfViewerProps) {
                             variant="ghost"
                             size="sm"
                             onClick={openInNewWindow}
-                            className="h-10 px-6 gap-3 font-black text-[10px] uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-all rounded-xl"
+                            className="h-10 px-6 gap-3 font-black text-label uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-all rounded-xl"
                         >
                             <ExternalLink className="w-4 h-4" /> Open in New Window
                         </Button>
@@ -55,7 +55,7 @@ export function PdfViewer({ pdfUrl, title }: PdfViewerProps) {
             <div className="absolute top-4 right-4 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 backdrop-blur-md border border-primary/20">
                     <FileText className="w-3 h-3 text-primary" />
-                    <span className="text-[9px] font-black text-primary uppercase tracking-widest">Interactive Viewer</span>
+                    <span className="text-label font-black text-primary uppercase tracking-widest">Interactive Viewer</span>
                 </div>
             </div>
         </div>

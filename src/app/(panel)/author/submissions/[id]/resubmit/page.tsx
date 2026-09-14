@@ -37,13 +37,13 @@ export default async function ResubmitPage({ params }: { params: Promise<Submiss
         <section className="max-w-2xl mx-auto space-y-6 pb-20">
             <header className="flex items-center gap-4 border-b border-primary/5 pb-6">
                 <Button asChild variant="ghost" size="sm" className="rounded-lg">
-                    <Link href={`/author/submissions/${submissionId}`} className="flex items-center gap-2 text-xs font-bold uppercase">
+                    <Link href={`/author/submissions/${submissionId}`} className="flex items-center gap-2 text-label font-bold uppercase">
                         <ArrowLeft className="w-3.5 h-3.5" /> Back
                     </Link>
                 </Button>
                 <div>
-                    <h1 className="font-black text-foreground tracking-widest uppercase text-xl">Submit Revision</h1>
-                    <p className="text-xs text-muted-foreground font-medium">Upload your revised manuscript and copyright form</p>
+                    <h1 className="font-black text-foreground tracking-widest uppercase">Submit Revision</h1>
+                    <p className="text-caption text-muted-foreground font-medium">Upload your revised manuscript and copyright form</p>
                 </div>
             </header>
 
@@ -51,9 +51,9 @@ export default async function ResubmitPage({ params }: { params: Promise<Submiss
                 <Card className="border-rose-200 bg-rose-50/50">
                     <CardContent className="p-10 flex flex-col items-center gap-4 text-center">
                         <XCircle className="w-12 h-12 text-rose-500" />
-                        <h3 className="font-black text-xl uppercase tracking-widest text-foreground">Not Eligible</h3>
-                        <p className="text-sm text-muted-foreground max-w-sm">{eligError || "Window Expired"}</p>
-                        <Button asChild variant="outline" size="sm" className="rounded-xl font-bold uppercase text-xs">
+                        <h3 className="font-black uppercase tracking-widest text-foreground">Not Eligible</h3>
+                        <p className="text-caption text-muted-foreground max-w-sm">{eligError || "Window Expired"}</p>
+                        <Button asChild variant="outline" size="sm" className="rounded-xl font-bold uppercase">
                             <Link href="/author">Back to Dashboard</Link>
                         </Button>
                     </CardContent>

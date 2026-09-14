@@ -99,20 +99,20 @@ export const GroupedReviewCard = React.memo(({
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 pb-4 border-b border-border/50">
                     <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-3">
-                            <Badge className={`h-6 px-3 text-[10px] font-bold rounded-lg border-none ${getStatusColor(group.submissionStatus)}`}>
+                            <Badge className={`h-6 px-3 text-badge font-bold rounded-lg border-none ${getStatusColor(group.submissionStatus)} `}>
                                 {group.submissionStatus.replace(/([A-Z])/g, ' $1').toLowerCase()}
                             </Badge>
-                            <span className="font-mono font-bold text-[10px] bg-muted px-2 py-1 rounded border border-border/50 text-muted-foreground mr-1">
+                            <span className="font-mono font-bold text-meta bg-muted px-2 py-1 rounded border border-border/50 text-muted-foreground mr-1">
                                 {group.paperId}
                             </span>
                         </div>
-                        <h3 className="font-semibold text-foreground text-lg xl:text-xl leading-tight group-hover:text-primary transition-colors">
+                        <h3 className="font-semibold text-foreground leading-tight group-hover:text-primary transition-colors">
                             {group.title}
                         </h3>
                     </div>
                     <div className="flex flex-col items-end shrink-0">
-                        <div className="text-xs font-bold text-muted-foreground">Review Progress</div>
-                        <div className="text-lg font-black text-primary">
+                        <div className="text-caption font-bold text-muted-foreground">Review Progress</div>
+                        <div className="text-body-sm font-black text-primary">
                             {completedReviews} of {totalReviews} complete
                         </div>
                         {/* Progress Bar */}
@@ -129,7 +129,7 @@ export const GroupedReviewCard = React.memo(({
                                     (completedReviews / totalReviews) <= 0.62 ? 'w-3/5' :
                                     (completedReviews / totalReviews) <= 0.7 ? 'w-2/3' :
                                     (completedReviews / totalReviews) <= 0.78 ? 'w-3/4' : 'w-4/5'
-                                }`} 
+                                } `} 
                             />
                         </div>
                     </div>
@@ -137,7 +137,7 @@ export const GroupedReviewCard = React.memo(({
 
                 {/* Reviewers List */}
                 <div className="space-y-4">
-                    <h4 className="text-[10px] font-bold text-primary tracking-[0.3em] uppercase opacity-60">
+                    <h4 className="font-bold text-primary tracking-[0.3em] uppercase opacity-60">
                         Assigned Reviewers & Evaluations
                     </h4>
                     <div className="grid gap-3">
@@ -150,19 +150,19 @@ export const GroupedReviewCard = React.memo(({
                                         isCompleted 
                                             ? 'bg-muted/10 border-border/40 hover:bg-muted/20' 
                                             : 'bg-amber-500/5 border-amber-500/10'
-                                    }`}
+                                    } `}
                                 >
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-sm font-bold text-foreground">{assignment.reviewerName}</span>
-                                                <Badge className={`h-5 text-[8px] font-extrabold uppercase border-none rounded ${
+                                                <span className="text-body-sm font-bold text-foreground">{assignment.reviewerName}</span>
+                                                <Badge className={`h-5 text-badge font-extrabold uppercase border-none rounded ${
                                                     isCompleted ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
-                                                }`}>
+                                                } `}>
                                                     {assignment.status}
                                                 </Badge>
                                             </div>
-                                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-caption text-muted-foreground">
                                                 <span>Assigned: {assignment.assignedAt ? new Date(assignment.assignedAt).toLocaleDateString('en-US') : 'N/A'}</span>
                                                 <span>Deadline: {assignment.deadline ? new Date(assignment.deadline).toLocaleDateString('en-US') : 'N/A'}</span>
                                             </div>
@@ -170,17 +170,17 @@ export const GroupedReviewCard = React.memo(({
 
                                         {isCompleted && (
                                             <div className="flex items-center gap-3">
-                                                <Badge variant="outline" className={`h-6 text-[10px] font-bold uppercase rounded border-none ${
+                                                <Badge variant="outline" className={`h-6 text-badge font-bold uppercase rounded border-none ${
                                                     assignment.decision === 'accept' 
                                                         ? 'bg-emerald-500/10 text-emerald-500' 
                                                         : assignment.decision === 'reject' 
                                                         ? 'bg-rose-500/10 text-rose-500' 
                                                         : 'bg-amber-500/10 text-amber-500'
-                                                }`}>
+                                                } `}>
                                                     {assignment.decision?.replace(/([A-Z])/g, ' $1').toLowerCase() || 'Completed'}
                                                 </Badge>
                                                 {assignment.feedbackFilePath && (
-                                                    <Button asChild variant="ghost" size="sm" className="h-8 gap-1.5 font-bold text-[10px] text-emerald-600 hover:text-emerald-700 hover:bg-emerald-500/5 rounded-lg">
+                                                    <Button asChild variant="ghost" size="sm" className="h-8 gap-1.5 font-bold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-500/5 rounded-lg">
                                                         <a href={assignment.feedbackFilePath} download>
                                                             <Download className="w-3.5 h-3.5" /> File
                                                         </a>
@@ -203,7 +203,7 @@ export const GroupedReviewCard = React.memo(({
                                             />
                                             <label 
                                                 htmlFor={`check-${assignment.id}`} 
-                                                className="text-sm text-foreground/80 leading-relaxed italic cursor-pointer select-none flex-1 group-hover/comment:text-foreground transition-colors"
+                                                className="text-foreground/80 leading-relaxed italic cursor-pointer select-none flex-1 group-hover/comment:text-foreground transition-colors"
                                             >
                                                 &quot;{assignment.commentsToAuthor}&quot;
                                             </label>
@@ -220,21 +220,21 @@ export const GroupedReviewCard = React.memo(({
                     <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border/50">
                         <Button
                             onClick={() => onAccept(group.submissionId)}
-                            className="w-full sm:w-auto h-11 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-emerald-600/10 cursor-pointer"
+                            className="w-full sm:w-auto h-11 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-emerald-600/10 cursor-pointer"
                         >
                             <CheckCircle className="w-4 h-4 mr-2" /> Accept Manuscript
                         </Button>
                         <Button
                             onClick={handleOpenRevisionDialog}
                             disabled={completedReviews === 0}
-                            className="w-full sm:w-auto h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/10 cursor-pointer"
+                            className="w-full sm:w-auto h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/10 cursor-pointer"
                         >
                             <RefreshCw className="w-4 h-4 mr-2" /> Request Revision
                         </Button>
                         <Button
                             variant="outline"
                             onClick={() => onReject(group.submissionId)}
-                            className="w-full sm:w-auto h-11 px-5 font-bold text-xs uppercase tracking-wider border-rose-500/20 text-rose-600 bg-rose-500/5 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
+                            className="w-full sm:w-auto h-11 px-5 font-bold uppercase tracking-wider border-rose-500/20 text-rose-600 bg-rose-500/5 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
                         >
                             <X className="w-4 h-4 mr-2" /> Reject
                         </Button>
@@ -245,22 +245,22 @@ export const GroupedReviewCard = React.memo(({
                 <Dialog open={revisionDialogOpen} onOpenChange={setRevisionDialogOpen}>
                     <DialogContent className="sm:max-w-2xl rounded-xl p-6 bg-card border-border shadow-2xl">
                         <DialogHeader>
-                            <DialogTitle className="text-lg font-bold text-primary tracking-tight">Request Revision</DialogTitle>
-                            <DialogDescription className="text-xs text-muted-foreground">
+                            <DialogTitle className="font-bold text-primary tracking-tight">Request Revision</DialogTitle>
+                            <DialogDescription className="text-caption text-muted-foreground">
                                 Technical feedback for paper: <span className="text-foreground">{group.paperId}</span>
                             </DialogDescription>
                         </DialogHeader>
 
                         <div className="space-y-4 pt-2">
                             <div className="space-y-1.5">
-                                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                                <label className="form-label-brand font-bold text-muted-foreground uppercase tracking-wider">
                                     Concatenated Comments to Author
                                 </label>
                                 <Textarea
                                     rows={8}
                                     value={revisionText}
                                     onChange={(e) => setRevisionText(e.target.value)}
-                                    className="w-full bg-muted/30 border-border/50 rounded-lg p-3 text-sm text-foreground resize-none focus:ring-2 focus:ring-primary"
+                                    className="w-full bg-muted/30 border-border/50 rounded-lg p-3 text-body-sm text-foreground resize-none focus:ring-2 focus:ring-primary"
                                     placeholder="Enter comments to author..."
                                 />
                             </div>
@@ -270,14 +270,14 @@ export const GroupedReviewCard = React.memo(({
                             <Button 
                                 variant="outline" 
                                 onClick={() => setRevisionDialogOpen(false)}
-                                className="h-11 font-bold text-xs rounded-lg cursor-pointer"
+                                className="h-11 font-bold rounded-lg cursor-pointer"
                             >
                                 Cancel
                             </Button>
                             <Button 
                                 onClick={handleConfirmRevision} 
                                 disabled={isSubmittingRevision || !revisionText.trim()} 
-                                className="h-11 bg-primary text-white font-bold text-xs rounded-lg px-6 cursor-pointer"
+                                className="h-11 bg-primary text-white font-bold rounded-lg px-6 cursor-pointer"
                             >
                                 {isSubmittingRevision ? 'Sending...' : 'Send Revision Request'}
                             </Button>

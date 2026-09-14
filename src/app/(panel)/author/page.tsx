@@ -72,7 +72,7 @@ async function AuthorStatsSection() {
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <p className="text-label text-muted-foreground">{stat.label}</p>
-                                    <p className="text-xl lg:text-2xl font-bold text-foreground tabular-nums">{stat.value}</p>
+                                    <p className="font-bold text-foreground tabular-nums">{stat.value}</p>
                                 </div>
                                 <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-xs">
                                     {stat.icon}
@@ -85,7 +85,7 @@ async function AuthorStatsSection() {
         );
     } catch (err) {
         console.error("AuthorStatsSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load metrics</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load metrics</div>;
     }
 }
 
@@ -103,8 +103,8 @@ async function AuthorSubmissionsSection() {
                             <FileText className="w-5 h-5" />
                         </div>
                         <div className="space-y-1">
-                            <h3 className="font-semibold text-foreground text-base">No submissions found</h3>
-                            <p className="text-xs text-muted-foreground">
+                            <h3 className="font-semibold text-foreground">No submissions found</h3>
+                            <p className="text-caption text-muted-foreground">
                                 You haven&apos;t submitted any papers yet.
                             </p>
                         </div>
@@ -144,7 +144,7 @@ async function AuthorSubmissionsSection() {
                                                     {cfg.label}
                                                 </Badge>
                                             </div>
-                                            <h3 className="font-medium text-foreground text-sm leading-snug">
+                                            <h3 className="font-medium text-foreground leading-snug">
                                                 {sub.title || "Untitled Manuscript"}
                                             </h3>
                                         </div>
@@ -174,25 +174,25 @@ async function AuthorSubmissionsSection() {
                                         </div>
                                         <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-border/50">
                                             {sub.status === 'published' && sub.finalPdfUrl ? (
-                                                <Button asChild size="sm" className="h-8 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-2xs">
+                                                <Button asChild size="sm" className="h-8 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-2xs">
                                                     <Link href={sub.finalPdfUrl} target="_blank" className="flex items-center gap-1.5">
                                                         <BookOpen className="w-3.5 h-3.5" /> PDF
                                                     </Link>
                                                 </Button>
                                             ) : (sub.status === 'accepted' || sub.status === 'paymentPending') && !['paid', 'verified', 'waived'].includes(sub.paymentStatus || '') ? (
-                                                <Button asChild size="sm" className="h-8 px-3 btn-primary text-xs font-semibold rounded-lg shadow-2xs">
+                                                <Button asChild size="sm" className="h-8 px-3 btn-primary font-semibold rounded-lg shadow-2xs">
                                                     <Link href={`/author/payments`} className="flex items-center gap-1.5">
                                                         <CreditCard className="w-3.5 h-3.5" /> Pay Fee
                                                     </Link>
                                                 </Button>
                                             ) : ['revisionRequested', 'rejected'].includes(sub.status) && daysLeft !== null && daysLeft > 0 ? (
-                                                <Button asChild size="sm" className="h-8 px-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-2xs">
+                                                <Button asChild size="sm" className="h-8 px-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg shadow-2xs">
                                                     <Link href={`/author/submissions/${sub.id}/resubmit`} className="flex items-center gap-1.5">
                                                         <Upload className="w-3.5 h-3.5" /> Resubmit
                                                     </Link>
                                                 </Button>
                                             ) : null}
-                                            <Button asChild variant="outline" size="sm" className="h-8 px-3 border-border/70 text-xs font-semibold rounded-lg hover:bg-muted">
+                                            <Button asChild variant="outline" size="sm" className="h-8 px-3 border-border/70 font-semibold rounded-lg hover:bg-muted">
                                                 <Link href={`/author/submissions/${sub.id}`} className="flex items-center gap-1.5">
                                                     Details <ArrowRight className="w-3.5 h-3.5" />
                                                 </Link>
@@ -216,7 +216,7 @@ async function AuthorSubmissionsSection() {
         return (
             <div className="p-8 text-center border border-dashed border-border/70 rounded-xl bg-muted/5">
                 <AlertCircle className="w-8 h-8 text-rose-500 mx-auto mb-2 opacity-50" />
-                <p className="text-xs text-muted-foreground">Unable to load submissions. Please refresh.</p>
+                <p className="text-caption text-muted-foreground">Unable to load submissions. Please refresh.</p>
             </div>
         );
     }
@@ -238,7 +238,7 @@ async function AuthorImpactSection() {
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-1">
                             <TrendingUp className="w-4 h-4 text-primary" />
-                            <h3 className="font-semibold text-foreground text-sm">Statistics</h3>
+                            <h3 className="font-semibold text-foreground">Statistics</h3>
                         </div>
                         <p className="text-body-sm text-muted-foreground">
                             Track the reach of your manuscripts.
@@ -246,15 +246,15 @@ async function AuthorImpactSection() {
                     </div>
 
                     <div className="space-y-2.5 pt-3 border-t border-border/70">
-                        <div className="flex justify-between items-center text-xs">
+                        <div className="flex justify-between items-center text-body-sm">
                             <span className="text-muted-foreground">Views</span>
                             <span className="font-bold text-foreground tabular-nums">{totalViews.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between items-center text-xs">
+                        <div className="flex justify-between items-center text-body-sm">
                             <span className="text-muted-foreground">Downloads</span>
                             <span className="font-bold text-foreground tabular-nums">{totalDownloads.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between items-center text-xs">
+                        <div className="flex justify-between items-center text-body-sm">
                             <span className="font-medium text-primary">Citations</span>
                             <span className="font-bold text-primary tabular-nums">{totalCitations.toLocaleString()}</span>
                         </div>
@@ -266,7 +266,7 @@ async function AuthorImpactSection() {
         console.error("AuthorImpactSection error:", err);
         return (
             <Card className="md:col-span-1 bg-card border-border/70 rounded-xl p-5">
-                <p className="text-xs text-muted-foreground">Stats unavailable</p>
+                <p className="text-caption text-muted-foreground">Stats unavailable</p>
             </Card>
         );
     }
@@ -309,9 +309,9 @@ async function AuthorDashboardContent() {
             <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/70 pb-3 sm:pb-4">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="badge-brand text-[10px] font-medium px-2.5 py-0.5 rounded-md">Author Portal</Badge>
+                        <Badge variant="outline" className="badge-brand font-medium px-2.5 py-0.5 rounded-md">Author Portal</Badge>
                     </div>
-                    <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">
+                    <h1 className="panel-title font-bold text-primary">
                         Welcome back, <span>{session.user.name?.split(' ')[0] || 'Scholar'}</span>
                     </h1>
                     <p className="panel-subtitle text-body-sm text-muted-foreground">
@@ -367,13 +367,13 @@ async function AuthorDashboardContent() {
                             <Sparkles className="w-5 h-5" />
                         </div>
                         <div className="space-y-2 flex-1">
-                            <h3 className="font-semibold text-foreground text-sm">Production Information</h3>
+                            <h3 className="font-semibold text-foreground">Production Information</h3>
                             <p className="text-body-sm text-muted-foreground">
                                 Our system automatically formats your accepted manuscripts with journal headers and DOI references upon publication.
                             </p>
                             <div className="p-3 rounded-lg bg-muted/30 border border-border/70 flex items-start gap-2.5 mt-2">
                                 <Timer className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                                <div className="space-y-0.5 text-xs">
+                                <div className="space-y-0.5 text-body-sm">
                                     <p className="font-semibold text-foreground">Archive Window</p>
                                     <p className="text-muted-foreground">
                                         Rejected or revision-required manuscripts are held in the author workspace for 28 days.

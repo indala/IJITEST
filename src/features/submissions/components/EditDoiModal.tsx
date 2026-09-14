@@ -96,7 +96,7 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 px-2.5 gap-1.5 bg-white/10 hover:bg-white/20 text-white font-medium text-[11px] rounded-lg border border-white/15 cursor-pointer transition-all"
+                    className="h-7 px-2.5 gap-1.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg border border-white/15 cursor-pointer transition-all"
                 >
                     <Tag className="w-3 h-3 text-emerald-400" />
                     <span>{currentDoi ? "Change DOI" : "Assign DOI"}</span>
@@ -109,10 +109,10 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                             <Globe className="w-5 h-5" />
                         </div>
                         <div>
-                            <DialogTitle className="text-lg font-bold text-foreground">
+                            <DialogTitle className="font-bold text-foreground">
                                 Manage Paper DOI
                             </DialogTitle>
-                            <DialogDescription className="text-xs text-muted-foreground">
+                            <DialogDescription className="text-caption text-muted-foreground">
                                 Manuscript: <span className="font-mono font-semibold text-foreground">{paperId}</span>
                             </DialogDescription>
                         </div>
@@ -121,8 +121,8 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
 
                 <div className="space-y-4 py-3">
                     {/* Current Status */}
-                    <div className="p-3 bg-muted/40 rounded-xl border border-border/60 text-xs space-y-1">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Current Status</span>
+                    <div className="p-3 bg-muted/40 rounded-xl border border-border/60 text-body-sm space-y-1">
+                        <span className="text-label font-bold text-muted-foreground uppercase tracking-wider">Current Status</span>
                         <p className="font-mono font-medium text-foreground break-all">
                             {currentDoi ? (
                                 <span className="text-emerald-700 dark:text-emerald-400 font-semibold">{currentDoi}</span>
@@ -134,8 +134,8 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
 
                     {/* Mode Selector */}
                     <div className="space-y-2">
-                        <label className="text-xs font-semibold text-foreground">Target DOI Allocation</label>
-                        <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted/50 rounded-xl border border-border/50 text-xs">
+                        <label className="form-label-brand font-semibold text-foreground">Target DOI Allocation</label>
+                        <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted/50 rounded-xl border border-border/50 text-body-sm">
                             <button
                                 type="button"
                                 onClick={() => setDoiMode('none')}
@@ -143,7 +143,7 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                                     doiMode === 'none'
                                         ? 'bg-white text-foreground shadow-xs font-bold'
                                         : 'text-muted-foreground hover:text-foreground'
-                                }`}
+                                } `}
                             >
                                 No DOI
                             </button>
@@ -154,7 +154,7 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                                     doiMode === 'official'
                                         ? 'bg-emerald-600 text-white shadow-xs font-bold'
                                         : 'text-muted-foreground hover:text-foreground'
-                                }`}
+                                } `}
                             >
                                 Official CrossRef
                             </button>
@@ -165,7 +165,7 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                                     doiMode === 'custom'
                                         ? 'bg-white text-foreground shadow-xs font-bold'
                                         : 'text-muted-foreground hover:text-foreground'
-                                }`}
+                                } `}
                             >
                                 Zenodo / Custom
                             </button>
@@ -174,14 +174,14 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
 
                     {/* Detail for Mode */}
                     {doiMode === 'official' && (
-                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs space-y-1">
-                            <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-body-sm space-y-1">
+                            <p className="text-label font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
                                 Official Journal DOI Target
                             </p>
                             <p className="font-mono text-emerald-950 dark:text-emerald-200 break-all font-semibold">
                                 {officialTargetDoi}
                             </p>
-                            <p className="text-[10px] text-muted-foreground pt-1">
+                            <p className="text-caption text-muted-foreground pt-1">
                                 Will be permanently stamped on the PDF and submitted to CrossRef metadata.
                             </p>
                         </div>
@@ -189,25 +189,25 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
 
                     {doiMode === 'custom' && (
                         <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-foreground">Custom DOI / Identifier</label>
+                            <label className="form-label-brand font-semibold text-foreground">Custom DOI / Identifier</label>
                             <Input
                                 placeholder="e.g. 10.5281/zenodo.12345678"
                                 value={customDoiValue}
                                 onChange={(e) => setCustomDoiValue(e.target.value)}
-                                className="h-10 text-xs font-mono bg-background"
+                                className="h-10 text-meta font-mono bg-background"
                             />
-                            <p className="text-[10px] text-muted-foreground">
+                            <p className="text-caption text-muted-foreground">
                                 Enter the persistent digital identifier from Zenodo, DataCite, or another provider.
                             </p>
                         </div>
                     )}
 
                     {doiMode === 'none' && (
-                        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs space-y-1">
-                            <p className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
+                        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-body-sm space-y-1">
+                            <p className="text-label font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                                 Unassigned Mode
                             </p>
-                            <p className="text-[11px] text-muted-foreground leading-relaxed">
+                            <p className="text-caption text-muted-foreground leading-relaxed">
                                 This paper will not display a DOI badge or link. The PDF will be re-branded with only journal particulars and ISSN.
                             </p>
                         </div>
@@ -220,7 +220,7 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                         variant="outline"
                         onClick={() => setOpen(false)}
                         disabled={isPending}
-                        className="h-10 text-xs rounded-xl"
+                        className="h-10 text-body-sm rounded-xl"
                     >
                         Cancel
                     </Button>
@@ -228,7 +228,7 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                         type="button"
                         onClick={handleSave}
                         disabled={isPending}
-                        className="h-10 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20"
+                        className="h-10 text-body-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20"
                     >
                         {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}
                         Commit DOI Update

@@ -263,12 +263,12 @@ export function LiveChatContent() {
         {/* Search Header */}
         <div className="p-4 border-b border-white/5 bg-slate-950/10 space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold tracking-widest uppercase text-muted-foreground flex items-center gap-2">
+            <h2 className="font-bold tracking-widest uppercase text-muted-foreground flex items-center gap-2">
               <MessageCircle className="w-4 h-4 text-primary" /> Active Chats
             </h2>
             <div className="flex items-center gap-1.5">
               <span className={cn("w-2 h-2 rounded-full", isConnected ? "bg-emerald-500 animate-pulse" : "bg-rose-500")} />
-              <span className="text-[10px] font-mono text-muted-foreground uppercase">
+              <span className="text-meta font-mono text-muted-foreground uppercase">
                 {isConnected ? "online" : "offline"}
               </span>
             </div>
@@ -281,7 +281,7 @@ export function LiveChatContent() {
               placeholder="Search staff & reviewers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs bg-slate-950/20 border border-white/5 rounded-xl placeholder:text-muted-foreground/40 focus:outline-hidden focus:ring-1 focus:ring-primary/30 transition-all text-foreground"
+              className="w-full pl-9 pr-4 py-2 text-caption bg-slate-950/20 border border-white/5 rounded-xl placeholder:text-muted-foreground/40 focus:outline-hidden focus:ring-1 focus:ring-primary/30 transition-all text-foreground"
             />
           </div>
         </div>
@@ -291,10 +291,10 @@ export function LiveChatContent() {
           {isSearching ? (
             <div className="flex flex-col items-center justify-center py-8 gap-2 text-muted-foreground/50">
               <Loader2 className="w-5 h-5 animate-spin text-primary" />
-              <span className="text-[10px] tracking-wider uppercase">Loading users...</span>
+              <span className="text-label tracking-wider uppercase">Loading users...</span>
             </div>
           ) : contacts.length === 0 ? (
-            <div className="text-center py-10 text-xs text-muted-foreground/40">
+            <div className="text-center py-10 text-caption text-muted-foreground/40">
               No chat partners found.
             </div>
           ) : (
@@ -320,7 +320,7 @@ export function LiveChatContent() {
                 >
                   {/* User Profile / Status Indicator */}
                   <div className="relative shrink-0">
-                    <div className="w-9 h-9 rounded-full bg-slate-800 border border-white/5 flex items-center justify-center text-xs font-bold text-primary-foreground uppercase shadow-inner">
+                    <div className="w-9 h-9 rounded-full bg-slate-800 border border-white/5 flex items-center justify-center text-badge font-bold text-primary-foreground uppercase shadow-inner">
                       {user.fullName.substring(0, 2)}
                     </div>
                     <span 
@@ -334,21 +334,21 @@ export function LiveChatContent() {
                   {/* Name and Metadata */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-xs font-bold truncate text-foreground">
+                      <span className="text-body-sm font-bold truncate text-foreground">
                         {user.fullName}
                       </span>
-                      <span className={cn("text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-sm border shrink-0", getRoleBadgeClass(user.role))}>
+                      <span className={cn("text-badge font-mono uppercase px-1.5 py-0.5 rounded-sm border shrink-0", getRoleBadgeClass(user.role))}>
                         {user.role}
                       </span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground/60 truncate mt-0.5">
+                    <p className="text-caption text-muted-foreground/60 truncate mt-0.5">
                       {user.email}
                     </p>
                   </div>
 
                   {/* Unread Message Badge */}
                   {unread > 0 && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 min-w-5 h-5 px-1 bg-secondary text-secondary-foreground text-[10px] font-black rounded-full flex items-center justify-center animate-bounce shadow-lg">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 min-w-5 h-5 px-1 bg-secondary text-secondary-foreground text-badge font-black rounded-full flex items-center justify-center animate-bounce shadow-lg">
                       {unread}
                     </span>
                   )}
@@ -378,7 +378,7 @@ export function LiveChatContent() {
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-slate-800 border border-white/5 flex items-center justify-center text-sm font-bold text-primary-foreground uppercase shadow-md">
+                  <div className="w-10 h-10 rounded-full bg-slate-800 border border-white/5 flex items-center justify-center text-badge font-bold text-primary-foreground uppercase shadow-md">
                     {selectedUser.fullName.substring(0, 2)}
                   </div>
                   <span 
@@ -391,20 +391,20 @@ export function LiveChatContent() {
                 
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xs font-black tracking-wider text-foreground">
+                    <h3 className="font-black tracking-wider text-foreground">
                       {selectedUser.fullName}
                     </h3>
-                    <span className={cn("text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-sm border", getRoleBadgeClass(selectedUser.role))}>
+                    <span className={cn("text-badge font-mono uppercase px-1.5 py-0.5 rounded-sm border", getRoleBadgeClass(selectedUser.role))}>
                       {selectedUser.role}
                     </span>
                   </div>
-                  <span className="text-[10px] text-muted-foreground/60 block">
+                  <span className="text-caption text-muted-foreground/60 block">
                     {selectedUser.email}
                   </span>
                 </div>
               </div>
 
-              <div className="hidden md:flex text-[10px] text-muted-foreground items-center gap-1.5 bg-slate-950/20 px-3 py-1.5 rounded-lg border border-white/5">
+              <div className="hidden md:flex text-caption text-muted-foreground items-center gap-1.5 bg-slate-950/20 px-3 py-1.5 rounded-lg border border-white/5">
                 <Hash className="w-3.5 h-3.5 text-primary/60" />
                 <span className="font-mono">Direct Communication Channel</span>
               </div>
@@ -419,13 +419,13 @@ export function LiveChatContent() {
               {isLoadingHistory ? (
                 <div className="flex flex-col items-center justify-center h-full gap-3 opacity-40">
                   <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] animate-pulse">Decoding encrypted logs...</p>
+                  <p className="font-mono text-meta uppercase tracking-[0.2em] animate-pulse">Decoding encrypted logs...</p>
                 </div>
               ) : optimisticMessages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center gap-2 opacity-50 p-4">
                   <MessageSquare className="w-10 h-10 text-primary/30" />
-                  <p className="text-xs font-bold text-foreground">Secure Thread Initialized</p>
-                  <p className="text-[10px] text-muted-foreground max-w-xs">
+                  <p className="font-bold text-foreground">Secure Thread Initialized</p>
+                  <p className="text-caption text-muted-foreground max-w-xs">
                     Send a message to start conversation. Messages are stored securely and pruned monthly.
                   </p>
                 </div>
@@ -446,7 +446,7 @@ export function LiveChatContent() {
                     >
                       {/* Optional Sender Name (for other user) */}
                       {!isSelf && (
-                        <span className="text-[9px] font-mono text-muted-foreground/60 px-1">
+                        <span className="text-meta font-mono text-muted-foreground/60 px-1">
                           {msg.senderName || selectedUser.fullName}
                         </span>
                       )}
@@ -454,17 +454,17 @@ export function LiveChatContent() {
                       {/* Message Bubble */}
                       <div
                         className={cn(
-                          "px-4 py-2.5 text-xs rounded-2xl shadow-xs leading-relaxed border transition-all duration-300",
+                          "px-4 py-2.5 text-body-sm rounded-2xl shadow-xs leading-relaxed border transition-all duration-300",
                           isSelf
                             ? "bg-primary border-primary/20 rounded-tr-none"
                             : "bg-secondary border-border/50 rounded-tl-none"
                         )}
                       >
-                        <p className=" text-white whitespace-pre-wrap wrap-break-word">{msg.messageText}</p>
+                        <p className="text-white whitespace-pre-wrap wrap-break-word">{msg.messageText}</p>
                       </div>
 
                       {/* Timestamp */}
-                      <span className="text-[8px] font-mono text-muted-foreground/40 px-1">
+                      <span className="text-meta font-mono text-muted-foreground/40 px-1">
                         {formattedTime}
                       </span>
                     </div>
@@ -492,7 +492,7 @@ export function LiveChatContent() {
                 }}
                 placeholder="Type your message here... (Enter to send)"
                 rows={1}
-                className="flex-1 bg-slate-950/20 border border-white/5 rounded-xl px-4 py-2 text-xs placeholder:text-muted-foreground/40 resize-none min-h-[38px] max-h-[80px] focus:outline-hidden focus:ring-1 focus:ring-primary/30 transition-all text-foreground"
+                className="flex-1 bg-slate-950/20 border border-white/5 rounded-xl px-4 py-2 text-caption placeholder:text-muted-foreground/40 resize-none min-h-[38px] max-h-[80px] focus:outline-hidden focus:ring-1 focus:ring-primary/30 transition-all text-foreground"
               />
               <Button
                 type="submit"
@@ -511,8 +511,8 @@ export function LiveChatContent() {
               <MessageCircle className="w-8 h-8" />
             </div>
             <div>
-              <p className="text-xs font-black tracking-widest uppercase text-foreground">Select a Conversation</p>
-              <p className="text-[10px] text-muted-foreground max-w-sm mt-1">
+              <p className="text-label font-black tracking-widest uppercase text-foreground">Select a Conversation</p>
+              <p className="text-caption text-muted-foreground max-w-sm mt-1">
                 Choose a team member or reviewer from the sidebar to establish a direct communication channel.
               </p>
             </div>

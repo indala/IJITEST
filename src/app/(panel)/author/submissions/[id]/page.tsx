@@ -52,22 +52,22 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black tracking-tight text-primary">Manuscript Details</h1>
-                    <div className="flex items-center gap-3 text-sm text-primary/40 font-bold uppercase tracking-widest leading-none">
+                    <h1 className="font-black tracking-tight text-primary">Manuscript Details</h1>
+                    <div className="flex items-center gap-3 text-label text-primary/40 font-bold uppercase tracking-widest leading-none">
                         <span>{sub.paperId}</span>
                         <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
                         <span>Submitted on {dayjs(sub.submittedAt).format("MMMM DD, YYYY")}</span>
                     </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2.5">
-                    <Badge className={`px-5 py-2 rounded-xl border text-xs font-black uppercase tracking-widest ${getStatusColor(sub.status)}`}>
+                    <Badge className={`px-5 py-2 rounded-xl border text-badge font-black uppercase tracking-widest ${getStatusColor(sub.status)} `}>
                         {sub.status.replace('_', ' ')}
                     </Badge>
                     {sub.section && (
-                        <Badge variant="outline" className="px-3.5 py-1.5 rounded-xl border text-xs font-bold bg-primary/5 text-primary border-primary/20 flex items-center gap-1.5">
+                        <Badge variant="outline" className="px-3.5 py-1.5 rounded-xl border text-badge font-bold bg-primary/5 text-primary border-primary/20 flex items-center gap-1.5">
                             <Bookmark className="w-3.5 h-3.5" />
                             <span>{sub.section.title}</span>
-                            {sub.section.abbrev && <span className="opacity-60 font-mono text-[10px]">({sub.section.abbrev})</span>}
+                            {sub.section.abbrev && <span className="opacity-60 font-mono text-meta">({sub.section.abbrev})</span>}
                         </Badge>
                     )}
                 </div>
@@ -78,18 +78,18 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                 <div className="lg:col-span-2 space-y-8">
                     <Card className="border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
                         <CardHeader className="bg-primary/1 border-b border-primary/5">
-                            <CardTitle className="text-xl font-black text-primary">Abstract & Metadata</CardTitle>
+                            <CardTitle className="font-black text-primary">Abstract & Metadata</CardTitle>
                             <CardDescription>Current version metadata for your manuscript.</CardDescription>
                         </CardHeader>
                         <CardContent className="pt-6 space-y-6">
                             <div className="space-y-2">
-                                <h3 className="text-lg font-black text-primary leading-tight">{sub.title}</h3>
-                                <p className="text-sm text-primary/60 italic leading-relaxed">{sub.abstract}</p>
+                                <h3 className="font-black text-primary leading-tight">{sub.title}</h3>
+                                <p className="text-caption text-primary/60 italic leading-relaxed">{sub.abstract}</p>
                             </div>
                             
                             <div className="flex flex-wrap gap-2">
                                 {sub.keywords?.split(',').map((kw: string) => (
-                                    <Badge key={kw} variant="outline" className="px-3 py-1 rounded-lg border-primary/10 text-xs font-bold text-primary/50">
+                                    <Badge key={kw} variant="outline" className="px-3 py-1 rounded-lg border-primary/10 text-badge font-bold text-primary/50">
                                         {kw.trim()}
                                     </Badge>
                                 ))}
@@ -97,12 +97,12 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
 
                             <div className="pt-6 border-t border-primary/5 grid grid-cols-2 gap-6">
                                 <div className="space-y-1">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-primary/30">Current Version</span>
-                                    <p className="text-sm font-bold text-primary">v{sub.versionNumber}</p>
+                                    <span className="text-label font-black uppercase tracking-widest text-primary/30">Current Version</span>
+                                    <p className="font-bold text-primary">v{sub.versionNumber}</p>
                                 </div>
                                 <div className="space-y-1 text-right">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-primary/30">Last Updated</span>
-                                    <p className="text-sm font-bold text-primary">{dayjs(sub.updatedAt!).format("MMM DD, YYYY")}</p>
+                                    <span className="text-label font-black uppercase tracking-widest text-primary/30">Last Updated</span>
+                                    <p className="font-bold text-primary">{dayjs(sub.updatedAt!).format("MMM DD, YYYY")}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -117,7 +117,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                         <MessageSquare className="w-5 h-5 text-primary" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-lg font-black text-primary">Peer Review Feedback</CardTitle>
+                                        <CardTitle className="font-black text-primary">Peer Review Feedback</CardTitle>
                                         <CardDescription>Evaluation notes and technical recommendations from the editorial board.</CardDescription>
                                     </div>
                                 </div>
@@ -125,21 +125,21 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             <CardContent className="pt-6 space-y-6">
                                 {!sub.reviewComments || sub.reviewComments.length === 0 ? (
                                     <div className="text-center py-8 bg-muted/10 rounded-2xl border border-dashed border-primary/10">
-                                        <p className="text-xs font-bold text-primary/40 uppercase tracking-widest">No review comments recorded for this decision round.</p>
+                                        <p className="text-label font-bold text-primary/40 uppercase tracking-widest">No review comments recorded for this decision round.</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
                                         {sub.reviewComments.map((comment, index) => (
                                             <div key={index} className="p-5 rounded-2xl border border-primary/5 bg-primary/5 space-y-3">
                                                 <div className="flex items-center justify-between gap-4">
-                                                    <Badge className="bg-primary/5 text-primary border-none text-[9px] font-black uppercase tracking-widest px-3 py-1">
+                                                    <Badge className="bg-primary/5 text-primary border-none text-badge font-black uppercase tracking-widest px-3 py-1">
                                                         Evaluation Comment #{index + 1}
                                                     </Badge>
-                                                    <span className="text-[10px] font-bold text-primary/30 uppercase tracking-widest">
+                                                    <span className="text-label font-bold text-primary/30 uppercase tracking-widest">
                                                         {dayjs(comment.submittedAt).format("MMM DD, YYYY")}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm font-semibold text-primary/80 leading-relaxed whitespace-pre-wrap">
+                                                <p className="font-semibold text-primary/80 leading-relaxed whitespace-pre-wrap">
                                                     &ldquo;{comment.commentsToAuthor}&rdquo;
                                                 </p>
                                             </div>
@@ -156,7 +156,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                         <MessageSquare className="w-5 h-5 text-primary" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-lg font-black text-primary">Peer Review Queue</CardTitle>
+                                        <CardTitle className="font-black text-primary">Peer Review Queue</CardTitle>
                                         <CardDescription>Status of technical and scientific peer assessment.</CardDescription>
                                     </div>
                                 </div>
@@ -166,8 +166,8 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                     <MessageSquare className="w-6 h-6 text-primary animate-pulse" />
                                 </div>
                                 <div className="space-y-1 max-w-sm mx-auto">
-                                    <p className="text-xs font-black uppercase tracking-widest text-primary">Undergoing Review</p>
-                                    <p className="text-xs font-bold text-primary/40 leading-relaxed">
+                                    <p className="text-label font-black uppercase tracking-widest text-primary">Undergoing Review</p>
+                                    <p className="font-bold text-primary/40 leading-relaxed">
                                         Your manuscript is currently undergoing editorial screening and peer evaluation. Reviewer feedback will be presented here once the final decision has been processed.
                                     </p>
                                 </div>
@@ -190,11 +190,11 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                             <CheckCircle className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h4 className="text-sm font-black text-emerald-800">Copyright Agreement Verified</h4>
-                                            <p className="text-xs text-emerald-600/70 font-bold">The signed consent form has been uploaded and validated.</p>
+                                            <h4 className="font-black text-emerald-800">Copyright Agreement Verified</h4>
+                                            <p className="text-emerald-600/70 font-bold">The signed consent form has been uploaded and validated.</p>
                                         </div>
                                     </div>
-                                    <Button asChild size="sm" variant="outline" className="h-9 gap-2 border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/10 rounded-xl font-bold uppercase text-[10px]">
+                                    <Button asChild size="sm" variant="outline" className="h-9 gap-2 border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/10 rounded-xl font-bold uppercase">
                                         <a href={getSecureUrl(copyrightFile.fileUrl)} target="_blank" rel="noopener noreferrer">
                                             <Download className="w-3.5 h-3.5" />
                                             View Form
@@ -213,8 +213,8 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                     {!eligibility.eligible && sub.status === 'revisionRequested' && (
                         <Alert className="bg-red-50 border-red-100 rounded-2xl">
                             <AlertTriangle className="w-4 h-4 text-red-600" />
-                            <AlertTitle className="text-xs font-black uppercase tracking-widest text-red-900">Window Expired</AlertTitle>
-                            <AlertDescription className="text-sm text-red-700 font-bold">
+                            <AlertTitle className="text-label font-black uppercase tracking-widest text-red-900">Window Expired</AlertTitle>
+                            <AlertDescription className="text-body-sm text-red-700 font-bold">
                                 {eligError || "Submission window (28 days) has expired."}
                             </AlertDescription>
                         </Alert>
@@ -229,7 +229,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                     {/* File Links */}
                     <Card className="border-primary/10 shadow-xl shadow-primary/5">
                         <CardHeader className="bg-primary/5 border-b border-primary/5">
-                            <CardTitle className="text-sm font-black text-primary uppercase tracking-widest">Submitted Files</CardTitle>
+                            <CardTitle className="font-black text-primary uppercase tracking-widest">Submitted Files</CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6 space-y-3">
                             {sub.files.map((file: SubmissionFile) => (
@@ -244,11 +244,11 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                             <Download className="w-4 h-4" />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-black text-primary/60 truncate max-w-[120px]">{file.originalName}</p>
-                                            <p className="text-[10px] font-bold text-primary/30 uppercase tracking-widest">{file.fileType.replace('_', ' ')}</p>
+                                            <p className="font-black text-primary/60 truncate max-w-[120px]">{file.originalName}</p>
+                                            <p className="text-label font-bold text-primary/30 uppercase tracking-widest">{file.fileType.replace('_', ' ')}</p>
                                         </div>
                                     </div>
-                                    <Badge variant="outline" className="text-[10px] border-primary/5 text-primary/40">{file.fileSize ? (file.fileSize / 1024 / 1024).toFixed(1) : '0'}MB</Badge>
+                                    <Badge variant="outline" className="text-badge border-primary/5 text-primary/40">{file.fileSize ? (file.fileSize / 1024 / 1024).toFixed(1) : '0'}MB</Badge>
                                 </Link>
                             ))}
                         </CardContent>
@@ -257,19 +257,19 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                     {/* Authors List */}
                     <Card className="border-primary/10 shadow-xl shadow-primary/5">
                         <CardHeader className="bg-primary/1 border-b border-primary/5">
-                            <CardTitle className="text-sm font-black text-primary uppercase tracking-widest">Research Authors</CardTitle>
+                            <CardTitle className="font-black text-primary uppercase tracking-widest">Research Authors</CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6 space-y-4">
                             {sub.authors.map((author: { name: string; institution: string | null; isCorresponding: boolean }, idx: number) => (
                                 <div key={idx} className="flex items-start gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center shrink-0 text-primary/40 font-black text-[10px]">
+                                    <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center shrink-0 text-primary/40 font-black text-badge">
                                         {idx + 1}
                                     </div>
                                     <div className="space-y-0.5">
-                                        <p className="text-xs font-black text-primary/80 leading-none">{author.name}</p>
-                                        <p className="text-[10px] font-bold text-primary/30 tracking-tight leading-none">{author.institution || 'No Institution'}</p>
+                                        <p className="font-black text-primary/80 leading-none">{author.name}</p>
+                                        <p className="text-label font-bold text-primary/30 tracking-tight leading-none">{author.institution || 'No Institution'}</p>
                                         {author.isCorresponding && (
-                                            <Badge className="mt-2 bg-secondary/10 text-secondary border-0 text-[8px] font-black tracking-widest h-4 px-1.5 uppercase leading-none">Corresponding</Badge>
+                                            <Badge className="mt-2 bg-secondary/10 text-secondary border-0 text-badge font-black tracking-widest h-4 px-1.5 uppercase leading-none">Corresponding</Badge>
                                         )}
                                     </div>
                                 </div>
@@ -281,7 +281,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                     {sub.reviewerSuggestions && sub.reviewerSuggestions.length > 0 && (
                         <Card className="border-primary/10 shadow-xl shadow-primary/5">
                             <CardHeader className="bg-primary/1 border-b border-primary/5">
-                                <CardTitle className="text-sm font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                                <CardTitle className="font-black text-primary uppercase tracking-widest flex items-center gap-2">
                                     <UserCheck className="w-4 h-4 text-primary" />
                                     Reviewer Preferences
                                 </CardTitle>
@@ -290,26 +290,26 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                 {sub.reviewerSuggestions.map((sug, idx) => (
                                     <div
                                         key={idx}
-                                        className={`p-3 rounded-xl border text-xs space-y-1 ${
+                                        className={`p-3 rounded-xl border text-body-sm space-y-1 ${
                                             sug.type === 'opposed'
                                                 ? 'border-rose-200 bg-rose-50/40 dark:bg-rose-950/20'
                                                 : 'border-emerald-200 bg-emerald-50/40 dark:bg-emerald-950/20'
-                                        }`}
+                                        } `}
                                     >
                                         <div className="flex items-center justify-between font-bold">
                                             <span className="flex items-center gap-1.5">
                                                 {sug.type === 'opposed' ? <ThumbsDown className="w-3.5 h-3.5 text-rose-600" /> : <ThumbsUp className="w-3.5 h-3.5 text-emerald-600" />}
                                                 {sug.givenName} {sug.familyName || ""}
                                             </span>
-                                            <span className={`text-[8px] uppercase px-1.5 py-0.5 rounded font-black ${
+                                            <span className={`text-label uppercase px-1.5 py-0.5 rounded font-black ${
                                                 sug.type === 'opposed' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
-                                            }`}>
+                                            } `}>
                                                 {sug.type}
                                             </span>
                                         </div>
-                                        <p className="text-muted-foreground text-[11px] truncate m-0">{sug.email} {sug.affiliation ? `• ${sug.affiliation}` : ''}</p>
+                                        <p className="text-muted-foreground text-caption truncate m-0">{sug.email} {sug.affiliation ? `• ${sug.affiliation}` : ''}</p>
                                         {sug.suggestionReason && (
-                                            <p className="text-muted-foreground italic text-[11px] m-0 border-t border-border/30 pt-1">
+                                            <p className="text-muted-foreground italic text-caption m-0 border-t border-border/30 pt-1">
                                                 &quot;{sug.suggestionReason}&quot;
                                             </p>
                                         )}
@@ -324,46 +324,46 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                         <Card className="border-primary/10 shadow-xl shadow-primary/5">
                             <CardHeader className="bg-primary/5 border-b border-primary/5">
                                 <div className="flex items-center justify-between">
-                                    <CardTitle className="text-sm font-black text-primary uppercase tracking-widest">
+                                    <CardTitle className="font-black text-primary uppercase tracking-widest">
                                         APC Remittance
                                     </CardTitle>
-                                    <Badge className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 ${
+                                    <Badge className={`text-badge font-black uppercase tracking-wider px-2 py-0.5 ${
                                         ['paid', 'verified'].includes(sub.payment.status)
                                             ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
                                             : sub.payment.status === 'waived'
                                             ? 'bg-purple-100 text-purple-700 border-purple-200'
                                             : 'bg-amber-100 text-amber-700 border-amber-200'
-                                    }`}>
+                                    } `}>
                                         {sub.payment.status === 'verified' ? 'Verified' : sub.payment.status}
                                     </Badge>
                                 </div>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-4">
-                                <div className="flex justify-between items-center text-xs">
+                                <div className="flex justify-between items-center text-body-sm">
                                     <span className="text-primary/50 font-bold uppercase tracking-wider">Fee Amount</span>
-                                    <span className="font-black text-primary text-sm">{sub.payment.amount} {sub.payment.currency}</span>
+                                    <span className="font-black text-primary text-body-sm">{sub.payment.amount} {sub.payment.currency}</span>
                                 </div>
                                 {sub.payment.invoiceNumber && (
-                                    <div className="flex justify-between items-center text-xs">
+                                    <div className="flex justify-between items-center text-body-sm">
                                         <span className="text-primary/50 font-bold uppercase tracking-wider">Invoice No.</span>
                                         <span className="font-mono font-bold text-primary/70">{sub.payment.invoiceNumber}</span>
                                     </div>
                                 )}
                                 {sub.payment.transactionId && (
-                                    <div className="flex justify-between items-center text-xs">
+                                    <div className="flex justify-between items-center text-body-sm">
                                         <span className="text-primary/50 font-bold uppercase tracking-wider">Transaction ID</span>
-                                        <span className="font-mono text-[11px] text-primary/60 truncate max-w-[150px]">{sub.payment.transactionId}</span>
+                                        <span className="font-mono text-meta text-primary/60 truncate max-w-[150px]">{sub.payment.transactionId}</span>
                                     </div>
                                 )}
                                 {['paid', 'verified'].includes(sub.payment.status) ? (
-                                    <Button asChild variant="outline" className="w-full h-10 gap-2 rounded-xl font-bold uppercase text-xs border-primary/20 hover:bg-primary/5">
+                                    <Button asChild variant="outline" className="w-full h-10 gap-2 rounded-xl font-bold uppercase border-primary/20 hover:bg-primary/5">
                                         <a href={`/api/receipt/${sub.payment.id}`} target="_blank" rel="noopener noreferrer">
                                             <Download className="w-4 h-4 text-primary" />
                                             Download Tax Invoice & Receipt
                                         </a>
                                     </Button>
                                 ) : sub.payment.status === 'pending' ? (
-                                    <Button asChild className="w-full h-10 gap-2 rounded-xl font-bold uppercase text-xs bg-primary text-primary-foreground hover:bg-primary/90">
+                                    <Button asChild className="w-full h-10 gap-2 rounded-xl font-bold uppercase bg-primary text-primary-foreground hover:bg-primary/90">
                                         <Link href={`/payment/${sub.paperId}`}>
                                             Proceed to APC Payment
                                         </Link>
@@ -383,14 +383,14 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             >
                                 <Calendar className="w-12 h-12 text-secondary" />
                                 <div className="space-y-1">
-                                    <h3 className="text-lg font-black tracking-tight">Paper Published!</h3>
-                                    <p className="text-xs text-white/60 font-black uppercase tracking-widest">
+                                    <h3 className="font-black tracking-tight">Paper Published!</h3>
+                                    <p className="text-label text-white/60 font-black uppercase tracking-widest">
                                         Volume {sub.publication.volumeNumber}, Issue {sub.publication.issueNumber}
                                     </p>
                                 </div>
-                                <Badge className="bg-white/20 text-white border-0 text-[10px] tracking-widest font-black h-8 px-5 rounded-full backdrop-blur-sm">VIEW ARCHIVE</Badge>
+                                <Badge className="bg-white/20 text-white border-0 text-badge tracking-widest font-black h-8 px-5 rounded-full backdrop-blur-sm">VIEW ARCHIVE</Badge>
                             </Link>
-                            <Button asChild variant="outline" className="w-full h-10 gap-2 rounded-xl font-bold uppercase text-xs border-primary/20 hover:bg-primary/5">
+                            <Button asChild variant="outline" className="w-full h-10 gap-2 rounded-xl font-bold uppercase border-primary/20 hover:bg-primary/5">
                                 <a href={`/api/certificate/${sub.paperId}`} target="_blank" rel="noopener noreferrer">
                                     <Download className="w-4 h-4 text-primary" />
                                     Download Certificate (PDF)

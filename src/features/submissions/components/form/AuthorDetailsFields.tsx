@@ -32,7 +32,7 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                                 className="input-standard"
                             />
                         </FormControl>
-                        <FormMessage className="text-xs font-medium text-destructive px-1" />
+                        <FormMessage className="text-caption font-medium text-destructive px-1" />
                     </FormItem>
                 )}
             />
@@ -60,9 +60,9 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                                     {sections.map((sec) => (
                                         <SelectItem key={sec.id} value={String(sec.id)}>
                                             <div className="flex flex-col text-left py-0.5">
-                                                <span className="font-semibold text-foreground text-sm">{sec.title}</span>
+                                                <span className="font-semibold text-foreground text-body-sm">{sec.title}</span>
                                                 {sec.policy && (
-                                                    <span className="text-xs text-muted-foreground line-clamp-1 max-w-md">
+                                                    <span className="text-caption text-muted-foreground line-clamp-1 max-w-md">
                                                         {sec.policy}
                                                     </span>
                                                 )}
@@ -71,10 +71,10 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <FormDescription className="text-xs text-muted-foreground">
+                            <FormDescription className="text-caption text-muted-foreground">
                                 Selecting the appropriate section directs your manuscript to the relevant editorial board members.
                             </FormDescription>
-                            <FormMessage className="text-xs font-medium text-destructive px-1" />
+                            <FormMessage className="text-caption font-medium text-destructive px-1" />
                         </FormItem>
                     )}
                 />
@@ -98,7 +98,7 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                                     className="input-standard"
                                 />
                             </FormControl>
-                            <FormMessage className="text-xs font-medium text-destructive px-1" />
+                            <FormMessage className="text-caption font-medium text-destructive px-1" />
                         </FormItem>
                     )}
                 />
@@ -120,7 +120,7 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                                     className="input-standard"
                                 />
                             </FormControl>
-                            <FormMessage className="text-xs font-medium text-destructive px-1" />
+                            <FormMessage className="text-caption font-medium text-destructive px-1" />
                         </FormItem>
                     )}
                 />
@@ -142,7 +142,7 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                                     className="input-standard"
                                 />
                             </FormControl>
-                            <FormMessage className="text-xs font-medium text-destructive px-1" />
+                            <FormMessage className="text-caption font-medium text-destructive px-1" />
                         </FormItem>
                     )}
                 />
@@ -166,7 +166,7 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                                     className="input-standard"
                                 />
                             </FormControl>
-                            <FormMessage className="text-xs font-medium text-destructive px-1" />
+                            <FormMessage className="text-caption font-medium text-destructive px-1" />
                         </FormItem>
                     )}
                 />
@@ -188,7 +188,7 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                                     className="input-standard"
                                 />
                             </FormControl>
-                            <FormMessage className="text-xs font-medium text-destructive px-1" />
+                            <FormMessage className="text-caption font-medium text-destructive px-1" />
                         </FormItem>
                     )}
                 />
@@ -206,7 +206,7 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                         <FormControl>
                             <Textarea
                                 placeholder="Summarize your research paper here..."
-                                className="bg-muted/20 border-border/50 rounded-lg font-medium text-foreground p-4 resize-none min-h-[150px] text-xs sm:text-sm focus-visible:ring-1 focus-visible:ring-primary/30 transition-all leading-relaxed"
+                                className="bg-muted/20 border-border/50 rounded-lg font-medium text-foreground p-4 resize-none min-h-[150px] text-body-sm focus-visible:ring-1 focus-visible:ring-primary/30 transition-all leading-relaxed"
                                 {...field}
                                 value={field.value ?? ""}
                             />
@@ -215,7 +215,7 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                             <FormDescription className="text-meta uppercase font-bold tracking-tight">Requirement: 100 - 500 Words</FormDescription>
                             <span className="text-meta font-bold text-primary uppercase">{(field.value || "").length} Characters</span>
                         </div>
-                        <FormMessage className="text-xs font-medium text-destructive px-1" />
+                        <FormMessage className="text-caption font-medium text-destructive px-1" />
                     </FormItem>
                 )}
             />
@@ -238,7 +238,7 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                             />
                         </FormControl>
                         <FormDescription className="text-meta font-bold uppercase px-1">Separate keywords with commas.</FormDescription>
-                        <FormMessage className="text-xs font-medium text-destructive px-1" />
+                        <FormMessage className="text-caption font-medium text-destructive px-1" />
                     </FormItem>
                 )}
             />

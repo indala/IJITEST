@@ -34,7 +34,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
             return (
                 <li
                     key={item.name}
-                    className={`relative group transition-all duration-300 ${isScrolled ? 'py-3' : 'py-3.5'}`}
+                    className={`relative group transition-all duration-300 ${isScrolled ? 'py-3' : 'py-3.5'} `}
                     onMouseEnter={() => handleActivate(item.name)}
                     onMouseLeave={() => setActiveIndex(null)}
                     onFocus={() => handleActivate(item.name)}
@@ -49,7 +49,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                         href={item.href}
                         aria-haspopup={hasDropdown ? "true" : undefined}
                         aria-expanded={hasDropdown ? isMenuOpen : undefined}
-                        className={`nav-link ${isActive ? 'text-primary' : 'text-foreground/90 hover:text-primary'}`}
+                        className={`nav-link ${isActive ? 'text-primary' : 'text-foreground/90 hover:text-primary'} `}
                     >
                         <span className="relative z-10 py-0.5">
                             {item.name}
@@ -65,7 +65,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                             )}
                         </span>
                         {hasDropdown && (
-                            <ChevronDown className={`w-3 h-3 transition-transform duration-300 text-secondary/50 group-hover:text-secondary ${isMenuOpen ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`w-3 h-3 transition-transform duration-300 text-secondary/50 group-hover:text-secondary ${isMenuOpen ? 'rotate-180' : ''} `} />
                         )}
                     </Link>
 
@@ -87,9 +87,9 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                 {item.isMegaMenu && item.columns ? (
                                     <div className="grid grid-cols-2 gap-3 divide-x divide-primary/5">
                                         {item.columns.map((col, idx) => (
-                                            <div key={col.heading} className={`space-y-1.5 ${idx > 0 ? 'pl-3' : 'pr-1'}`}>
+                                            <div key={col.heading} className={`space-y-1.5 ${idx > 0 ? 'pl-3' : 'pr-1'} `}>
                                                 <div className="px-2.5 pb-1 border-b border-primary/5">
-                                                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-primary/60">
+                                                    <span className="text-label font-extrabold uppercase tracking-wider text-primary/60">
                                                         {col.heading}
                                                     </span>
                                                 </div>
@@ -101,17 +101,17 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                                             <li key={child.name}>
                                                                 <Link
                                                                     href={child.href}
-                                                                    className={`nav-dropdown-item group/child text-xs py-1.5 px-2.5 rounded-lg flex items-center justify-between transition-all ${
+                                                                    className={`nav-dropdown-item group/child text-body-sm py-1.5 px-2.5 rounded-lg flex items-center justify-between transition-all ${
                                                                         isSubActive
                                                                             ? 'text-primary bg-primary/5 font-semibold'
                                                                             : 'text-foreground/80 hover:text-primary hover:bg-primary/5'
-                                                                    }`}
+                                                                    } `}
                                                                 >
                                                                     <span className="relative z-10 flex items-center gap-2 truncate">
                                                                         {IconComponent ? (
                                                                             <IconComponent className={`w-3.5 h-3.5 shrink-0 ${isSubActive ? 'text-secondary' : 'text-primary/40 group-hover/child:text-secondary'} transition-colors`} />
                                                                         ) : (
-                                                                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300 ${isSubActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'}`} />
+                                                                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300 ${isSubActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'} `} />
                                                                         )}
                                                                         <span className="truncate">{child.name}</span>
                                                                     </span>
@@ -131,13 +131,13 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                                 <li key={child.name}>
                                                     <Link
                                                         href={child.href}
-                                                        className={`nav-dropdown-item group/child ${isChildActive ? 'text-primary bg-primary/5' : 'text-foreground/90 hover:text-primary'}`}
+                                                        className={`nav-dropdown-item group/child ${isChildActive ? 'text-primary bg-primary/5' : 'text-foreground/90 hover:text-primary'} `}
                                                     >
                                                         <span className="relative z-10 flex items-center gap-2">
-                                                            <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isChildActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'}`} />
+                                                            <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isChildActive ? 'bg-secondary scale-125' : 'bg-secondary/0 group-hover/child:bg-secondary'} `} />
                                                             {child.name}
                                                         </span>
-                                                        <div className={`absolute inset-0 bg-primary/3 transition-transform duration-300 ${isChildActive ? 'translate-x-0' : '-translate-x-full group-hover/child:translate-x-0'}`} />
+                                                        <div className={`absolute inset-0 bg-primary/3 transition-transform duration-300 ${isChildActive ? 'translate-x-0' : '-translate-x-full group-hover/child:translate-x-0'} `} />
                                                     </Link>
                                                 </li>
                                             );

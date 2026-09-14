@@ -62,7 +62,7 @@ export function CoAuthorsSection({ control }: CoAuthorsSectionProps) {
 
                                 <CardContent className="p-6 sm:p-8 space-y-6">
                                     <div className="flex items-center gap-4 border-b border-border/50 pb-4">
-                                        <div className="w-10 h-10 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                                        <div className="w-10 h-10 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-center text-primary font-bold text-body-sm">
                                             {index + 1}
                                         </div>
                                         <div className="space-y-0.5">
@@ -148,7 +148,7 @@ export function CoAuthorsSection({ control }: CoAuthorsSectionProps) {
                         <Users className="w-6 h-6" />
                     </div>
                     <h4 className="m-0">Single Author Submission</h4>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase max-w-xs mt-1">
+                    <p className="font-bold text-muted-foreground uppercase max-w-xs mt-1">
                         No co-authors listed. Up to 5 allowed.
                     </p>
                 </div>

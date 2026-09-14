@@ -55,29 +55,29 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-1">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <Globe className="size-4" />
                                         <span>Global Scientific Exchange</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         Providing a zero-barrier dissemination venue for cutting-edge engineering discoveries.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15 space-y-1">
-                                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-body-sm">
                                         <Cpu className="size-4" />
                                         <span>Applied Innovation</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         Prioritizing empirical validation, computational modeling, and industrial scalability.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-blue-500/5 border border-blue-500/15 space-y-1">
-                                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-body-sm">
                                         <LockOpen className="size-4" />
                                         <span>Open Science</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         Immediate unrestricted global access under Creative Commons Attribution 4.0 (CC-BY).
                                     </p>
                                 </div>
@@ -133,44 +133,44 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <Card className="border-border/70 shadow-2xs">
                                     <CardContent className="p-4 space-y-1">
-                                        <div className="flex items-center gap-1.5 font-bold text-xs text-primary">
+                                        <div className="flex items-center gap-1.5 font-bold text-body-sm text-primary">
                                             <FileText className="size-3.5" />
                                             <span>Original Research Articles</span>
                                         </div>
-                                        <p className="text-muted-foreground text-xs m-0">
+                                        <p className="text-muted-foreground text-caption m-0">
                                             Substantive empirical or theoretical contributions detailing novel methodologies, experimental findings, and validation benchmarks (up to 8,000 words).
                                         </p>
                                     </CardContent>
                                 </Card>
                                 <Card className="border-border/70 shadow-2xs">
                                     <CardContent className="p-4 space-y-1">
-                                        <div className="flex items-center gap-1.5 font-bold text-xs text-primary">
+                                        <div className="flex items-center gap-1.5 font-bold text-body-sm text-primary">
                                             <Sparkles className="size-3.5" />
                                             <span>Review Articles</span>
                                         </div>
-                                        <p className="text-muted-foreground text-xs m-0">
+                                        <p className="text-muted-foreground text-caption m-0">
                                             Critical, systematic literature reviews identifying emerging paradigms, comparative benchmarks, and open research challenges (up to 12,000 words).
                                         </p>
                                     </CardContent>
                                 </Card>
                                 <Card className="border-border/70 shadow-2xs">
                                     <CardContent className="p-4 space-y-1">
-                                        <div className="flex items-center gap-1.5 font-bold text-xs text-primary">
+                                        <div className="flex items-center gap-1.5 font-bold text-body-sm text-primary">
                                             <Layers className="size-3.5" />
                                             <span>Technical Notes & Short Communications</span>
                                         </div>
-                                        <p className="text-muted-foreground text-xs m-0">
+                                        <p className="text-muted-foreground text-caption m-0">
                                             Rapid reports of preliminary breakthroughs, novel software algorithms, or critical methodological improvements (up to 4,000 words).
                                         </p>
                                     </CardContent>
                                 </Card>
                                 <Card className="border-border/70 shadow-2xs">
                                     <CardContent className="p-4 space-y-1">
-                                        <div className="flex items-center gap-1.5 font-bold text-xs text-primary">
+                                        <div className="flex items-center gap-1.5 font-bold text-body-sm text-primary">
                                             <Building2 className="size-3.5" />
                                             <span>Industrial Case Studies</span>
                                         </div>
-                                        <p className="text-muted-foreground text-xs m-0">
+                                        <p className="text-muted-foreground text-caption m-0">
                                             Real-world technological implementations, failure analyses, or large-scale industrial deployments of broad practitioner interest (up to 6,000 words).
                                         </p>
                                     </CardContent>
@@ -216,7 +216,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 {journalName} is committed to the principles of open scholarship, author empowerment, and unrestricted scientific distribution. In strict accordance with the <strong>Budapest Open Access Initiative (BOAI)</strong> and <strong>Directory of Open Access Journals (DOAJ)</strong> criteria, authors publishing with {journalShort} retain copyright of their work without restrictions.
                             </p>
-                            <div className="space-y-2 text-xs text-muted-foreground">
+                            <div className="space-y-2 text-caption text-muted-foreground">
                                 <div className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
                                     <span><strong>Authors Retain Full Copyright:</strong> Authors retain 100% of their copyright and proprietary rights to their research. Authors are never required to transfer or assign copyright to the publisher or journal.</span>
@@ -244,33 +244,33 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
                                 <Card className="border-border/70 shadow-2xs">
                                     <CardContent className="p-3.5 space-y-1.5">
-                                        <div className="flex items-center gap-1.5 font-bold text-xs text-secondary">
+                                        <div className="flex items-center gap-1.5 font-bold text-body-sm text-secondary">
                                             <FileText className="size-3.5" />
                                             <span>Preprint (AOM)</span>
                                         </div>
-                                        <p className="text-muted-foreground text-[11px] leading-relaxed m-0">
+                                        <p className="text-muted-foreground text-caption leading-relaxed m-0">
                                             Authors may post pre-refereed drafts on preprint servers (e.g., arXiv, TechRxiv, SSRN) or university repositories at any time.
                                         </p>
                                     </CardContent>
                                 </Card>
                                 <Card className="border-border/70 shadow-2xs">
                                     <CardContent className="p-3.5 space-y-1.5">
-                                        <div className="flex items-center gap-1.5 font-bold text-xs text-secondary">
+                                        <div className="flex items-center gap-1.5 font-bold text-body-sm text-secondary">
                                             <Sparkles className="size-3.5" />
                                             <span>Postprint (AAM)</span>
                                         </div>
-                                        <p className="text-muted-foreground text-[11px] leading-relaxed m-0">
+                                        <p className="text-muted-foreground text-caption leading-relaxed m-0">
                                             Authors may deposit peer-reviewed, accepted manuscripts in institutional repositories immediately upon formal acceptance.
                                         </p>
                                     </CardContent>
                                 </Card>
                                 <Card className="border-border/70 shadow-2xs">
                                     <CardContent className="p-3.5 space-y-1.5">
-                                        <div className="flex items-center gap-1.5 font-bold text-xs text-secondary">
+                                        <div className="flex items-center gap-1.5 font-bold text-body-sm text-secondary">
                                             <UploadCloud className="size-3.5" />
                                             <span>Version of Record (VoR)</span>
                                         </div>
-                                        <p className="text-muted-foreground text-[11px] leading-relaxed m-0">
+                                        <p className="text-muted-foreground text-caption leading-relaxed m-0">
                                             The final branded PDF with CrossRef DOI may be shared anywhere immediately without embargo or fee.
                                         </p>
                                     </CardContent>
@@ -287,7 +287,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 Any subsequent reproduction, translation, or re-use of the work (in whole or in part) must include a complete scholarly citation acknowledging {journalShort} as the original publication venue:
                             </p>
-                            <div className="p-3.5 rounded-xl bg-muted/30 border border-border font-mono text-xs space-y-1">
+                            <div className="p-3.5 rounded-xl bg-muted/30 border border-border font-mono text-meta space-y-1">
                                 <p className="m-0 text-foreground font-semibold">Standard Citation Format:</p>
                                 <p className="m-0 text-muted-foreground">
                                     Author(s), &quot;Article Title,&quot; <em>{journalName}</em>, Vol. X, No. Y, pp. XX-YY, Year. https://doi.org/10.XXXXX/...
@@ -332,17 +332,17 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             </p>
                             <div className="p-4 rounded-xl bg-card border border-border space-y-3 shadow-2xs">
                                 <div className="flex items-center gap-2">
-                                    <Badge className="bg-primary text-white font-mono text-[11px] px-2 py-0.5">
+                                    <Badge className="bg-primary text-white font-mono text-badge px-2 py-0.5">
                                         CC BY 4.0
                                     </Badge>
-                                    <span className="font-bold text-foreground text-xs sm:text-sm">
+                                    <span className="font-bold text-foreground text-body-sm">
                                         Creative Commons Attribution 4.0 International
                                     </span>
                                 </div>
-                                <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                                <p className="text-caption text-muted-foreground leading-relaxed m-0">
                                     Under this license, readers, academic institutions, and commercial entities are permitted to:
                                 </p>
-                                <ul className="space-y-1.5 text-xs text-muted-foreground list-none p-0 m-0">
+                                <ul className="space-y-1.5 text-caption text-muted-foreground list-none p-0 m-0">
                                     <li className="flex items-start gap-2">
                                         <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0 mt-0.5" />
                                         <span><strong>Share</strong> — copy and redistribute the material in any medium or format worldwide.</span>
@@ -357,7 +357,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                         href="https://creativecommons.org/licenses/by/4.0/"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-secondary transition-colors"
+                                        className="inline-flex items-center gap-1.5 text-body-sm font-bold text-primary hover:text-secondary transition-colors"
                                     >
                                         <span>View Official Legal Deed on Creative Commons</span>
                                         <ExternalLink className="size-3" />
@@ -375,7 +375,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 The freedoms granted by the CC-BY 4.0 license require compliance with two straightforward stipulations:
                             </p>
-                            <ul className="space-y-2 list-none p-0 m-0 text-xs text-muted-foreground">
+                            <ul className="space-y-2 list-none p-0 m-0 text-caption text-muted-foreground">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
                                     <span><strong>Attribution:</strong> You must give appropriate credit to the original author(s) and {journalShort}, provide a link to the license, and indicate if modifications were made.</span>
@@ -396,7 +396,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 To enable automated indexing by institutional harvesters, aggregators, and search algorithms, {journalShort} embeds standardized machine-readable licensing metadata:
                             </p>
-                            <ul className="space-y-1.5 list-none p-0 m-0 text-xs text-muted-foreground">
+                            <ul className="space-y-1.5 list-none p-0 m-0 text-caption text-muted-foreground">
                                 <li>• Dublin Core metadata tags in HTML headers pointing to official CC-BY 4.0 URIs.</li>
                                 <li>• CrossRef Schema 5.3 <code>&lt;license_ref&gt;</code> nodes registered during DOI minting.</li>
                                 <li>• JATS 1.3 XML <code>&lt;permissions&gt;</code> blocks embedded within published article assets.</li>
@@ -430,20 +430,20 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15 space-y-1">
-                                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-body-sm">
                                         <CheckCircle2 className="size-4" />
                                         <span>100% Free Submission</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         Submitting an article to {journalShort} is completely free of charge. No upfront fees are ever collected.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-blue-500/5 border border-blue-500/15 space-y-1">
-                                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-body-sm">
                                         <CheckCircle2 className="size-4" />
                                         <span>No Peer Review Charges</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         Editorial screening, Turnitin similarity checks, and expert peer review are conducted without cost to authors.
                                     </p>
                                 </div>
@@ -461,12 +461,12 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             </p>
                             <div className="p-4 rounded-xl bg-card border border-border space-y-3 shadow-2xs">
                                 <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-border/50">
-                                    <span className="font-bold text-foreground text-xs sm:text-sm">Standard Publication APC ({currentYear})</span>
-                                    <span className="font-mono font-bold text-primary text-xs sm:text-sm">
+                                    <span className="font-bold text-foreground text-body-sm">Standard Publication APC ({currentYear})</span>
+                                    <span className="font-mono font-bold text-primary text-meta">
                                         ₹{apcInr} INR (India) / ${apcUsd} USD (International)
                                     </span>
                                 </div>
-                                <ul className="space-y-1.5 text-xs text-muted-foreground list-none p-0 m-0">
+                                <ul className="space-y-1.5 text-caption text-muted-foreground list-none p-0 m-0">
                                     <li>• Covers full copyediting, formatting, and CrossRef DOI generation.</li>
                                     <li>• Immediate unrestricted Gold Open Access under CC BY 4.0.</li>
                                     <li>• No additional fees for color figures, supplementary data files, or co-authors.</li>
@@ -495,7 +495,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 {journalShort} firmly believes that financial limitations must never prevent the publication of worthy scientific discoveries. We provide the following fee relief programs:
                             </p>
-                            <ul className="space-y-2 list-none p-0 m-0 text-xs text-muted-foreground">
+                            <ul className="space-y-2 list-none p-0 m-0 text-caption text-muted-foreground">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
                                     <span><strong>Low-Income Economies:</strong> Authors from World Bank-designated low-income economies qualify for up to 100% full waiver of publication fees.</span>
@@ -509,7 +509,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                     <span><strong>Student & Hardship Waivers:</strong> Unfunded graduate students or researchers experiencing certified hardship may request discretionary relief during submission.</span>
                                 </li>
                             </ul>
-                            <p className="text-xs text-muted-foreground pt-1">
+                            <p className="text-caption text-muted-foreground pt-1">
                                 Waiver requests must be noted in the submission cover letter and cannot be requested retroactively after editorial acceptance.
                             </p>
                         </div>
@@ -539,7 +539,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                 Academic integrity is the bedrock of scientific discourse. <strong>{journalName}</strong> maintains a strict, zero-tolerance policy against all manifestations of plagiarism and intellectual misappropriation in accordance with the <strong>Committee on Publication Ethics (COPE)</strong> standards.
                             </p>
                             <p>Plagiarism includes, but is not limited to:</p>
-                            <ul className="space-y-1.5 list-none p-0 m-0 text-xs text-muted-foreground">
+                            <ul className="space-y-1.5 list-none p-0 m-0 text-caption text-muted-foreground">
                                 <li>• <strong>Verbatim Copying:</strong> Reproducing text word-for-word from another source without quotation marks and complete citation.</li>
                                 <li>• <strong>Substantial Paraphrasing:</strong> Rephrasing another author&apos;s ideas or research design without proper attribution.</li>
                                 <li>• <strong>Self-Plagiarism & Text Recycling:</strong> Reusing extensive passages from an author&apos;s previously published papers without citation.</li>
@@ -559,20 +559,20 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <ShieldCheck className="size-4" />
                                         <span>Overall Similarity &lt; 15%</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         Total similarity must not exceed 15% (excluding reference citations and standard mathematical definitions).
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <ShieldCheck className="size-4" />
                                         <span>Single Source Match &le; 2%</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         No single external document or publication may account for more than 2% of overlapping content.
                                     </p>
                                 </div>
@@ -588,7 +588,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 When similarity or text recycling is identified, the editorial board follows the official COPE flowchart:
                             </p>
-                            <ul className="space-y-2 list-none p-0 m-0 text-xs text-muted-foreground">
+                            <ul className="space-y-2 list-none p-0 m-0 text-caption text-muted-foreground">
                                 <li>• <strong>Pre-Review:</strong> Manuscripts exceeding 15% similarity with unintentional overlaps are returned for revision; papers with blatant copying are desk-rejected immediately.</li>
                                 <li>• <strong>During Peer Review:</strong> If reviewers or editors identify uncredited sources, the manuscript is halted and rejected pending investigation.</li>
                                 <li>• <strong>Post-Publication:</strong> If confirmed plagiarism is discovered post-publication, the paper is formally <strong>retracted</strong> with a prominent notice, and the authors&apos; institution may be formally notified.</li>
@@ -621,14 +621,14 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <span className="font-bold text-xs text-primary block">Financial Interests</span>
-                                    <p className="text-muted-foreground text-[11px] m-0 leading-relaxed">
+                                    <span className="font-bold text-body-sm text-primary block">Financial Interests</span>
+                                    <p className="text-muted-foreground text-caption m-0 leading-relaxed">
                                         Commercial sponsorships, consultancies, employment, patent holdings, stock equity, or advisory fees within the preceding 36 months related to the study.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <span className="font-bold text-xs text-primary block">Non-Financial Interests</span>
-                                    <p className="text-muted-foreground text-[11px] m-0 leading-relaxed">
+                                    <span className="font-bold text-body-sm text-primary block">Non-Financial Interests</span>
+                                    <p className="text-muted-foreground text-caption m-0 leading-relaxed">
                                         Close personal or family ties, academic rivalries, direct supervisory relationships, or active involvement in advocacy organizations tied to the research.
                                     </p>
                                 </div>
@@ -644,7 +644,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 All submitted manuscripts must include a dedicated <strong>&quot;Declaration of Competing Interests&quot;</strong> section placed immediately before the bibliography.
                             </p>
-                            <div className="p-3.5 rounded-xl bg-muted/30 border border-border space-y-2 text-xs">
+                            <div className="p-3.5 rounded-xl bg-muted/30 border border-border space-y-2 text-body-sm">
                                 <p className="m-0 font-semibold text-foreground">Standard Negative Disclosure Statement:</p>
                                 <blockquote className="border-l-2 border-primary/40 pl-3 italic text-muted-foreground my-1">
                                     &quot;The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.&quot;
@@ -661,7 +661,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 Reviewers and editors must recuse themselves from evaluating manuscripts whenever a conflict of interest exists:
                             </p>
-                            <ul className="space-y-1.5 list-none p-0 m-0 text-xs text-muted-foreground">
+                            <ul className="space-y-1.5 list-none p-0 m-0 text-caption text-muted-foreground">
                                 <li>• Current departmental affiliation or shared institutional employer with any co-author.</li>
                                 <li>• Co-authorship with any author within the previous 36 months.</li>
                                 <li>• Active advisory, thesis supervision, or mentor-mentee relationship with authors.</li>
@@ -693,7 +693,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 <strong>{journalName}</strong> adheres to the guidelines established by the <strong>Committee on Publication Ethics (COPE)</strong> and <strong>World Association of Medical Editors (WAME)</strong> to uphold research integrity and combat fraudulent scholarly practices.
                             </p>
-                            <ul className="space-y-2 list-none p-0 m-0 text-xs text-muted-foreground">
+                            <ul className="space-y-2 list-none p-0 m-0 text-caption text-muted-foreground">
                                 <li className="flex items-start gap-2">
                                     <AlertTriangle className="size-4 text-rose-600 shrink-0 mt-0.5" />
                                     <span><strong>Data Fabrication:</strong> Inventing experimental results, statistical observations, or mathematical derivations that did not take place.</span>
@@ -722,7 +722,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 Allegations of research malpractice undergo a confidential, multi-step investigation:
                             </p>
-                            <ol className="space-y-1.5 list-decimal pl-5 text-xs text-muted-foreground m-0">
+                            <ol className="space-y-1.5 list-decimal pl-5 text-caption text-muted-foreground m-0">
                                 <li><strong>Initial Assessment:</strong> The Editor-in-Chief reviews the allegations to establish whether prima facie evidence of misconduct exists.</li>
                                 <li><strong>Author Query:</strong> The corresponding author is given 14 business days to provide verified raw datasets, laboratory logs, or institutional approvals.</li>
                                 <li><strong>Expert Forensic Review:</strong> Independent image and statistical specialists examine the disputed artifacts if necessary.</li>
@@ -770,20 +770,20 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <RefreshCw className="size-4" />
                                         <span>Corrigendum (Author Correction)</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0 leading-relaxed">
+                                    <p className="text-muted-foreground text-caption m-0 leading-relaxed">
                                         Issued when authors identify minor inadvertent mathematical or typographic errors that do not affect the main conclusions.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <RefreshCw className="size-4" />
                                         <span>Erratum (Publisher Error)</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0 leading-relaxed">
+                                    <p className="text-muted-foreground text-caption m-0 leading-relaxed">
                                         Issued when typesetting, printing, or digital metadata errors are inadvertently introduced by the publisher.
                                     </p>
                                 </div>
@@ -810,7 +810,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 A published article will be formally retracted if conclusive evidence confirms severe honest error, plagiarism, data fabrication, or ethical malpractice.
                             </p>
-                            <ul className="space-y-1.5 list-none p-0 m-0 text-xs text-muted-foreground">
+                            <ul className="space-y-1.5 list-none p-0 m-0 text-caption text-muted-foreground">
                                 <li>• A formal Retraction Note is authored by the Editor-in-Chief and assigned an independent CrossRef DOI.</li>
                                 <li>• The original online HTML abstract remains live with an unmistakable red Retraction Notice banner.</li>
                                 <li>• The official published PDF is permanently watermarked with <strong>&quot;RETRACTED&quot;</strong> on every page in accordance with international archiving protocols.</li>
@@ -844,38 +844,38 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <Database className="size-4" />
                                         <span>JATS 1.3 XML Archiving</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         Every published paper is converted to standard JATS 1.3 XML for platform-independent long-term semantic readability.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <FileText className="size-4" />
                                         <span>Archival PDF/A Compliance</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         Galley proofs are produced in PDF/A-1b format with embedded fonts and standardized Highwire Press scholarly metadata.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <UploadCloud className="size-4" />
                                         <span>Redundant Cloud Storage</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         Assets and PDFs are mirrored across geographically distributed S3 cloud nodes with automated point-in-time snapshots.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-card border border-border space-y-1 shadow-2xs">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <Globe className="size-4" />
                                         <span>OAI-PMH 2.0 Harvester</span>
                                     </div>
-                                    <p className="text-muted-foreground text-[11px] m-0">
+                                    <p className="text-muted-foreground text-caption m-0">
                                         A public endpoint at <code>/api/oai</code> allows libraries and global discovery indexing networks to mirror Dublin Core metadata continuously.
                                     </p>
                                 </div>
@@ -942,7 +942,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 Authors who utilize generative AI or AI-assisted technologies during any stage of manuscript conception, data analysis, translation, or writing must provide transparent disclosure:
                             </p>
-                            <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-2 text-xs">
+                            <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-2 text-body-sm">
                                 <p className="m-0 font-bold text-foreground">Where to Disclose:</p>
                                 <p className="m-0 text-muted-foreground">
                                     Include a dedicated section titled <strong>&quot;AI and AI-Assisted Technologies Statement&quot;</strong> immediately preceding the references.
@@ -1005,7 +1005,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 <strong>{journalName}</strong> is an international peer-reviewed scholarly publication published by <strong>{publisher}</strong> in accordance with the <strong>Principles of Transparency and Best Practice in Scholarly Publishing</strong> established by COPE, DOAJ, OASPA, and WAME.
                             </p>
-                            <div className="p-4 rounded-xl bg-card border border-border space-y-2 text-xs shadow-2xs">
+                            <div className="p-4 rounded-xl bg-card border border-border space-y-2 text-body-sm shadow-2xs">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     <div>
                                         <span className="font-bold text-foreground">Journal Title:</span>
@@ -1044,7 +1044,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 {journalShort} maintains strict separation between editorial decisions and publishing management:
                             </p>
-                            <ul className="space-y-1.5 list-none p-0 m-0 text-xs text-muted-foreground">
+                            <ul className="space-y-1.5 list-none p-0 m-0 text-caption text-muted-foreground">
                                 <li>• The Editor-in-Chief and independent Editorial Board maintain sole authority over all peer-reviewed content, manuscript acceptances, and retractions.</li>
                                 <li>• Administrative management and APC revenue collection have zero influence on editorial outcomes.</li>
                                 <li>• Editors and reviewers receive no financial incentives tied to paper acceptance rates.</li>

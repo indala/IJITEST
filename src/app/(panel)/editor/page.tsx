@@ -67,7 +67,7 @@ async function EditorStatsSection() {
         return <DashboardStatsGrid stats={stats} />;
     } catch (err) {
         console.error("EditorStatsSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load metrics</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load metrics</div>;
     }
 }
 
@@ -134,7 +134,7 @@ async function EditorRecentSubmissionsSection() {
         );
     } catch (err) {
         console.error("EditorRecentSubmissionsSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load active submissions</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load active submissions</div>;
     }
 }
 
@@ -145,7 +145,7 @@ async function EditorMySubmissionsSection() {
         return <DashboardMySubmissionsGrid mySubmissions={mySubmissions as DashboardSubmission[]} />;
     } catch (err) {
         console.error("EditorMySubmissionsSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load personal papers</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load personal papers</div>;
     }
 }
 
@@ -178,7 +178,7 @@ async function EditorHealthSection() {
         );
     } catch (err) {
         console.error("EditorHealthSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load system health</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load system health</div>;
     }
 }
 
@@ -248,9 +248,9 @@ async function EditorDashboardContent() {
         >
             <div className="p-4 border-primary/10 bg-card/30 border-dashed border-2 flex flex-col items-center justify-center text-center rounded-xl">
                 <TrendingUp className="w-7 h-7 text-primary/30 mb-2" />
-                <h4 className="text-xs font-semibold mb-0.5">Support</h4>
-                <p className="text-[11px] text-muted-foreground mb-3">Need help with your submissions?</p>
-                <Button asChild size="sm" variant="outline" className="h-8 px-4 text-xs font-semibold text-primary border-primary/20 hover:bg-primary/5 rounded-lg cursor-pointer">
+                <h4 className="font-semibold mb-0.5">Support</h4>
+                <p className="text-muted-foreground mb-3">Need help with your submissions?</p>
+                <Button asChild size="sm" variant="outline" className="h-8 px-4 font-semibold text-primary border-primary/20 hover:bg-primary/5 rounded-lg cursor-pointer">
                     <Link href="/editor/messages" className="cursor-pointer">Contact</Link>
                 </Button>
             </div>

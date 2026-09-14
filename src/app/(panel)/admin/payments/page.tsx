@@ -48,23 +48,23 @@ import type { PaymentRow, ActionResponse } from '@/db/types';
 
 const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow, onUpdateStatus: (id: number, status: 'pending' | 'paid' | 'verified' | 'failed' | 'waived', txId: string) => Promise<void> }) => (
     <Card key={item.id} className="border-border/70 shadow-2xs hover:border-primary/30 transition-all group overflow-hidden bg-card relative rounded-xl">
-        <div className={`absolute top-0 left-0 w-1 h-full ${item.status === 'verified' ? 'bg-emerald-500' : item.status === 'paid' ? 'bg-blue-500' : item.status === 'waived' ? 'bg-purple-500' : 'bg-orange-500'}`} />
+        <div className={`absolute top-0 left-0 w-1 h-full ${item.status === 'verified' ? 'bg-emerald-500' : item.status === 'paid' ? 'bg-blue-500' : item.status === 'waived' ? 'bg-purple-500' : 'bg-orange-500'} `} />
         <CardContent className="p-4 sm:p-5">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex-1 space-y-3 min-w-0 pl-1">
                     <div className="flex items-center gap-2.5">
-                        <Badge className={`h-5 px-2.5 text-[10px] font-semibold rounded-md ${getStatusVariant(item.status)}`}>
+                        <Badge className={`h-5 px-2.5 text-badge font-semibold rounded-md ${getStatusVariant(item.status)} `}>
                             {item.status === 'verified' ? 'Authorized' : item.status}
                         </Badge>
-                        <div className="flex items-center gap-1.5 bg-muted/60 px-2.5 py-0.5 rounded text-xs font-mono border border-border/60 text-muted-foreground">
+                        <div className="flex items-center gap-1.5 bg-muted/60 px-2.5 py-0.5 rounded text-meta font-mono border border-border/60 text-muted-foreground">
                             <ShieldCheck className="w-3.5 h-3.5 text-primary" />
                             <span>{item.paperId}</span>
                         </div>
                     </div>
-                    <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                    <h3 className="font-semibold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
                         {item.title}
                     </h3>
-                    <div className="flex flex-wrap gap-6 sm:gap-10 items-center border-t border-border/50 pt-3 text-xs">
+                    <div className="flex flex-wrap gap-6 sm:gap-10 items-center border-t border-border/50 pt-3 text-body-sm">
                         <div className="space-y-0.5">
                             <p className="text-meta">Author</p>
                             <div className="flex items-center gap-1.5 text-foreground font-medium">
@@ -113,7 +113,7 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                                     await onUpdateStatus(item.id, 'paid', txId);
                                 }
                             }}
-                            className="h-8 px-3 text-xs font-semibold gap-1.5 bg-card border border-secondary text-secondary hover:text-secondary-foreground hover:bg-secondary rounded-lg transition-colors cursor-pointer"
+                            className="h-8 px-3 font-semibold gap-1.5 bg-card border border-secondary text-secondary hover:text-secondary-foreground hover:bg-secondary rounded-lg transition-colors cursor-pointer"
                         >
                             <CheckCircle className="w-3.5 h-3.5" /> Verify
                         </Button>
@@ -124,17 +124,17 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                                     await onUpdateStatus(item.id, 'verified', item.transactionId || '');
                                 }
                             }}
-                            className="h-8 px-3 text-xs font-semibold gap-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer shadow-xs"
+                            className="h-8 px-3 font-semibold gap-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer shadow-xs"
                         >
                             <ShieldCheck className="w-3.5 h-3.5" /> Authorize Archive
                         </Button>
                     ) : item.status === 'verified' ? (
-                        <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-md text-emerald-600 text-xs font-semibold border border-emerald-200/60">
+                        <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-md text-emerald-600 text-body-sm font-semibold border border-emerald-200/60">
                             <Globe className="w-3.5 h-3.5" />
                             <span>Archive Active</span>
                         </div>
                     ) : (
-                        <div className="flex items-center gap-1.5 bg-purple-50 px-3 py-1 rounded-md text-purple-600 text-xs font-semibold border border-purple-200/60">
+                        <div className="flex items-center gap-1.5 bg-purple-50 px-3 py-1 rounded-md text-purple-600 text-body-sm font-semibold border border-purple-200/60">
                             <ArrowRight className="w-3.5 h-3.5" />
                             <span>Fee Waived</span>
                         </div>
@@ -229,7 +229,7 @@ export default function PaymentManagement() {
     if (loading) return (
         <div className="p-24 text-center space-y-4">
             <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
-            <p className="text-xs text-muted-foreground animate-pulse font-medium">Verifying Financial Records...</p>
+            <p className="text-caption text-muted-foreground animate-pulse font-medium">Verifying Financial Records...</p>
         </div>
     );
 
@@ -238,7 +238,7 @@ export default function PaymentManagement() {
             {/* Header Section */}
             <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/70 pb-3 sm:pb-4">
                 <div className="space-y-1">
-                    <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">Financial Oversight</h1>
+                    <h1 className="panel-title font-bold text-primary">Financial Oversight</h1>
                     <p className="panel-subtitle text-body-sm text-muted-foreground">Article processing charge (APC) management and financial protocol enforcement.</p>
                 </div>
                 <div className="flex items-center gap-2.5">
@@ -250,8 +250,8 @@ export default function PaymentManagement() {
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md rounded-2xl p-5 sm:p-6 bg-card border-border/70 shadow-2xl">
                             <DialogHeader className="space-y-2">
-                                <DialogTitle className="text-xl font-semibold text-foreground tracking-tight">Manual Request</DialogTitle>
-                                <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
+                                <DialogTitle className="font-semibold text-foreground tracking-tight">Manual Request</DialogTitle>
+                                <DialogDescription className="text-caption text-muted-foreground leading-relaxed">
                                     Initialize a payment node for an accepted manuscript without automated triggers.
                                 </DialogDescription>
                             </DialogHeader>
@@ -259,12 +259,12 @@ export default function PaymentManagement() {
                                 <div className="space-y-2">
                                     <Label className="text-label text-foreground">Accepted Paper</Label>
                                     <Select name="submissionId" required>
-                                        <SelectTrigger className="h-10 w-full rounded-lg bg-background border-border/70 text-sm">
+                                        <SelectTrigger className="h-10 w-full rounded-lg bg-background border-border/70">
                                             <SelectValue placeholder="Select target paper..." />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-xl border-border/70 bg-card">
                                             {unpaidPapers.map(paper => (
-                                                <SelectItem key={paper.id} value={paper.id.toString()} className="text-xs sm:text-sm">
+                                                <SelectItem key={paper.id} value={paper.id.toString()} className="">
                                                     {paper.paperId} | {paper.title.slice(0, 50)}...
                                                 </SelectItem>
                                             ))}
@@ -274,12 +274,12 @@ export default function PaymentManagement() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label className="text-label text-foreground">Amount</Label>
-                                        <Input name="amount" type="number" step="0.01" required className="h-10 bg-background border-border/70 rounded-lg text-sm" placeholder="2500" defaultValue="2500" />
+                                        <Input name="amount" type="number" step="0.01" required className="h-10 bg-background border-border/70 rounded-lg" placeholder="2500" defaultValue="2500" />
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="text-label text-foreground">Currency</Label>
                                         <Select name="currency" defaultValue="INR">
-                                            <SelectTrigger className="h-10 w-full rounded-lg bg-background border-border/70 text-sm">
+                                            <SelectTrigger className="h-10 w-full rounded-lg bg-background border-border/70">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl border-border/70 bg-card">
@@ -306,16 +306,16 @@ export default function PaymentManagement() {
                     <Card key={stat.label} className="border-border/70 shadow-2xs bg-card rounded-xl">
                         <CardContent className="p-3.5 sm:p-4">
                             <div className="flex items-center justify-between mb-2">
-                                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${stat.variant === 'emerald' ? 'bg-emerald-500/10 text-emerald-600' : stat.variant === 'blue' ? 'bg-blue-500/10 text-blue-600' : stat.variant === 'orange' ? 'bg-orange-500/10 text-orange-600' : 'bg-rose-500/10 text-rose-600'}`}>
+                                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${stat.variant === 'emerald' ? 'bg-emerald-500/10 text-emerald-600' : stat.variant === 'blue' ? 'bg-blue-500/10 text-blue-600' : stat.variant === 'orange' ? 'bg-orange-500/10 text-orange-600' : 'bg-rose-500/10 text-rose-600'} `}>
                                     <div className="[&>svg]:w-4 [&>svg]:h-4">
                                         {stat.icon}
                                     </div>
                                 </div>
-                                <Badge variant="outline" className="h-5 px-2 text-[10px] text-muted-foreground border-border/70">Live Metric</Badge>
+                                <Badge variant="outline" className="h-5 px-2 text-badge text-muted-foreground border-border/70">Live Metric</Badge>
                             </div>
                             <div className="space-y-0.5">
                                 <p className="text-label text-muted-foreground">{stat.label}</p>
-                                <h3 className="text-xl lg:text-2xl font-bold text-foreground">{stat.value}</h3>
+                                <h3 className="font-bold text-foreground">{stat.value}</h3>
                             </div>
                         </CardContent>
                     </Card>
@@ -332,12 +332,12 @@ export default function PaymentManagement() {
                         placeholder="Search by Title, ID, Author, or Transaction..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-full px-3 text-sm bg-transparent border-0 ring-0 focus-visible:ring-0"
+                        className="h-full px-3 text-body-sm bg-transparent border-0 ring-0 focus-visible:ring-0"
                     />
                 </InputGroup>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="h-9 px-3 bg-card border-border/70 rounded-lg shadow-2xs text-xs text-foreground min-w-[150px]">
+                        <SelectTrigger className="h-9 px-3 bg-card border-border/70 rounded-lg shadow-2xs text-foreground min-w-[150px]">
                             <SelectValue placeholder="Global Status" />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-border/70 bg-card">
@@ -356,7 +356,7 @@ export default function PaymentManagement() {
                 <div className="flex items-center justify-between px-1">
                     <div className="flex items-center gap-2">
                         <h2 className="text-label text-muted-foreground uppercase">Transaction Registry</h2>
-                        <span className="badge-brand text-[10px] font-medium h-5 px-2 rounded-md inline-flex items-center justify-center">{filteredPayments.length}</span>
+                        <span className="badge-brand font-medium h-5 px-2 rounded-md inline-flex items-center justify-center">{filteredPayments.length}</span>
                     </div>
                 </div>
 
@@ -371,8 +371,8 @@ export default function PaymentManagement() {
                                 <AlertTriangle className="w-6 h-6" />
                             </div>
                             <div className="text-center space-y-1">
-                                <h3 className="font-semibold text-foreground text-lg">No Records Found</h3>
-                                <p className="text-sm text-muted-foreground max-w-sm">No financial transactions correlate with your active query.</p>
+                                <h3 className="font-semibold text-foreground">No Records Found</h3>
+                                <p className="text-caption text-muted-foreground max-w-sm">No financial transactions correlate with your active query.</p>
                             </div>
                         </div>
                     )}

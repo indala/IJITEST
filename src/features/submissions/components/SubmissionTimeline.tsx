@@ -184,14 +184,14 @@ export function SubmissionTimeline({
     };
 
     return (
-        <Card className={`border-border/60 shadow-xs bg-card ${className}`}>
+        <Card className={`border-border/60 shadow-xs bg-card ${className} `}>
             <CardHeader className="p-5 pb-3 border-b border-border/40 flex flex-row items-center justify-between">
                 <div className="space-y-0.5">
-                    <CardTitle className="text-sm font-bold flex items-center gap-2">
+                    <CardTitle className="font-bold flex items-center gap-2">
                         <Clock className="w-4 h-4 text-primary" />
                         Submission History & Audit Timeline
                     </CardTitle>
-                    <CardDescription className="text-xs">
+                    <CardDescription className="text-body-sm">
                         Chronological record of editorial workflows, author submissions, peer reviews, and status changes.
                     </CardDescription>
                 </div>
@@ -200,10 +200,10 @@ export function SubmissionTimeline({
                     size="sm"
                     onClick={() => fetchEvents(true)}
                     disabled={isRefreshing || isLoading}
-                    className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
+                    className="h-8 px-2 text-caption text-muted-foreground hover:text-foreground"
                     title="Refresh Timeline"
                 >
-                    <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                    <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""} `} />
                 </Button>
             </CardHeader>
 
@@ -211,13 +211,13 @@ export function SubmissionTimeline({
                 {isLoading ? (
                     <div className="py-12 flex flex-col items-center justify-center text-muted-foreground gap-2">
                         <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                        <p className="text-xs font-medium">Loading event timeline...</p>
+                        <p className="font-medium">Loading event timeline...</p>
                     </div>
                 ) : events.length === 0 ? (
                     <div className="py-8 text-center text-muted-foreground space-y-1">
                         <Clock className="w-8 h-8 mx-auto opacity-30 mb-2" />
-                        <p className="text-xs font-semibold">No timeline events recorded yet.</p>
-                        <p className="text-[11px] opacity-70">
+                        <p className="font-semibold">No timeline events recorded yet.</p>
+                        <p className="text-caption opacity-70">
                             Milestone events such as reviews, editorial decisions, and revisions will be displayed here.
                         </p>
                     </div>
@@ -230,7 +230,7 @@ export function SubmissionTimeline({
                             return (
                                 <div key={evt.id || idx} className="relative group">
                                     {/* Timeline Marker Dot / Icon */}
-                                    <div className={`absolute -left-6 top-0.5 w-6 h-6 rounded-full border flex items-center justify-center shadow-xs transition-transform group-hover:scale-110 ${config.color}`}>
+                                    <div className={`absolute -left-6 top-0.5 w-6 h-6 rounded-full border flex items-center justify-center shadow-xs transition-transform group-hover:scale-110 ${config.color} `}>
                                         <IconComponent className="w-3 h-3" />
                                     </div>
 
@@ -238,27 +238,27 @@ export function SubmissionTimeline({
                                     <div className="space-y-1 bg-muted/20 border border-border/40 rounded-xl p-3.5 transition-colors hover:bg-muted/40">
                                         <div className="flex flex-wrap items-center justify-between gap-2">
                                             <div className="flex items-center gap-2">
-                                                <Badge variant="outline" className={`text-[10px] font-bold tracking-tight px-2 py-0.5 ${config.bgBadge}`}>
+                                                <Badge variant="outline" className={`text-badge font-bold tracking-tight px-2 py-0.5 ${config.bgBadge} `}>
                                                     {config.label}
                                                 </Badge>
                                                 {evt.actor?.role ? (
-                                                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                                                    <span className="text-label font-semibold text-muted-foreground uppercase tracking-wider">
                                                         [{evt.actor.role}]
                                                     </span>
                                                 ) : null}
                                             </div>
-                                            <span className="text-[11px] text-muted-foreground font-mono">
+                                            <span className="text-meta text-muted-foreground font-mono">
                                                 {formatEventTime(evt.createdAt)}
                                             </span>
                                         </div>
 
-                                        <p className="text-xs text-foreground font-medium m-0 leading-relaxed pt-1">
+                                        <p className="text-foreground font-medium m-0 leading-relaxed pt-1">
                                             {evt.description}
                                         </p>
 
                                         {/* Actor Name if present */}
                                         {evt.actor?.fullName ? (
-                                            <p className="text-[11px] text-muted-foreground m-0">
+                                            <p className="text-caption text-muted-foreground m-0">
                                                 By: <span className="font-semibold text-foreground/80">{evt.actor.fullName}</span>
                                             </p>
                                         ) : null}
@@ -271,7 +271,7 @@ export function SubmissionTimeline({
                                                     return (
                                                         <span
                                                             key={key}
-                                                            className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-card border border-border/50 text-muted-foreground"
+                                                            className="text-meta font-mono px-1.5 py-0.5 rounded bg-card border border-border/50 text-muted-foreground"
                                                         >
                                                             {key}: <strong className="text-foreground">{String(val)}</strong>
                                                         </span>

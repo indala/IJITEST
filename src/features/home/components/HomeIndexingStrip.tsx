@@ -86,13 +86,13 @@ function HomeIndexingStrip() {
                     <span className="p-1.5 bg-primary/5 rounded-lg text-primary">
                         <Globe className="w-4 h-4" />
                     </span>
-                    <h2 id="indexing-heading" className="m-0 text-lg font-bold text-foreground">
+                    <h2 id="indexing-heading" className="m-0 font-bold text-foreground">
                         Indexing & Digital Repositories
                     </h2>
                 </div>
                 <Link
                     href="/indexing"
-                    className="text-xs font-bold text-primary hover:text-secondary transition-colors inline-flex items-center gap-1"
+                    className="text-body-sm font-bold text-primary hover:text-secondary transition-colors inline-flex items-center gap-1"
                 >
                     <span>View Roadmap & Details</span>
                     <Sparkles className="w-3.5 h-3.5 text-secondary" />
@@ -113,7 +113,7 @@ function HomeIndexingStrip() {
                                 </div>
                                 <div>
                                     <div className="flex items-center justify-between gap-1">
-                                        <h3 className="group-hover:text-primary transition-colors m-0 text-xs font-semibold truncate">
+                                        <h3 className="group-hover:text-primary transition-colors m-0 font-semibold truncate">
                                             {agency.name}
                                         </h3>
                                         {agency.isVerified && (
@@ -126,8 +126,8 @@ function HomeIndexingStrip() {
                                 </div>
                             </div>
 
-                            <div className="pt-2 border-t border-border/40 flex items-center justify-between text-[10px] 2xl:text-xs">
-                                <span className={`font-medium truncate max-w-[120px] ${agency.isVerified ? 'text-emerald-700 font-semibold' : 'text-muted-foreground'}`}>
+                            <div className="pt-2 border-t border-border/40 flex items-center justify-between text-body-sm">
+                                <span className={`font-medium truncate max-w-[120px] ${agency.isVerified ? 'text-emerald-700 font-semibold' : 'text-muted-foreground'} `}>
                                     {agency.status}
                                 </span>
                                 {agency.link && (

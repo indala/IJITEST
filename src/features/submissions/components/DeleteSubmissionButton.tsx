@@ -63,7 +63,7 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
         <Button
             variant="outline"
             disabled={loading || isRestricted}
-            className="w-full h-14 gap-3 border-red-500/10 text-red-400 font-black text-xs  tracking-[0.2em] rounded-2xl hover:bg-red-500/5 hover:text-red-600 transition-all  shadow-inner cursor-pointer"
+            className="w-full h-14 gap-3 border-red-500/10 text-red-400 font-black tracking-[0.2em] rounded-2xl hover:bg-red-500/5 hover:text-red-600 transition-all shadow-inner cursor-pointer"
         >
             {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -100,19 +100,19 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
                         <div className="w-16 h-16 rounded-2xl bg-red-500/5 border border-red-500/10 flex items-center justify-center text-red-500 shadow-inner mb-2">
                             <AlertTriangle className="w-8 h-8" />
                         </div>
-                        <AlertDialogTitle className="text-2xl font-black text-red-600 tracking-widerer ">Critical Termination Protocol</AlertDialogTitle>
-                        <AlertDialogDescription className="text-xs font-medium text-red-900/40 leading-relaxed  tracking-widest ">
+                        <AlertDialogTitle className="text-label font-black text-red-600 tracking-widerer">Critical Termination Protocol</AlertDialogTitle>
+                        <AlertDialogDescription className="text-label font-medium text-red-900/40 leading-relaxed tracking-widest">
                             DANGER: This action will permanently erase this manuscript node and all associated technical dossiers from the global server. This operation is irreversible.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="pt-6 gap-4">
-                        <AlertDialogCancel className="h-14 px-8 rounded-2xl font-black text-[10px]  tracking-widest border-primary/10 text-primary/40 hover:bg-primary/5 cursor-pointer">
+                        <AlertDialogCancel className="h-14 px-8 rounded-2xl font-black tracking-widest border-primary/10 text-primary/40 hover:bg-primary/5 cursor-pointer">
                             Abort Protocol
                         </AlertDialogCancel>
                         <form action={deleteAction}>
                             <AlertDialogAction
                                 type="submit"
-                                className="h-14 px-8 rounded-2xl bg-red-600 text-white font-black text-[10px]  tracking-widest hover:bg-red-700 shadow-xl shadow-red-600/20 cursor-pointer"
+                                className="h-14 px-8 rounded-2xl bg-red-600 text-white font-black tracking-widest hover:bg-red-700 shadow-xl shadow-red-600/20 cursor-pointer"
                             >
                                 Authorize Termination
                             </AlertDialogAction>
@@ -127,13 +127,13 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
                         <div className="w-16 h-16 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex items-center justify-center text-amber-500 shadow-inner mb-2">
                             <XCircle className="w-8 h-8" />
                         </div>
-                        <AlertDialogTitle className="text-2xl font-black text-primary tracking-widerer ">Access Restricted</AlertDialogTitle>
-                        <AlertDialogDescription className="text-xs font-medium text-primary/40 leading-relaxed  tracking-widest ">
+                        <AlertDialogTitle className="text-label font-black text-primary tracking-widerer">Access Restricted</AlertDialogTitle>
+                        <AlertDialogDescription className="text-label font-medium text-primary/40 leading-relaxed tracking-widest">
                             {errorMessage}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="pt-6">
-                        <Button onClick={() => setErrorOpen(false)} className="w-full h-14 font-black text-[10px]  tracking-widest shadow-xl shadow-primary/20  rounded-2xl cursor-pointer">
+                        <Button onClick={() => setErrorOpen(false)} className="w-full h-14 font-black tracking-widest shadow-xl shadow-primary/20 rounded-2xl cursor-pointer">
                             Acknowledge
                         </Button>
                     </AlertDialogFooter>

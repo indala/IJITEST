@@ -50,10 +50,10 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
                         placeholder="Search by name, department, institute..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted/30 border border-border/70 text-xs focus:outline-none focus:ring-1 focus:ring-primary/30"
+                        className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted/30 border border-border/70 text-body-sm focus:outline-none focus:ring-1 focus:ring-primary/30"
                     />
                 </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground shrink-0 w-full sm:w-auto justify-end">
+                <div className="flex items-center gap-2 text-caption text-muted-foreground shrink-0 w-full sm:w-auto justify-end">
                     <Users className="w-3.5 h-3.5 text-primary" />
                     <span>{1 + filteredReviewers.length} Editorial Members Listed</span>
                 </div>
@@ -62,9 +62,9 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
             {/* 1. Editor-in-Chief Section */}
             {!searchQuery.trim() && (
                 <section className="overflow-hidden rounded-xl border border-primary/20 shadow-xs bg-slate-200/60">
-                    <div className="bg-[#000066] p-3 px-5 sm:px-6 flex items-center justify-between">
+                    <div className="bg-primary p-3 px-5 sm:px-6 flex items-center justify-between">
                         <h2 className="text-white m-0">Editor-in-Chief</h2>
-                        <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-[10px] font-bold uppercase tracking-wider">
+                        <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white font-bold uppercase tracking-wider">
                             Executive Lead
                         </span>
                     </div>
@@ -87,7 +87,7 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
 
                                 <div className="flex flex-wrap items-center gap-3 pt-2.5 border-t border-primary/15">
                                     {editorInChief.email && (
-                                        <div className="flex items-center gap-1.5 text-xs text-primary">
+                                        <div className="flex items-center gap-1.5 text-body-sm text-primary">
                                             <Mail className="w-3.5 h-3.5 text-primary/40 shrink-0" />
                                             <a href={`mailto:${editorInChief.email}`} className="hover:text-primary hover:underline transition-colors font-semibold">
                                                 {editorInChief.email}
@@ -95,7 +95,7 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
                                         </div>
                                     )}
                                     {editorInChief.secondaryEmail && (
-                                        <div className="flex items-center gap-1.5 text-xs text-primary/60 border-l border-primary/20 pl-3">
+                                        <div className="flex items-center gap-1.5 text-body-sm text-primary/60 border-l border-primary/20 pl-3">
                                             <Mail className="w-3.5 h-3.5 text-primary/40 shrink-0" />
                                             <a href={`mailto:${editorInChief.secondaryEmail}`} className="hover:text-primary hover:underline transition-colors font-medium">
                                                 {editorInChief.secondaryEmail}
@@ -111,9 +111,9 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
 
             {/* 2. Editorial Board Members & Reviewers Section */}
             <section className="overflow-hidden rounded-xl border border-primary/20 shadow-xs bg-slate-200/60">
-                <div className="bg-[#000066] p-3 px-5 sm:px-6 flex items-center justify-between">
+                <div className="bg-primary p-3 px-5 sm:px-6 flex items-center justify-between">
                     <h2 className="text-white m-0">Editorial Board Members & Reviewers</h2>
-                    <span className="text-white/80 text-xs font-semibold">
+                    <span className="text-white/80 font-semibold">
                         {filteredReviewers.length} Reviewers
                     </span>
                 </div>
@@ -130,7 +130,7 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
                                     <h3 className="m-0 text-primary font-bold">
                                         {member.full_name}
                                     </h3>
-                                    <span className="text-[10px] font-mono font-semibold text-muted-foreground uppercase">
+                                    <span className="text-meta font-mono font-semibold text-muted-foreground uppercase">
                                         Board Member #{mIdx + 1}
                                     </span>
                                 </header>
@@ -145,7 +145,7 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
 
                                     <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-primary/15">
                                         {member.email && (
-                                            <div className="flex items-center gap-1.5 text-xs text-primary">
+                                            <div className="flex items-center gap-1.5 text-body-sm text-primary">
                                                 <Mail className="w-3.5 h-3.5 text-primary/40 shrink-0" />
                                                 <a href={`mailto:${member.email}`} className="hover:text-primary hover:underline transition-colors font-semibold">
                                                     {member.email}
@@ -153,7 +153,7 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
                                             </div>
                                         )}
                                         {member.secondaryEmail && (
-                                            <div className="flex items-center gap-1.5 text-xs text-primary/60 border-l border-primary/20 pl-3">
+                                            <div className="flex items-center gap-1.5 text-body-sm text-primary/60 border-l border-primary/20 pl-3">
                                                 <Mail className="w-3.5 h-3.5 text-primary/40 shrink-0" />
                                                 <a href={`mailto:${member.secondaryEmail}`} className="hover:text-primary hover:underline transition-colors font-medium">
                                                     {member.secondaryEmail}
@@ -161,7 +161,7 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
                                             </div>
                                         )}
                                         {member.profileLink && (
-                                            <div className="flex items-center gap-1.5 text-xs">
+                                            <div className="flex items-center gap-1.5 text-body-sm">
                                                 <a
                                                     href={member.profileLink}
                                                     target="_blank"
@@ -196,13 +196,13 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
                         <div className="pt-2 flex flex-col gap-1">
                             <div className="flex items-center gap-2">
                                 <Mail className="w-4 h-4 text-primary/40" />
-                                <a href="mailto:editor@ijitest.org" className="text-[#000066] font-semibold hover:underline">
+                                <a href="mailto:editor@ijitest.org" className="text-primary font-semibold hover:underline">
                                     editor@ijitest.org
                                 </a>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Mail className="w-4 h-4 text-primary/40 opacity-50" />
-                                <a href="mailto:rthorlapati@miracleeducationalsociety.com" className="text-[#000066]/70 hover:underline">
+                                <a href="mailto:rthorlapati@miracleeducationalsociety.com" className="text-primary/70 hover:underline">
                                     rthorlapati@miracleeducationalsociety.com
                                 </a>
                             </div>
@@ -223,14 +223,14 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
                     <div className="pt-2 flex items-center gap-3">
                         <Link
                             href="/join-us"
-                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-white font-bold text-xs hover:bg-primary/90 transition-all shadow-xs"
+                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-white font-bold text-body-sm hover:bg-primary/90 transition-all shadow-xs"
                         >
                             <span>Apply as Reviewer / Editor</span>
                             <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
                         <a
                             href={`mailto:${supportEmail}`}
-                            className="text-xs font-semibold text-primary hover:underline"
+                            className="text-body-sm font-semibold text-primary hover:underline"
                         >
                             Email Inquiry
                         </a>

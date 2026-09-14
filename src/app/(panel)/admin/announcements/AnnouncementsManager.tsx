@@ -222,9 +222,9 @@ export default function AnnouncementsManager() {
                         <div className="p-2 rounded-lg bg-primary/10 text-primary">
                             <Megaphone className="h-5 w-5" />
                         </div>
-                        <h1 className="text-2xl font-bold tracking-tight">Announcements & Notices</h1>
+                        <h1 className="font-bold tracking-tight">Announcements & Notices</h1>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-caption text-muted-foreground">
                         Publish scholarly calls for papers, editorial changes, and indexing milestones directly linked with storage-service assets.
                     </p>
                 </div>
@@ -281,14 +281,14 @@ export default function AnnouncementsManager() {
             {loading ? (
                 <div className="flex flex-col items-center justify-center p-12 text-muted-foreground gap-3">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-sm">Loading scholarly announcements...</p>
+                    <p className="">Loading scholarly announcements...</p>
                 </div>
             ) : filtered.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground gap-2">
                         <Megaphone className="h-10 w-10 text-muted-foreground/50" />
-                        <h3 className="font-semibold text-foreground text-lg">No announcements found</h3>
-                        <p className="text-sm max-w-sm">
+                        <h3 className="font-semibold text-foreground">No announcements found</h3>
+                        <p className="max-w-sm">
                             {searchQuery ? "No results match your search filter." : "Create your first scholarly announcement or call for papers."}
                         </p>
                         <Button onClick={openCreateDialog} size="sm" className="mt-2">
@@ -304,7 +304,7 @@ export default function AnnouncementsManager() {
                         const typeInfo = TYPE_CONFIG[item.type] || TYPE_CONFIG.news;
 
                         return (
-                            <Card key={item.id} className={`overflow-hidden transition-all duration-150 ${!item.isActive ? 'opacity-60 bg-muted/30' : ''}`}>
+                            <Card key={item.id} className={`overflow-hidden transition-all duration-150 ${!item.isActive ? 'opacity-60 bg-muted/30' : ''} `}>
                                 <div className="flex flex-col md:flex-row items-start">
                                     {/* Thumbnail if image exists */}
                                     {item.imageUrl && (
@@ -327,17 +327,17 @@ export default function AnnouncementsManager() {
                                                     {typeInfo.label}
                                                 </Badge>
                                                 {item.priority > 0 && (
-                                                    <Badge variant="secondary" className="text-xs">
+                                                    <Badge variant="secondary" className="text-badge">
                                                         Priority: {item.priority}
                                                     </Badge>
                                                 )}
                                                 {isExpired && (
-                                                    <Badge variant="destructive" className="text-xs">
+                                                    <Badge variant="destructive" className="text-badge">
                                                         Expired
                                                     </Badge>
                                                 )}
                                                 {!item.isActive && (
-                                                    <Badge variant="outline" className="text-xs text-muted-foreground">
+                                                    <Badge variant="outline" className="text-badge text-muted-foreground">
                                                         Draft / Inactive
                                                     </Badge>
                                                 )}
@@ -350,7 +350,7 @@ export default function AnnouncementsManager() {
                                                         onCheckedChange={() => handleToggleStatus(item.id)}
                                                         disabled={isPending}
                                                     />
-                                                    <span className="text-xs text-muted-foreground">
+                                                    <span className="text-badge text-muted-foreground">
                                                         {item.isActive ? "Active" : "Hidden"}
                                                     </span>
                                                 </div>
@@ -375,26 +375,26 @@ export default function AnnouncementsManager() {
                                         </div>
 
                                         <div>
-                                            <h3 className="font-semibold text-lg hover:text-primary transition-colors">
+                                            <h3 className="font-semibold hover:text-primary transition-colors">
                                                 <Link href={`/announcements/${item.id}`} target="_blank" className="hover:underline flex items-center gap-1.5">
                                                     {item.title}
                                                     <ExternalLink className="h-3.5 w-3.5 opacity-40" />
                                                 </Link>
                                             </h3>
                                             {item.descriptionShort && (
-                                                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                                                <p className="text-caption text-muted-foreground mt-1 line-clamp-2">
                                                     {item.descriptionShort}
                                                 </p>
                                             )}
                                         </div>
 
-                                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-1 border-t">
+                                        <div className="flex flex-wrap items-center gap-4 text-caption text-muted-foreground pt-1 border-t">
                                             <div className="flex items-center gap-1">
                                                 <Calendar className="h-3.5 w-3.5" />
                                                 Posted: {new Date(item.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                                             </div>
                                             {item.dateExpire && (
-                                                <div className={`flex items-center gap-1 ${isExpired ? 'text-destructive font-medium' : ''}`}>
+                                                <div className={`flex items-center gap-1 ${isExpired ? 'text-destructive font-medium' : ''} `}>
                                                     <Clock className="h-3.5 w-3.5" />
                                                     Expires: {new Date(item.dateExpire).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                                                 </div>
@@ -445,7 +445,7 @@ export default function AnnouncementsManager() {
                                     id="ann-type"
                                     value={type}
                                     onChange={e => setType(e.target.value as AnnouncementType)}
-                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-body-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
                                 >
                                     <option value="call_for_papers">Call for Papers</option>
                                     <option value="news">Journal News</option>
@@ -496,7 +496,7 @@ export default function AnnouncementsManager() {
                                 <UploadCloud className="h-4 w-4 text-primary" />
                                 Banner Image (Stored in storage-service)
                             </Label>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-badge text-muted-foreground">
                                 Supported formats: PNG, JPG, WEBP, GIF, SVG (Max: 5MB).
                             </div>
 
@@ -533,13 +533,13 @@ export default function AnnouncementsManager() {
 
                             {imagePreview && (
                                 <div className="pt-2">
-                                    <Label htmlFor="ann-alt" className="text-xs">Image Alt Text / Caption</Label>
+                                    <Label htmlFor="ann-alt" className="text-badge">Image Alt Text / Caption</Label>
                                     <Input
                                         id="ann-alt"
                                         placeholder="Accessible description of banner image"
                                         value={imageAltText}
                                         onChange={e => setImageAltText(e.target.value)}
-                                        className="h-8 text-xs mt-1"
+                                        className="h-8 text-body-sm mt-1"
                                     />
                                 </div>
                             )}
@@ -554,7 +554,7 @@ export default function AnnouncementsManager() {
                                     value={dateExpire}
                                     onChange={e => setDateExpire(e.target.value)}
                                 />
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-badge text-muted-foreground">
                                     Announcement will automatically unpublish after this date.
                                 </span>
                             </div>

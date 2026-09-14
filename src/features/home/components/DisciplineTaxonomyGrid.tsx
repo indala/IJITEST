@@ -92,7 +92,7 @@ function DisciplineTaxonomyGrid() {
 
                 <Link
                     href="/submit"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-secondary hover:text-primary transition-colors shrink-0"
+                    className="inline-flex items-center gap-1.5 text-body-sm font-bold text-secondary hover:text-primary transition-colors shrink-0"
                 >
                     <span>Submit to Track</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -113,7 +113,7 @@ function DisciplineTaxonomyGrid() {
                                     <div className="w-8 h-8 rounded-lg bg-primary/5 group-hover:bg-primary group-hover:text-white text-primary flex items-center justify-center transition-colors duration-200">
                                         <Icon className="w-4 h-4" />
                                     </div>
-                                    <span className="text-[10px] font-mono text-muted-foreground/60 group-hover:text-secondary transition-colors font-semibold">
+                                    <span className="text-meta font-mono text-muted-foreground/60 group-hover:text-secondary transition-colors font-semibold">
                                         Track {idx + 1}
                                     </span>
                                 </div>
@@ -122,7 +122,7 @@ function DisciplineTaxonomyGrid() {
                                     <h4 className="m-0 group-hover:text-secondary transition-colors leading-snug">
                                         {item.title}
                                     </h4>
-                                    <p className="text-muted-foreground text-xs leading-relaxed m-0 line-clamp-2">
+                                    <p className="text-muted-foreground text-caption leading-relaxed m-0 line-clamp-2">
                                         {item.description}
                                     </p>
                                 </div>
@@ -131,7 +131,7 @@ function DisciplineTaxonomyGrid() {
                             {/* Tags list */}
                             <div className="pt-3 mt-3 border-t border-border/40 flex flex-wrap gap-1">
                                 {item.tags.map((t) => (
-                                    <span key={t} className="px-1.5 py-0.5 rounded bg-muted/60 text-[10px] font-medium text-foreground/70 group-hover:text-primary transition-colors">
+                                    <span key={t} className="px-1.5 py-0.5 rounded bg-muted/60 text-body-sm font-medium text-foreground/70 group-hover:text-primary transition-colors">
                                         {t}
                                     </span>
                                 ))}

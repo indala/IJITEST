@@ -50,7 +50,7 @@ export default function InviteEditorModal() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="sm" variant="outline" className="h-8 rounded-lg text-[9px] font-black uppercase tracking-wider border-primary/20 text-primary hover:bg-primary hover:text-white transition-all cursor-pointer">
+                <Button size="sm" variant="outline" className="h-8 rounded-lg font-black uppercase tracking-wider border-primary/20 text-primary hover:bg-primary hover:text-white transition-all cursor-pointer">
                     Invite Editor
                 </Button>
             </DialogTrigger>
@@ -62,8 +62,8 @@ export default function InviteEditorModal() {
                         </div>
                         <div>
                             <DialogHeader>
-                                <DialogTitle className="text-xl font-black text-foreground tracking-wider">Expand Infrastructure</DialogTitle>
-                                <DialogDescription className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
+                                <DialogTitle className="font-black text-foreground tracking-wider">Expand Infrastructure</DialogTitle>
+                                <DialogDescription className="text-label font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
                                     Adding high-priority personnel to the editorial board.
                                 </DialogDescription>
                             </DialogHeader>
@@ -74,7 +74,7 @@ export default function InviteEditorModal() {
                 <form action={formAction} className="p-8 space-y-6">
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="fullName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Candidate Name</Label>
+                            <Label htmlFor="fullName" className="form-label-brand font-black uppercase tracking-widest text-muted-foreground ml-1">Candidate Name</Label>
                             <div className="relative">
                                 <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
                                 <Input
@@ -83,12 +83,12 @@ export default function InviteEditorModal() {
                                     placeholder="Dr. Alexander Thorne"
                                     required
                                     disabled={isPending}
-                                    className="h-12 pl-12 rounded-xl bg-muted/30 border-none focus-visible:ring-primary/20 text-sm font-semibold"
+                                    className="h-12 pl-12 rounded-xl bg-muted/30 border-none focus-visible:ring-primary/20 text-body-sm font-semibold"
                                 />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Secure Email Gateway</Label>
+                            <Label htmlFor="email" className="form-label-brand font-black uppercase tracking-widest text-muted-foreground ml-1">Secure Email Gateway</Label>
                             <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
                                 <Input
@@ -98,7 +98,7 @@ export default function InviteEditorModal() {
                                     placeholder="thorne@ijitest.org"
                                     required
                                     disabled={isPending}
-                                    className="h-12 pl-12 rounded-xl bg-muted/30 border-none focus-visible:ring-primary/20 text-sm font-semibold"
+                                    className="h-12 pl-12 rounded-xl bg-muted/30 border-none focus-visible:ring-primary/20 text-body-sm font-semibold"
                                 />
                             </div>
                         </div>
@@ -108,7 +108,7 @@ export default function InviteEditorModal() {
                         <Button
                             type="submit"
                             disabled={isPending}
-                            className="h-12 w-full bg-primary text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                            className="h-12 w-full bg-primary text-white font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                         >
                             {isPending ? (
                                 <>Initiating Protocol <Loader2 className="ml-2 w-4 h-4 animate-spin" /></>
@@ -116,7 +116,7 @@ export default function InviteEditorModal() {
                                 <>Transmit Invitation <ShieldCheck className="ml-2 w-4 h-4" /></>
                             )}
                         </Button>
-                        <p className="text-[9px] font-bold text-center text-muted-foreground uppercase tracking-widest">
+                        <p className="text-label font-bold text-center text-muted-foreground uppercase tracking-widest">
                             Authorized personnel will receive a secure setup link via email.
                         </p>
                     </div>

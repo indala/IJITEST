@@ -554,10 +554,10 @@ export default function EmailTemplatesManager() {
                             <Mail className="w-6 h-6" />
                         </div>
                         <div>
-                            <CardTitle className="text-lg sm:text-xl font-bold text-slate-900 m-0">
+                            <CardTitle className="font-bold text-slate-900 m-0">
                                 Customizable Email Templates (OJS Parity)
                             </CardTitle>
-                            <CardDescription className="text-xs text-slate-500 m-0 mt-0.5">
+                            <CardDescription className="text-body-sm text-slate-500 m-0 mt-0.5">
                                 Customize automated notification subjects, bodies, and placeholder variables.
                             </CardDescription>
                         </div>
@@ -572,7 +572,7 @@ export default function EmailTemplatesManager() {
                                     size="sm"
                                     onClick={handleUndo}
                                     disabled={historyIndex <= 0 || previewMode}
-                                    className="h-8 px-2.5 text-xs font-semibold text-slate-700 hover:text-slate-950 hover:bg-white disabled:opacity-40 cursor-pointer"
+                                    className="h-8 px-2.5 font-semibold text-slate-700 hover:text-slate-950 hover:bg-white disabled:opacity-40 cursor-pointer"
                                     title="Undo (Ctrl+Z)"
                                 >
                                     <Undo2 className="w-3.5 h-3.5 mr-1" />
@@ -585,7 +585,7 @@ export default function EmailTemplatesManager() {
                                     size="sm"
                                     onClick={handleRedo}
                                     disabled={historyIndex >= history.length - 1 || previewMode}
-                                    className="h-8 px-2.5 text-xs font-semibold text-slate-700 hover:text-slate-950 hover:bg-white disabled:opacity-40 cursor-pointer"
+                                    className="h-8 px-2.5 font-semibold text-slate-700 hover:text-slate-950 hover:bg-white disabled:opacity-40 cursor-pointer"
                                     title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
                                 >
                                     <Redo2 className="w-3.5 h-3.5 mr-1" />
@@ -598,7 +598,7 @@ export default function EmailTemplatesManager() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setPreviewMode(!previewMode)}
-                                className="h-9 gap-1.5 text-xs font-semibold"
+                                className="h-9 gap-1.5 text-body-sm font-semibold"
                             >
                                 {previewMode ? <Code2 className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                                 {previewMode ? "Edit Mode" : "Live Preview"}
@@ -609,7 +609,7 @@ export default function EmailTemplatesManager() {
                                 size="sm"
                                 onClick={handleReset}
                                 disabled={resetting || saving}
-                                className="h-9 gap-1.5 text-xs text-slate-600 hover:text-red-600 font-semibold"
+                                className="h-9 gap-1.5 text-body-sm text-slate-600 hover:text-red-600 font-semibold"
                             >
                                 {resetting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}
                                 Reset
@@ -619,7 +619,7 @@ export default function EmailTemplatesManager() {
                                 size="sm"
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="h-9 gap-1.5 text-xs bg-primary text-white font-bold"
+                                className="h-9 gap-1.5 text-body-sm bg-primary text-white font-bold"
                             >
                                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                                 Save Template
@@ -634,10 +634,10 @@ export default function EmailTemplatesManager() {
                     {/* Left: Template Selector List */}
                     <div className="lg:col-span-4 space-y-3 border-r border-slate-100 pr-0 lg:pr-6">
                         <div className="flex items-center justify-between">
-                            <Label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                            <Label className="form-label-brand font-bold text-slate-700 uppercase tracking-wider block">
                                 Notification Events
                             </Label>
-                            <Badge variant="secondary" className="text-[10px] font-semibold text-slate-500">
+                            <Badge variant="secondary" className="text-badge font-semibold text-slate-500">
                                 {filteredTemplates.length} of {templates.length}
                             </Badge>
                         </div>
@@ -650,7 +650,7 @@ export default function EmailTemplatesManager() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search templates..."
-                                className="pl-8 h-8 text-xs bg-slate-50/50 border-slate-200"
+                                className="pl-8 h-8 text-body-sm bg-slate-50/50 border-slate-200"
                             />
                         </div>
 
@@ -666,14 +666,14 @@ export default function EmailTemplatesManager() {
                                         key={cat.id}
                                         type="button"
                                         onClick={() => setSelectedCategory(cat.id)}
-                                        className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1 cursor-pointer ${
+                                        className={`px-2 py-1 rounded-lg font-medium transition-colors flex items-center gap-1 cursor-pointer ${
                                             isActive
                                                 ? "bg-slate-900 text-white font-semibold shadow-2xs"
                                                 : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                        }`}
+                                        } `}
                                     >
                                         <span>{cat.label}</span>
-                                        <span className={`text-[9px] px-1 py-0.2 rounded-full ${isActive ? "bg-slate-800 text-slate-200" : "bg-slate-200 text-slate-600"}`}>
+                                        <span className={`text-badge px-1 py-0.2 rounded-full ${isActive ? "bg-slate-800 text-slate-200" : "bg-slate-200 text-slate-600"} `}>
                                             {count}
                                         </span>
                                     </button>
@@ -684,7 +684,7 @@ export default function EmailTemplatesManager() {
                         {/* Template List */}
                         <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
                             {filteredTemplates.length === 0 ? (
-                                <div className="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-xl">
+                                <div className="p-6 text-center text-body-sm text-slate-400 border border-dashed border-slate-200 rounded-xl">
                                     No notification templates match your search.
                                 </div>
                             ) : (
@@ -699,15 +699,15 @@ export default function EmailTemplatesManager() {
                                                 isSelected
                                                     ? "bg-primary/5 border-primary/30 shadow-xs"
                                                     : "bg-white hover:bg-slate-50 border-slate-100"
-                                            }`}
+                                            } `}
                                         >
                                             <div className="flex items-center justify-between gap-1 mb-1">
-                                                <span className={`text-xs font-bold ${isSelected ? "text-primary" : "text-slate-800"}`}>
+                                                <span className={`text-body-sm font-bold ${isSelected ? "text-primary" : "text-slate-800"} `}>
                                                     {tpl.name}
                                                 </span>
                                                 {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />}
                                             </div>
-                                            <p className="text-[11px] text-slate-500 line-clamp-1 m-0">
+                                            <p className="text-slate-500 line-clamp-1 m-0">
                                                 {tpl.description}
                                             </p>
                                         </button>
@@ -723,10 +723,10 @@ export default function EmailTemplatesManager() {
                             <>
                                 <div>
                                     <div className="flex items-center justify-between mb-1.5">
-                                        <Label htmlFor="tpl-subject" className="text-xs font-bold text-slate-700">
+                                        <Label htmlFor="tpl-subject" className="form-label-brand font-bold text-slate-700">
                                             Email Subject Template
                                         </Label>
-                                        <Badge variant="outline" className="text-[10px] font-mono text-muted-foreground">
+                                        <Badge variant="outline" className="text-badge font-mono text-muted-foreground">
                                             {selectedTemplate.templateKey}
                                         </Badge>
                                     </div>
@@ -742,7 +742,7 @@ export default function EmailTemplatesManager() {
                                             setHasUserFocused(true);
                                         }}
                                         placeholder="Email Subject with {{variables}}"
-                                        className="font-medium text-sm"
+                                        className="font-medium text-body-sm"
                                         disabled={previewMode}
                                     />
                                 </div>
@@ -750,12 +750,12 @@ export default function EmailTemplatesManager() {
                                 {/* Placeholder Variables Bar */}
                                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1.5">
                                     <div className="flex items-center justify-between flex-wrap gap-2">
-                                        <div className="flex items-center gap-1 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                                        <div className="flex items-center gap-1 text-label font-bold text-slate-600 uppercase tracking-wider">
                                             <Sparkles className="w-3 h-3 text-amber-500" /> Click to Insert Placeholder Variable:
                                         </div>
-                                        <div className="flex items-center gap-2.5 text-[10px] text-slate-400">
+                                        <div className="flex items-center gap-2.5 text-body-sm text-slate-400">
                                             <span className="hidden sm:inline font-medium">
-                                                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-mono text-slate-600 shadow-2xs">Ctrl+Z</kbd> Undo / <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-mono text-slate-600 shadow-2xs">Ctrl+Y</kbd> Redo
+                                                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-meta font-mono text-slate-600 shadow-2xs">Ctrl+Z</kbd> Undo / <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-meta font-mono text-slate-600 shadow-2xs">Ctrl+Y</kbd> Redo
                                             </span>
                                             <span className="font-medium">
                                                 Target: <span className="text-slate-700 font-bold uppercase">{lastFocusedField}</span> (at cursor)
@@ -770,7 +770,7 @@ export default function EmailTemplatesManager() {
                                                 onMouseDown={(e) => e.preventDefault()}
                                                 onClick={() => insertVariable(v)}
                                                 disabled={previewMode}
-                                                className="px-2 py-0.5 bg-white hover:bg-primary/5 hover:border-primary/30 border border-slate-200 rounded-md text-[11px] font-mono font-medium text-slate-700 transition-colors cursor-pointer"
+                                                className="px-2 py-0.5 bg-white hover:bg-primary/5 hover:border-primary/30 border border-slate-200 rounded-md font-mono font-medium text-slate-700 transition-colors cursor-pointer"
                                                 title={`Insert {{${v}}} at ${lastFocusedField} cursor`}
                                             >
                                                 {`{{${v}}}`}
@@ -784,18 +784,18 @@ export default function EmailTemplatesManager() {
                                     <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-md bg-slate-100/70 space-y-0 animate-in fade-in duration-300">
                                         {/* Mockup Mail Client Envelope Bar */}
                                         <div className="bg-white border-b border-slate-200 px-5 py-3 space-y-1.5">
-                                            <div className="flex items-center justify-between text-xs">
+                                            <div className="flex items-center justify-between text-body-sm">
                                                 <div className="flex items-center gap-2">
                                                     <span className="font-bold text-slate-800">From:</span>
-                                                    <span className="text-slate-600 font-mono text-[11px]">{JOURNAL_EMAIL_CONFIG.shortName} Editorial &lt;{JOURNAL_EMAIL_CONFIG.supportEmail}&gt;</span>
+                                                    <span className="text-slate-600 font-mono text-meta">{JOURNAL_EMAIL_CONFIG.shortName} Editorial &lt;{JOURNAL_EMAIL_CONFIG.supportEmail}&gt;</span>
                                                 </div>
-                                                <Badge variant="outline" className="text-[10px] bg-slate-50 text-slate-500 font-medium">Recipient Inbox Preview</Badge>
+                                                <Badge variant="outline" className="text-badge bg-slate-50 text-slate-500 font-medium">Recipient Inbox Preview</Badge>
                                             </div>
-                                            <div className="flex items-center gap-2 text-xs">
+                                            <div className="flex items-center gap-2 text-body-sm">
                                                 <span className="font-bold text-slate-800">To:</span>
-                                                <span className="text-slate-600 font-mono text-[11px]">Dr. Alexander Wright &lt;alexander.wright@mit.edu&gt;</span>
+                                                <span className="text-slate-600 font-mono text-meta">Dr. Alexander Wright &lt;alexander.wright@mit.edu&gt;</span>
                                             </div>
-                                            <div className="flex items-start gap-2 text-xs pt-1.5 border-t border-slate-100">
+                                            <div className="flex items-start gap-2 text-body-sm pt-1.5 border-t border-slate-100">
                                                 <span className="font-bold text-slate-900 shrink-0">Subject:</span>
                                                 <span className="font-bold text-slate-900">{previewSubject}</span>
                                             </div>
@@ -811,10 +811,10 @@ export default function EmailTemplatesManager() {
                                                         alt={JOURNAL_EMAIL_CONFIG.shortName} 
                                                         className="h-12 mx-auto mb-2.5 object-contain" 
                                                     />
-                                                    <h2 className="text-lg font-black tracking-wider uppercase m-0" style={{ color: JOURNAL_EMAIL_CONFIG.primaryColor }}>
+                                                    <h2 className="font-black tracking-wider uppercase m-0" style={{ color: JOURNAL_EMAIL_CONFIG.primaryColor }}>
                                                         {JOURNAL_EMAIL_CONFIG.shortName}
                                                     </h2>
-                                                    <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase mt-1 m-0">
+                                                    <p className="text-label font-bold tracking-widest text-slate-500 uppercase mt-1 m-0">
                                                         Editorial Management System
                                                     </p>
                                                 </div>
@@ -833,7 +833,7 @@ export default function EmailTemplatesManager() {
                                                                 href={getTemplateCta(selectedTemplate?.templateKey)?.url}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-block px-8 py-3.5 rounded-xl font-bold text-sm text-white shadow-lg shadow-rose-900/20 hover:opacity-95 transition-opacity"
+                                                                className="inline-block px-8 py-3.5 rounded-xl font-bold text-caption text-white shadow-lg shadow-rose-900/20 hover:opacity-95 transition-opacity"
                                                                 style={{ backgroundColor: JOURNAL_EMAIL_CONFIG.primaryColor }}
                                                             >
                                                                 {getTemplateCta(selectedTemplate?.templateKey)?.text} &rarr;
@@ -843,11 +843,11 @@ export default function EmailTemplatesManager() {
                                                 </div>
 
                                                 {/* Academic Footer */}
-                                                <div className="p-6 bg-slate-50 border-t border-slate-100 text-center text-xs text-slate-500 space-y-2">
+                                                <div className="p-6 bg-slate-50 border-t border-slate-100 text-center text-body-sm text-slate-500 space-y-2">
                                                     <p className="font-bold text-slate-800 m-0">{JOURNAL_EMAIL_CONFIG.name}</p>
-                                                    <p className="text-[11px] text-slate-600 m-0">Published by <strong>{JOURNAL_EMAIL_CONFIG.publisher}</strong></p>
-                                                    <p className="text-[10px] text-slate-400 m-0">{JOURNAL_EMAIL_CONFIG.address}</p>
-                                                    <div className="pt-3 border-t border-slate-200 text-[10px] text-slate-400">
+                                                    <p className="text-slate-600 m-0">Published by <strong>{JOURNAL_EMAIL_CONFIG.publisher}</strong></p>
+                                                    <p className="text-slate-400 m-0">{JOURNAL_EMAIL_CONFIG.address}</p>
+                                                    <div className="pt-3 border-t border-slate-200 text-body-sm text-slate-400">
                                                         This is an automated scholarly notification. Direct replies to this mailbox are not monitored.
                                                     </div>
                                                 </div>
@@ -857,7 +857,7 @@ export default function EmailTemplatesManager() {
                                 ) : (
                                     /* Edit Mode */
                                     <div>
-                                        <Label htmlFor="tpl-body" className="text-xs font-bold text-slate-700 block mb-1.5">
+                                        <Label htmlFor="tpl-body" className="form-label-brand font-bold text-slate-700 block mb-1.5">
                                             Email Body Template (Plain Text & Placeholders)
                                         </Label>
                                         <Textarea
@@ -873,7 +873,7 @@ export default function EmailTemplatesManager() {
                                                 setHasUserFocused(true);
                                             }}
                                             placeholder="Write your email body template using {{placeholder}} variables..."
-                                            className="font-mono text-xs leading-relaxed"
+                                            className="font-mono text-meta leading-relaxed"
                                         />
                                     </div>
                                 )}

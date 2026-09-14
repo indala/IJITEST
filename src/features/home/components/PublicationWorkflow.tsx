@@ -80,13 +80,13 @@ function PublicationWorkflow() {
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-xs font-semibold">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-body-sm font-semibold">
                         <Clock className="w-3.5 h-3.5 text-emerald-600" />
                         <span>Average Review: 14–21 Days</span>
                     </div>
                     <Link
                         href="/peer-review"
-                        className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-secondary transition-colors"
+                        className="inline-flex items-center gap-1 text-body-sm font-bold text-primary hover:text-secondary transition-colors"
                     >
                         <span>Full Policy</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -105,19 +105,19 @@ function PublicationWorkflow() {
                                 step.highlight
                                     ? 'bg-primary/5 border-primary/20 shadow-xs'
                                     : 'bg-muted/30 hover:bg-muted/50 border-border/60 hover:border-primary/20'
-                            }`}
+                            } `}
                         >
                             <div className="space-y-3">
                                 {/* Top Badge Row */}
                                 <div className="flex items-center justify-between">
-                                    <span className={`font-mono font-bold text-xs px-2 py-0.5 rounded ${
+                                    <span className={`font-mono font-bold text-meta px-2 py-0.5 rounded ${
                                         step.highlight
                                             ? 'bg-primary text-white'
                                             : 'bg-muted/80 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors'
-                                    }`}>
+                                    } `}>
                                         {step.number}
                                     </span>
-                                    <span className="text-[10px] font-semibold text-secondary flex items-center gap-1">
+                                    <span className="text-body-sm font-semibold text-secondary flex items-center gap-1">
                                         <Clock className="w-2.5 h-2.5" />
                                         {step.timeframe}
                                     </span>
@@ -129,7 +129,7 @@ function PublicationWorkflow() {
                                         step.highlight
                                             ? 'bg-primary/10 text-primary'
                                             : 'bg-card text-primary/70 group-hover:text-primary border border-border/50'
-                                    }`}>
+                                    } `}>
                                         <Icon className="w-4 h-4" />
                                     </div>
                                     <h4 className="m-0 leading-snug group-hover:text-secondary transition-colors">
@@ -137,7 +137,7 @@ function PublicationWorkflow() {
                                     </h4>
                                 </div>
 
-                                <p className="text-muted-foreground text-xs leading-relaxed m-0">
+                                <p className="text-muted-foreground text-caption leading-relaxed m-0">
                                     {step.description}
                                 </p>
                             </div>

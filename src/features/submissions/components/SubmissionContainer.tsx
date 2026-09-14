@@ -58,14 +58,14 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, rol
         <div className="flex justify-between items-start gap-3">
             <div className="space-y-1.5 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs border border-border/70 text-muted-foreground font-semibold">
+                    <span className="font-mono bg-muted px-2 py-0.5 rounded text-meta border border-border/70 text-muted-foreground font-semibold">
                         {sub.paperId}
                     </span>
-                    <Badge className={`h-5 px-2.5 rounded-md text-[10px] font-semibold border-none ${getStatusVariant(sub.status)}`}>
+                    <Badge className={`h-5 px-2.5 rounded-md text-badge font-semibold border-none ${getStatusVariant(sub.status)} `}>
                         {sub.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                     </Badge>
                 </div>
-                <h4 className="font-medium text-foreground text-sm leading-snug">
+                <h4 className="font-medium text-foreground leading-snug">
                     {sub.title}
                 </h4>
             </div>
@@ -76,7 +76,7 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, rol
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5 shadow-xl border-border/70 bg-card">
-                    <DropdownMenuItem asChild className="rounded-lg h-9 gap-2.5 px-3 text-xs sm:text-sm font-medium focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer">
+                    <DropdownMenuItem asChild className="rounded-lg h-9 gap-2.5 px-3 font-medium focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer">
                         <Link href={`/${role}/submissions/${sub.id}`}>
                             <Eye className="w-4 h-4 text-primary" />
                             <span>Inspect Manuscript</span>
@@ -92,7 +92,7 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, rol
             </DropdownMenu>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 text-xs">
+        <div className="grid grid-cols-2 gap-3 text-body-sm">
             <div className="space-y-0.5">
                 <span className="text-meta">Author</span>
                 <p className="text-foreground truncate flex items-center gap-1.5 font-medium">
@@ -108,7 +108,7 @@ const SubmissionMobileCard = React.memo(({ sub, role }: { sub: SubmissionUI, rol
         </div>
 
         <div className="pt-2 border-t border-border/50 flex justify-end gap-2">
-            <Button asChild size="sm" className="h-8 px-3 btn-primary text-xs font-semibold rounded-lg">
+            <Button asChild size="sm" className="h-8 px-3 btn-primary font-semibold rounded-lg">
                 <Link href={`/${role}/submissions/${sub.id}`}>
                     Examine
                 </Link>
@@ -122,13 +122,13 @@ SubmissionMobileCard.displayName = 'SubmissionMobileCard';
 const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, role: string }) => (
     <TableRow className="hover:bg-muted/30 transition-colors border-b border-border/50 group">
         <TableCell className="px-3.5 py-3">
-            <span className="font-mono text-xs text-muted-foreground bg-muted/60 px-2 py-0.5 rounded border border-border/60">
+            <span className="font-mono text-muted-foreground bg-muted/60 px-2 py-0.5 rounded border border-border/60">
                 {sub.paperId}
             </span>
         </TableCell>
         <TableCell className="px-3.5 py-3">
             <div className="space-y-1">
-                <h4 className="font-medium text-foreground text-sm leading-snug group-hover:text-primary transition-colors wrap-break-word">
+                <h4 className="font-medium text-foreground leading-snug group-hover:text-primary transition-colors wrap-break-word">
                     {sub.title}
                 </h4>
                 <div className="flex items-center gap-4 text-meta">
@@ -143,11 +143,11 @@ const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, rol
         </TableCell>
         <TableCell className="px-3.5 py-3">
             <div className="flex flex-col gap-1.5 items-center">
-                <Badge className={`h-5 px-2 text-[10px] font-semibold rounded-md border-none ${getStatusVariant(sub.status)}`}>
+                <Badge className={`h-5 px-2 text-badge font-semibold rounded-md border-none ${getStatusVariant(sub.status)} `}>
                     {sub.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                 </Badge>
                 {sub.status === 'underReview' && (sub.completedReviews ?? 0) > 0 && (
-                    <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20 text-[10px] font-semibold">
+                    <div className="flex items-center gap-1 text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20 text-badge font-semibold">
                         <MessageSquare className="w-3 h-3" />
                         {sub.completedReviews} Reviews
                     </div>
@@ -156,7 +156,7 @@ const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, rol
         </TableCell>
         <TableCell className="px-3.5 py-3 text-right">
             <div className="flex items-center justify-end gap-2">
-                <Button asChild size="sm" className="h-8 px-3 btn-primary text-xs font-semibold rounded-lg">
+                <Button asChild size="sm" className="h-8 px-3 btn-primary font-semibold rounded-lg">
                     <Link href={`/${role}/submissions/${sub.id}`}>
                         Examine
                     </Link>
@@ -169,7 +169,7 @@ const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, rol
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5 shadow-xl border-border/70 bg-card">
-                        <DropdownMenuItem asChild className="rounded-lg h-9 gap-2.5 px-3 text-xs sm:text-sm font-medium focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer">
+                        <DropdownMenuItem asChild className="rounded-lg h-9 gap-2.5 px-3 font-medium focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer">
                             <Link href={`/${role}/submissions/${sub.id}`}>
                                 <FileText className="w-4 h-4 text-primary" />
                                 <span>Decision Protocol</span>
@@ -182,7 +182,7 @@ const SubmissionDesktopRow = React.memo(({ sub, role }: { sub: SubmissionUI, rol
                             </div>
                         )}
                         {role === 'editor' && sub.filePath && (
-                            <DropdownMenuItem asChild className="rounded-lg h-9 gap-2.5 px-3 text-xs sm:text-sm font-medium group cursor-pointer">
+                            <DropdownMenuItem asChild className="rounded-lg h-9 gap-2.5 px-3 font-medium group cursor-pointer">
                                 <a href={sub.filePath} download className="flex items-center gap-2.5">
                                     <Download className="w-4 h-4 text-emerald-600" />
                                     <span>Download MS</span>
@@ -231,7 +231,7 @@ export default function SubmissionContainer({ submissions, role }: SubmissionCon
                     <div className="flex items-center gap-3 px-3.5 py-2 bg-card rounded-xl border border-border/70 shrink-0 shadow-2xs self-start sm:self-auto">
                         <div className="flex flex-col items-end">
                             <span className="text-meta">Active Records</span>
-                            <span className="text-sm font-bold text-primary">
+                            <span className="text-body-sm font-bold text-primary">
                                 {filteredSubmissions.length} <span className="text-muted-foreground/50 font-normal">/</span> {submissions.length}
                             </span>
                         </div>

@@ -50,7 +50,7 @@ export default function RebrandPdfButton({ submissionId }: RebrandPdfButtonProps
                 <Button
                     variant="ghost"
                     disabled={isPending}
-                    className="w-full h-10 gap-2 bg-white/5  text-white font-semibold text-[10px] tracking-widest border border-white/10 rounded-xl cursor-pointer disabled:opacity-50"
+                    className="w-full h-10 gap-2 bg-white/5 text-white font-semibold tracking-widest border border-white/10 rounded-xl cursor-pointer disabled:opacity-50"
                 >
                     {isPending ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -65,19 +65,19 @@ export default function RebrandPdfButton({ submissionId }: RebrandPdfButtonProps
                     <div className="w-16 h-16 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-center text-primary shadow-inner mb-2">
                         <RefreshCw className="w-8 h-8 text-primary" />
                     </div>
-                    <AlertDialogTitle className="text-2xl font-black text-primary tracking-widerer">Re-brand Publication PDF</AlertDialogTitle>
-                    <AlertDialogDescription className="text-xs font-medium text-primary/40 leading-relaxed tracking-widest">
+                    <AlertDialogTitle className="text-label font-black text-primary tracking-widerer">Re-brand Publication PDF</AlertDialogTitle>
+                    <AlertDialogDescription className="text-label font-medium text-primary/40 leading-relaxed tracking-widest">
                         {"This action will regenerate the header and footer branding for this published paper's PDF using the latest journal metadata (ISSN, Website URL, and Journal Name) currently in your system settings. The page numbering and volume assignments will remain intact."}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="pt-6 gap-4">
-                    <AlertDialogCancel className="h-14 px-8 rounded-2xl font-black text-[10px] tracking-widest border-primary/10 text-primary/40 hover:bg-primary/5 cursor-pointer">
+                    <AlertDialogCancel className="h-14 px-8 rounded-2xl font-black tracking-widest border-primary/10 text-primary/40 hover:bg-primary/5 cursor-pointer">
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleRebrand}
                         disabled={isPending}
-                        className="h-14 px-8 rounded-2xl bg-primary text-white font-black text-[10px] tracking-widest hover:bg-primary/90 shadow-xl shadow-primary/20 cursor-pointer flex items-center gap-2"
+                        className="h-14 px-8 rounded-2xl bg-primary text-white font-black tracking-widest hover:bg-primary/90 shadow-xl shadow-primary/20 cursor-pointer flex items-center gap-2"
                     >
                         {isPending && <Loader2 className="w-3 h-3 animate-spin" />}
                         Confirm Re-brand

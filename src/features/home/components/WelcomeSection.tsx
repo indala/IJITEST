@@ -25,7 +25,7 @@ export default function WelcomeSection({ settings }: WelcomeSectionProps) {
                 </p>
 
                 {/* Clean, unboxed academic metadata with symbols */}
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-2 border-t border-border/50 text-xs sm:text-sm text-foreground/85">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-2 border-t border-border/50 text-body-sm">
                     <span className="inline-flex items-center gap-1.5">
                         <span className="text-secondary">▪</span>
                         <span>ISSN (Online): <span className="font-semibold text-primary">{issn}</span></span>

@@ -38,14 +38,14 @@ export function AppSidebar() {
         <Sidebar collapsible="icon" className={cn("border-r border-primary/5 backdrop-blur-xl 2xl:w-[320px]", isMobile ? "bg-white" : "bg-white/50")}>
             <SidebarHeader className="h-20 flex items-center justify-center border-b border-primary/5">
                 <Link href="/" className="flex items-center gap-3 group px-4 cursor-pointer" onClick={() => setOpenMobile(false)}>
-                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-black text-body-sm shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
                         {journalShortName[0]}
                     </div>
                     <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-                        <span className="font-black text-xs 2xl:text-base tracking-widest text-primary ">
+                        <span className="font-black text-label tracking-widest text-primary">
                             {journalShortName}
                         </span>
-                        <span className="text-[10px] 2xl:text-xs font-bold text-primary/40  tracking-wider">
+                        <span className="text-label font-bold text-primary/40 tracking-wider">
                             Journal Portal
                         </span>
                     </div>
@@ -54,7 +54,7 @@ export function AppSidebar() {
 
             <SidebarContent className="px-2">
                 <SidebarGroup>
-                    <SidebarGroupLabel className="px-4 text-[10px] 2xl:text-sm font-black tracking-[0.2em] text-primary/30 mt-4">
+                    <SidebarGroupLabel className="px-4 text-label font-black tracking-[0.2em] text-primary/30 mt-4">
                         Navigation
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
@@ -77,7 +77,7 @@ export function AppSidebar() {
                                                     "w-1.5 h-1.5 rounded-full mr-2 transition-all",
                                                     isActive ? "bg-secondary scale-125" : "bg-primary/20"
                                                 )} />
-                                                <span className=" text-[11px] 2xl:text-base tracking-widest">{item.name}</span>
+                                                <span className="text-label tracking-widest">{item.name}</span>
                                             </Link>
                                         </SidebarMenuButton>
 
@@ -91,7 +91,7 @@ export function AppSidebar() {
                                                                 asChild
                                                                 isActive={isSubActive}
                                                                 className={cn(
-                                                                    "h-10 px-4 rounded-lg text-[10px] 2xl:text-sm font-black  tracking-widest transition-all",
+                                                                    "h-10 px-4 rounded-lg text-label font-black tracking-widest transition-all",
                                                                     isSubActive ? "text-secondary" : "text-primary/40 hover:text-primary hover:bg-primary/5"
                                                                 )}
                                                             >
@@ -115,7 +115,7 @@ export function AppSidebar() {
             <SidebarFooter className="p-4 border-t border-primary/5">
                 <Link
                     href="/submit"
-                    className="flex items-center justify-center gap-3 w-full h-12 bg-primary text-white rounded-xl font-black  tracking-widest text-[10px] shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all group overflow-hidden relative"
+                    className="flex items-center justify-center gap-3 w-full h-12 bg-primary text-white rounded-xl font-black tracking-widest text-label shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all group overflow-hidden relative"
                     onClick={() => setOpenMobile(false)}
                 >
                     <div className="absolute inset-0 bg-linear-to-r from-secondary to-secondary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

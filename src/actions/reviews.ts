@@ -242,7 +242,7 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 .orderBy(desc(submissionVersions.versionNumber))
                 .limit(1);
 
-            return { success: true, staff, paper, setupUrl };
+            return { success: true, staff, paper, setupUrl, invitationToken };
         });
 
         if (!txResult.success) {
@@ -256,7 +256,8 @@ export async function assignReviewer(formData: FormData): Promise<ActionResponse
                 txResult.paper.title,
                 deadline,
                 txResult.paper.paperId,
-                txResult.setupUrl
+                txResult.setupUrl,
+                txResult.invitationToken
             );
             sendEmail({ to: txResult.staff.email, subject: template.subject, html: template.html })
                 .catch(e => console.error("Reviewer assignment email failed:", e));

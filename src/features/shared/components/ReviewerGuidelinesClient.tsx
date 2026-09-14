@@ -66,7 +66,7 @@ export default function ReviewerGuidelinesClient({ settings }: ReviewerGuideline
                         </div>
                     </Card>
 
-                    <section className="bg-[#000066] text-white p-4 sm:p-6 rounded-xl relative overflow-hidden shadow-md">
+                    <section className="bg-primary text-white p-4 sm:p-6 rounded-xl relative overflow-hidden shadow-md">
                         <div className="relative z-10 space-y-4">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="space-y-1">

@@ -53,7 +53,7 @@ export default function JoinUsClient({ settings: _settings }: JoinUsClientProps)
                         {BENEFITS.map((benefit, i) => (
                             <article key={i} role="listitem" className="p-3 bg-card border border-border/70 rounded-xl transition-all group hover:bg-muted/20">
                                 <div className="flex gap-3 items-center">
-                                    <div className="w-8 h-8 bg-[#000066]/5 rounded-lg flex items-center justify-center shrink-0 text-[#000066]" aria-hidden="true">
+                                    <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center shrink-0 text-primary" aria-hidden="true">
                                         <benefit.icon className="w-4 h-4" />
                                     </div>
                                     <div className="space-y-0.5">
@@ -68,7 +68,7 @@ export default function JoinUsClient({ settings: _settings }: JoinUsClientProps)
                         <h3 id="eligibility-heading" className="m-0">Eligibility Criteria</h3>
                         <ul className="space-y-2 list-none p-0 m-0">
                             {REQUIREMENTS.map((item, i) => (
-                                <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                <li key={i} className="flex items-start gap-2 text-caption text-muted-foreground">
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                                     <span>{item}</span>
                                 </li>

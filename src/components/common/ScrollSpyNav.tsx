@@ -58,7 +58,7 @@ export function ScrollSpyNav({
                         onClick={(e) => handleScrollTo(e, item.id)}
                         aria-current={isActive ? 'true' : undefined}
                         className={cn(
-                            "block py-1.5 px-3 rounded-lg text-xs 2xl:text-sm transition-all duration-200 relative",
+                            "block py-1.5 px-3 rounded-lg transition-all duration-200 relative",
                             isActive
                                 ? "text-primary font-bold bg-primary/5 border-l-2 border-primary -ml-[13px] pl-3.5 shadow-2xs"
                                 : "text-muted-foreground/80 hover:text-foreground hover:bg-muted/40 font-medium",

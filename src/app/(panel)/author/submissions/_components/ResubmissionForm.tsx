@@ -66,10 +66,10 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
             <CardHeader className="border-b border-primary/5 bg-primary/1">
                 <div className="flex items-center justify-between">
                     <div>
-                        <CardTitle className="text-xl font-black tracking-tight text-primary">Submit Revised Manuscript</CardTitle>
+                        <CardTitle className="font-black tracking-tight text-primary">Submit Revised Manuscript</CardTitle>
                         <CardDescription>Upload your updated documents and address reviewer feedback.</CardDescription>
                     </div>
-                    <div className="bg-orange-50 text-orange-700 px-4 py-2 rounded-xl text-xs font-bold border border-orange-100 flex items-center gap-2">
+                    <div className="bg-orange-50 text-orange-700 px-4 py-2 rounded-xl text-body-sm font-bold border border-orange-100 flex items-center gap-2">
                         <AlertCircle className="w-4 h-4" />
                         {daysRemaining} days remaining to resubmit
                     </div>
@@ -78,7 +78,7 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
             <CardContent className="pt-6">
                 <form action={formAction} className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="changelog" className="text-sm font-bold text-primary/60">Response to Reviewers / Changelog</Label>
+                        <Label htmlFor="changelog" className="form-label-brand font-bold text-primary/60">Response to Reviewers / Changelog</Label>
                         <Textarea 
                             id="changelog" 
                             name="changelog"
@@ -90,11 +90,11 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="manuscript" className="text-sm font-bold text-primary/60">Revised Manuscript (Main File)</Label>
+                        <Label htmlFor="manuscript" className="form-label-brand font-bold text-primary/60">Revised Manuscript (Main File)</Label>
                         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary/10 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className="w-8 h-8 text-primary/20 mb-2" />
-                                <p className="text-xs text-primary/40 font-bold">Strict Policy: .DOCX Only (Max 20MB)</p>
+                                <p className="text-primary/40 font-bold">Strict Policy: .DOCX Only (Max 20MB)</p>
                             </div>
                             <Input id="manuscript" name="manuscript" type="file" accept=".docx" className="hidden" required disabled={isPending} />
                         </label>
@@ -102,8 +102,8 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
 
                     <Alert className="bg-primary/5 border-primary/10 rounded-2xl">
                         <Info className="w-4 h-4" />
-                        <AlertTitle className="text-xs font-black uppercase tracking-widest text-primary/40">Important Note</AlertTitle>
-                        <AlertDescription className="text-sm text-primary/60 italic">
+                        <AlertTitle className="text-label font-black uppercase tracking-widest text-primary/40">Important Note</AlertTitle>
+                        <AlertDescription className="text-caption text-primary/60 italic">
                             Uploading a revision will reset the status to &quot;Submitted&quot; and notify the editors. Please ensure all reviewer comments have been addressed.
                         </AlertDescription>
                     </Alert>

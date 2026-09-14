@@ -49,7 +49,7 @@ export const ProfileHeader = React.memo(({
                     <Button
                         type="button"
                         onClick={onPhotoClick}
-                        className="absolute -bottom-2 -right-2 h-10 w-10 rounded-xl shadow-md border-4 border-card bg-[#000066] text-white hover:bg-[#000088] transition-all z-20"
+                        className="absolute -bottom-2 -right-2 h-10 w-10 rounded-xl shadow-md border-4 border-card bg-primary text-white hover:bg-primary/90 transition-all z-20"
                         aria-label="Change profile photo"
                         title="Change profile photo"
                     >
@@ -59,12 +59,12 @@ export const ProfileHeader = React.memo(({
 
                 <div className="flex-1 space-y-4">
                     <div className="space-y-1">
-                        <h2 className="text-xl font-semibold text-gray-900 leading-none m-0">{fullName}</h2>
+                        <h2 className="font-semibold text-gray-900 leading-none m-0">{fullName}</h2>
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                            <Badge variant="secondary" className="px-3 h-6 text-[10px] font-bold uppercase tracking-wider rounded-md bg-[#000066]/5 text-[#000066] border-[#000066]/10">
+                            <Badge variant="secondary" className="px-3 h-6 text-badge font-bold uppercase tracking-wider rounded-md bg-primary/5 text-primary border-primary/10">
                                 {role}
                             </Badge>
-                            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground opacity-60">
+                            <div className="flex items-center gap-2 text-label font-bold uppercase tracking-wider text-muted-foreground opacity-60">
                                 <Mail className="w-3.5 h-3.5" />
                                 {email}
                             </div>

@@ -15,7 +15,7 @@ function LoginFallback() {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background text-muted-foreground">
             <Loader2 className="w-8 h-8 animate-spin opacity-20" />
-            <p className="text-[10px] font-semibold capitalize tracking-widest animate-pulse">Checking credentials...</p>
+            <p className="text-label font-semibold capitalize tracking-widest animate-pulse">Checking credentials...</p>
         </div>
     );
 }

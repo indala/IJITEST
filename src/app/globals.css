@@ -8,6 +8,8 @@
   /* Deep signature academic navy blue */
   --color-secondary: oklch(0.5 0.25 25);
   /* Richer crimson/maroon */
+  --color-orcid: #A6CE39;
+  /* ORCID Brand Green */
   --color-accent: var(--accent);
   --color-background: oklch(0.995 0.002 255);
   --color-foreground: oklch(0.18 0.02 255);
@@ -233,7 +235,7 @@
      -------------------------------------------------------------------------- */
   p {
     @apply text-foreground/80 font-normal leading-relaxed mb-2.5;
-    @apply text-xs sm:text-sm lg:text-15 xl:text-base 2xl:text-lg;
+    @apply text-13 sm:text-sm lg:text-15 xl:text-base 2xl:text-lg;
   }
 
   ul, ol {
@@ -281,7 +283,7 @@
   }
 
   .text-body {
-    @apply font-normal leading-relaxed text-foreground/80 text-xs sm:text-sm lg:text-15 xl:text-base 2xl:text-lg;
+    @apply font-normal leading-relaxed text-foreground/80 text-13 sm:text-sm lg:text-15 xl:text-base 2xl:text-lg;
   }
 
   .text-body-sm {
@@ -298,6 +300,10 @@
 
   .text-badge {
     @apply font-sans font-bold uppercase tracking-wider text-2xs 2xl:text-xs;
+  }
+
+  .text-caption {
+    @apply font-sans font-normal text-muted-foreground text-2xs sm:text-xs-plus 2xl:text-xs leading-normal;
   }
 
   /* Standardized Form & Field Utilities */
@@ -318,6 +324,10 @@
 
   .panel-subtitle {
     @apply font-medium text-muted-foreground text-xs sm:text-xs md:text-sm xl:text-sm 2xl:text-base;
+  }
+
+  .heading-stat {
+    @apply font-sans font-bold tracking-tight text-2xl sm:text-3xl xl:text-4xl 2xl:text-5xl text-foreground;
   }
 
   .card-title-brand {
@@ -356,6 +366,36 @@
 
   .badge-brand {
     @apply bg-primary/5 text-primary border border-primary/10 font-semibold rounded-md uppercase tracking-wider;
+    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
+    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+  }
+
+  .badge-secondary {
+    @apply bg-secondary/10 text-secondary border border-secondary/20 font-semibold rounded-md uppercase tracking-wider;
+    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
+    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+  }
+
+  .badge-neutral {
+    @apply bg-muted text-muted-foreground border border-border/50 font-medium rounded-md uppercase tracking-wider;
+    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
+    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+  }
+
+  .badge-outline {
+    @apply bg-transparent text-foreground/80 border border-border font-medium rounded-md uppercase tracking-wider;
+    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
+    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+  }
+
+  .badge-success {
+    @apply bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 font-semibold rounded-md uppercase tracking-wider;
+    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
+    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+  }
+
+  .badge-warning {
+    @apply bg-amber-500/10 text-amber-700 border border-amber-500/20 font-semibold rounded-md uppercase tracking-wider;
     @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
     @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
   }
@@ -417,7 +457,7 @@
   .nav-link {
     @apply font-sans font-semibold tracking-normal whitespace-nowrap transition-all duration-200;
     @apply flex items-center gap-1 relative;
-    @apply text-xs lg:text-[13px] xl:text-sm 2xl:text-[15px];
+    @apply text-xs lg:text-13 xl:text-sm 2xl:text-15;
     @apply px-2 lg:px-2.5 xl:px-3 2xl:px-4;
   }
 
@@ -425,7 +465,7 @@
   .nav-dropdown-item {
     @apply font-sans font-semibold tracking-normal transition-all duration-200 relative;
     @apply block py-2 2xl:py-2.5 px-4 2xl:px-5;
-    @apply text-xs xl:text-[13px] 2xl:text-sm;
+    @apply text-xs xl:text-13 2xl:text-sm;
   }
 
   /* Navbar Action Button (Submit Manuscript) */
@@ -443,7 +483,7 @@
 
   .nav-mobile-sublink {
     @apply flex items-center gap-2.5 py-1.5 transition-all;
-    @apply text-[11px] sm:text-xs font-semibold tracking-wide;
+    @apply text-xs-plus sm:text-xs font-semibold tracking-wide;
   }
 }
 

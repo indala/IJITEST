@@ -93,7 +93,7 @@ function AcceptButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full h-11 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-wider rounded-lg shadow-sm cursor-pointer"
+            className="w-full h-11 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold uppercase tracking-wider rounded-lg shadow-sm cursor-pointer"
         >
             <CheckCircle className="w-4 h-4" />
             {pending ? "Authorizing..." : "Authorize Acceptance"}
@@ -108,7 +108,7 @@ function RejectButton() {
             type="submit"
             disabled={pending}
             variant="outline"
-            className="w-full h-11 gap-2 border-red-500/20 text-red-600 font-semibold text-xs uppercase tracking-wider rounded-lg hover:bg-red-500/10 hover:text-red-700 hover:border-red-500/30 cursor-pointer"
+            className="w-full h-11 gap-2 border-red-500/20 text-red-600 font-semibold uppercase tracking-wider rounded-lg hover:bg-red-500/10 hover:text-red-700 hover:border-red-500/30 cursor-pointer"
         >
             <XCircle className="w-4 h-4" />
             {pending ? "Processing..." : "Final Rejection"}
@@ -123,7 +123,7 @@ function WaiveButton() {
             type="submit"
             disabled={pending}
             variant="outline"
-            className="w-full h-9 gap-2 border-emerald-500/30 text-emerald-600 font-semibold text-[9px] tracking-widest rounded-lg hover:bg-emerald-500 hover:text-white cursor-pointer"
+            className="w-full h-9 gap-2 border-emerald-500/30 text-emerald-600 font-semibold tracking-widest rounded-lg hover:bg-emerald-500 hover:text-white cursor-pointer"
         >
             {pending ? "Waiving..." : "Waive Transaction Fee"}
         </Button>

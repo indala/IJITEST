@@ -529,11 +529,14 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
             return actionError("Copyright form file is required.");
         }
 
-        // Strict Policy: Only .docx format is accepted
+        // Policy: .docx or .pdf formats are accepted
         const docxMime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-        const isDocx = copyrightFile.name.toLowerCase().endsWith(".docx") || copyrightFile.type === docxMime;
-        if (!isDocx) {
-            return actionError("Strict Policy: The Copyright Form must be a .docx file.");
+        const isDocxOrPdf = copyrightFile.name.toLowerCase().endsWith(".docx") || 
+                            copyrightFile.name.toLowerCase().endsWith(".pdf") ||
+                            copyrightFile.type === docxMime ||
+                            copyrightFile.type === "application/pdf";
+        if (!isDocxOrPdf) {
+            return actionError("Policy: The Copyright Form must be a .docx or .pdf file.");
         }
 
         // Find all previous copyright files associated with this submission across all versions
@@ -560,7 +563,8 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
         if (!latestVersion) return actionError("Submission version records not found.");
 
         const timestamp = Date.now();
-        const cName = `copyright_${submissionId}_${timestamp}.docx`;
+        const ext = copyrightFile.name.split('.').pop() || 'docx';
+        const cName = `copyright_${submissionId}_${timestamp}.${ext}`;
         const cUrl = `/api/files/submissions/${cName}`;
 
         // 1. File System modifications (Proxy to storage service)

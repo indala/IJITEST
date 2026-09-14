@@ -31,9 +31,9 @@ export const JournalParticulars = ({ settings, variant = 'sidebar' }: JournalPar
             <div className="bg-primary p-3.5 sm:p-4 flex items-center justify-between text-white">
                 <div className="flex items-center gap-2">
                     <Info className="w-4 h-4 text-white/80 shrink-0" />
-                    <CardTitle className="text-white text-sm font-semibold tracking-wide m-0">Journal Particulars</CardTitle>
+                    <CardTitle className="text-white font-semibold tracking-wide m-0">Journal Particulars</CardTitle>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/15 text-white font-medium">
+                <span className="text-meta font-mono px-2 py-0.5 rounded bg-white/15 text-white font-medium">
                     {settings['journalShortName'] || 'IJITEST'}
                 </span>
             </div>
@@ -76,7 +76,7 @@ export const JournalParticulars = ({ settings, variant = 'sidebar' }: JournalPar
                             <Mail className="w-3.5 h-3.5" />
                         </a>
                     </div>
-                    <span className="text-[10px] font-bold text-muted-foreground/60 tracking-wider uppercase">{(settings.journalShortName || 'IJITEST')} {(settings.startingYear || '2026')}</span>
+                    <span className="text-label font-bold text-muted-foreground/60 tracking-wider uppercase">{(settings.journalShortName || 'IJITEST')} {(settings.startingYear || '2026')}</span>
                 </div>
             </CardContent>
         </Card>

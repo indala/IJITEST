@@ -52,7 +52,7 @@ export default function LoginClient() {
         <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 2xl:p-8 relative">
             <Link
                 href="/"
-                className="absolute top-4 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/50 bg-card text-xs font-semibold text-muted-foreground hover:text-primary hover:bg-muted/30 transition-all shadow-sm group"
+                className="absolute top-4 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/50 bg-card text-caption font-semibold text-muted-foreground hover:text-primary hover:bg-muted/30 transition-all shadow-sm group"
             >
                 <Home className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
                 <span>Back to Home</span>
@@ -73,7 +73,7 @@ export default function LoginClient() {
                         <div
                             id="login-error"
                             role="alert"
-                            className="mb-6 p-4 bg-destructive/5 border border-destructive/10 text-destructive rounded-lg text-xs font-semibold flex items-center gap-2"
+                            className="mb-6 p-4 bg-destructive/5 border border-destructive/10 text-destructive rounded-lg text-caption font-semibold flex items-center gap-2"
                         >
                             <ShieldCheck className="w-4 h-4 text-destructive" />
                             {error}
@@ -81,7 +81,7 @@ export default function LoginClient() {
                     )}
                     <form action={formAction} className="space-y-6 2xl:space-y-8">
                         <div className="space-y-2 2xl:space-y-3">
-                            <label htmlFor="email" className="text-[10px] 2xl:text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">Email Address</label>
+                            <label htmlFor="email" className="form-label-brand font-bold text-muted-foreground uppercase tracking-widest ml-1">Email Address</label>
                             <InputGroup className="h-11 2xl:h-13 rounded-lg 2xl:rounded-xl border-border/50 bg-muted/20">
                                 <InputGroupAddon align="inline-start" className="pl-3 2xl:pl-4">
                                     <Mail className="w-4 h-4 2xl:w-5 2xl:h-5 text-muted-foreground/60" />
@@ -101,13 +101,13 @@ export default function LoginClient() {
                                     spellCheck="false"
                                     aria-describedby={error ? "login-error" : undefined}
                                     aria-invalid={error ? "true" : "false"}
-                                    className="text-xs 2xl:text-sm font-medium placeholder:text-muted-foreground/50"
+                                    className="text-caption font-medium placeholder:text-muted-foreground/50"
                                 />
                             </InputGroup>
                         </div>
 
                         <div className="space-y-2 2xl:space-y-3">
-                            <label htmlFor="password" className="text-[10px] 2xl:text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">Password</label>
+                            <label htmlFor="password" className="form-label-brand font-bold text-muted-foreground uppercase tracking-widest ml-1">Password</label>
                             <InputGroup className="h-11 2xl:h-13 rounded-lg 2xl:rounded-xl border-border/50 bg-muted/20">
                                 <InputGroupAddon align="inline-start" className="pl-3 2xl:pl-4">
                                     <Lock className="w-4 h-4 2xl:w-5 2xl:h-5 text-muted-foreground/60" />
@@ -122,7 +122,7 @@ export default function LoginClient() {
                                     autoComplete="current-password"
                                     aria-describedby={error ? "login-error" : undefined}
                                     aria-invalid={error ? "true" : "false"}
-                                    className="text-xs 2xl:text-sm font-medium placeholder:text-muted-foreground/50"
+                                    className="text-caption font-medium placeholder:text-muted-foreground/50"
                                 />
                                 <InputGroupAddon align="inline-end" className="pr-1 2xl:pr-2">
                                     <Button
@@ -142,9 +142,9 @@ export default function LoginClient() {
 
                         <div className="flex items-center justify-between pt-2 2xl:pt-3">
                             <label className="flex items-center gap-2 cursor-pointer group">
-                                <span className="text-[10px] 2xl:text-xs font-bold text-muted-foreground tracking-widest uppercase">Remember session</span>
+                                <span className="text-label font-bold text-muted-foreground tracking-widest uppercase">Remember session</span>
                             </label>
-                            <Link href="/auth/forgot-password" title="Forgot Password" className="text-[10px] 2xl:text-xs font-bold text-primary hover:text-primary/80 tracking-widest uppercase transition-colors">
+                            <Link href="/auth/forgot-password" title="Forgot Password" className="text-label font-bold text-primary hover:text-primary/80 tracking-widest uppercase transition-colors">
                                 Forgot Password?
                             </Link>
                         </div>
@@ -153,7 +153,7 @@ export default function LoginClient() {
                     </form>
                 </div>
 
-                <span className="text-center mt-8 2xl:mt-12 text-[10px] 2xl:text-xs text-muted-foreground font-semibold tracking-widest uppercase opacity-40 block">
+                <span className="text-center mt-8 2xl:mt-12 text-label text-muted-foreground font-semibold tracking-widest uppercase opacity-40 block">
                     Authorized Access Only
                 </span>
             </div>

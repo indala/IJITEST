@@ -21,13 +21,13 @@ export function RelatedArticlesPanel({ articles }: RelatedArticlesPanelProps) {
                         <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-foreground m-0">Related Articles</h3>
-                        <p className="text-[11px] text-muted-foreground m-0">
+                        <h3 className="font-bold text-foreground m-0">Related Articles</h3>
+                        <p className="text-caption text-muted-foreground m-0">
                             Recommended based on authorship, section domain, and shared keywords
                         </p>
                     </div>
                 </div>
-                <Badge variant="outline" className="text-[10px] text-primary border-primary/20">
+                <Badge variant="outline" className="text-badge text-primary border-primary/20">
                     OJS Similarity Engine
                 </Badge>
             </div>
@@ -45,36 +45,36 @@ export function RelatedArticlesPanel({ articles }: RelatedArticlesPanelProps) {
                                     <div className="flex items-center justify-between gap-1">
                                         <Badge
                                             variant="secondary"
-                                            className="text-[9px] px-1.5 py-0 font-medium bg-secondary/10 text-secondary border border-secondary/20"
+                                            className="text-body-sm px-1.5 py-0 font-medium bg-secondary/10 text-secondary border border-secondary/20"
                                         >
                                             {item.matchReason}
                                         </Badge>
-                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
+                                        <span className="text-meta text-muted-foreground flex items-center gap-1 font-mono">
                                             Vol {item.volumeNumber} ({item.issueNumber})
                                         </span>
                                     </div>
 
                                     <Link
                                         href={articleHref}
-                                        className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug"
+                                        className="text-body-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug"
                                     >
                                         {item.title}
                                     </Link>
 
-                                    <p className="text-[11px] text-muted-foreground line-clamp-1">
+                                    <p className="text-caption text-muted-foreground line-clamp-1">
                                         {item.coAuthors && item.coAuthors.length > 0
                                             ? item.coAuthors.map((a) => a.name).join(", ")
                                             : item.authorName}
                                     </p>
                                 </div>
 
-                                <div className="pt-2 border-t border-border/40 flex items-center justify-between text-xs">
-                                    <span className="text-[10px] font-mono text-muted-foreground">
+                                <div className="pt-2 border-t border-border/40 flex items-center justify-between text-body-sm">
+                                    <span className="text-meta font-mono text-muted-foreground">
                                         ID: {item.paperId}
                                     </span>
                                     <Link
                                         href={articleHref}
-                                        className="text-[11px] font-bold text-primary group-hover:underline flex items-center gap-1"
+                                        className="text-body-sm font-bold text-primary group-hover:underline flex items-center gap-1"
                                     >
                                         Read Article
                                         <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />

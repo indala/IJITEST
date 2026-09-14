@@ -17,17 +17,17 @@ export const ProfileFormActions = React.memo(({
                 <div className={`p-4 rounded-lg flex items-center gap-4 border border-border/50 shadow-sm ${status.success
                     ? 'bg-emerald-500/5 text-emerald-600'
                     : 'bg-rose-500/5 text-rose-600'
-                    }`}
+                    } `}
                 >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${status.success ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'
-                        }`}>
+                        } `}>
                         {status.success ? <CheckCircle className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
                     </div>
                     <div className="flex-1">
-                        <p className="text-[10px] font-bold uppercase tracking-wider">
+                        <p className="text-label font-bold uppercase tracking-wider">
                             {status.success ? 'Success' : 'Error'}
                         </p>
-                        <p className="text-xs font-semibold opacity-90">
+                        <p className="text-caption font-semibold opacity-90">
                             {status.success
                                 ? 'Profile updated successfully.'
                                 : status.error}
@@ -41,14 +41,14 @@ export const ProfileFormActions = React.memo(({
                 <Button
                     type="submit"
                     disabled={pending}
-                    className="h-11 px-8 gap-2 bg-[#000066] text-white hover:bg-[#000088] transition-all rounded-lg shadow-sm disabled:opacity-50"
+                    className="h-11 px-8 gap-2 bg-primary text-white hover:bg-primary/90 transition-all rounded-lg shadow-sm disabled:opacity-50"
                 >
                     {pending ? (
                         <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                         <Save className="w-3.5 h-3.5" />
                     )}
-                    <span className="text-[10px] font-bold uppercase tracking-widest">{pending ? "Saving..." : "Save Profile"}</span>
+                    <span className="text-label font-bold uppercase tracking-widest">{pending ? "Saving..." : "Save Profile"}</span>
                 </Button>
             </div>
         </div>

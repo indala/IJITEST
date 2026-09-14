@@ -80,7 +80,7 @@ export default function ApplicationDecisionButtons({ id }: Props) {
             {showReasonInput && (
                 <div className="space-y-2 mb-2 animate-in fade-in slide-in-from-top-1 duration-200">
                     <textarea
-                        className="w-full h-20 p-2 text-[10px] bg-muted border border-primary/10 rounded-md focus:ring-1 focus:ring-primary/20 outline-none resize-none font-medium text-foreground placeholder:text-muted-foreground/50"
+                        className="w-full h-20 p-2 bg-muted border border-primary/10 rounded-md focus:ring-1 focus:ring-primary/20 outline-none resize-none font-medium text-foreground placeholder:text-muted-foreground/50"
                         placeholder="Rejection Reason (min 20 characters)..."
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
@@ -90,7 +90,7 @@ export default function ApplicationDecisionButtons({ id }: Props) {
                             onClick={() => { setShowReasonInput(false); setReason(""); }}
                             variant="ghost"
                             size="sm"
-                            className="h-6 px-2 text-[8px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground"
+                            className="h-6 px-2 text-label font-black uppercase tracking-widest text-muted-foreground hover:text-foreground"
                          >
                             Cancel
                          </Button>
@@ -103,7 +103,7 @@ export default function ApplicationDecisionButtons({ id }: Props) {
                     disabled={loading}
                     size="sm"
                     variant="outline"
-                    className={`h-7 flex-1 rounded-md text-[9px] font-black uppercase tracking-widest border-rose-100 transition-all ${showReasonInput ? 'bg-rose-600 text-white hover:bg-rose-700' : 'text-rose-600 hover:bg-rose-50'}`}
+                    className={`h-7 flex-1 rounded-md text-label font-black uppercase tracking-widest border-rose-100 transition-all ${showReasonInput ? 'bg-rose-600 text-white hover:bg-rose-700' : 'text-rose-600 hover:bg-rose-50'} `}
                 >
                     {isRejecting ? (
                         <div className="w-3 h-3 border-2 border-rose-600/20 border-t-rose-600 rounded-full animate-spin" />
@@ -128,7 +128,7 @@ function ApproveButton() {
             type="submit"
             disabled={pending}
             size="sm"
-            className="h-7 flex-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-500 hover:bg-emerald-600 text-white"
+            className="h-7 flex-1 rounded-md font-black uppercase tracking-widest bg-emerald-500 hover:bg-emerald-600 text-white"
         >
             {pending ? (
                 <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />

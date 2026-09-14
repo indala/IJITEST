@@ -22,12 +22,12 @@ export const ApplicationItemCard = React.memo(({
 }: ApplicationItemCardProps) => {
     return (
         <Card 
-            className={`relative overflow-hidden border-border/70 bg-card transition-all hover:border-primary/30 cursor-pointer group rounded-xl shadow-2xs ${isSelected ? 'ring-2 ring-primary/50' : ''}`}
+            className={`relative overflow-hidden border-border/70 bg-card transition-all hover:border-primary/30 cursor-pointer group rounded-xl shadow-2xs ${isSelected ? 'ring-2 ring-primary/50' : ''} `}
             onClick={() => onInspect(app)}
         >
             <CardContent className="p-0 flex flex-col lg:flex-row items-stretch lg:items-center">
                 <div 
-                    className={`px-4 py-3 lg:py-4 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-border/70 bg-muted/10 lg:bg-transparent ${app.status !== 'pending' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`px-4 py-3 lg:py-4 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-border/70 bg-muted/10 lg:bg-transparent ${app.status !== 'pending' ? 'opacity-50 cursor-not-allowed' : ''} `}
                     onClick={(e) => { 
                         if (app.status !== 'pending') return;
                         e.stopPropagation(); 
@@ -55,25 +55,25 @@ export const ApplicationItemCard = React.memo(({
 
                 <div className="p-3.5 sm:p-4 flex-1 space-y-1.5 lg:border-r border-border/70 min-w-0">
                     <div className="flex items-center gap-2.5">
-                        <h3 className="font-semibold text-sm text-foreground truncate">{app.fullName}</h3>
-                        <Badge className={`rounded-md h-5 px-2 border-none text-[8px] font-semibold uppercase ${
+                        <h3 className="font-semibold text-foreground truncate">{app.fullName}</h3>
+                        <Badge className={`rounded-md h-5 px-2 border-none text-badge font-semibold uppercase ${
                             app.type === 'editor' ? 'bg-purple-500/10 text-purple-600' : 'bg-blue-500/10 text-blue-600'
-                        }`}>
+                        } `}>
                             {app.type}
                         </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-[10px] font-medium">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-caption font-medium">
                         <span className="flex items-center gap-1.5"><Building2 className="w-3 h-3 text-primary" /> {app.institute}</span>
                         <span className="flex items-center gap-1.5"><Briefcase className="w-3 h-3 text-primary" /> {app.designation}</span>
                     </div>
                 </div>
 
                 <div className="p-3.5 sm:p-4 flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-2 bg-muted/5 h-full min-w-0 lg:min-w-[170px] border-t lg:border-t-0 border-border/70">
-                    <Badge className={`h-6 px-3 text-[10px] font-semibold border-none rounded-md ${
+                    <Badge className={`h-6 px-3 text-badge font-semibold border-none rounded-md ${
                         app.status === 'approved' ? 'bg-emerald-500 text-white' :
                         app.status === 'rejected' ? 'bg-rose-500 text-white' :
                         'bg-amber-500 text-black'
-                    }`}>
+                    } `}>
                         {app.status}
                     </Badge>
                     <p className="text-meta">

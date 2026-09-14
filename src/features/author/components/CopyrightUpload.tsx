@@ -20,8 +20,8 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
 
     const uploadAction = async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
         if (!file) {
-            toast.error("Please select a signed .docx copyright form first.");
-            return { success: false, error: "Please select a signed .docx copyright form first." };
+            toast.error("Please select a signed copyright form (.docx or .pdf) first.");
+            return { success: false, error: "Please select a signed copyright form (.docx or .pdf) first." };
         }
 
         formData.set("copyrightForm", file);
@@ -48,10 +48,12 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
     const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0] || null;
         if (selectedFile) {
-            const isDocx = selectedFile.name.toLowerCase().endsWith('.docx') || 
-                           selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-            if (!isDocx) {
-                toast.error("Strict Policy: Only .docx files are accepted for the copyright agreement.");
+            const isDocxOrPdf = selectedFile.name.toLowerCase().endsWith('.docx') || 
+                                selectedFile.name.toLowerCase().endsWith('.pdf') ||
+                                selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+                                selectedFile.type === "application/pdf";
+            if (!isDocxOrPdf) {
+                toast.error("Policy: Only .docx and .pdf files are accepted for the copyright agreement.");
                 e.target.value = '';
                 setFile(null);
                 return;
@@ -68,19 +70,19 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
                         <ShieldCheck className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                        <CardTitle className="text-lg font-black text-primary">Copyright & Consent Agreement</CardTitle>
+                        <CardTitle className="font-black text-primary">Copyright & Consent Agreement</CardTitle>
                         <CardDescription>A signed copyright agreement is mandatory before publication.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
-                <div className="text-sm text-primary/70 leading-relaxed space-y-2">
+                <div className="text-body-sm text-primary/70 leading-relaxed space-y-2">
                     <p>
-                        Congratulations! Your manuscript has been accepted. To complete the editorial workflow, please download the official template, fill/sign it, and upload it back as a <strong>.docx</strong> document.
+                        Congratulations! Your manuscript has been accepted. To complete the editorial workflow, please download the official template, fill/sign it, and upload it back as a <strong>.docx</strong> or <strong>.pdf</strong> document.
                     </p>
                     {copyrightUrl && (
                         <div className="pt-2">
-                            <Button asChild variant="outline" size="sm" className="h-9 gap-2 border-primary/20 text-primary hover:bg-primary/5 font-semibold text-xs transition-all">
+                            <Button asChild variant="outline" size="sm" className="h-9 gap-2 border-primary/20 text-primary hover:bg-primary/5 font-semibold transition-all">
                                 <a href={copyrightUrl} download="IJITEST-Publication-License-Agreement.docx" target="_blank" rel="noopener noreferrer">
                                     <Download className="w-3.5 h-3.5" />
                                     Download Copyright Template
@@ -97,7 +99,7 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
                             onChange={handleFileChange}
                             className="hidden"
                             id="post-accept-copyright-upload"
-                            accept=".docx"
+                            accept=".docx,.pdf"
                             disabled={isPending}
                         />
                         <label
@@ -106,23 +108,23 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
                                 file
                                     ? 'border-emerald-500/50 bg-emerald-500/5'
                                     : 'border-primary/10 bg-card hover:border-primary/30 hover:bg-primary/2'
-                            }`}
+                            } `}
                         >
                             {file ? (
                                 <div className="text-center px-4 py-6">
                                     <div className="w-12 h-12 bg-emerald-500 text-white rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md">
                                         <FileText className="w-6 h-6" />
                                     </div>
-                                    <p className="text-xs font-semibold text-gray-900 truncate max-w-[280px]">{file.name}</p>
-                                    <p className="text-[10px] font-bold text-emerald-600/70 uppercase mt-1">Ready to upload ({(file.size / 1024).toFixed(0)} KB)</p>
+                                    <p className="font-semibold text-gray-900 truncate max-w-[280px]">{file.name}</p>
+                                    <p className="text-label font-bold text-emerald-600/70 uppercase mt-1">Ready to upload ({(file.size / 1024).toFixed(0)} KB)</p>
                                 </div>
                             ) : (
                                 <div className="text-center px-4 py-6">
                                     <div className="w-12 h-12 bg-primary/5 border border-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
                                         <Upload className="w-5 h-5 text-primary/40" />
                                     </div>
-                                    <p className="text-xs font-semibold text-primary/80">Select Signed Copyright Form</p>
-                                    <p className="text-[10px] font-bold text-primary/40 uppercase mt-1">DOCX Only (Max 10MB)</p>
+                                    <p className="font-semibold text-primary/80">Select Signed Copyright Form</p>
+                                    <p className="text-label font-bold text-primary/40 uppercase mt-1">DOCX or PDF (Max 10MB)</p>
                                 </div>
                             )}
                         </label>
@@ -131,7 +133,7 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
                     <Button
                         type="submit"
                         disabled={isPending || !file}
-                        className="w-full h-12 btn-primary font-bold text-xs uppercase tracking-widest rounded-xl shadow-md transition-all active:scale-[0.99] cursor-pointer"
+                        className="w-full h-12 btn-primary font-bold uppercase tracking-widest rounded-xl shadow-md transition-all active:scale-[0.99] cursor-pointer"
                     >
                         {isPending ? (
                             <div className="flex items-center justify-center gap-2">

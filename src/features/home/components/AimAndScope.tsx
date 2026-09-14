@@ -28,7 +28,7 @@ export default function AimAndScope({ settings, shortName }: AimAndScopeProps) {
     return (
         <section className="space-y-4 pt-1 animate-in fade-in duration-500" aria-labelledby="aim-scope-heading">
             {/* Journal Particulars Overview */}
-            <div className="space-y-1 text-xs sm:text-sm text-foreground/85">
+            <div className="space-y-1 text-body-sm">
                 <p className="m-0">
                     <span className="font-semibold text-primary">Year of Commencement:</span> {startingYear}.
                 </p>
@@ -42,7 +42,7 @@ export default function AimAndScope({ settings, shortName }: AimAndScopeProps) {
                 <h2 id="aim-scope-heading" className="m-0">
                     Aim and Scope
                 </h2>
-                <h4 className="text-secondary font-semibold m-0 text-sm sm:text-base">
+                <h4 className="text-secondary font-semibold m-0">
                     All Engineering & Technology Disciplines
                 </h4>
             </div>
@@ -54,14 +54,14 @@ export default function AimAndScope({ settings, shortName }: AimAndScopeProps) {
 
             {/* Topics List with Symbols */}
             <div className="space-y-2 pt-1">
-                <p className="font-semibold text-primary m-0 text-xs sm:text-sm">
+                <p className="font-semibold text-primary m-0">
                     Topics include, but are not limited to, the following:
                 </p>
 
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 list-none p-0 m-0">
                     {disciplines.map((item, i) => (
-                        <li key={i} className="flex items-start gap-2 text-xs sm:text-sm text-foreground/85">
-                            <span className="text-secondary font-bold text-xs select-none mt-0.5" aria-hidden="true">▪</span>
+                        <li key={i} className="flex items-start gap-2 text-body-sm">
+                            <span className="text-secondary font-bold select-none mt-0.5" aria-hidden="true">▪</span>
                             <span className="leading-snug">{item}</span>
                         </li>
                     ))}

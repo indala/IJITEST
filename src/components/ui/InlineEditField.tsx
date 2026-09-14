@@ -74,7 +74,7 @@ export function InlineEditField({
 
     return (
         <div className={cn("space-y-1.5 py-2 group/field", className)}>
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 block px-1">
+            <label className="form-label-brand font-black uppercase tracking-widest text-muted-foreground/60 block px-1">
                 {label}
             </label>
 
@@ -95,7 +95,7 @@ export function InlineEditField({
                                     placeholder={placeholder}
                                     disabled={isPending}
                                     className={cn(
-                                        "w-full min-h-[120px] p-4 bg-background/50 border border-primary/20 rounded-xl font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/20 text-sm resize-none",
+                                        "w-full min-h-[120px] p-4 bg-background/50 border border-primary/20 rounded-xl font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/20 text-body-sm resize-none",
                                         error && "border-rose-500/50"
                                     )}
                                 />
@@ -145,9 +145,9 @@ export function InlineEditField({
                         <div className="flex items-center gap-3 px-1 overflow-hidden">
                             {icon && <div className="opacity-40 shrink-0">{icon}</div>}
                             <span className={cn(
-                                "font-serif text-lg 2xl:text-xl font-bold transition-colors whitespace-pre-wrap",
-                                type === "textarea" && "text-sm font-sans font-medium leading-relaxed opacity-80",
-                                !value && "text-muted-foreground italic font-sans text-base opacity-40"
+                                "font-serif text-body-sm font-bold transition-colors whitespace-pre-wrap",
+                                type === "textarea" && "text-caption font-sans font-medium leading-relaxed opacity-80",
+                                !value && "text-muted-foreground italic font-sans text-caption opacity-40"
                             )}>
                                 {value || placeholder || "Not set"}
                             </span>
@@ -169,7 +169,7 @@ export function InlineEditField({
             </div>
 
             {error && (
-                <p className="text-[10px] text-rose-500 font-bold uppercase transition-all px-1">
+                <p className="text-label text-rose-500 font-bold uppercase transition-all px-1">
                     {error}
                 </p>
             )}

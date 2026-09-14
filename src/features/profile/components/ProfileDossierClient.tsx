@@ -252,7 +252,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                         className="object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-slate-300">
+                                    <div className="w-full h-full flex items-center justify-center text-body-sm font-bold text-slate-300">
                                         {data.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                                     </div>
                                 )}
@@ -292,8 +292,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                     >
                                         <div className="p-8 border-b border-slate-100 flex items-center justify-between">
                                             <div>
-                                                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Adjust Frame</h3>
-                                                <p className="text-xs font-medium text-slate-500 uppercase tracking-widest">Scale & Position Asset</p>
+                                                <h3 className="font-black text-slate-900 uppercase tracking-tight">Adjust Frame</h3>
+                                                <p className="text-label font-medium text-slate-500 uppercase tracking-widest">Scale & Position Asset</p>
                                             </div>
                                             <Button
                                                 variant="ghost"
@@ -333,8 +333,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                         <div className="p-8 space-y-6">
                                             <div className="space-y-4">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Zoom Precision</span>
-                                                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">{Math.round(zoom * 100)}%</span>
+                                                    <span className="text-label font-black text-slate-400 uppercase tracking-widest">Zoom Precision</span>
+                                                    <span className="text-label font-black text-primary uppercase tracking-widest">{Math.round(zoom * 100)}%</span>
                                                 </div>
                                                 <div className="flex items-center gap-4">
                                                     <Button
@@ -372,13 +372,13 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                             <div className="flex gap-3">
                                                 <Button 
                                                     variant="outline" 
-                                                    className="flex-1 h-12 rounded-2xl font-bold uppercase tracking-widest text-[10px] border-slate-200"
+                                                    className="flex-1 h-12 rounded-2xl font-bold uppercase tracking-widest text-label border-slate-200"
                                                     onClick={() => setPhotoToAdjust(null)}
                                                 >
                                                     Cancel
                                                 </Button>
                                                 <Button 
-                                                    className="flex-1 h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/20"
+                                                    className="flex-1 h-12 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20"
                                                     onClick={handleConfirmAdjustment}
                                                 >
                                                     <Check className="w-4 h-4 mr-2" /> Lock & Sync
@@ -392,17 +392,17 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
 
                         <div className="flex-1 text-center md:text-left space-y-4">
                             <div>
-                                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{data.name}</h1>
-                                <p className="text-lg text-primary font-medium">{data.designation || 'Academic Professional'}</p>
+                                <h1 className="font-bold text-slate-900 tracking-tight">{data.name}</h1>
+                                <p className="text-primary font-medium">{data.designation || 'Academic Professional'}</p>
                             </div>
                             
                             <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                                <Badge variant="secondary" className="font-bold px-3 py-1 bg-primary/10 text-primary border-none uppercase tracking-widest text-[10px]">{role}</Badge>
+                                <Badge variant="secondary" className="font-bold px-3 py-1 bg-primary/10 text-primary border-none uppercase tracking-widest text-badge">{role}</Badge>
                                 {data.orcidId && (
                                     <Link
                                         href={`https://orcid.org/${data.orcidId}`}
                                         target="_blank"
-                                        className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-primary transition-colors bg-white px-3 py-1 rounded-full border border-slate-100 shadow-sm"
+                                        className="inline-flex items-center gap-2 text-badge font-semibold text-slate-400 hover:text-primary transition-colors bg-white px-3 py-1 rounded-full border border-slate-100 shadow-sm"
                                     >
                                         <Globe className="w-3.5 h-3.5" />
                                         {data.orcidId}
@@ -425,8 +425,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                     {/* 1. Identification & Contact */}
                     <div className="p-10 space-y-10">
                             <div className="flex items-center gap-2 mb-2">
-                                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-[10px]">Section 01</Badge>
-                                <h3 className="text-lg font-bold text-slate-800">Identification & Contact</h3>
+                                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-badge">Section 01</Badge>
+                                <h3 className="font-bold text-slate-800">Identification & Contact</h3>
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
@@ -455,11 +455,11 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-1.5">
+                                    <label className="form-label-brand font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-1.5">
                                         <Lock className="w-3 h-3" /> Email Identity
                                     </label>
                                     <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                        <p className="text-sm font-semibold truncate text-slate-600">{data.email}</p>
+                                        <p className="font-semibold truncate text-slate-600">{data.email}</p>
                                     </div>
                                 </div>
                                 <div ref={phoneRef}>
@@ -492,8 +492,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                         {/* 2. Biography */}
                         <div className="p-8 space-y-6 bg-slate-50/30" ref={bioRef}>
                             <div className="flex items-center gap-2 mb-2">
-                                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-[10px]">Section 02</Badge>
-                                <h3 className="text-lg font-bold text-slate-800">Researcher Biography</h3>
+                                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-badge">Section 02</Badge>
+                                <h3 className="font-bold text-slate-800">Researcher Biography</h3>
                             </div>
                             <InlineEditField
                                 label="Brief Academic Narrative"
@@ -509,8 +509,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                             <div className="p-8 space-y-6" ref={interestsRef}>
                                 <div className="flex items-center justify-between gap-2 mb-2">
                                     <div className="flex items-center gap-2">
-                                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-[10px]">Section 03</Badge>
-                                        <h3 className="text-lg font-bold text-slate-800">Research Expertise</h3>
+                                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-badge">Section 03</Badge>
+                                        <h3 className="font-bold text-slate-800">Research Expertise</h3>
                                     </div>
                                     <Button
                                         variant="ghost"
@@ -519,7 +519,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                             setTempInterests([...data.researchInterests]);
                                             setIsEditingInterests(!isEditingInterests);
                                         }}
-                                        className="text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5"
+                                        className="text-label font-bold uppercase tracking-widest text-primary hover:bg-primary/5"
                                     >
                                         {isEditingInterests ? "Discard Changes" : "Modify Interests"}
                                     </Button>
@@ -539,7 +539,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                         key={cat}
                                                         onClick={() => toggleInterest(cat)}
                                                         className={cn(
-                                                            "px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200",
+                                                            "px-4 py-2 rounded-xl text-body-sm font-bold transition-all duration-200",
                                                             tempInterests.includes(cat)
                                                                 ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
                                                                 : "bg-white  text-slate-600  border border-slate-100  hover:border-primary/50"
@@ -556,7 +556,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                     value={newInterest}
                                                     onChange={(e) => setNewInterest(e.target.value)}
                                                     onKeyDown={(e) => e.key === 'Enter' && addCustomInterest()}
-                                                    className="h-11 bg-slate-50 border-slate-200 text-sm rounded-xl focus:ring-primary/20"
+                                                    className="h-11 bg-slate-50 border-slate-200 text-body-sm rounded-xl focus:ring-primary/20"
                                                 />
                                                 <Button onClick={addCustomInterest} className="h-11 px-5 rounded-xl">
                                                     <Plus className="w-5 h-5" />
@@ -581,11 +581,11 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                     ) : (
                                         <div className="flex flex-wrap gap-3">
                                             {data.researchInterests.length > 0 ? data.researchInterests.map((interest: string) => (
-                                                <span key={interest} className="px-4 py-2 bg-primary/5 text-primary border border-primary/10 rounded-xl text-xs font-bold tracking-tight">
+                                                <span key={interest} className="px-4 py-2 bg-primary/5 text-primary border border-primary/10 rounded-xl text-label font-bold tracking-tight">
                                                     {interest}
                                                 </span>
                                             )) : (
-                                                <p className="text-slate-400 text-sm italic">No expertise domains identified.</p>
+                                                <p className="text-slate-400 text-caption italic">No expertise domains identified.</p>
                                             )}
                                         </div>
                                     )}
@@ -598,10 +598,10 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                             <div className="p-8 space-y-6" ref={historyRef}>
                                 <div className="flex items-center justify-between gap-2 mb-2">
                                     <div className="flex items-center gap-2">
-                                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-[10px]">Section 04</Badge>
-                                        <h3 className="text-lg font-bold text-slate-800">{role === 'author' ? "Submission History" : "Peer Review Logs"}</h3>
+                                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-tighter text-badge">Section 04</Badge>
+                                        <h3 className="font-bold text-slate-800">{role === 'author' ? "Submission History" : "Peer Review Logs"}</h3>
                                     </div>
-                                    <Button variant="link" size="sm" className="h-auto p-0 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-primary transition-colors" asChild>
+                                    <Button variant="link" size="sm" className="h-auto p-0 font-bold uppercase tracking-widest text-slate-400 hover:text-primary transition-colors" asChild>
                                         <Link href={role === 'author' ? "/author/submissions" : "/reviewer/reviews"}>
                                             View Complete Records
                                         </Link>
@@ -616,8 +616,8 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                     <FileText className="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors" />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <h5 className="text-sm font-bold line-clamp-1 text-slate-800">{item.title}</h5>
-                                                    <div className="flex items-center gap-3 text-[10px] text-slate-400 font-medium">
+                                                    <h5 className="font-bold line-clamp-1 text-slate-800">{item.title}</h5>
+                                                    <div className="flex items-center gap-3 text-body-sm text-slate-400 font-medium">
                                                         <span className="flex items-center gap-1">
                                                             <Clock className="w-3 h-3" />
                                                             {(item.submittedAt || item.updatedAt) ? new Date((item.submittedAt || item.updatedAt)!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Pending Archive'}
@@ -626,7 +626,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                                 </div>
                                             </div>
                                             <Badge variant="outline" className={cn(
-                                                "text-[9px] font-bold h-6 px-3 rounded-lg uppercase tracking-wider border-none",
+                                                "text-label font-bold h-6 px-3 rounded-lg uppercase tracking-wider border-none",
                                                 item.status === 'accepted' || item.decision === 'accept' ? 'bg-emerald-500/10 text-emerald-600' :
                                                 item.status === 'rejected' || item.decision === 'reject' ? 'bg-rose-500/10 text-rose-600' : 'bg-primary/10 text-primary'
                                             )}>
@@ -638,7 +638,7 @@ export function ProfileDossierClient({ data: initialData, role, userId }: Profil
                                             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-inner">
                                                 <Search className="w-6 h-6 text-slate-300" />
                                             </div>
-                                            <p className="text-sm font-bold text-slate-400">No activity protocols detected.</p>
+                                            <p className="font-bold text-slate-400">No activity protocols detected.</p>
                                         </div>
                                     )}
                                 </div>

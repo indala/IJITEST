@@ -145,8 +145,11 @@ export async function generatePublicationCertificate(data: CertificateData): Pro
     const metadataText = `Published in Volume ${data.volume}, Issue ${data.issue} (${data.monthRange ? data.monthRange + " " : ""}${data.year})  |  Paper ID: ${data.paperId}`;
     drawCenteredText(metadataText, currentY, fontRegular, 10, charcoalColor);
 
-    currentY -= 15;
-    const doiText = data.doi ? `DOI: https://doi.org/${data.doi}` : `Permanent URL: https://ijitest.org/archives/${data.paperId}`;
+    currentY -= 16;
+    const baseSiteUrl = (data.baseUrl || 'https://ijitest.org').replace(/\/$/, '');
+    const doiText = data.doi
+        ? `DOI: https://doi.org/${data.doi.replace(/^https?:\/\/doi\.org\//, '')}`
+        : `Permanent URL: ${baseSiteUrl}/article/${data.paperId}`;
     drawCenteredText(doiText, currentY, fontBold, 9.5, primaryColor);
 
     // 7. Footer Signatures & Validation Seal

@@ -79,13 +79,13 @@ export default function ForgotPassword() {
                                 exit={{ opacity: 0 }}
                              >
                                 {error && (
-                                    <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl text-sm font-semibold">
+                                    <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl text-caption font-semibold">
                                         {error}
                                     </div>
                                 )}
                                 <form action={formAction} className="space-y-6">
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-700  tracking-widest mb-3 pl-1">Registered Email</label>
+                                        <label className="block form-label-brand font-black text-slate-700 tracking-widest mb-3 pl-1">Registered Email</label>
                                         <div className="relative">
                                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                                             <input
@@ -102,14 +102,14 @@ export default function ForgotPassword() {
                                     <button
                                         type="submit"
                                         disabled={isPending}
-                                        className="w-full bg-primary text-white py-5 rounded-3xl font-black text-xs  tracking-[0.2em] shadow-xl shadow-primary/20 hover:shadow-2xl hover:bg-primary/95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer"
+                                        className="w-full bg-primary text-white py-5 rounded-3xl font-black tracking-[0.2em] shadow-xl shadow-primary/20 hover:shadow-2xl hover:bg-primary/95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer"
                                     >
                                         {isPending ? 'Processing...' : 'Send Recovery Link'}
                                         <ArrowRight className="w-5 h-5" />
                                     </button>
  
                                     <div className="text-center">
-                                        <Link href="/login" className="text-[10px] font-black  text-gray-400 tracking-widest hover:text-primary transition-colors cursor-pointer">
+                                        <Link href="/login" className="font-black text-gray-400 tracking-widest hover:text-primary transition-colors cursor-pointer">
                                             Wait, I remember it!
                                         </Link>
                                     </div>

@@ -164,7 +164,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                                                 <div className="w-9 h-9 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
                                                     <Archive className="size-4" />
                                                 </div>
-                                                <Badge variant="outline" className="bg-secondary/5 text-secondary border-secondary/15 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                                                <Badge variant="outline" className="bg-secondary/5 text-secondary border-secondary/15 text-badge font-semibold px-2 py-0.5 rounded-full">
                                                     Year {vol.year}
                                                 </Badge>
                                             </div>
@@ -179,7 +179,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                                             </div>
                                         </div>
 
-                                        <div className="mt-4 pt-3 border-t border-t-border/40 flex items-center justify-between text-xs">
+                                        <div className="mt-4 pt-3 border-t border-t-border/40 flex items-center justify-between text-body-sm">
                                             <div className="flex items-center gap-3 text-muted-foreground font-medium">
                                                 <span className="flex items-center gap-1">
                                                     <Layers className="size-3.5 text-primary/40" />
@@ -190,7 +190,7 @@ export default function ArchivesSearch({ papers, volumes }: ArchivesSearchProps)
                                                     {vol.papersCount} {vol.papersCount === 1 ? 'Paper' : 'Papers'}
                                                 </span>
                                             </div>
-                                            <span className="text-primary font-bold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform text-xs">
+                                            <span className="text-primary font-bold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform text-body-sm">
                                                 View Issues <ChevronRight className="size-3.5" />
                                             </span>
                                         </div>

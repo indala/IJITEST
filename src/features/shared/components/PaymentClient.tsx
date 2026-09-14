@@ -137,7 +137,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                     </div>
                                     <div className="flex justify-between items-center pt-3 mt-2 border-t border-dashed border-border/50">
                                         <span className="text-label text-primary">Total Due</span>
-                                        <span className="text-xl sm:text-2xl font-bold text-primary">₹ {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                        <span className="text-body-sm font-bold text-primary">₹ {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
                                 </div>
                             </div>

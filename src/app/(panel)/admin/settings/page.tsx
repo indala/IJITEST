@@ -261,7 +261,7 @@ export default function SystemSettings() {
                 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
                     <div className="space-y-2">
-                        <Badge variant="outline" className="px-3 py-1 rounded-full border-primary/20 text-primary bg-primary/5 text-[9px] font-bold tracking-wider uppercase">
+                        <Badge variant="outline" className="px-3 py-1 rounded-full border-primary/20 text-primary bg-primary/5 text-badge font-bold tracking-wider uppercase">
                             Root Administrator Console
                         </Badge>
                         <h1 className="m-0">
@@ -272,7 +272,7 @@ export default function SystemSettings() {
                         </p>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                        <div className="flex items-center gap-2.5 px-4 py-2.5 bg-white/80 border border-slate-200/90 rounded-xl shadow-xs text-xs">
+                        <div className="flex items-center gap-2.5 px-4 py-2.5 bg-white/80 border border-slate-200/90 rounded-xl shadow-xs text-body-sm">
                             {isSavingAny ? (
                                 <>
                                     <Loader2 className="w-4 h-4 text-primary animate-spin" />
@@ -301,68 +301,68 @@ export default function SystemSettings() {
                                 </div>
                                 <div className="space-y-0.5">
                                     <CardTitle className="text-slate-900">Journal Identity</CardTitle>
-                                    <CardDescription className="text-slate-500 text-xs">Branding & metadata protocols.</CardDescription>
+                                    <CardDescription className="text-slate-500 text-body-sm">Branding & metadata protocols.</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
                         <CardContent className="p-6 pt-0 space-y-6">
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Full Publication Handle</Label>
+                                    <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Full Publication Handle</Label>
                                     {isSavingField('journalName') && <Loader2 className="w-3 h-3 text-primary animate-spin" />}
                                 </div>
                                 <Input
                                     key={settings.journalName}
                                     defaultValue={settings.journalName}
                                     onBlur={(e) => handleSaveField('journalName', e.target.value, 'Journal Name')}
-                                    className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm shadow-sm rounded-xl px-4 transition-all"
+                                    className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-body-sm shadow-sm rounded-xl px-4 transition-all"
                                 />
                             </div>
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Publishing Syndicate</Label>
+                                    <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Publishing Syndicate</Label>
                                     {isSavingField('publisherName') && <Loader2 className="w-3 h-3 text-primary animate-spin" />}
                                 </div>
                                 <Input
                                     key={settings.publisherName}
                                     defaultValue={settings.publisherName}
                                     onBlur={(e) => handleSaveField('publisherName', e.target.value, 'Publisher Name')}
-                                    className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm shadow-sm rounded-xl px-4"
+                                    className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-body-sm shadow-sm rounded-xl px-4"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">SEO Cipher</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">SEO Cipher</Label>
                                         {isSavingField('journalShortName') && <Loader2 className="w-3 h-3 text-primary animate-spin" />}
                                     </div>
                                     <Input
                                         key={settings.journalShortName}
                                         defaultValue={settings.journalShortName}
                                         onBlur={(e) => handleSaveField('journalShortName', e.target.value, 'Short Name')}
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-black text-sm shadow-sm rounded-xl px-4 tracking-widest"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-black text-label shadow-sm rounded-xl px-4 tracking-widest"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">ISSN Protocol</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">ISSN Protocol</Label>
                                         {isSavingField('issnNumber') && <Loader2 className="w-3 h-3 text-primary animate-spin" />}
                                     </div>
                                     <Input
                                         key={settings.issnNumber}
                                         defaultValue={settings.issnNumber}
                                         onBlur={(e) => handleSaveField('issnNumber', e.target.value, 'ISSN Number')}
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm font-mono shadow-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-meta font-mono shadow-sm rounded-xl px-4"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-4 pt-2 border-t border-slate-100">
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Official DOI Prefix Protocol</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Official DOI Prefix Protocol</Label>
                                         <div className="flex items-center gap-2">
                                             {isSavingField('doiPrefix') && <Loader2 className="w-3 h-3 text-primary animate-spin" />}
-                                            <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">Registered Prefix</span>
+                                            <span className="text-body-sm font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">Registered Prefix</span>
                                         </div>
                                     </div>
                                     <Input
@@ -370,24 +370,24 @@ export default function SystemSettings() {
                                         defaultValue={settings.doiPrefix || '10.68139'}
                                         placeholder="e.g. 10.68139"
                                         onBlur={(e) => handleSaveField('doiPrefix', e.target.value, 'DOI Prefix')}
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-sm font-mono shadow-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-meta font-mono shadow-sm rounded-xl px-4"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">DOI Assignment Policy</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">DOI Assignment Policy</Label>
                                         {isSavingField('doiAssignmentMode') && <Loader2 className="w-3 h-3 text-primary animate-spin" />}
                                     </div>
                                     <select
                                         key={settings.doiAssignmentMode}
                                         defaultValue={settings.doiAssignmentMode || 'manual'}
                                         onChange={(e) => handleSaveField('doiAssignmentMode', e.target.value, 'DOI Assignment Policy')}
-                                        className="w-full h-12 bg-white/50 border border-slate-200 focus-visible:ring-2 focus-visible:ring-primary/20 font-medium text-xs rounded-xl px-4 appearance-none outline-none shadow-sm cursor-pointer"
+                                        className="w-full h-12 bg-white/50 border border-slate-200 focus-visible:ring-2 focus-visible:ring-primary/20 font-medium rounded-xl px-4 appearance-none outline-none shadow-sm cursor-pointer"
                                     >
                                         <option value="manual">Selective / Manual Mode (Assign per paper to selected articles — Recommended)</option>
                                         <option value="auto">Automatic Mode (Auto-assign 10.68139/[paperId] to all papers on publish)</option>
                                     </select>
-                                    <p className="text-[10px] text-slate-500 px-1 leading-relaxed">
+                                    <p className="text-slate-500 px-1 leading-relaxed">
                                         In <strong>Selective Mode</strong>, your team decides which accepted papers receive the official CrossRef DOI, a Zenodo DOI, or remain without a DOI. Existing papers are never modified automatically.
                                     </p>
                                 </div>
@@ -407,7 +407,7 @@ export default function SystemSettings() {
                                 </div>
                                 <div className="space-y-0.5">
                                     <CardTitle className="text-slate-900">Econometrics</CardTitle>
-                                    <CardDescription className="text-slate-500 text-xs">Transmission fees & parameters.</CardDescription>
+                                    <CardDescription className="text-slate-500 text-body-sm">Transmission fees & parameters.</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
@@ -415,38 +415,38 @@ export default function SystemSettings() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Domestic (INR)</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Domestic (INR)</Label>
                                         {isSavingField('apcInr') && <Loader2 className="w-3 h-3 text-emerald-600 animate-spin" />}
                                     </div>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-emerald-600/50 text-base">₹</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-emerald-600/50 text-body-sm">₹</span>
                                         <Input
                                             key={settings.apcInr}
                                             defaultValue={settings.apcInr}
                                             onBlur={(e) => handleSaveField('apcInr', e.target.value, 'Domestic APC (INR)')}
-                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-emerald-500/20 font-black text-lg pl-8 rounded-xl"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-emerald-500/20 font-black text-body-sm pl-8 rounded-xl"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">International (USD)</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">International (USD)</Label>
                                         {isSavingField('apcUsd') && <Loader2 className="w-3 h-3 text-emerald-600 animate-spin" />}
                                     </div>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-emerald-600/50 text-base">$</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-emerald-600/50 text-body-sm">$</span>
                                         <Input
                                             key={settings.apcUsd}
                                             defaultValue={settings.apcUsd}
                                             onBlur={(e) => handleSaveField('apcUsd', e.target.value, 'International APC (USD)')}
-                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-emerald-500/20 font-black text-lg pl-8 rounded-xl"
+                                            className="h-12 bg-white/50 border-slate-200 focus-visible:ring-emerald-500/20 font-black text-body-sm pl-8 rounded-xl"
                                         />
                                     </div>
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Financial Disclosure Text</Label>
+                                    <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Financial Disclosure Text</Label>
                                     {isSavingField('apcDescription') && <Loader2 className="w-3 h-3 text-emerald-600 animate-spin" />}
                                 </div>
                                 <Textarea
@@ -454,7 +454,7 @@ export default function SystemSettings() {
                                     defaultValue={settings.apcDescription}
                                     onBlur={(e) => handleSaveField('apcDescription', e.target.value, 'Financial Disclosure Text')}
                                     rows={3}
-                                    className="bg-white/50 border-slate-200 focus-visible:ring-emerald-500/20 font-medium text-xs p-4 rounded-xl resize-none min-h-[100px]"
+                                    className="bg-white/50 border-slate-200 focus-visible:ring-emerald-500/20 font-medium text-body-sm p-4 rounded-xl resize-none min-h-[100px]"
                                 />
                             </div>
                         </CardContent>
@@ -472,7 +472,7 @@ export default function SystemSettings() {
                                 </div>
                                 <div className="space-y-0.5">
                                     <CardTitle className="text-slate-900">Academic Metadata</CardTitle>
-                                    <CardDescription className="text-slate-500 text-xs">Scholarly indexing & registration.</CardDescription>
+                                    <CardDescription className="text-slate-500 text-body-sm">Scholarly indexing & registration.</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
@@ -480,65 +480,65 @@ export default function SystemSettings() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Starting Year</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Starting Year</Label>
                                         {isSavingField('startingYear') && <Loader2 className="w-3 h-3 text-blue-600 animate-spin" />}
                                     </div>
                                     <Input
                                         key={settings.startingYear}
                                         defaultValue={settings.startingYear}
                                         onBlur={(e) => handleSaveField('startingYear', e.target.value, 'Starting Year')}
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-body-sm rounded-xl px-4"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Frequency</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Frequency</Label>
                                         {isSavingField('publicationFrequency') && <Loader2 className="w-3 h-3 text-blue-600 animate-spin" />}
                                     </div>
                                     <Input
                                         key={settings.publicationFrequency}
                                         defaultValue={settings.publicationFrequency}
                                         onBlur={(e) => handleSaveField('publicationFrequency', e.target.value, 'Publication Frequency')}
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-body-sm rounded-xl px-4"
                                     />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Language</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Language</Label>
                                         {isSavingField('journalLanguage') && <Loader2 className="w-3 h-3 text-blue-600 animate-spin" />}
                                     </div>
                                     <Input
                                         key={settings.journalLanguage}
                                         defaultValue={settings.journalLanguage}
                                         onBlur={(e) => handleSaveField('journalLanguage', e.target.value, 'Journal Language')}
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-body-sm rounded-xl px-4"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">UDYAM / MSME</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">UDYAM / MSME</Label>
                                         {isSavingField('udyamRegistration') && <Loader2 className="w-3 h-3 text-blue-600 animate-spin" />}
                                     </div>
                                     <Input
                                         key={settings.udyamRegistration}
                                         defaultValue={settings.udyamRegistration}
                                         onBlur={(e) => handleSaveField('udyamRegistration', e.target.value, 'UDYAM Registration')}
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-body-sm rounded-xl px-4"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Subject Area</Label>
+                                    <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Subject Area</Label>
                                     {isSavingField('journalSubject') && <Loader2 className="w-3 h-3 text-blue-600 animate-spin" />}
                                 </div>
                                 <Input
                                     key={settings.journalSubject}
                                     defaultValue={settings.journalSubject}
                                     onBlur={(e) => handleSaveField('journalSubject', e.target.value, 'Journal Subject')}
-                                    className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-sm rounded-xl px-4"
+                                    className="h-12 bg-white/50 border-slate-200 focus-visible:ring-blue-500/20 font-bold text-body-sm rounded-xl px-4"
                                 />
                             </div>
                         </CardContent>
@@ -556,7 +556,7 @@ export default function SystemSettings() {
                                 </div>
                                 <div className="space-y-0.5">
                                     <CardTitle className="text-slate-900">Operations Center</CardTitle>
-                                    <CardDescription className="text-slate-500 text-xs">Support pathways & physical logistics.</CardDescription>
+                                    <CardDescription className="text-slate-500 text-body-sm">Support pathways & physical logistics.</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
@@ -564,32 +564,32 @@ export default function SystemSettings() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Editorial Council Inbox</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Editorial Council Inbox</Label>
                                         {isSavingField('supportEmail') && <Loader2 className="w-3 h-3 text-amber-600 animate-spin" />}
                                     </div>
                                     <Input
                                         key={settings.supportEmail}
                                         defaultValue={settings.supportEmail}
                                         onBlur={(e) => handleSaveField('supportEmail', e.target.value, 'Support Email')}
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-amber-500/20 font-bold text-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-amber-500/20 font-bold text-body-sm rounded-xl px-4"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">Direct Operations Phone</Label>
+                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">Direct Operations Phone</Label>
                                         {isSavingField('supportPhone') && <Loader2 className="w-3 h-3 text-amber-600 animate-spin" />}
                                     </div>
                                     <Input
                                         key={settings.supportPhone}
                                         defaultValue={settings.supportPhone}
                                         onBlur={(e) => handleSaveField('supportPhone', e.target.value, 'Support Phone')}
-                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-amber-500/20 font-bold text-sm rounded-xl px-4"
+                                        className="h-12 bg-white/50 border-slate-200 focus-visible:ring-amber-500/20 font-bold text-body-sm rounded-xl px-4"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <Label className="text-[10px] font-bold text-slate-900 tracking-wider px-1 uppercase">HQ Physical Architecture</Label>
+                                    <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">HQ Physical Architecture</Label>
                                     {isSavingField('officeAddress') && <Loader2 className="w-3 h-3 text-amber-600 animate-spin" />}
                                 </div>
                                 <Textarea
@@ -597,7 +597,7 @@ export default function SystemSettings() {
                                     defaultValue={settings.officeAddress}
                                     onBlur={(e) => handleSaveField('officeAddress', e.target.value, 'Office Address')}
                                     rows={2}
-                                    className="bg-white/50 border-slate-200 focus-visible:ring-amber-500/20 font-bold text-sm p-4 rounded-xl resize-none"
+                                    className="bg-white/50 border-slate-200 focus-visible:ring-amber-500/20 font-bold text-body-sm p-4 rounded-xl resize-none"
                                 />
                             </div>
                         </CardContent>
@@ -614,7 +614,7 @@ export default function SystemSettings() {
                                 </div>
                                 <div className="space-y-0.5">
                                     <CardTitle className="text-slate-900">Asset Repository</CardTitle>
-                                    <CardDescription className="text-slate-500 text-xs">Manage templates & covenants.</CardDescription>
+                                    <CardDescription className="text-slate-500 text-body-sm">Manage templates & covenants.</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
@@ -624,7 +624,7 @@ export default function SystemSettings() {
                                 <div className="group/asset bg-slate-50/50 p-6 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-xl">
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="space-y-1">
-                                            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-bold text-[8px] tracking-wider uppercase rounded-lg px-2 py-0.5">
+                                            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-bold text-badge tracking-wider uppercase rounded-lg px-2 py-0.5">
                                                 MS-DOCX / PDF
                                             </Badge>
                                             <h4 className="m-0">Upload Template</h4>
@@ -650,12 +650,12 @@ export default function SystemSettings() {
                                         {isSavingField('templateUrl') ? (
                                             <div className="flex flex-col items-center gap-2">
                                                 <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
-                                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest animate-pulse">Uploading & Locking Asset...</span>
+                                                <span className="text-label font-black text-blue-600 uppercase tracking-widest animate-pulse">Uploading & Locking Asset...</span>
                                             </div>
                                         ) : (
                                             <>
                                                 <Upload className="w-6 h-6 text-slate-300 group-hover/field:text-blue-500 group-hover/field:scale-110 transition-all" />
-                                                <span className="text-xs font-bold text-slate-500 group-hover/field:text-blue-600 uppercase tracking-tighter">Click or Drop new Template</span>
+                                                <span className="text-label font-bold text-slate-500 group-hover/field:text-blue-600 uppercase tracking-tighter">Click or Drop new Template</span>
                                             </>
                                         )}
 
@@ -675,7 +675,7 @@ export default function SystemSettings() {
                                                 <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
                                                     <FileText className="w-3.5 h-3.5" />
                                                 </div>
-                                                <p className="truncate text-xs font-medium text-slate-600">{settings.templateUrl.split('/').pop()}</p>
+                                                <p className="truncate font-medium text-slate-600">{settings.templateUrl.split('/').pop()}</p>
                                             </div>
                                             <Button asChild variant="ghost" size="icon" className="w-7 h-7 rounded-lg hover:bg-blue-50 hover:text-blue-600">
                                                 <a href={settings.templateUrl} target="_blank" download="IJITEST-Manuscript-Template.docx" title="Download Template"><ExternalLink className="w-3.5 h-3.5" /></a>
@@ -688,7 +688,7 @@ export default function SystemSettings() {
                                 <div className="group/asset bg-slate-50/50 p-6 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-xl">
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="space-y-1">
-                                            <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 border-none font-bold text-[8px] tracking-wider uppercase rounded-lg px-2 py-0.5">
+                                            <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 border-none font-bold text-badge tracking-wider uppercase rounded-lg px-2 py-0.5">
                                                 Legal Covenant
                                             </Badge>
                                             <h4 className="m-0">Upload Copyright Form</h4>
@@ -714,12 +714,12 @@ export default function SystemSettings() {
                                         {isSavingField('copyrightUrl') ? (
                                             <div className="flex flex-col items-center gap-2">
                                                 <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-                                                <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Uploading & Locking Asset...</span>
+                                                <span className="text-label font-black text-indigo-600 uppercase tracking-widest animate-pulse">Uploading & Locking Asset...</span>
                                             </div>
                                         ) : (
                                             <>
                                                 <Upload className="w-6 h-6 text-slate-300 group-hover/field:text-indigo-500 group-hover/field:scale-110 transition-all" />
-                                                <span className="text-xs font-bold text-slate-500 group-hover/field:text-indigo-600 uppercase tracking-tighter">Click or Drop new Agreement</span>
+                                                <span className="text-label font-bold text-slate-500 group-hover/field:text-indigo-600 uppercase tracking-tighter">Click or Drop new Agreement</span>
                                             </>
                                         )}
 
@@ -739,7 +739,7 @@ export default function SystemSettings() {
                                                 <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
                                                     <FileText className="w-3.5 h-3.5" />
                                                 </div>
-                                                <p className="truncate text-xs font-medium text-slate-600">{settings.copyrightUrl.split('/').pop()}</p>
+                                                <p className="truncate font-medium text-slate-600">{settings.copyrightUrl.split('/').pop()}</p>
                                             </div>
                                             <Button asChild variant="ghost" size="icon" className="w-7 h-7 rounded-lg hover:bg-indigo-50 hover:text-indigo-600">
                                                 <a href={settings.copyrightUrl} target="_blank" download="IJITEST-Publication-License-Agreement.docx" title="Download Copyright Form"><ExternalLink className="w-3.5 h-3.5" /></a>
@@ -762,12 +762,12 @@ export default function SystemSettings() {
                             </div>
                             <div className="space-y-1.5">
                                 <div className="flex flex-wrap items-center gap-2">
-                                    <h3 className="text-slate-900 font-bold text-base m-0">Visitor Promotion Popup</h3>
-                                    <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                                    <h3 className="text-slate-900 font-bold m-0">Visitor Promotion Popup</h3>
+                                    <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 text-badge font-bold px-2.5 py-0.5 rounded-full">
                                         100% APC Waiver
                                     </Badge>
                                 </div>
-                                <p className="text-slate-600 text-xs max-w-xl font-medium leading-relaxed m-0">
+                                <p className="text-slate-600 max-w-xl font-medium leading-relaxed m-0">
                                     Controls the introductory modal popup shown to first-time visitors after 5 seconds, offering the 100% Article Processing Charge (APC) waiver for the 2026 volume.
                                 </p>
                             </div>
@@ -780,11 +780,11 @@ export default function SystemSettings() {
                                         "w-2 h-2 rounded-full",
                                         isPromotionActive ? "bg-emerald-500 animate-pulse" : "bg-slate-300"
                                     )} />
-                                    <span className="text-xs font-bold text-slate-900">
+                                    <span className="text-body-sm font-bold text-slate-900">
                                         {isPromotionActive ? "Popup Active" : "Popup Disabled"}
                                     </span>
                                 </div>
-                                <span className="text-[10px] font-medium text-slate-500">
+                                <span className="text-body-sm font-medium text-slate-500">
                                     {isTogglingPromotion ? "Saving..." : (isPromotionActive ? "Visible to new visitors" : "Hidden site-wide")}
                                 </span>
                             </div>
@@ -817,17 +817,17 @@ export default function SystemSettings() {
                                     <div className="space-y-0.5">
                                         <div className="flex items-center gap-2">
                                             <CardTitle className="text-slate-900">Institutional Metrics & SUSHI (COUNTER R5)</CardTitle>
-                                            <Badge className="bg-emerald-100 text-emerald-800 border-none font-bold text-[9px] px-2 py-0.5">
+                                            <Badge className="bg-emerald-100 text-emerald-800 border-none font-bold text-badge px-2 py-0.5">
                                                 Release 5 Compliant
                                             </Badge>
                                         </div>
-                                        <CardDescription className="text-slate-500 text-xs">
+                                        <CardDescription className="text-slate-500 text-body-sm">
                                             Automated harvesting endpoints for university libraries, indexers, and consortium metrics.
                                         </CardDescription>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 text-xs px-2.5 py-1">
+                                    <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 text-badge px-2.5 py-1">
                                         <Activity className="w-3 h-3 text-emerald-500 mr-1.5 animate-pulse" />
                                         SUSHI Active
                                     </Badge>
@@ -838,39 +838,39 @@ export default function SystemSettings() {
                             {/* Live COUNTER & Storage Metrics Grid */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                                 <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Investigations</span>
-                                    <p className="text-xl font-black text-slate-800 m-0">
+                                    <span className="text-label font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Investigations</span>
+                                    <p className="font-black text-slate-800 m-0">
                                         {telemetry ? telemetry.counterMetrics.totalInvestigations.toLocaleString() : "--"}
                                     </p>
-                                    <span className="text-[10px] text-slate-400 mt-1 block">Article Page Views</span>
+                                    <span className="text-body-sm text-slate-400 mt-1 block">Article Page Views</span>
                                 </div>
                                 <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Unique Investigations</span>
-                                    <p className="text-xl font-black text-slate-800 m-0">
+                                    <span className="text-label font-bold text-slate-400 uppercase tracking-wider block mb-1">Unique Investigations</span>
+                                    <p className="font-black text-slate-800 m-0">
                                         {telemetry ? telemetry.counterMetrics.uniqueInvestigations.toLocaleString() : "--"}
                                     </p>
-                                    <span className="text-[10px] text-slate-400 mt-1 block">Unique Daily Readers</span>
+                                    <span className="text-body-sm text-slate-400 mt-1 block">Unique Daily Readers</span>
                                 </div>
                                 <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Requests</span>
-                                    <p className="text-xl font-black text-emerald-700 m-0">
+                                    <span className="text-label font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Requests</span>
+                                    <p className="font-black text-emerald-700 m-0">
                                         {telemetry ? telemetry.counterMetrics.totalRequests.toLocaleString() : "--"}
                                     </p>
-                                    <span className="text-[10px] text-emerald-600 mt-1 block">Full-Text PDF Downloads</span>
+                                    <span className="text-body-sm text-emerald-600 mt-1 block">Full-Text PDF Downloads</span>
                                 </div>
                                 <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Unique Requests</span>
-                                    <p className="text-xl font-black text-emerald-700 m-0">
+                                    <span className="text-label font-bold text-slate-400 uppercase tracking-wider block mb-1">Unique Requests</span>
+                                    <p className="font-black text-emerald-700 m-0">
                                         {telemetry ? telemetry.counterMetrics.uniqueRequests.toLocaleString() : "--"}
                                     </p>
-                                    <span className="text-[10px] text-emerald-600 mt-1 block">Unique PDF Downloads</span>
+                                    <span className="text-body-sm text-emerald-600 mt-1 block">Unique PDF Downloads</span>
                                 </div>
                                 <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 col-span-2 sm:col-span-1">
-                                    <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-wider block mb-1">Storage-Service</span>
-                                    <p className="text-xl font-black text-indigo-900 m-0">
+                                    <span className="text-label font-bold text-indigo-500 uppercase tracking-wider block mb-1">Storage-Service</span>
+                                    <p className="font-black text-indigo-900 m-0">
                                         {telemetry?.storageStats ? `${telemetry.storageStats.sizeMB} MB` : "Connected"}
                                     </p>
-                                    <span className="text-[10px] text-indigo-600 mt-1 block">
+                                    <span className="text-body-sm text-indigo-600 mt-1 block">
                                         {telemetry?.storageStats ? `${telemetry.storageStats.fileCount} Managed Files` : "Fastify Backend Active"}
                                     </span>
                                 </div>
@@ -878,7 +878,7 @@ export default function SystemSettings() {
 
                             {/* SUSHI Harvest Endpoints */}
                             <div className="space-y-3">
-                                <Label className="text-xs font-bold text-slate-700">Automated Harvesting Endpoints</Label>
+                                <Label className="form-label-brand font-bold text-slate-700">Automated Harvesting Endpoints</Label>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     {[
                                         { name: "Service Status", path: "/api/sushi/status", desc: "SUSHI protocol operational check" },
@@ -888,8 +888,8 @@ export default function SystemSettings() {
                                     ].map((ep) => (
                                         <div key={ep.path} className="flex items-center justify-between p-3 bg-slate-50/80 rounded-xl border border-slate-200/80 hover:bg-white hover:shadow-xs transition-all">
                                             <div className="min-w-0 pr-2">
-                                                <p className="text-xs font-bold text-slate-800 m-0">{ep.name}</p>
-                                                <code className="text-[11px] text-indigo-600 font-mono block truncate mt-0.5">{ep.path}</code>
+                                                <p className="font-bold text-slate-800 m-0">{ep.name}</p>
+                                                <code className="text-meta text-indigo-600 font-mono block truncate mt-0.5">{ep.path}</code>
                                             </div>
                                             <div className="flex items-center gap-1 shrink-0">
                                                 <Button
@@ -897,7 +897,7 @@ export default function SystemSettings() {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => copyToClipboard(ep.path)}
-                                                    className="h-8 px-2.5 text-xs text-slate-600 hover:text-indigo-600 cursor-pointer"
+                                                    className="h-8 px-2.5 text-slate-600 hover:text-indigo-600 cursor-pointer"
                                                     title="Copy endpoint URL"
                                                 >
                                                     {copiedUrl === ep.path ? (
@@ -907,7 +907,7 @@ export default function SystemSettings() {
                                                     )}
                                                     {copiedUrl === ep.path ? "Copied" : "Copy"}
                                                 </Button>
-                                                <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-xs text-slate-500 hover:text-indigo-600">
+                                                <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-slate-500 hover:text-indigo-600">
                                                     <a href={ep.path} target="_blank" rel="noreferrer" title="Open in new tab">
                                                         <ExternalLink className="w-3.5 h-3.5" />
                                                     </a>
@@ -922,7 +922,7 @@ export default function SystemSettings() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-slate-100">
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between">
-                                        <Label htmlFor="sushiPlatformId" className="text-xs font-bold text-slate-700">SUSHI Platform Identifier</Label>
+                                        <Label htmlFor="sushiPlatformId" className="form-label-brand font-bold text-slate-700">SUSHI Platform Identifier</Label>
                                         {isSavingField('sushiPlatformId') && <Loader2 className="w-3 h-3 text-emerald-600 animate-spin" />}
                                     </div>
                                     <Input
@@ -931,13 +931,13 @@ export default function SystemSettings() {
                                         defaultValue={settings.sushiPlatformId || "ijitest"}
                                         onBlur={(e) => handleSaveField('sushiPlatformId', e.target.value, 'SUSHI Platform Identifier')}
                                         placeholder="ijitest"
-                                        className="h-10 text-xs"
+                                        className="h-10 text-body-sm"
                                     />
-                                    <p className="text-[10px] text-slate-400 m-0">Used as the platform identifier in standard COUNTER headers.</p>
+                                    <p className="text-slate-400 m-0">Used as the platform identifier in standard COUNTER headers.</p>
                                 </div>
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between">
-                                        <Label htmlFor="sushiCustomerId" className="text-xs font-bold text-slate-700">Default Customer ID</Label>
+                                        <Label htmlFor="sushiCustomerId" className="form-label-brand font-bold text-slate-700">Default Customer ID</Label>
                                         {isSavingField('sushiCustomerId') && <Loader2 className="w-3 h-3 text-emerald-600 animate-spin" />}
                                     </div>
                                     <Input
@@ -946,9 +946,9 @@ export default function SystemSettings() {
                                         defaultValue={settings.sushiCustomerId || "0"}
                                         onBlur={(e) => handleSaveField('sushiCustomerId', e.target.value, 'Default Customer ID')}
                                         placeholder="0"
-                                        className="h-10 text-xs"
+                                        className="h-10 text-body-sm"
                                     />
-                                    <p className="text-[10px] text-slate-400 m-0">Use &apos;0&apos; to represent open-access / global public access (The World).</p>
+                                    <p className="text-slate-400 m-0">Use &apos;0&apos; to represent open-access / global public access (The World).</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -957,11 +957,11 @@ export default function SystemSettings() {
 
                 {/* Bottom Auto-Save Status Bar */}
                 <motion.div variants={itemVariants} className="lg:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm mt-2">
-                    <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
+                    <div className="flex items-center gap-2 text-body-sm text-slate-600 font-medium">
                         <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                         <span>All settings are automatically saved and broadcast across the journal network.</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                    <div className="flex items-center gap-2 text-body-sm font-bold text-slate-500">
                         {isSavingAny ? (
                             <span className="flex items-center gap-1.5 text-primary">
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" /> Synchronizing...
@@ -984,13 +984,13 @@ export default function SystemSettings() {
                                 <Mail className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="text-base font-bold text-slate-900 m-0">Customizable Email Templates (OJS Parity)</h3>
-                                <p className="text-xs text-slate-500 m-0 mt-1">
+                                <h3 className="font-bold text-slate-900 m-0">Customizable Email Templates (OJS Parity)</h3>
+                                <p className="text-slate-500 m-0 mt-1">
                                     Configure automated notifications, placeholders, I-beam cursor insertion, undo/redo history, and live branded previews.
                                 </p>
                             </div>
                         </div>
-                        <Button asChild variant="outline" className="shrink-0 h-10 px-5 font-bold text-xs bg-white hover:bg-slate-50 border-slate-300 shadow-xs cursor-pointer">
+                        <Button asChild variant="outline" className="shrink-0 h-10 px-5 font-bold bg-white hover:bg-slate-50 border-slate-300 shadow-xs cursor-pointer">
                             <Link href="/admin/email-templates">
                                 Open Email Templates Manager &rarr;
                             </Link>

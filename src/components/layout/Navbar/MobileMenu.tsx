@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { navigation } from './nav-data';
-import { X, ChevronRight, SendHorizontal } from 'lucide-react';
+import { X, ChevronRight, FilePlus, RefreshCw, Award } from 'lucide-react';
 
 interface MobileMenuProps {
     isOpen: boolean;
@@ -50,7 +50,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={handleClose}
-                        className="fixed  inset-0 bg-primary/20 backdrop-blur-md z-9998 lg:hidden"
+                        className="fixed inset-0 bg-primary/20 backdrop-blur-md z-9998 lg:hidden"
                     />
 
                     {/* Fixed Floating Modal Content */}
@@ -67,8 +67,8 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 h-16 border-b border-primary/5 shrink-0">
                             <div className="flex flex-col">
-                                <span className="text-[9px] font-black text-secondary  tracking-[0.3em]">Menu</span>
-                                <span id="mobile-menu-title" className="text-xs font-black text-primary  tracking-widest">Navigation</span>
+                                <span className="text-label font-black text-secondary tracking-[0.3em]">Menu</span>
+                                <span id="mobile-menu-title" className="text-label font-black text-primary tracking-widest">Navigation</span>
                             </div>
                             <button
                                 title="Close Menu"
@@ -160,7 +160,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                                     <div className="ml-8 space-y-3 border-l border-primary/10 pl-3.5 pb-2 pt-1">
                                                         {item.columns.map((col) => (
                                                             <div key={col.heading} className="space-y-1">
-                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-primary/40 block px-1 pt-1">
+                                                                <span className="text-label font-bold uppercase tracking-wider text-primary/40 block px-1 pt-1">
                                                                     {col.heading}
                                                                 </span>
                                                                 <ul className="space-y-0.5 list-none p-0">
@@ -205,16 +205,35 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                             </ul>
                         </div>
 
-                        {/* Footer / CTA */}
-                        <div className="px-6 py-5 border-t border-primary/5 shrink-0">
-                            <Link
-                                href="/submit"
-                                className="btn-primary btn-fill-secondary w-full h-14 flex items-center justify-center gap-3"
-                                onClick={handleClose}
-                            >
-                                <SendHorizontal className="w-4 h-4 relative z-20" />
-                                <span className="relative z-20">Submit Manuscript</span>
-                            </Link>
+                        {/* Footer / CTA: 3 Paper Submission Options */}
+                        <div className="px-5 py-4 border-t border-primary/5 shrink-0 bg-muted/20 space-y-2">
+                            <p className="text-meta font-bold text-muted-foreground uppercase tracking-widest pl-1 m-0">Paper Submission</p>
+                            <div className="grid grid-cols-3 gap-2">
+                                <Link
+                                    href="/submit?type=new"
+                                    className="flex flex-col items-center justify-center p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all text-center gap-1 group no-underline"
+                                    onClick={handleClose}
+                                >
+                                    <FilePlus className="w-4 h-4" />
+                                    <span className="text-meta font-bold leading-tight">New</span>
+                                </Link>
+                                <Link
+                                    href="/submit?type=revised"
+                                    className="flex flex-col items-center justify-center p-2 rounded-xl bg-secondary/15 text-secondary hover:bg-secondary hover:text-white transition-all text-center gap-1 group no-underline"
+                                    onClick={handleClose}
+                                >
+                                    <RefreshCw className="w-4 h-4" />
+                                    <span className="text-meta font-bold leading-tight">Revised</span>
+                                </Link>
+                                <Link
+                                    href="/submit?type=final"
+                                    className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-500/15 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-all text-center gap-1 group no-underline"
+                                    onClick={handleClose}
+                                >
+                                    <Award className="w-4 h-4" />
+                                    <span className="text-meta font-bold leading-tight">Final</span>
+                                </Link>
+                            </div>
                         </div>
                     </motion.div>
                 </>

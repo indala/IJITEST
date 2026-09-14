@@ -68,11 +68,11 @@ async function ReviewerStatsSection({ userId }: { userId: string }) {
                         <div className="w-9 h-9 rounded-lg bg-blue-500/10 flex items-center justify-center">
                             <BookOpen className="w-4 h-4 text-blue-500" />
                         </div>
-                        <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-none font-semibold text-[10px]">TOTAL</Badge>
+                        <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-none font-semibold text-badge">TOTAL</Badge>
                     </div>
                     <div>
-                        <h4 className="text-xl lg:text-2xl font-bold text-foreground">{totalAssigned}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5">Assigned Tasks</p>
+                        <h4 className="font-bold text-foreground">{totalAssigned}</h4>
+                        <p className="text-caption text-muted-foreground mt-0.5">Assigned Tasks</p>
                     </div>
                 </Card>
 
@@ -81,11 +81,11 @@ async function ReviewerStatsSection({ userId }: { userId: string }) {
                         <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                             <CheckCircle className="w-4 h-4 text-emerald-500" />
                         </div>
-                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-none font-semibold text-[10px]">DONE</Badge>
+                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-none font-semibold text-badge">DONE</Badge>
                     </div>
                     <div>
-                        <h4 className="text-xl lg:text-2xl font-bold text-foreground">{completedReviews}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5">Completed Evaluations</p>
+                        <h4 className="font-bold text-foreground">{completedReviews}</h4>
+                        <p className="text-caption text-muted-foreground mt-0.5">Completed Evaluations</p>
                     </div>
                 </Card>
 
@@ -94,11 +94,11 @@ async function ReviewerStatsSection({ userId }: { userId: string }) {
                         <div className="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center">
                             <Clock className="w-4 h-4 text-amber-500" />
                         </div>
-                        <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-none font-semibold text-[10px]">PENDING</Badge>
+                        <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-none font-semibold text-badge">PENDING</Badge>
                     </div>
                     <div>
-                        <h4 className="text-xl lg:text-2xl font-bold text-foreground">{pendingReviews}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5">Awaiting Review</p>
+                        <h4 className="font-bold text-foreground">{pendingReviews}</h4>
+                        <p className="text-caption text-muted-foreground mt-0.5">Awaiting Review</p>
                     </div>
                 </Card>
 
@@ -107,12 +107,12 @@ async function ReviewerStatsSection({ userId }: { userId: string }) {
                         <div className="w-9 h-9 rounded-lg bg-purple-500/10 flex items-center justify-center">
                             <Zap className="w-4 h-4 text-purple-500" />
                         </div>
-                        <Badge variant="outline" className="bg-purple-500/10 text-purple-600 border-none font-semibold text-[10px]">HEALTH</Badge>
+                        <Badge variant="outline" className="bg-purple-500/10 text-purple-600 border-none font-semibold text-badge">HEALTH</Badge>
                     </div>
                     <div className="space-y-1">
                         <div className="flex items-center justify-between">
-                            <h4 className="text-lg font-bold text-foreground">{completionRate.toFixed(0)}%</h4>
-                            <span className="text-[10px] text-muted-foreground">Accuracy</span>
+                            <h4 className="font-bold text-foreground">{completionRate.toFixed(0)}%</h4>
+                            <span className="text-caption text-muted-foreground">Accuracy</span>
                         </div>
                         <Progress value={completionRate} className="h-1.5 bg-muted" />
                     </div>
@@ -121,7 +121,7 @@ async function ReviewerStatsSection({ userId }: { userId: string }) {
         );
     } catch (err) {
         console.error("ReviewerStatsSection error:", err);
-        return <div className="p-4 text-xs text-muted-foreground">Unable to load review statistics</div>;
+        return <div className="p-4 text-caption text-muted-foreground">Unable to load review statistics</div>;
     }
 }
 
@@ -133,10 +133,10 @@ async function ReviewerQueueSection({ userId }: { userId: string }) {
         return (
             <Card className="lg:col-span-8 border-border/70 shadow-2xs bg-card overflow-hidden rounded-xl">
                 <div className="p-3.5 sm:p-4 border-b border-border/70 flex items-center justify-between bg-muted/10">
-                    <h3 className="card-title-brand font-semibold text-sm">Evaluation Queue</h3>
+                    <h3 className="card-title-brand font-semibold">Evaluation Queue</h3>
                     <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-medium text-muted-foreground">Live Updates</span>
+                        <span className="text-caption font-medium text-muted-foreground">Live Updates</span>
                     </div>
                 </div>
                 <div className="divide-y divide-border/70">
@@ -146,8 +146,8 @@ async function ReviewerQueueSection({ userId }: { userId: string }) {
                                 <Shield className="w-5 h-5" />
                             </div>
                             <div className="space-y-0.5">
-                                <p className="font-semibold text-sm text-foreground">No Assignments Found</p>
-                                <p className="text-xs text-muted-foreground">New tasks will appear here once editorial authorization is granted.</p>
+                                <p className="font-semibold text-foreground">No Assignments Found</p>
+                                <p className="text-caption text-muted-foreground">New tasks will appear here once editorial authorization is granted.</p>
                             </div>
                         </div>
                     ) : assignedReviews.map((review) => (
@@ -155,22 +155,22 @@ async function ReviewerQueueSection({ userId }: { userId: string }) {
                             <div className="flex items-start justify-between gap-3">
                                 <div className="space-y-1.5 min-w-0">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <Badge variant="outline" className="text-[10px] font-mono border-border/70 px-2 py-0.5">REF: {review.paperId}</Badge>
-                                        <Badge className={`text-[10px] font-semibold py-0.5 px-2 border-none ${review.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'}`}>
+                                        <Badge variant="outline" className="text-badge font-mono border-border/70 px-2 py-0.5">REF: {review.paperId}</Badge>
+                                        <Badge className={`text-badge font-semibold py-0.5 px-2 border-none ${review.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'} `}>
                                             {review.status}
                                         </Badge>
                                         {review.deadline && (
-                                            <span className="text-[10px] font-medium text-rose-500 flex items-center gap-1">
+                                            <span className="text-body-sm font-medium text-rose-500 flex items-center gap-1">
                                                 <Timer className="w-3 h-3" /> Due {new Date(review.deadline).toLocaleDateString()}
                                             </span>
                                         )}
                                     </div>
-                                    <h4 className="font-semibold text-sm text-foreground line-clamp-1 group-hover:text-primary transition-colors">{review.title}</h4>
-                                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                    <h4 className="font-semibold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{review.title}</h4>
+                                    <div className="flex items-center gap-4 text-caption text-muted-foreground">
                                         <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 opacity-60" /> Assigned {review.assignedAt ? new Date(review.assignedAt).toLocaleDateString() : 'N/A'}</span>
                                     </div>
                                 </div>
-                                <Button asChild size="sm" className="btn-secondary h-8 px-3 font-semibold text-xs rounded-lg transition-colors">
+                                <Button asChild size="sm" className="btn-secondary h-8 px-3 font-semibold rounded-lg transition-colors">
                                     <Link href={`/reviewer/submissions/${review.submissionId}`}>
                                         Evaluate <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                                     </Link>
@@ -183,7 +183,7 @@ async function ReviewerQueueSection({ userId }: { userId: string }) {
         );
     } catch (err) {
         console.error("ReviewerQueueSection error:", err);
-        return <div className="p-8 text-center text-xs text-muted-foreground">Unable to load evaluation queue</div>;
+        return <div className="p-8 text-center text-caption text-muted-foreground">Unable to load evaluation queue</div>;
     }
 }
 
@@ -198,8 +198,8 @@ async function ReviewerMySubmissionsSection() {
                     <Card className="md:col-span-2 lg:col-span-3 border-dashed border border-border/70 bg-muted/10 py-10 text-center rounded-xl">
                         <div className="flex flex-col items-center gap-2 max-w-xs mx-auto text-muted-foreground">
                             <FileText className="w-7 h-7 opacity-30" />
-                            <span className="font-semibold text-xs">No Personal Records</span>
-                            <Button asChild size="sm" className="btn-primary mt-1.5 h-8 font-semibold text-xs rounded-lg shadow-2xs">
+                            <span className="font-semibold text-body-sm">No Personal Records</span>
+                            <Button asChild size="sm" className="btn-primary mt-1.5 h-8 font-semibold rounded-lg shadow-2xs">
                                 <Link href="/submit">Start Submission</Link>
                             </Button>
                         </div>
@@ -208,18 +208,18 @@ async function ReviewerMySubmissionsSection() {
                     <Card key={paper.id} className="border-border/70 shadow-2xs bg-card hover:shadow-sm transition-all group overflow-hidden rounded-xl">
                         <div className="p-3.5 sm:p-4 space-y-2.5">
                             <div className="flex items-center justify-between">
-                                <Badge variant="outline" className="text-[10px] border-border/70 bg-muted/30 px-2 py-0.5">ID: {paper.paperId}</Badge>
-                                <Badge className={`text-[10px] font-semibold py-0.5 px-2 border-none ${paper.status === 'published' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30' :
+                                <Badge variant="outline" className="text-badge border-border/70 bg-muted/30 px-2 py-0.5">ID: {paper.paperId}</Badge>
+                                <Badge className={`text-badge font-semibold py-0.5 px-2 border-none ${paper.status === 'published' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30' :
                                     paper.status === 'rejected' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/30' :
                                         'badge-brand'
-                                    }`}>
+                                    } `}>
                                     {paper.status}
                                 </Badge>
                             </div>
-                            <h3 className="font-semibold text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">{paper.title}</h3>
-                            <div className="flex items-center justify-between text-xs text-muted-foreground pt-2.5 border-t border-border/70">
+                            <h3 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">{paper.title}</h3>
+                            <div className="flex items-center justify-between text-caption text-muted-foreground pt-2.5 border-t border-border/70">
                                 <span className="flex items-center gap-1.5 font-medium"><Clock className="w-3.5 h-3.5 opacity-60" /> {paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : 'N/A'}</span>
-                                <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-primary hover:bg-primary/10 rounded-md font-semibold text-xs">
+                                <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-primary hover:bg-primary/10 rounded-md font-semibold">
                                     <Link href={`/track?id=${paper.paperId}`} className="flex items-center gap-1">
                                         Trace <ExternalLink className="w-3 h-3" />
                                     </Link>
@@ -232,7 +232,7 @@ async function ReviewerMySubmissionsSection() {
         );
     } catch (err) {
         console.error("ReviewerMySubmissionsSection error:", err);
-        return <div className="p-8 text-center text-xs text-muted-foreground">Unable to load personal records</div>;
+        return <div className="p-8 text-center text-caption text-muted-foreground">Unable to load personal records</div>;
     }
 }
 
@@ -276,9 +276,9 @@ async function ReviewerDashboardContent() {
             <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/70 pb-3 sm:pb-4">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="badge-brand text-[10px] font-medium px-2.5 py-0.5 rounded-md">Reviewer Portal</Badge>
+                        <Badge variant="outline" className="badge-brand font-medium px-2.5 py-0.5 rounded-md">Reviewer Portal</Badge>
                     </div>
-                    <h1 className="panel-title text-xl xl:text-2xl font-bold text-primary">
+                    <h1 className="panel-title font-bold text-primary">
                         Reviewer Intel Center
                     </h1>
                     <p className="panel-subtitle text-body-sm text-muted-foreground">
@@ -286,7 +286,7 @@ async function ReviewerDashboardContent() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2.5">
-                    <Button asChild size="sm" className="btn-primary h-9 font-semibold text-xs rounded-lg shadow-2xs">
+                    <Button asChild size="sm" className="btn-primary h-9 font-semibold rounded-lg shadow-2xs">
                         <Link href="/reviewer/reviews">Open Assignment Hub</Link>
                     </Button>
                 </div>
@@ -300,8 +300,8 @@ async function ReviewerDashboardContent() {
             {/* Main Content Area */}
             <Tabs defaultValue="active-tasks" className="space-y-3 sm:space-y-4">
                 <TabsList className="bg-muted/40 p-1 rounded-lg border border-border/70">
-                    <TabsTrigger value="active-tasks" className="rounded-md font-medium text-xs px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-2xs">Evaluation Queue</TabsTrigger>
-                    <TabsTrigger value="my-papers" className="rounded-md font-medium text-xs px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-2xs">Personal Records</TabsTrigger>
+                    <TabsTrigger value="active-tasks" className="rounded-md font-medium text-body-sm px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-2xs">Evaluation Queue</TabsTrigger>
+                    <TabsTrigger value="my-papers" className="rounded-md font-medium text-body-sm px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-2xs">Personal Records</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="active-tasks" className="space-y-3 sm:space-y-4">
@@ -326,26 +326,26 @@ async function ReviewerDashboardContent() {
                                 <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <MessageSquare className="w-4 h-4 text-primary" />
                                 </div>
-                                <h3 className="card-title-brand font-semibold text-base">Editorial Guidelines</h3>
-                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                <h3 className="card-title-brand font-semibold">Editorial Guidelines</h3>
+                                <p className="text-caption text-muted-foreground leading-relaxed">
                                     Please ensure all evaluations are completed within the designated timeframe. Your intelligence directly impacts the journal&apos;s publication cycle.
                                 </p>
                                 <div className="space-y-2 pt-1">
-                                    <div className="flex items-center gap-2 text-xs font-medium text-foreground">
+                                    <div className="flex items-center gap-2 text-body-sm font-medium text-foreground">
                                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                                         Double-Blind Protocol
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs font-medium text-foreground">
+                                    <div className="flex items-center gap-2 text-body-sm font-medium text-foreground">
                                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                                         Conflict of Interest Check
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs font-medium text-foreground">
+                                    <div className="flex items-center gap-2 text-body-sm font-medium text-foreground">
                                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                                         Technical Merit Criteria
                                     </div>
                                 </div>
                             </div>
-                            <Button asChild variant="outline" className="btn-outline mt-4 w-full h-8 text-xs font-semibold rounded-lg">
+                            <Button asChild variant="outline" className="btn-outline mt-4 w-full h-8 font-semibold rounded-lg">
                                 <Link href="/reviewer/reviews">Access Management Hub</Link>
                             </Button>
                         </Card>

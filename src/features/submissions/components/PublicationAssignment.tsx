@@ -147,7 +147,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                             <DialogContent className="sm:max-w-md rounded-xl p-8 bg-card border-primary/5 shadow-2xl overflow-hidden">
                                 <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500/10" />
                                 <DialogHeader className="space-y-2">
-                                    <DialogTitle className="text-2xl text-foreground">Quick Terminal</DialogTitle>
+                                    <DialogTitle className="text-foreground">Quick Terminal</DialogTitle>
                                     <DialogDescription className="opacity-60 leading-relaxed">
                                         Instantly define a new publication node for immediate manuscript archival.
                                     </DialogDescription>
@@ -250,16 +250,16 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                 {/* DOI Allocation Protocol */}
                 <div className="space-y-2 pt-3 border-t border-emerald-500/10">
                     <div className="flex items-center justify-between">
-                        <label className="text-[11px] font-semibold text-foreground">DOI Assignment</label>
-                        <span className="text-[10px] text-muted-foreground font-mono">Prefix: {doiPrefix}</span>
+                        <label className="form-label-brand font-semibold text-foreground">DOI Assignment</label>
+                        <span className="text-meta text-muted-foreground font-mono">Prefix: {doiPrefix}</span>
                     </div>
-                    <div className="grid grid-cols-4 gap-1 p-1 bg-muted/40 rounded-lg border border-border/40 text-[11px]">
+                    <div className="grid grid-cols-4 gap-1 p-1 bg-muted/40 rounded-lg border border-border/40 text-body-sm">
                         <button
                             type="button"
                             onClick={() => setDoiChoice('none')}
                             className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
                                 doiChoice === 'none' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-                            }`}
+                            } `}
                         >
                             No DOI
                         </button>
@@ -268,7 +268,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                             onClick={() => setDoiChoice('official')}
                             className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
                                 doiChoice === 'official' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-                            }`}
+                            } `}
                         >
                             CrossRef
                         </button>
@@ -277,7 +277,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                             onClick={() => setDoiChoice('zenodo')}
                             className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
                                 doiChoice === 'zenodo' ? 'bg-sky-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-                            }`}
+                            } `}
                         >
                             Zenodo
                         </button>
@@ -286,27 +286,27 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                             onClick={() => setDoiChoice('custom')}
                             className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
                                 doiChoice === 'custom' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-                            }`}
+                            } `}
                         >
                             Custom
                         </button>
                     </div>
 
                     {doiChoice === 'official' && (
-                        <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs space-y-1">
+                        <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-body-sm space-y-1">
                             <div className="flex items-center justify-between">
-                                <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Official CrossRef DOI</p>
-                                <span className="text-[9px] bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Auto-Deposit</span>
+                                <p className="text-label font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Official CrossRef DOI</p>
+                                <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Auto-Deposit</span>
                             </div>
                             <p className="font-mono text-emerald-900 dark:text-emerald-300 break-all">{doiPrefix}/{paperId || '...'}</p>
-                            <p className="text-[10px] text-muted-foreground">Generates CrossRef Schema 5.3 XML & queues live deposit to CrossRef API.</p>
+                            <p className="text-caption text-muted-foreground">Generates CrossRef Schema 5.3 XML & queues live deposit to CrossRef API.</p>
                         </div>
                     )}
 
                     {doiChoice === 'zenodo' && (
-                        <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 rounded-lg text-xs space-y-1">
-                            <p className="text-[10px] font-bold text-sky-700 dark:text-sky-400 uppercase tracking-wider">Zenodo Self-Archiving</p>
-                            <p className="text-[10px] text-muted-foreground">Paper will be published immediately; authors or editors can deposit directly to Zenodo from the manuscript console.</p>
+                        <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 rounded-lg text-body-sm space-y-1">
+                            <p className="text-label font-bold text-sky-700 dark:text-sky-400 uppercase tracking-wider">Zenodo Self-Archiving</p>
+                            <p className="text-caption text-muted-foreground">Paper will be published immediately; authors or editors can deposit directly to Zenodo from the manuscript console.</p>
                         </div>
                     )}
 
@@ -316,16 +316,16 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                                 placeholder="e.g. 10.5281/zenodo.12345678"
                                 value={customDoiValue}
                                 onChange={(e) => setCustomDoiValue(e.target.value)}
-                                className="h-9 bg-background text-xs font-mono"
+                                className="h-9 bg-background text-meta font-mono"
                             />
-                            <p className="text-[10px] text-muted-foreground">Enter the persistent digital identifier (external registrar or pre-reserved DOI).</p>
+                            <p className="text-caption text-muted-foreground">Enter the persistent digital identifier (external registrar or pre-reserved DOI).</p>
                         </div>
                     )}
 
                     {depositStatus.status === 'success' && depositStatus.batchId && (
-                        <div className="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-xs text-emerald-800">
+                        <div className="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-body-sm text-emerald-800">
                             <p className="font-bold">CrossRef Deposit Submitted ✓</p>
-                            <p className="text-[10px] font-mono">Batch ID: {depositStatus.batchId}</p>
+                            <p className="text-meta font-mono">Batch ID: {depositStatus.batchId}</p>
                         </div>
                     )}
                 </div>

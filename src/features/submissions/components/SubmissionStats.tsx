@@ -58,12 +58,12 @@ export default function SubmissionStats({ stats }: SubmissionStatsProps) {
                                     <p className="text-label text-muted-foreground m-0">
                                         {item.label}
                                     </p>
-                                    <h3 className="m-0 text-2xl font-bold text-foreground">
+                                    <h3 className="m-0 font-bold text-foreground">
                                         {item.value}
                                     </h3>
                                 </div>
                                 <div className={`w-10 h-10 rounded-lg ${item.bg} flex items-center justify-center border ${item.borderColor} shadow-xs`}>
-                                    <item.icon className={`w-5 h-5 ${item.color}`} />
+                                    <item.icon className={`w-5 h-5 ${item.color} `} />
                                 </div>
                             </div>
                         </CardContent>

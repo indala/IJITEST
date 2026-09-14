@@ -13,7 +13,7 @@ export default function ReviewerMessagesPage() {
             <Suspense fallback={
                 <div className="flex-1 flex flex-col items-center justify-center gap-6 opacity-40">
                     <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                    <p className="font-mono text-[10px] uppercase tracking-[0.5em] animate-pulse">Initializing Comm-Matrix...</p>
+                    <p className="font-mono text-meta uppercase tracking-[0.5em] animate-pulse">Initializing Comm-Matrix...</p>
                 </div>
             }>
                 <div className="flex-1 min-h-0 px-6 pb-6 flex flex-col overflow-hidden">

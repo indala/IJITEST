@@ -49,7 +49,9 @@ export async function GET(
             headers: {
                 "Content-Type": "application/pdf",
                 "Content-Disposition": `attachment; filename="${safeFilename}"`,
-                "Cache-Control": "public, max-age=86400",
+                "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
             },
         });
     } catch (error) {

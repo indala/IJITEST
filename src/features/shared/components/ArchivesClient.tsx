@@ -115,33 +115,10 @@ export default function ArchivesClient({ mode = 'archive', initialPapers }: Arch
                             placeholder="Search archives by Title, Author, or Keywords..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="text-xs sm:text-sm placeholder:text-muted-foreground/40 border-none bg-transparent"
+                            className="text-caption placeholder:text-muted-foreground/40 border-none bg-transparent"
                         />
                     </InputGroup>
 
-                    {/* Open Science Repository & Digital Preservation Banner */}
-                    <div className="p-3 sm:p-3.5 rounded-xl bg-primary/5 border border-primary/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
-                        <div className="space-y-0.5">
-                            <div className="flex items-center gap-2">
-                                <span className="px-1.5 py-0.5 rounded bg-emerald-700 text-white font-mono font-bold text-[10px] uppercase tracking-wider">
-                                    Open Access Archive
-                                </span>
-                                <span className="font-bold text-primary text-xs">Official Digital Repository & Preservation</span>
-                            </div>
-                            <p className="text-muted-foreground leading-relaxed m-0 text-xs">
-                                All published issues and research papers are permanently preserved under persistent digital identifiers (DOI: 10.5281/zenodo.22016453) and open-science repositories.
-                            </p>
-                        </div>
-                        <a
-                            href="https://zenodo.org/communities/ijitest/records?q=&l=list&p=1&s=10&sort=newest"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-primary/20 text-[#000066] hover:text-secondary text-xs font-bold shadow-2xs transition-all shrink-0"
-                        >
-                            <span>Repository Community</span>
-                            <ExternalLink className="w-3 h-3" />
-                        </a>
-                    </div>
                 </div>
             </div>
 
@@ -159,20 +136,20 @@ export default function ArchivesClient({ mode = 'archive', initialPapers }: Arch
                                     <div key={vol.volume} className="space-y-1">
                                         <div className="flex items-center gap-2 px-2.5 py-1.5 bg-muted/30 rounded-lg border border-border/50">
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                                            <span className="text-xs sm:text-sm font-bold text-secondary">Volume {vol.volume} ({vol.year})</span>
+                                            <span className="text-body-sm font-bold text-secondary">Volume {vol.volume} ({vol.year})</span>
                                         </div>
                                         <div className="grid grid-cols-1 gap-0.5 pl-3">
                                             {vol.issues.map((iss) => (
                                                 <button
                                                     key={iss.key}
                                                     onClick={() => setSelectedIssue(iss.key)}
-                                                    className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-left text-xs sm:text-sm transition-all group ${effectiveIssueKey === iss.key
-                                                            ? 'bg-[#000066] text-white shadow-xs font-semibold'
+                                                    className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-left text-body-sm transition-all group ${effectiveIssueKey === iss.key
+                                                            ? 'bg-primary text-white shadow-xs font-semibold'
                                                             : 'hover:bg-primary/5 text-muted-foreground border border-transparent hover:border-primary/10'
-                                                        }`}
+                                                        } `}
                                                 >
                                                     <div className="flex items-center gap-1.5">
-                                                        <ChevronRight className={`w-3 h-3 transition-transform ${effectiveIssueKey === iss.key ? 'rotate-90 text-white/70' : 'text-primary/30 group-hover:translate-x-0.5'}`} />
+                                                        <ChevronRight className={`w-3 h-3 transition-transform ${effectiveIssueKey === iss.key ? 'rotate-90 text-white/70' : 'text-primary/30 group-hover:translate-x-0.5'} `} />
                                                         <span>
                                                             Issue {iss.issue} — {iss.monthRange} {iss.year}
                                                         </span>
@@ -214,7 +191,7 @@ export default function ArchivesClient({ mode = 'archive', initialPapers }: Arch
                             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-primary/2 border border-primary/10 rounded-xl relative overflow-hidden group">
                                 <div className="space-y-0.5 relative z-10">
                                     <div className="flex items-center gap-2 mb-0.5">
-                                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs px-2 py-0.5 rounded flex items-center gap-1 font-semibold">
+                                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-badge px-2 py-0.5 rounded flex items-center gap-1 font-semibold">
                                             <BadgeCheck className="size-3.5" />
                                             Current Selection
                                         </Badge>
@@ -248,7 +225,7 @@ export default function ArchivesClient({ mode = 'archive', initialPapers }: Arch
                                     </p>
                                 </div>
                                 <div className="flex justify-center pt-2">
-                                    <Button asChild size="sm" className="h-8 px-4 bg-[#000066] hover:bg-[#000088] text-white rounded-lg font-bold text-xs uppercase tracking-wider shadow-xs transition-all border-none">
+                                    <Button asChild size="sm" className="h-8 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg font-bold uppercase tracking-wider shadow-xs transition-all border-none">
                                         <Link href="/submit" className="flex items-center gap-1.5">
                                             Submit Paper <ChevronRight className="w-3.5 h-3.5" />
                                         </Link>

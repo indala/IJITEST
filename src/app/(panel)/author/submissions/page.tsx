@@ -53,10 +53,10 @@ export default async function AuthorSubmissionsList() {
         <section className="space-y-6 pb-20">
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-primary/5 pb-6">
                 <div>
-                    <h1 className="font-black text-foreground tracking-widest uppercase text-2xl">My Submissions</h1>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">All manuscripts you have submitted to IJITEST</p>
+                    <h1 className="font-black text-foreground tracking-widest uppercase">My Submissions</h1>
+                    <p className="text-caption text-muted-foreground font-medium mt-1">All manuscripts you have submitted to IJITEST</p>
                 </div>
-                <Button asChild className="bg-primary text-white hover:bg-primary/90 font-bold uppercase text-xs rounded-xl h-10 px-5">
+                <Button asChild className="bg-primary text-white hover:bg-primary/90 font-bold uppercase rounded-xl h-10 px-5">
                     <Link href="/submit">+ New Submission</Link>
                 </Button>
             </header>
@@ -65,8 +65,8 @@ export default async function AuthorSubmissionsList() {
                 <Card className="border-dashed border-2 border-border/50 bg-muted/10 py-20 text-center rounded-xl">
                     <CardContent className="flex flex-col items-center gap-3 text-muted-foreground">
                         <FileText className="w-10 h-10 opacity-20" />
-                        <span className="font-bold uppercase tracking-widest text-xs">No Submissions</span>
-                        <Button asChild size="sm" className="mt-2 bg-primary text-white hover:bg-primary/90 font-bold uppercase text-[10px] rounded-lg">
+                        <span className="font-bold uppercase tracking-widest text-label">No Submissions</span>
+                        <Button asChild size="sm" className="mt-2 bg-primary text-white hover:bg-primary/90 font-bold uppercase rounded-lg">
                             <Link href="/submit">Start Your First Submission</Link>
                         </Button>
                     </CardContent>
@@ -81,21 +81,21 @@ export default async function AuthorSubmissionsList() {
                         const isUrgent = !!(eligible && daysLeft !== undefined && daysLeft <= 5);
 
                         return (
-                            <Card key={sub.id} className={`border-border/50 bg-background hover:shadow-md transition-all group ${isUrgent ? 'ring-1 ring-orange-400/40' : ''}`}>
+                            <Card key={sub.id} className={`border-border/50 bg-background hover:shadow-md transition-all group ${isUrgent ? 'ring-1 ring-orange-400/40' : ''} `}>
                                 <CardContent className="p-6">
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
                                         <div className="flex-1 min-w-0 space-y-2">
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <Badge variant="outline" className="text-[9px] font-mono">{sub.paperId}</Badge>
-                                                <Badge className={`text-[9px] font-bold border-none uppercase ${cfg.bg} ${cfg.color}`}>{cfg.label}</Badge>
+                                                <Badge variant="outline" className="text-badge font-mono">{sub.paperId}</Badge>
+                                                <Badge className={`text-badge font-bold border-none uppercase ${cfg.bg}  ${cfg.color} `}>{cfg.label}</Badge>
                                             </div>
                                             <h3 className="font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
                                                 {sub.title}
                                             </h3>
-                                            <div className="flex flex-wrap gap-4 text-[10px] text-muted-foreground">
+                                            <div className="flex flex-wrap gap-4 text-caption text-muted-foreground">
                                                 <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString() : 'N/A'}</span>
                                                 {daysLeft !== undefined && daysLeft !== null && (
-                                                    <span className={`flex items-center gap-1 font-bold ${isUrgent ? 'text-orange-600' : 'text-amber-600'}`}>
+                                                    <span className={`flex items-center gap-1 font-bold ${isUrgent ? 'text-orange-600' : 'text-amber-600'} `}>
                                                         <Timer className="w-3 h-3" />
                                                         {daysLeft > 0 ? `${daysLeft}d to resubmit` : 'Window expired'}
                                                     </span>
@@ -104,11 +104,11 @@ export default async function AuthorSubmissionsList() {
                                         </div>
 
                                         <div className="flex flex-wrap gap-2 shrink-0">
-                                            <Button asChild variant="outline" size="sm" className="h-8 text-[10px] font-bold uppercase rounded-lg">
+                                            <Button asChild variant="outline" size="sm" className="h-8 font-bold uppercase rounded-lg">
                                                 <Link href={`/author/submissions/${sub.id}`} className="flex items-center gap-1.5">Details <ExternalLink className="w-3 h-3" /></Link>
                                             </Button>
                                             {eligible && daysLeft !== undefined && daysLeft > 0 && (
-                                                <Button asChild size="sm" className="h-8 text-[10px] bg-orange-500 hover:bg-orange-600 text-white font-bold uppercase rounded-lg">
+                                                <Button asChild size="sm" className="h-8 bg-orange-500 hover:bg-orange-600 text-white font-bold uppercase rounded-lg">
                                                     <Link href={`/author/submissions/${sub.id}/resubmit`} className="flex items-center gap-1.5">
                                                         <Upload className="w-3 h-3" /> Resubmit
                                                     </Link>

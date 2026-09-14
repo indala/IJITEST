@@ -42,29 +42,29 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                         <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-1">
-                            <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                            <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                 <LockOpen className="size-4" />
                                 <span>Zero Paywalls</span>
                             </div>
-                            <p className="text-muted-foreground text-[11px] m-0">
+                            <p className="text-muted-foreground text-caption m-0">
                                 Unrestricted global access from the date of online publication.
                             </p>
                         </div>
                         <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15 space-y-1">
-                            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-xs">
+                            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-body-sm">
                                 <Globe className="size-4" />
                                 <span>Universal Reach</span>
                             </div>
-                            <p className="text-muted-foreground text-[11px] m-0">
+                            <p className="text-muted-foreground text-caption m-0">
                                 Open for researchers, industry professionals, educators, and the public.
                             </p>
                         </div>
                         <div className="p-3.5 rounded-xl bg-blue-500/5 border border-blue-500/15 space-y-1">
-                            <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-xs">
+                            <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-body-sm">
                                 <Scale className="size-4" />
                                 <span>BOAI Compliant</span>
                             </div>
-                            <p className="text-muted-foreground text-[11px] m-0">
+                            <p className="text-muted-foreground text-caption m-0">
                                 Adheres to Budapest Open Access Initiative definitions of Open Access.
                             </p>
                         </div>
@@ -82,17 +82,17 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
                     </p>
                     <div className="p-4 rounded-xl bg-card border border-border space-y-3 shadow-2xs">
                         <div className="flex items-center gap-2">
-                            <Badge className="bg-primary text-white font-mono text-[11px] px-2 py-0.5">
+                            <Badge className="bg-primary text-white font-mono text-badge px-2 py-0.5">
                                 CC BY 4.0
                             </Badge>
-                            <span className="font-bold text-foreground text-xs sm:text-sm">
+                            <span className="font-bold text-foreground text-body-sm">
                                 Creative Commons Attribution 4.0 International License
                             </span>
                         </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                        <p className="text-caption text-muted-foreground leading-relaxed m-0">
                             Under this license, authors permit anyone to:
                         </p>
-                        <ul className="space-y-1.5 text-xs text-muted-foreground list-none p-0 m-0">
+                        <ul className="space-y-1.5 text-caption text-muted-foreground list-none p-0 m-0">
                             <li className="flex items-start gap-2">
                                 <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0 mt-0.5" />
                                 <span><strong>Share</strong> — copy and redistribute the material in any medium or format.</span>
@@ -111,7 +111,7 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
                                 href="https://creativecommons.org/licenses/by/4.0/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-secondary transition-colors"
+                                className="inline-flex items-center gap-1.5 text-body-sm font-bold text-primary hover:text-secondary transition-colors"
                             >
                                 <span>View Full Legal Code on Creative Commons</span>
                                 <ExternalLink className="size-3" />
@@ -128,7 +128,7 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
                     <p className="leading-relaxed">
                         Authors publishing with {journalShortName} <strong>retain copyright</strong> of their scholarly work without restriction. Authors grant {journalShortName} an exclusive first-publication license while allowing the public to freely access and share the work under the CC BY 4.0 license.
                     </p>
-                    <div className="space-y-2 text-xs text-muted-foreground">
+                    <div className="space-y-2 text-caption text-muted-foreground">
                         <div className="flex items-start gap-2">
                             <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
                             <span><strong>No Copyright Transfer:</strong> Authors are not required to transfer their copyright to the publisher or journal.</span>
@@ -155,39 +155,39 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
                         <Card className="border-border/70 shadow-2xs">
                             <CardContent className="p-3.5 space-y-1.5">
-                                <div className="flex items-center gap-1.5 font-bold text-xs text-secondary">
+                                <div className="flex items-center gap-1.5 font-bold text-body-sm text-secondary">
                                     <FileText className="size-3.5" />
                                     <span>Preprint Version</span>
                                 </div>
-                                <p className="text-muted-foreground text-[11px] leading-relaxed m-0">
+                                <p className="text-muted-foreground text-caption leading-relaxed m-0">
                                     Authors may archive pre-refereed drafts on preprint servers (e.g., arXiv, SSRN, TechRxiv) at any time.
                                 </p>
                             </CardContent>
                         </Card>
                         <Card className="border-border/70 shadow-2xs">
                             <CardContent className="p-3.5 space-y-1.5">
-                                <div className="flex items-center gap-1.5 font-bold text-xs text-secondary">
+                                <div className="flex items-center gap-1.5 font-bold text-body-sm text-secondary">
                                     <Sparkles className="size-3.5" />
                                     <span>Accepted Manuscript</span>
                                 </div>
-                                <p className="text-muted-foreground text-[11px] leading-relaxed m-0">
+                                <p className="text-muted-foreground text-caption leading-relaxed m-0">
                                     Authors may deposit post-peer-review accepted manuscripts in university and subject repositories immediately.
                                 </p>
                             </CardContent>
                         </Card>
                         <Card className="border-border/70 shadow-2xs">
                             <CardContent className="p-3.5 space-y-1.5">
-                                <div className="flex items-center gap-1.5 font-bold text-xs text-secondary">
+                                <div className="flex items-center gap-1.5 font-bold text-body-sm text-secondary">
                                     <UploadCloud className="size-3.5" />
                                     <span>Published Version (VoR)</span>
                                 </div>
-                                <p className="text-muted-foreground text-[11px] leading-relaxed m-0">
+                                <p className="text-muted-foreground text-caption leading-relaxed m-0">
                                     The final branded publisher PDF may be deposited anywhere immediately with a link to the official DOI.
                                 </p>
                             </CardContent>
                         </Card>
                     </div>
-                    <p className="text-xs text-muted-foreground m-0 pt-1">
+                    <p className="text-caption text-muted-foreground m-0 pt-1">
                         All published papers are permanently preserved under digital repositories including <strong>Zenodo</strong> (Community: IJITEST) with persistent DOIs.
                     </p>
                 </div>
@@ -200,7 +200,7 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
                     <p className="leading-relaxed">
                         To maintain open access without reader subscriptions, {journalShortName} operates on an Article Processing Charge (APC) model. APC is only invoiced <strong>after formal peer review and editorial acceptance</strong>.
                     </p>
-                    <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-2 text-xs">
+                    <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-2 text-body-sm">
                         <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-border/50">
                             <span className="font-bold text-foreground">Standard Publication APC:</span>
                             <span className="font-mono font-bold text-primary">₹{apcInr} (Indian Authors) / ${apcUsd} (International)</span>
@@ -256,11 +256,11 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
                         </div>
 
                         <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 space-y-2">
-                            <div className="flex items-center gap-1.5 font-bold text-xs text-primary">
+                            <div className="flex items-center gap-1.5 font-bold text-body-sm text-primary">
                                 <BookOpen className="size-3.5" />
                                 <span>Related Policies</span>
                             </div>
-                            <div className="flex flex-col gap-1.5 text-xs">
+                            <div className="flex flex-col gap-1.5 text-body-sm">
                                 <Link href="/ethics" className="text-muted-foreground hover:text-primary transition-colors">
                                     • Publication Ethics
                                 </Link>

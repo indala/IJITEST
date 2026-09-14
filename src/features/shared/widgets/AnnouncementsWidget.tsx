@@ -48,16 +48,16 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
                     <div className="w-8 h-8 2xl:w-10 2xl:h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
                         <Megaphone className="w-4 h-4 2xl:w-5 2xl:h-5" />
                     </div>
-                    <h3 className="text-primary m-0 font-sans font-bold text-base 2xl:text-lg tracking-tight">
+                    <h3 className="card-title-brand m-0">
                         Announcements
                     </h3>
                 </div>
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-3xs 2xl:text-2xs font-semibold bg-primary/5 text-primary border border-primary/15">
+                <span className="badge-brand inline-flex items-center gap-1.5">
                     <span className="relative flex h-1.5 w-1.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
                         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
                     </span>
-                    <span className="font-bold uppercase tracking-wider">Live</span>
+                    <span>Live</span>
                 </span>
             </div>
 
@@ -78,7 +78,7 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
                                 className="block p-2.5 2xl:p-3 bg-muted/40 hover:bg-muted/70 rounded-lg border border-border/50 hover:border-primary/20 transition-all space-y-1.5 group no-underline"
                             >
                                 <div className="flex items-center justify-between gap-1.5">
-                                    <span className={`inline-block px-1.5 py-0.5 rounded border text-3xs font-semibold uppercase tracking-wider ${tag.badgeClass}`}>
+                                    <span className={`inline-block px-1.5 py-0.5 rounded border text-badge ${tag.badgeClass}`}>
                                         {tag.label}
                                     </span>
                                     <span className="text-meta text-muted-foreground flex items-center gap-1 shrink-0">
@@ -86,11 +86,11 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
                                         <span>{formattedDate}</span>
                                     </span>
                                 </div>
-                                <h4 className="text-xs sm:text-13 2xl:text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 m-0 leading-snug">
+                                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 m-0 leading-snug">
                                     {item.title}
                                 </h4>
                                 {item.descriptionShort && (
-                                    <p className="text-2xs sm:text-xs-plus 2xl:text-xs text-muted-foreground line-clamp-1 m-0 leading-normal">
+                                    <p className="text-caption line-clamp-1 m-0">
                                         {item.descriptionShort}
                                     </p>
                                 )}
@@ -99,17 +99,17 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
                     })}
 
                     {/* Footer Links */}
-                    <div className="pt-2 flex items-center justify-between border-t border-border/50 text-xs 2xl:text-13">
+                    <div className="pt-2 flex items-center justify-between border-t border-border/50">
                         <Link
                             href="/announcements"
-                            className="font-semibold text-primary hover:text-secondary transition-colors inline-flex items-center gap-1 group no-underline text-xs 2xl:text-13"
+                            className="font-semibold text-primary hover:text-secondary transition-colors inline-flex items-center gap-1 group no-underline"
                         >
                             <span>View all notices</span>
                             <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                         </Link>
                         <Link
                             href="/submit"
-                            className="text-muted-foreground hover:text-primary text-2xs sm:text-xs-plus 2xl:text-xs font-medium transition-colors no-underline"
+                            className="text-caption text-muted-foreground hover:text-primary font-medium transition-colors no-underline"
                         >
                             Submit paper
                         </Link>
@@ -122,10 +122,10 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
                             <Bell className="w-3.5 h-3.5" />
                         </div>
                         <div className="space-y-1">
-                            <p className="text-foreground font-medium leading-snug m-0 text-xs 2xl:text-sm">
+                            <p className="text-foreground font-medium leading-snug m-0">
                                 Volume {currentStatus.volume}, Issue {currentStatus.issue} ({currentStatus.date})
                             </p>
-                            <p className="text-muted-foreground m-0 text-2xs 2xl:text-xs">
+                            <p className="text-caption m-0">
                                 Submissions are currently open for peer review and publication.
                             </p>
                         </div>
@@ -133,14 +133,14 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
                     <div className="pt-1.5 flex items-center justify-between border-t border-border/40">
                         <Link
                             href="/submit"
-                            className="text-xs 2xl:text-13 font-bold text-secondary hover:text-primary transition-colors inline-flex items-center gap-1 no-underline group"
+                            className="font-bold text-secondary hover:text-primary transition-colors inline-flex items-center gap-1 no-underline group"
                         >
                             <span>Submit Manuscript</span>
                             <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                         </Link>
                         <Link
                             href="/announcements"
-                            className="text-muted-foreground hover:text-primary text-2xs 2xl:text-xs font-medium transition-colors no-underline"
+                            className="text-caption text-muted-foreground hover:text-primary font-medium transition-colors no-underline"
                         >
                             All Notices
                         </Link>
