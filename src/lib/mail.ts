@@ -185,7 +185,7 @@ export const emailTemplates = {
     manuscriptPublished: async (authorName: string, paperTitle: string, paperId: string, volume: number, issue: number, year: number) => {
         const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const articleUrl = `${baseUrl}/archives/volume${volume}/issue${issue}/${paperId}`;
-        const certificateUrl = `${baseUrl}/api/certificate/${paperId}`;
+        const certificateUrl = `${baseUrl}/article/${paperId}#certificate`;
         return getCompiledEmailTemplate("PAPER_PUBLISHED", {
             authorName,
             paperTitle,

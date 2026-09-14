@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import type { PublishedPaperUI, RelatedArticle } from "@/db/types";
 import CitationSection from "./CitationSection";
-import { PaperViewTracker, DownloadPaperButton } from "./PaperActions";
+import { PaperViewTracker, DownloadPaperButton, DownloadCertificateButton } from "./PaperActions";
 import { CrossrefLogo } from "@/features/indexing/components/IndexingLogos";
 import { CrossmarkDialog } from "./CrossmarkDialog";
 import { RelatedArticlesPanel } from "./RelatedArticlesPanel";
@@ -342,7 +342,7 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                 {/* Sidebar Utilities */}
                 <div className="space-y-4 sm:space-y-5">
                     {/* Publication Certificate Generator */}
-                    <div className="bg-card p-4 sm:p-5 rounded-2xl border border-border/70 shadow-2xs space-y-3">
+                    <div id="certificate" className="bg-card p-4 sm:p-5 rounded-2xl border border-border/70 shadow-2xs space-y-3 scroll-mt-24">
                         <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shrink-0">
                                 <Award className="w-4 h-4" />
@@ -352,14 +352,10 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                                 <p className="text-caption text-muted-foreground m-0">Official verified author credential</p>
                             </div>
                         </div>
-                        <a
-                            href={`/api/certificate/${paper.paperId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white py-2.5 px-4 rounded-xl font-bold text-body-sm shadow-xs transition-all"
-                        >
-                            <Download className="w-3.5 h-3.5" /> Download Certificate (PDF)
-                        </a>
+                        <DownloadCertificateButton
+                            paperId={paper.paperId}
+                            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white py-2.5 px-4 rounded-xl font-bold text-body-sm shadow-xs transition-all cursor-pointer disabled:opacity-60"
+                        />
                     </div>
 
                     {/* Download Button (Mobile Only) */}

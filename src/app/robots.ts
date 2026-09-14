@@ -24,7 +24,6 @@ export default function robots(): MetadataRoute.Robots {
                     '/author/',
                     '/api/auth/',
                     '/api/receipt/',
-                    '/api/certificate/',
                 ],
             },
             {

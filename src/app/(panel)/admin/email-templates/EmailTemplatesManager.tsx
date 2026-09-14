@@ -438,7 +438,7 @@ export default function EmailTemplatesManager() {
         title: "New Manuscript Screening Required [IJITEST-2026-084]",
         proofUrl: "https://ijitest.org/author/submissions/84",
         articleUrl: "https://ijitest.org/archives/volume1/issue1/IJITEST-2026-084",
-        certificateUrl: "https://ijitest.org/api/certificate/IJITEST-2026-084",
+        certificateUrl: "https://ijitest.org/article/IJITEST-2026-084#certificate",
         volumeNumber: "1",
         issueNumber: "1",
         year: "2026",

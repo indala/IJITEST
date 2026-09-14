@@ -206,8 +206,8 @@
 
 - [x] **5.2 Dynamic Publication Certificate & Acceptance Letter Generator** `[P1]`
   - [x] Generated high-resolution vector PDF certificate of publication with recipient author names, paper title, volume, issue, year, ISSN, and official CrossRef prefix (`10.68139`) using `pdf-lib` via `src/lib/certificate-generator.ts`
-  - [x] Downloadable endpoint created at `/api/certificate/[paperId]` and direct "Download Certificate (PDF)" card embedded in `PaperDetailClient.tsx`
-  - *Target Files*: `IJITEST/src/lib/certificate-generator.ts`, `IJITEST/src/app/api/certificate/[paperId]/route.ts`, `IJITEST/src/features/archives/components/PaperDetailClient.tsx`
+  - [x] Server Action created at `src/actions/certificate.ts` (`generateCertificateAction`) and direct "Download Certificate (PDF)" card embedded in `PaperDetailClient.tsx` and author submissions dashboard
+  - *Target Files*: `IJITEST/src/lib/certificate-generator.ts`, `IJITEST/src/actions/certificate.ts`, `IJITEST/src/features/archives/components/PaperActions.tsx`, `IJITEST/src/features/archives/components/PaperDetailClient.tsx`
 
 - [x] **5.3 Galley Proofing Approval Stage** `[P2]`
   - [x] Added `galleyStatus`, `galleyApprovedAt`, `galleyCorrectionsNote` to `submissions` in `src/db/schema.ts`

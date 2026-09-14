@@ -1,3 +1,4 @@
+import "server-only";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 export interface CertificateData {
@@ -146,7 +147,8 @@ export async function generatePublicationCertificate(data: CertificateData): Pro
     drawCenteredText(metadataText, currentY, fontRegular, 10, charcoalColor);
 
     currentY -= 16;
-    const baseSiteUrl = (data.baseUrl || 'https://ijitest.org').replace(/\/$/, '');
+    const rawBaseUrl = data.baseUrl || 'https://ijitest.org';
+    const baseSiteUrl = (rawBaseUrl.includes('localhost') ? 'https://ijitest.org' : rawBaseUrl).replace(/\/$/, '');
     const doiText = data.doi
         ? `DOI: https://doi.org/${data.doi.replace(/^https?:\/\/doi\.org\//, '')}`
         : `Permanent URL: ${baseSiteUrl}/article/${data.paperId}`;

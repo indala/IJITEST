@@ -13,6 +13,7 @@ import dayjs from "@/lib/dayjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getSecureUrl } from "@/lib/utils";
 import { SubmissionTimeline } from "@/features/submissions/components/SubmissionTimeline";
+import { DownloadCertificateButton } from "@/features/archives/components/PaperActions";
 import type { SubmissionFile, SubmissionIdParam } from "@/db/types";
 
 export default async function AuthorSubmissionDetailsPage({ params }: { params: Promise<SubmissionIdParam> }) {
@@ -390,12 +391,15 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                 </div>
                                 <Badge className="bg-white/20 text-white border-0 text-badge tracking-widest font-black h-8 px-5 rounded-full backdrop-blur-sm">VIEW ARCHIVE</Badge>
                             </Link>
-                            <Button asChild variant="outline" className="w-full h-10 gap-2 rounded-xl font-bold uppercase border-primary/20 hover:bg-primary/5">
-                                <a href={`/api/certificate/${sub.paperId}`} target="_blank" rel="noopener noreferrer">
+                            {sub.paperId && (
+                                <DownloadCertificateButton
+                                    paperId={sub.paperId}
+                                    className="w-full h-10 flex items-center justify-center gap-2 rounded-xl font-bold uppercase border border-primary/20 hover:bg-primary/5 text-primary text-sm transition-all cursor-pointer disabled:opacity-60"
+                                >
                                     <Download className="w-4 h-4 text-primary" />
-                                    Download Certificate (PDF)
-                                </a>
-                            </Button>
+                                    <span>Download Certificate (PDF)</span>
+                                </DownloadCertificateButton>
+                            )}
                             <ZenodoDepositCard
                                 submissionId={submissionId}
                                 publication={sub.publication}
