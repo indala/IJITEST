@@ -12,7 +12,7 @@ import {
     payments,
 } from "@/db/schema";
 import { type Submission } from "@/db/types";
-import { eq, desc, inArray, sql } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { logSubmissionEvent } from "./event-log";

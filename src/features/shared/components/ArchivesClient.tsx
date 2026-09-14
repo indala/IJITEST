@@ -1,6 +1,6 @@
 'use client'
 
-import { FileText, ChevronRight, Search, BadgeCheck, ExternalLink } from 'lucide-react';
+import { FileText, ChevronRight, Search, BadgeCheck } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import PaperCard from '@/features/archives/components/PaperCard';
