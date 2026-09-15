@@ -24,6 +24,7 @@ import crypto from 'crypto';
 import { type ActionResponse, serverError } from "@/lib/action-response";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
+import { MAX_MANUSCRIPT_SIZE, MAX_DOCUMENT_SIZE } from "@/lib/upload-limits";
 
 const phoneRegex = /^[+]?[\d\s\-().]{7,25}$/;
 
@@ -44,6 +45,16 @@ const submissionSchema = z.object({
     termsAccepted: z.string().refine(val => val === "on", {
         message: "You must accept the terms and guidelines"
     }),
+});
+
+const coAuthorSchema = z.object({
+    name: z.string().min(1).max(255),
+    email: z.string().email().max(255),
+    phone: z.string().max(25).optional().nullable().or(z.literal('')),
+    designation: z.string().max(255).optional().nullable(),
+    institution: z.string().max(500).optional().nullable(),
+    orcidId: z.string().max(50).optional().nullable(),
+    creditRoles: z.array(z.string()).optional().nullable(),
 });
 
 /**
@@ -109,6 +120,12 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
         if (!isDocx(manuscriptFile)) {
             return { success: false, error: "Strict Policy: Only .docx files are accepted for the Manuscript." };
+        }
+        if (manuscriptFile.size > MAX_MANUSCRIPT_SIZE) {
+            return { success: false, error: "Manuscript file exceeds the 20MB size limit." };
+        }
+        if (blindedFile && blindedFile.size > 0 && blindedFile.size > MAX_DOCUMENT_SIZE) {
+            return { success: false, error: "Blinded manuscript file exceeds the 10MB size limit." };
         }
 
         // 2. Transactional Database Operations (Save everything BUT don't upload files yet)

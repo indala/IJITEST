@@ -1,6 +1,7 @@
 "use client";
 
 import { CreditCard, DollarSign, CheckCircle, Clock, Search, Plus, User, ShieldCheck, Mail, ArrowRight, AlertTriangle, History, Eye, Globe, Download } from 'lucide-react';
+import SendReceiptButton from "@/features/submissions/components/SendReceiptButton";
 import {
     usePayments,
     useUnpaidPapers,
@@ -96,12 +97,14 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                             </a>
                         </Button>
                         {['paid', 'verified'].includes(item.status) && (
-                            <Button asChild variant="ghost" size="icon" aria-label="Download APC Receipt / Tax Invoice" className="w-8 h-8 rounded-lg text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
-                                <a href={`/api/receipt/${item.id}`} target="_blank" rel="noopener noreferrer" title="Download Tax Invoice & Receipt (PDF)">
-                                    <Download className="w-4 h-4" />
-                                    <span className="sr-only">Download APC Receipt</span>
-                                </a>
-                            </Button>
+                            <SendReceiptButton
+                                paymentId={item.id}
+                                className="w-8 h-8 rounded-lg text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                                aria-label="Email APC Receipt / Tax Invoice"
+                            >
+                                <Download className="w-4 h-4" />
+                                <span className="sr-only">Email APC Receipt</span>
+                            </SendReceiptButton>
                         )}
                     </div>
                     <Separator orientation="vertical" className="h-6 mx-1 bg-border/70 hidden lg:block" />

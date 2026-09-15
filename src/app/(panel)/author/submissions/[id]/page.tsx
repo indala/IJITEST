@@ -7,7 +7,8 @@ import { getSettingsData } from "@/actions/settings";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Download, AlertTriangle, MessageSquare, CheckCircle, Bookmark, ThumbsUp, ThumbsDown, UserCheck } from "lucide-react";
+import { Calendar, Download, AlertTriangle, MessageSquare, CheckCircle, Bookmark, ThumbsUp, ThumbsDown, UserCheck, Mail } from "lucide-react";
+import SendReceiptButton from "@/features/submissions/components/SendReceiptButton";
 import Link from "next/link";
 import dayjs from "@/lib/dayjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -357,12 +358,13 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                     </div>
                                 )}
                                 {['paid', 'verified'].includes(sub.payment.status) ? (
-                                    <Button asChild variant="outline" className="w-full h-10 gap-2 rounded-xl font-bold uppercase border-primary/20 hover:bg-primary/5">
-                                        <a href={`/api/receipt/${sub.payment.id}`} target="_blank" rel="noopener noreferrer">
-                                            <Download className="w-4 h-4 text-primary" />
-                                            Download Tax Invoice & Receipt
-                                        </a>
-                                    </Button>
+                                    <SendReceiptButton
+                                        paymentId={sub.payment.id}
+                                        className="w-full h-10 gap-2 rounded-xl font-bold uppercase border-primary/20 hover:bg-primary/5"
+                                    >
+                                        <Mail className="w-4 h-4 text-primary" />
+                                        Email Tax Invoice & Receipt
+                                    </SendReceiptButton>
                                 ) : sub.payment.status === 'pending' ? (
                                     <Button asChild className="w-full h-10 gap-2 rounded-xl font-bold uppercase bg-primary text-primary-foreground hover:bg-primary/90">
                                         <Link href={`/payment/${sub.paperId}`}>

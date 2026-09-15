@@ -8,9 +8,11 @@ import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { invalidateAuthorActionsCount, createNotification } from "./notifications";
 import { type PaymentRow, type UnpaidPaperRow, type PaymentStatus } from "@/db/types";
-import { type ActionResponse, serverError } from "@/lib/action-response";
+import { type ActionResponse, serverError, actionSuccess } from "@/lib/action-response";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { generateInvoicePdf } from "@/lib/invoice-generator";
+import { sendEmailWithRetry } from "@/lib/mail";
 
 
 
@@ -298,5 +300,103 @@ export async function waivePayment(submissionId: number): Promise<ActionResponse
     } catch (error) {
         console.error("Waive Payment Error:", error);
         return serverError(error, "waive payment");
+    }
+}
+
+export async function sendReceiptEmail(paymentId: number): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        // Fetch payment + submission + author data (same joins as the old API route)
+        const rows = await db.select({
+            payment: payments,
+            submission: submissions,
+            authorProfile: userProfiles,
+            authorUser: users,
+        })
+        .from(payments)
+        .innerJoin(submissions, eq(payments.submissionId, submissions.id))
+        .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
+        .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+        .where(eq(payments.id, paymentId))
+        .limit(1);
+
+        const row = rows[0];
+        if (!row?.payment) {
+            return { success: false, error: "Invoice not found" };
+        }
+
+        // Authorization: must be admin, editor, or the corresponding author
+        const isAuthorized =
+            session.user.role === "admin" ||
+            session.user.role === "editor" ||
+            session.user.id === row.submission.correspondingAuthorId;
+
+        if (!isAuthorized) {
+            return { success: false, error: "Unauthorized to access this receipt" };
+        }
+
+        // Only send for paid/verified/waived payments
+        if (!["paid", "verified", "waived"].includes(row.payment.status)) {
+            return { success: false, error: "Receipt is only available for completed payments" };
+        }
+
+        // Fetch the latest version title
+        const versionRows = await db
+            .select({ title: submissionVersions.title })
+            .from(submissionVersions)
+            .where(eq(submissionVersions.submissionId, row.submission.id))
+            .orderBy(desc(submissionVersions.versionNumber))
+            .limit(1);
+
+        const paperTitle = versionRows[0]?.title || "Research Manuscript";
+        const invoiceNumber =
+            row.payment.invoiceNumber ||
+            `INV-${new Date(row.payment.paidAt || row.payment.createdAt || new Date()).getFullYear()}-${String(row.payment.id).padStart(4, "0")}`;
+
+        // Generate the PDF
+        const pdfBytes = await generateInvoicePdf({
+            invoiceNumber,
+            date: row.payment.paidAt || row.payment.createdAt || new Date(),
+            paperId: row.submission.paperId,
+            paperTitle,
+            authorName: row.authorProfile?.fullName || row.authorUser.email,
+            authorEmail: row.authorUser.email,
+            authorInstitution: row.authorProfile?.institute || undefined,
+            amount: row.payment.amount,
+            currency: row.payment.currency || "INR",
+            transactionId: row.payment.transactionId,
+            paymentMethod: row.payment.provider
+                ? `${row.payment.provider} Gateway`
+                : "Razorpay Secure Gateway",
+        });
+
+        // Email the PDF to the author
+        await sendEmailWithRetry(
+            {
+                to: row.authorUser.email,
+                subject: `Tax Invoice & APC Receipt — ${row.submission.paperId}`,
+                html: `<p>Dear ${row.authorProfile?.fullName || "Author"},</p>
+<p>Please find attached your official Tax Invoice and Article Processing Charge (APC) receipt for manuscript <strong>${row.submission.paperId}</strong>.</p>
+<p>Invoice No: <strong>${invoiceNumber}</strong></p>
+<p>If you have any questions, please contact us at <a href="mailto:support@ijitest.org">support@ijitest.org</a>.</p>
+<p>Best regards,<br/>IJITEST Editorial Office</p>`,
+                attachments: [
+                    {
+                        filename: `APC_Receipt_${row.submission.paperId}.pdf`,
+                        content: Buffer.from(pdfBytes),
+                        contentType: "application/pdf",
+                    },
+                ],
+            },
+            `receipt-email-payment-${paymentId}`
+        );
+
+        return actionSuccess(undefined, "Receipt emailed successfully");
+    } catch (error) {
+        return serverError(error, "send receipt email");
     }
 }

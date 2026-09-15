@@ -23,7 +23,6 @@ export default function robots(): MetadataRoute.Robots {
                     '/reviewer/',
                     '/author/',
                     '/api/auth/',
-                    '/api/receipt/',
                 ],
             },
             {

@@ -196,13 +196,13 @@
   h1 {
     color: var(--color-primary);
     @apply font-sans font-semibold text-primary leading-tight tracking-tight mb-2.5;
-    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-4.5xl 2xl:text-5xl;
+    @apply text-xl sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl;
   }
 
   h2 {
     color: var(--color-foreground);
     @apply font-sans font-semibold text-foreground leading-snug tracking-tight mb-2;
-    @apply text-lg sm:text-xl md:text-2xl lg:text-2.5xl xl:text-3xl 2xl:text-4xl;
+    @apply text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl;
   }
 
   h3 {

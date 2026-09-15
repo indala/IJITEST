@@ -10,20 +10,23 @@ import {
     users,
     userProfiles,
     payments,
+    settings,
 } from "@/db/schema";
 import { type Submission } from "@/db/types";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and, inArray } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { logSubmissionEvent } from "./event-log";
 import { type ActionResponse, actionSuccess, actionError, serverError } from "@/lib/action-response";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
+import { MAX_MANUSCRIPT_SIZE, MAX_DOCUMENT_SIZE } from "@/lib/upload-limits";
 import { createNotification } from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 
 export interface ManuscriptVerificationResult {
     submissionId: number;
+    userId: string;
     paperId: string;
     title: string;
     authorName: string;
@@ -67,6 +70,7 @@ export async function verifyManuscriptForRevision(
             status: submissions.status,
             authorName: userProfiles.fullName,
             authorEmail: users.email,
+            userId: users.id,
             versionNumber: submissionVersions.versionNumber,
             versionId: submissionVersions.id,
             title: submissionVersions.title,
@@ -101,6 +105,7 @@ export async function verifyManuscriptForRevision(
 
         return actionSuccess({
             submissionId: manuscript.submissionId,
+            userId: manuscript.userId,
             paperId: manuscript.paperId,
             title: manuscript.title,
             authorName: manuscript.authorName,
@@ -146,6 +151,7 @@ export async function verifyManuscriptForFinalSubmission(
             status: submissions.status,
             authorName: userProfiles.fullName,
             authorEmail: users.email,
+            userId: users.id,
             versionNumber: submissionVersions.versionNumber,
             versionId: submissionVersions.id,
             title: submissionVersions.title,
@@ -193,6 +199,7 @@ export async function verifyManuscriptForFinalSubmission(
 
         return actionSuccess({
             submissionId: manuscript.submissionId,
+            userId: manuscript.userId,
             paperId: manuscript.paperId,
             title: manuscript.title,
             authorName: manuscript.authorName,
@@ -215,6 +222,8 @@ export async function verifyManuscriptForFinalSubmission(
  */
 export async function submitPublicRevision(formData: FormData): Promise<ActionResponse<{ paperId: string; version: number }>> {
     const fileCleanup: string[] = [];
+    let submissionId: number | null = null;
+    let txResult: { mName: string; rName: string | null; nextVersion: number; verId: number } | null = null;
     try {
         const paperId = (formData.get("paperId") as string)?.trim();
         const authorEmail = (formData.get("authorEmail") as string)?.trim().toLowerCase();
@@ -226,13 +235,22 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
             return actionError("Missing Manuscript ID or Author Email.");
         }
 
+        const uploadRate = await checkRateLimit({
+            key: `submit-rev:${paperId}:${authorEmail}`,
+            max: 3,
+            windowMs: 5 * 60_000,
+        });
+        if (!uploadRate.allowed) {
+            return actionError(`Too many submission attempts. Please wait ${uploadRate.retryAfterSeconds} seconds.`);
+        }
+
         // Verify eligibility again
         const verifyRes = await verifyManuscriptForRevision(paperId, authorEmail);
         if (!verifyRes.success || !verifyRes.data) {
             return actionError(verifyRes.error || "Eligibility verification failed.");
         }
 
-        const { submissionId } = verifyRes.data;
+        submissionId = verifyRes.data.submissionId;
 
         if (!manuscriptFile || manuscriptFile.size === 0) {
             return actionError("Revised manuscript file is required.");
@@ -243,18 +261,25 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
             return actionError("Strict Policy: Only .docx files are accepted for the revised manuscript.");
         }
 
+        if (manuscriptFile.size > MAX_MANUSCRIPT_SIZE) {
+            return actionError("Revised manuscript exceeds the 20MB size limit.");
+        }
+
         if (rebuttalFile && rebuttalFile.size > 0) {
             const isDocxOrPdf = (f: File) => f.name.toLowerCase().endsWith(".docx") || f.name.toLowerCase().endsWith(".pdf");
             if (!isDocxOrPdf(rebuttalFile)) {
                 return actionError("Rebuttal document must be a .docx or .pdf file.");
             }
+            if (rebuttalFile.size > MAX_DOCUMENT_SIZE) {
+                return actionError("Rebuttal document exceeds the 10MB size limit.");
+            }
         }
 
         // 1. Transactional DB commit
-        const txResult = await db.transaction(async (tx) => {
+        txResult = await db.transaction(async (tx) => {
             const versionsArr = await tx.select()
                 .from(submissionVersions)
-                .where(eq(submissionVersions.submissionId, submissionId))
+                .where(eq(submissionVersions.submissionId, submissionId!))
                 .orderBy(desc(submissionVersions.versionNumber))
                 .limit(1);
 
@@ -263,13 +288,13 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
             const nextVersion = latest.versionNumber + 1;
 
             const [versionInsert] = await tx.insert(submissionVersions).values({
-                submissionId,
+                submissionId: submissionId!,
                 versionNumber: nextVersion,
                 title: latest.title,
                 abstract: latest.abstract,
                 keywords: latest.keywords,
                 changelog: changelog || "Revised version submitted via author portal",
-                rebuttalLetter: changelog || null,
+                rebuttalLetter: null,
             });
             const verId = versionInsert.insertId;
 
@@ -305,7 +330,7 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
             // Revert status to 'submitted' for editorial review
             await tx.update(submissions)
                 .set({ status: 'submitted', updatedAt: new Date() })
-                .where(eq(submissions.id, submissionId));
+                .where(eq(submissions.id, submissionId!));
 
             return { mName, rName, nextVersion, verId };
         });
@@ -325,7 +350,8 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
 
         // 3. Log event
         await logSubmissionEvent({
-            submissionId,
+            submissionId: submissionId!,
+            userId: verifyRes.data.userId,
             eventType: "revision_submitted",
             description: `Author submitted revision version ${txResult.nextVersion}.`,
             metadata: { version: txResult.nextVersion, paperId }
@@ -335,7 +361,7 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
         try {
             const [adminUsers, assignedEd] = await Promise.all([
                 db.select({ id: users.id, email: users.email }).from(users).where(eq(users.role, 'admin')),
-                db.select({ editorId: submissionEditors.editorId }).from(submissionEditors).where(eq(submissionEditors.submissionId, submissionId))
+                db.select({ editorId: submissionEditors.editorId }).from(submissionEditors).where(eq(submissionEditors.submissionId, submissionId!))
             ]);
 
             const recipientIds = new Set<string>();
@@ -351,7 +377,7 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
                         userId,
                         type: "submission_created",
                         priority: "high",
-                        message: `Revision (v${txResult.nextVersion}) submitted for manuscript ${paperId}: "${paperTitle}"`,
+                        message: `Revision (v${txResult!.nextVersion}) submitted for manuscript ${paperId}: "${paperTitle}"`,
                         actionLink: `/admin/submissions/${submissionId}`,
                         metadata: { submissionId, paperId }
                     })
@@ -363,7 +389,7 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
                 authorName,
                 paperTitle,
                 paperId,
-                submissionId,
+                submissionId!,
                 'admin'
             );
             await Promise.allSettled(
@@ -380,7 +406,7 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
         }
 
         // 5. Invalidation
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId!));
         updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/submit');
         revalidatePath('/track');
@@ -390,8 +416,24 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
         return actionSuccess({ paperId, version: txResult.nextVersion });
     } catch (error) {
         console.error("submitPublicRevision error:", error);
+        // Clean up any files already uploaded to storage
         for (const filePath of fileCleanup) {
             await safeDeleteFile(filePath).catch(() => {});
+        }
+        // Compensating DB rollback — remove orphaned version/file records
+        if (txResult && submissionId) {
+            await db.transaction(async (tx) => {
+                await tx.delete(submissionFiles).where(eq(submissionFiles.versionId, txResult!.verId));
+                await tx.delete(submissionVersions).where(
+                    and(
+                        eq(submissionVersions.submissionId, submissionId!),
+                        eq(submissionVersions.versionNumber, txResult!.nextVersion)
+                    )
+                );
+                await tx.update(submissions)
+                    .set({ status: 'revisionRequested', updatedAt: new Date() })
+                    .where(eq(submissions.id, submissionId!));
+            }).catch(rbErr => console.error("Revision rollback failed:", rbErr));
         }
         return serverError(error, "submit revision");
     }
@@ -440,6 +482,23 @@ export async function submitPublicFinalSubmission(formData: FormData): Promise<A
         if (!isDocxOrPdf(copyrightFile)) {
             return actionError("Copyright form must be a .docx or .pdf file.");
         }
+
+        if (cameraReadyFile.size > MAX_MANUSCRIPT_SIZE) {
+            return actionError("Camera-ready manuscript exceeds the 20MB size limit.");
+        }
+        if (copyrightFile.size > MAX_DOCUMENT_SIZE) {
+            return actionError("Copyright form exceeds the 10MB size limit.");
+        }
+        if (paymentReceiptFile && paymentReceiptFile.size > 5 * 1024 * 1024) {
+            return actionError("Payment receipt file exceeds the 5MB size limit.");
+        }
+
+        // Fetch APC amount from journal settings (do NOT hardcode)
+        const apcRows = await db.select({ settingValue: settings.settingValue })
+            .from(settings)
+            .where(eq(settings.settingKey, 'apcInr'))
+            .limit(1);
+        const apcAmount = apcRows[0]?.settingValue || '2500';
 
         // 1. Transactional DB commit
         const txResult = await db.transaction(async (tx) => {
@@ -512,25 +571,30 @@ export async function submitPublicFinalSubmission(formData: FormData): Promise<A
                 if (existingPay.length > 0) {
                     await tx.update(payments)
                         .set({
-                            transactionId: utrNumber || sql`transaction_id`,
-                            status: 'pending'
+                            transactionId: utrNumber || undefined,
+                            status: utrNumber ? 'paid' : 'pending'
                         })
                         .where(eq(payments.id, existingPay[0]!.id));
                 } else {
                     await tx.insert(payments).values({
                         submissionId,
-                        amount: "2500.00",
+                        amount: apcAmount,
                         currency: "INR",
-                        status: "pending",
+                        status: utrNumber ? 'paid' : 'pending',
                         transactionId: utrNumber || null,
                     });
                 }
             }
 
-            // Update submission timestamp
+            // Advance submission status + update timestamp
             await tx.update(submissions)
-                .set({ updatedAt: new Date() })
-                .where(eq(submissions.id, submissionId));
+                .set({ status: 'paymentPending', updatedAt: new Date() })
+                .where(
+                    and(
+                        eq(submissions.id, submissionId),
+                        inArray(submissions.status, ['accepted', 'paymentPending'])
+                    )
+                );
 
             return { cReadyName, crName, pReceiptName, nextVersion };
         });
@@ -556,7 +620,8 @@ export async function submitPublicFinalSubmission(formData: FormData): Promise<A
         // 3. Log event
         await logSubmissionEvent({
             submissionId,
-            eventType: "copyright_uploaded",
+            userId: verifyRes.data.userId,
+            eventType: "revision_submitted",
             description: "Final camera-ready manuscript and signed copyright agreement submitted by author.",
             metadata: { utrNumber: utrNumber || null }
         });
@@ -570,7 +635,7 @@ export async function submitPublicFinalSubmission(formData: FormData): Promise<A
                         userId: a.id,
                         type: "submission_created",
                         priority: "high",
-                        message: `Final camera-ready manuscript & copyright submitted for ${paperId}`,
+                        message: `Final package submitted for ${paperId}${utrNumber ? ` — Payment UTR/Ref: ${utrNumber}` : ' — No payment reference provided yet'}.`,
                         actionLink: `/admin/submissions/${submissionId}`,
                         metadata: { submissionId, paperId }
                     })

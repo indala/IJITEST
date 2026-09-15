@@ -22,6 +22,21 @@ export async function createRazorpayOrder(submissionId: number, paperId: string)
         const session = await getServerSession(authOptions);
         if (!session?.user) return { success: false, error: "Authentication required" };
 
+        // Verify the requesting user owns this submission (or is staff)
+        const [subRecord] = await db.select({ correspondingAuthorId: submissions.correspondingAuthorId })
+            .from(submissions)
+            .where(eq(submissions.id, submissionId))
+            .limit(1);
+
+        if (!subRecord) return { success: false, error: "Submission not found." };
+
+        const isAuthorized =
+            session.user.role === 'admin' ||
+            session.user.role === 'editor' ||
+            session.user.id === subRecord.correspondingAuthorId;
+
+        if (!isAuthorized) return { success: false, error: "Unauthorized." };
+
         // 1. Fetch APC amount from settings
         const settingsRows = await db.select()
             .from(settings)
@@ -138,7 +153,12 @@ export async function verifyRazorpayPayment(data: {
                     paidAt: new Date(),
                     invoiceNumber: sql`COALESCE(${payments.invoiceNumber}, ${invoiceNum})`
                 })
-                .where(eq(payments.submissionId, submissionId));
+                .where(
+                    and(
+                        eq(payments.submissionId, submissionId),
+                        eq(payments.status, 'pending')
+                    )
+                );
 
             const [submission] = await tx.select({ 
                 status: submissions.status,
