@@ -6,13 +6,11 @@ export const metadata = {
 };
 
 export default async function AdminSubmissions({
-    searchParams
+    searchParams: _searchParams
 }: {
     searchParams: Promise<{ status?: string, q?: string }>
 }) {
-    const { status, q } = await searchParams;
-    const currentStatus = status || 'all';
-    const res = await getAllSubmissions(q ? { q } : {});
+    const res = await getAllSubmissions();
 
     if (!res.success) {
         return <div className="p-10 text-center font-black uppercase tracking-widest text-rose-500">Error: {res.error}</div>;
@@ -28,16 +26,11 @@ export default async function AdminSubmissions({
         rejected: allSubmissions.filter(s => s.status === 'rejected').length
     };
 
-    const filteredSubmissions = currentStatus === 'all'
-        ? allSubmissions
-        : allSubmissions.filter(s => s.status === currentStatus);
-
     return (
         <SubmissionRegistry 
             role="admin" 
-            submissions={filteredSubmissions} 
+            submissions={allSubmissions} 
             stats={statsResult} 
-            currentStatus={currentStatus} 
         />
     );
 }

@@ -67,53 +67,37 @@ export default async function Footer() {
                         </div>
                     </div>
 
-                    {/* Quick Links */}
+                    {/* Explore */}
                     <div className="lg:col-span-1 space-y-3">
-                        <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Quick Links</h3>
+                        <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Explore</h3>
                         <ul className="space-y-1.5 text-white/80 list-none p-0 text-body-sm m-0">
-                            <li><Link href="/" className="hover:text-secondary transition-colors">Home Portal</Link></li>
-                            <li><Link href="/about" className="hover:text-secondary transition-colors">About Journal</Link></li>
+                            <li><Link href="/about" className="hover:text-secondary transition-colors">About IJITEST</Link></li>
                             <li><Link href="/current-issue" className="hover:text-secondary transition-colors">Current Issue</Link></li>
-                            <li><Link href="/archives" className="hover:text-secondary transition-colors">Digital Archives</Link></li>
+                            <li><Link href="/archives" className="hover:text-secondary transition-colors">All Archives</Link></li>
                             <li><Link href="/editorial-board" className="hover:text-secondary transition-colors">Editorial Board</Link></li>
-                            <li><Link href="/guidelines" className="hover:text-secondary transition-colors">Author Guidelines</Link></li>
-                            <li><Link href="/indexing" className="hover:text-secondary transition-colors">Indexing Hub</Link></li>
-                            <li><Link href="/submit" className="hover:text-secondary transition-colors">Submit Manuscript</Link></li>
-                            <li><Link href="/track" className="hover:text-secondary transition-colors">Track Status</Link></li>
-                            <li><Link href="/announcements" className="hover:text-secondary transition-colors">Calls & Announcements</Link></li>
-                            <li><Link href="/join-us" className="hover:text-secondary transition-colors">Join As Reviewer</Link></li>
-                            <li><Link href="/contact" className="hover:text-secondary transition-colors">Contact Office</Link></li>
-                            <li><Link href="/login" className="hover:text-secondary transition-colors">Portal Login</Link></li>
-                            <li><Link href="/api/feed/rss" target="_blank" className="hover:text-secondary transition-colors">RSS / Atom Feeds</Link></li>
+                            <li><Link href="/indexing" className="hover:text-secondary transition-colors">Indexing and Abstracting</Link></li>
+                            <li><Link href="/announcements" className="hover:text-secondary transition-colors">Announcements</Link></li>
+                            <li><Link href="/contact" className="hover:text-secondary transition-colors">Contact</Link></li>
                         </ul>
                     </div>
 
-                    {/* Journal Policies (DOAJ Compliant) */}
+                    {/* For Authors */}
                     <div className="lg:col-span-1 space-y-3">
-                        <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Journal Policies</h3>
+                        <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">For Authors</h3>
                         <ul className="space-y-1.5 text-white/80 list-none p-0 text-body-sm m-0">
-                            <li><Link href="/aims-scope" className="hover:text-secondary transition-colors">Aims & Scope</Link></li>
-                            <li><Link href="/peer-review" className="hover:text-secondary transition-colors">Peer Review Process</Link></li>
-                            <li><Link href="/ethics" className="hover:text-secondary transition-colors">Publication Ethics</Link></li>
-                            <li><Link href="/open-access" className="hover:text-secondary transition-colors">Open Access Policy</Link></li>
-                            <li><Link href="/copyright-policy" className="hover:text-secondary transition-colors">Copyright & Author Rights</Link></li>
-                            <li><Link href="/licensing-policy" className="hover:text-secondary transition-colors">Licensing Terms (CC-BY 4.0)</Link></li>
-                            <li><Link href="/apc-fees" className="hover:text-secondary transition-colors">APC & Fee Transparency</Link></li>
-                            <li><Link href="/plagiarism-policy" className="hover:text-secondary transition-colors">Plagiarism & Similarity</Link></li>
-                            <li><Link href="/conflict-of-interest" className="hover:text-secondary transition-colors">Conflict of Interest</Link></li>
-                            <li><Link href="/research-misconduct" className="hover:text-secondary transition-colors">Research Misconduct</Link></li>
-                            <li><Link href="/corrections-retractions" className="hover:text-secondary transition-colors">Corrections & Retractions</Link></li>
-                            <li><Link href="/archiving-policy" className="hover:text-secondary transition-colors">Digital Preservation</Link></li>
-                            <li><Link href="/ai-policy" className="hover:text-secondary transition-colors">AI & Generative AI Policy</Link></li>
-                            <li><Link href="/publisher-info" className="hover:text-secondary transition-colors">Publisher Information</Link></li>
-                            <li><Link href="/privacy" className="hover:text-secondary transition-colors">Privacy & Terms</Link></li>
+                            <li><Link href="/submit" className="hover:text-secondary transition-colors">Submit a Manuscript</Link></li>
+                            <li><Link href="/guidelines" className="hover:text-secondary transition-colors">Author Guidelines</Link></li>
+                            <li><Link href="/track" className="hover:text-secondary transition-colors">Track Manuscript</Link></li>
+                            <li><Link href="/apc-fees" className="hover:text-secondary transition-colors">Publication Fees</Link></li>
+                            <li><Link href="/join-us" className="hover:text-secondary transition-colors">Join as a Reviewer</Link></li>
+                            <li><Link href="/login" className="hover:text-secondary transition-colors">Portal Login</Link></li>
                         </ul>
                     </div>
 
                     {/* Contact & Support — dynamic values from client island */}
                     <div className="space-y-4">
                         <div>
-                            <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Support HQ</h3>
+                            <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Contact & Support</h3>
                             <div className="space-y-2.5">
                                 {/* Static — COPE compliance badge */}
                                 <div className="flex items-center gap-3 group/support">
@@ -158,6 +142,11 @@ export default async function Footer() {
                         {/* Dynamic — publisher name + year */}
                         <Suspense><FooterDynamic field="copyright" settings={settings} /></Suspense>
                         <p className="text-white/60 m-0">All Rights Reserved • E-ISSN: 3139-6887</p>
+                        <div className="flex flex-wrap justify-center lg:justify-start gap-x-3 gap-y-1 text-white/60 text-caption">
+                            <Link href="/ethics" className="hover:text-secondary transition-colors">Publication Ethics</Link>
+                            <Link href="/privacy" className="hover:text-secondary transition-colors">Privacy</Link>
+                            <Link href="/terms" className="hover:text-secondary transition-colors">Terms</Link>
+                        </div>
                     </div>
 
                     {/* Creative Commons Attribution Notice */}

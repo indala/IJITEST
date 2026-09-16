@@ -43,7 +43,7 @@ export default async function AimsScopePage() {
                 description={policy.description}
                 breadcrumbs={[
                     { name: 'Home', href: '/' },
-                    { name: 'Policies', href: '/#policies' },
+                    { name: 'Policies', href: '/about' },
                     { name: policy.title, href: `/${SLUG}` },
                 ]}
             />

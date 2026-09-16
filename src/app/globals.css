@@ -4,15 +4,14 @@
 
 
 @theme {
-  --color-primary: #000066;
-  /* Deep signature academic navy blue */
-  --color-secondary: oklch(0.5 0.25 25);
-  /* Richer crimson/maroon */
+  --color-primary: var(--brand-primary);
+  --color-secondary: var(--brand-secondary);
+  --color-accent: var(--brand-accent);
+  --color-orange: var(--brand-orange);
+  --color-pink: var(--brand-pink);
   --color-orcid: #A6CE39;
-  /* ORCID Brand Green */
-  --color-accent: var(--accent);
-  --color-background: oklch(0.995 0.002 255);
-  --color-foreground: oklch(0.18 0.02 255);
+  --color-background: var(--brand-background);
+  --color-foreground: var(--brand-foreground);
 
   --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-serif: var(--font-crimson), "Crimson Pro", Georgia, Cambria, "Times New Roman", Times, serif;
@@ -54,19 +53,19 @@
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
 
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --color-card: var(--surface-card);
+  --color-card-foreground: var(--brand-foreground);
+  --color-popover: var(--surface-card);
+  --color-popover-foreground: var(--brand-foreground);
+  --color-primary-foreground: #ffffff;
+  --color-secondary-foreground: #ffffff;
+  --color-muted: var(--surface-muted);
+  --color-muted-foreground: var(--brand-muted-foreground);
+  --color-accent-foreground: var(--brand-accent-foreground);
+  --color-destructive: var(--brand-destructive);
+  --color-border: var(--brand-border);
+  --color-input: var(--brand-border);
+  --color-ring: var(--brand-ring);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -187,7 +186,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    @apply font-sans antialiased bg-background text-foreground tracking-tight text-13 sm:text-sm lg:text-15 2xl:text-base;
+    @apply font-sans antialiased bg-background text-foreground tracking-tight text-[13px] sm:text-[14px] lg:text-[15px] 2xl:text-[16px];
   }
 
   /* --------------------------------------------------------------------------
@@ -196,37 +195,37 @@
   h1 {
     color: var(--color-primary);
     @apply font-sans font-semibold text-primary leading-tight tracking-tight mb-2.5;
-    @apply text-xl sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl;
+    @apply text-[22px] sm:text-[24px] md:text-[28px] lg:text-[30px] xl:text-[34px] 2xl:text-[38px];
   }
 
   h2 {
     color: var(--color-foreground);
     @apply font-sans font-semibold text-foreground leading-snug tracking-tight mb-2;
-    @apply text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl;
+    @apply text-[20px] sm:text-[22px] md:text-[24px] lg:text-[26px] xl:text-[30px] 2xl:text-[34px];
   }
 
   h3 {
     color: var(--color-foreground);
     @apply font-sans font-medium text-foreground/90 leading-snug tracking-normal mb-1.5;
-    @apply text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl 2xl:text-3xl;
+    @apply text-[17px] sm:text-[18px] md:text-[20px] lg:text-[20px] xl:text-[22px] 2xl:text-[24px];
   }
 
   h4 {
     color: var(--color-foreground);
     @apply font-sans font-medium text-foreground/85 leading-normal mb-1;
-    @apply text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-2xl;
+    @apply text-[15px] sm:text-[16px] md:text-[18px] lg:text-[18px] xl:text-[20px] 2xl:text-[22px];
   }
 
   h5 {
     color: var(--color-foreground);
     @apply font-sans font-medium text-foreground/80 leading-normal mb-1;
-    @apply text-xs sm:text-sm md:text-base lg:text-base xl:text-lg 2xl:text-xl;
+    @apply text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px];
   }
 
   h6 {
     color: var(--color-primary);
-    @apply font-sans font-semibold text-primary uppercase tracking-wider mb-0.5;
-    @apply text-xs-plus sm:text-xs md:text-sm xl:text-sm 2xl:text-base;
+    @apply font-sans font-semibold text-primary tracking-wider mb-0.5;
+    @apply text-[12px] sm:text-[12px] md:text-[14px] xl:text-[15px] 2xl:text-[16px];
   }
 
 
@@ -235,10 +234,11 @@
      -------------------------------------------------------------------------- */
   p {
     @apply text-foreground/80 font-normal leading-relaxed mb-2.5;
-    @apply text-13 sm:text-sm lg:text-15 xl:text-base 2xl:text-lg;
+    @apply text-[13px] sm:text-[14px] lg:text-[15px] xl:text-[16px] 2xl:text-[18px];
   }
 
-  ul, ol {
+  ul,
+  ol {
     @apply text-foreground/80 font-normal leading-relaxed;
   }
 
@@ -246,8 +246,10 @@
     @apply border-l-4 border-secondary/40 pl-3.5 italic text-foreground/85 my-3;
   }
 
-  code, pre, kbd {
-    @apply font-mono text-xs-plus sm:text-xs xl:text-13 2xl:text-sm;
+  code,
+  pre,
+  kbd {
+    @apply font-mono text-[11px] sm:text-[12px] xl:text-[13px] 2xl:text-[14px];
   }
 
   * {
@@ -256,6 +258,7 @@
 }
 
 @layer components {
+
   /* Semantic Font Family Utilities */
   .font-academic {
     @apply font-serif;
@@ -267,250 +270,259 @@
 
   /* Semantic Typography & Heading Utilities */
   .heading-hero {
-    @apply font-sans font-bold tracking-tight text-3xl sm:text-4xl md:text-5xl xl:text-6xl 2xl:text-7xl text-foreground;
+    @apply font-sans font-bold tracking-tight text-[30px] sm:text-[34px] md:text-[38px] xl:text-[46px] 2xl:text-[54px] text-foreground;
   }
 
   .heading-academic {
-    @apply font-serif font-semibold tracking-tight text-xl sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl text-foreground;
+    @apply font-serif font-semibold tracking-tight text-[22px] sm:text-[24px] md:text-[28px] xl:text-[32px] 2xl:text-[38px] text-foreground;
   }
 
   .heading-card {
-    @apply font-sans font-semibold tracking-tight text-base sm:text-lg xl:text-xl 2xl:text-2xl text-foreground;
+    @apply font-sans font-semibold tracking-tight text-[16px] sm:text-[18px] xl:text-[19px] 2xl:text-[21px] text-foreground;
   }
 
   .text-lead {
-    @apply font-normal leading-relaxed text-foreground/85 text-sm sm:text-base md:text-lg xl:text-xl 2xl:text-2xl;
+    @apply font-normal leading-relaxed text-foreground/85 text-[14px] sm:text-[16px] md:text-[18px] xl:text-[20px] 2xl:text-[24px];
   }
 
   .text-body {
-    @apply font-normal leading-relaxed text-foreground/80 text-13 sm:text-sm lg:text-15 xl:text-base 2xl:text-lg;
+    @apply font-normal leading-relaxed text-foreground/80 text-[13px] sm:text-[14px] lg:text-[15px] xl:text-[16px] 2xl:text-[18px];
   }
 
   .text-body-sm {
-    @apply font-normal leading-normal text-muted-foreground text-xs sm:text-xs md:text-sm xl:text-sm 2xl:text-base;
+    @apply font-normal leading-normal text-muted-foreground text-[12px] sm:text-[12px] md:text-[14px] xl:text-[14px] 2xl:text-[16px];
   }
 
   .text-meta {
-    @apply font-mono font-medium tracking-normal text-muted-foreground text-2xs sm:text-xs-plus md:text-xs xl:text-xs 2xl:text-sm;
+    @apply font-mono font-medium tracking-normal text-muted-foreground text-[10px] sm:text-[11px] md:text-[12px] xl:text-[12px] 2xl:text-[14px];
   }
 
   .text-label {
-    @apply font-sans font-bold uppercase tracking-wider text-2xs sm:text-xs-plus md:text-xs xl:text-xs 2xl:text-sm;
+    @apply font-sans font-bold tracking-wider text-[10px] sm:text-[11px] md:text-[12px] xl:text-[12px] 2xl:text-[14px];
   }
 
   .text-badge {
-    @apply font-sans font-bold uppercase tracking-wider text-2xs 2xl:text-xs;
+    @apply font-sans font-bold tracking-wider text-[10px] 2xl:text-[12px];
   }
 
   .text-caption {
-    @apply font-sans font-normal text-muted-foreground text-2xs sm:text-xs-plus 2xl:text-xs leading-normal;
+    @apply font-sans font-normal text-muted-foreground text-[10px] sm:text-[11px] 2xl:text-[12px] leading-normal;
   }
 
   /* Standardized Form & Field Utilities */
   .form-label-brand {
-    @apply text-primary font-bold uppercase tracking-wider text-xs-plus 2xl:text-xs;
+    @apply text-primary font-bold tracking-wider text-[11px] 2xl:text-[12px];
   }
 
   .input-standard {
     @apply bg-muted/20 border-border/50 rounded-lg font-medium text-foreground transition-all focus-visible:ring-1 focus-visible:ring-primary/30;
-    @apply text-xs sm:text-sm xl:text-sm 2xl:text-base;
-    @apply h-10 sm:h-11 xl:h-11 2xl:h-12 px-3 sm:px-4 2xl:px-5;
+    @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
+    @apply h-[40px] sm:h-[44px] xl:h-[44px] 2xl:h-[48px] px-[12px] sm:px-[16px] 2xl:px-[20px];
   }
 
   /* Standardized Panel & Card Utilities */
   .panel-title {
-    @apply font-bold tracking-tight text-primary text-xl sm:text-2xl md:text-3xl xl:text-3xl 2xl:text-4xl;
+    @apply font-bold tracking-tight text-primary text-[22px] sm:text-[24px] md:text-[26px] xl:text-[30px] 2xl:text-[32px];
   }
 
   .panel-subtitle {
-    @apply font-medium text-muted-foreground text-xs sm:text-xs md:text-sm xl:text-sm 2xl:text-base;
+    @apply font-medium text-muted-foreground text-[12px] sm:text-[12px] md:text-[14px] xl:text-[14px] 2xl:text-[16px];
   }
 
   .heading-stat {
-    @apply font-sans font-bold tracking-tight text-2xl sm:text-3xl xl:text-4xl 2xl:text-5xl text-foreground;
+    @apply font-sans font-bold tracking-tight text-[24px] sm:text-[28px] xl:text-[30px] 2xl:text-[36px] text-foreground;
   }
 
   .card-title-brand {
-    @apply font-bold text-primary tracking-tight text-base sm:text-base md:text-lg xl:text-xl 2xl:text-2xl;
+    @apply font-semibold text-primary tracking-tight text-[16px] sm:text-[16px] md:text-[18px] xl:text-[18px] 2xl:text-[20px];
   }
 
   .btn-primary {
     @apply bg-primary text-white rounded-lg hover:bg-primary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm;
-    @apply text-xs sm:text-sm xl:text-sm 2xl:text-base;
-    @apply px-3.5 py-1.5 sm:px-4 sm:py-2 xl:px-5 xl:py-2.5 2xl:px-6 2xl:py-3;
+    @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
+    @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[10px] 2xl:px-[24px] 2xl:py-[12px];
   }
 
   .btn-secondary {
     @apply bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm;
-    @apply text-xs sm:text-sm xl:text-sm 2xl:text-base;
-    @apply px-3.5 py-1.5 sm:px-4 sm:py-2 xl:px-5 xl:py-2.5 2xl:px-6 2xl:py-3;
+    @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
+    @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[10px] 2xl:px-[24px] 2xl:py-[12px];
   }
 
   .btn-outline {
     @apply border border-primary/20 text-primary rounded-lg hover:bg-primary/5 transition-all inline-block text-center cursor-pointer font-semibold;
-    @apply text-xs sm:text-sm xl:text-sm 2xl:text-base;
-    @apply px-3.5 py-1.5 sm:px-4 sm:py-2 xl:px-5 xl:py-2.5 2xl:px-6 2xl:py-3;
+    @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
+    @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[10px] 2xl:px-[24px] 2xl:py-[12px];
   }
 
   .btn-sm {
     @apply font-semibold rounded-lg;
-    @apply text-xs-plus sm:text-xs md:text-xs xl:text-xs 2xl:text-sm;
-    @apply px-2.5 py-1 sm:px-3 sm:py-1.5 xl:px-3.5 xl:py-1.5 2xl:px-4 2xl:py-2;
+    @apply text-[11px] sm:text-[12px] md:text-[12px] xl:text-[12px] 2xl:text-[14px];
+    @apply px-[10px] py-[4px] sm:px-[12px] sm:py-[6px] xl:px-[14px] xl:py-[6px] 2xl:px-[16px] 2xl:py-[8px];
   }
 
   .btn-lg {
     @apply font-semibold rounded-xl;
-    @apply text-sm sm:text-base md:text-base xl:text-lg 2xl:text-xl;
-    @apply px-5 py-2.5 sm:px-6 sm:py-3 md:px-7 md:py-3.5 xl:px-8 xl:py-4 2xl:px-10 2xl:py-4.5;
+    @apply text-[14px] sm:text-[16px] md:text-[16px] xl:text-[18px] 2xl:text-[20px];
+    @apply px-[20px] py-[10px] sm:px-[24px] sm:py-[12px] md:px-[28px] md:py-[14px] xl:px-[32px] xl:py-[16px] 2xl:px-[40px] 2xl:py-[18px];
   }
 
   .badge-brand {
-    @apply bg-primary/5 text-primary border border-primary/10 font-semibold rounded-md uppercase tracking-wider;
-    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
-    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+    @apply bg-primary/5 text-primary border border-primary/10 font-semibold rounded-md tracking-wider;
+    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
+    @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
   .badge-secondary {
-    @apply bg-secondary/10 text-secondary border border-secondary/20 font-semibold rounded-md uppercase tracking-wider;
-    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
-    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+    @apply bg-secondary/10 text-secondary border border-secondary/20 font-semibold rounded-md tracking-wider;
+    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
+    @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
   .badge-neutral {
-    @apply bg-muted text-muted-foreground border border-border/50 font-medium rounded-md uppercase tracking-wider;
-    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
-    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+    @apply bg-muted text-muted-foreground border border-border/50 font-medium rounded-md tracking-wider;
+    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
+    @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
   .badge-outline {
-    @apply bg-transparent text-foreground/80 border border-border font-medium rounded-md uppercase tracking-wider;
-    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
-    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+    @apply bg-transparent text-foreground/80 border border-border font-medium rounded-md tracking-wider;
+    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
+    @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
   .badge-success {
-    @apply bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 font-semibold rounded-md uppercase tracking-wider;
-    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
-    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+    @apply bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 font-semibold rounded-md tracking-wider;
+    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
+    @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
   .badge-warning {
-    @apply bg-amber-500/10 text-amber-700 border border-amber-500/20 font-semibold rounded-md uppercase tracking-wider;
-    @apply text-3xs sm:text-2xs md:text-xs-plus xl:text-xs 2xl:text-xs;
-    @apply px-2 py-0.5 sm:px-2.5 sm:py-1 2xl:px-3 2xl:py-1;
+    @apply bg-amber-500/10 text-amber-700 border border-amber-500/20 font-semibold rounded-md tracking-wider;
+    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
+    @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
   /* --------------------------------------------------------------------------
      Responsive Container System (Single Source of Truth)
      -------------------------------------------------------------------------- */
   .container-responsive {
-    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-14 2xl:px-16;
+    @apply w-full mx-auto px-[16px] sm:px-[24px] lg:px-[32px] xl:px-[56px] 2xl:px-[64px];
   }
 
   .container-narrow {
-    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12;
+    @apply w-full mx-auto px-[16px] sm:px-[24px] lg:px-[32px] 2xl:px-[48px];
   }
 
   .container-fluid {
-    @apply w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12;
+    @apply w-full px-[16px] sm:px-[24px] lg:px-[32px] xl:px-[40px] 2xl:px-[48px];
   }
 
   /* --------------------------------------------------------------------------
      Responsive Section Spacing (sm, md, lg, xl, 2xl)
      -------------------------------------------------------------------------- */
   .section-padding {
-    @apply py-6 sm:py-8 md:py-10 lg:py-12 xl:py-14 2xl:py-16 px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12;
+    @apply py-[24px] sm:py-[32px] md:py-[40px] lg:py-[48px] xl:py-[56px] 2xl:py-[64px] px-[16px] sm:px-[24px] lg:px-[32px] xl:px-[40px] 2xl:px-[48px];
   }
 
   .section-vertical {
-    @apply py-6 sm:py-8 md:py-10 lg:py-12 xl:py-14 2xl:py-16;
+    @apply py-[24px] sm:py-[32px] md:py-[40px] lg:py-[48px] xl:py-[56px] 2xl:py-[64px];
   }
 
   .section-vertical-sm {
-    @apply py-4 sm:py-6 md:py-8 lg:py-10 2xl:py-12;
+    @apply py-[16px] sm:py-[24px] md:py-[32px] lg:py-[40px] 2xl:py-[48px];
   }
 
   /* --------------------------------------------------------------------------
      Responsive Grid Utilities (sm, md, lg, xl, 2xl)
      -------------------------------------------------------------------------- */
   .grid-responsive-2 {
-    @apply grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 2xl:gap-8;
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-[16px] md:gap-[24px] 2xl:gap-[32px];
   }
 
   .grid-responsive-3 {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 2xl:gap-8;
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[16px] md:gap-[24px] 2xl:gap-[32px];
   }
 
   .grid-responsive-4 {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 2xl:gap-8;
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[12px] sm:gap-[16px] md:gap-[24px] 2xl:gap-[32px];
   }
 
   .layout-content-sidebar {
-    @apply grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 2xl:gap-12;
+    @apply grid grid-cols-1 lg:grid-cols-12 gap-[24px] lg:gap-[32px] xl:gap-[40px] 2xl:gap-[48px];
   }
 
   /* --------------------------------------------------------------------------
      Navigation Component System (Single Source of Truth)
      -------------------------------------------------------------------------- */
-  
+
   /* Desktop Top-level Nav Link */
   .nav-link {
     @apply font-sans font-semibold tracking-normal whitespace-nowrap transition-all duration-200;
     @apply flex items-center gap-1 relative;
-    @apply text-xs lg:text-13 xl:text-sm 2xl:text-15;
-    @apply px-2 lg:px-2.5 xl:px-3 2xl:px-4;
+    @apply text-[12px] lg:text-[13px] xl:text-[14px] 2xl:text-[15px];
+    @apply px-[8px] lg:px-[10px] xl:px-[12px] 2xl:px-[16px];
   }
 
   /* Desktop Submenu / Dropdown Item */
   .nav-dropdown-item {
     @apply font-sans font-semibold tracking-normal transition-all duration-200 relative;
-    @apply block py-2 2xl:py-2.5 px-4 2xl:px-5;
-    @apply text-xs xl:text-13 2xl:text-sm;
+    @apply block py-[8px] 2xl:py-[10px] px-[16px] 2xl:px-[20px];
+    @apply text-[12px] xl:text-[13px] 2xl:text-[14px];
   }
 
   /* Navbar Action Button (Submit Manuscript) */
   .nav-btn-action {
     @apply bg-primary text-white rounded-lg hover:bg-primary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-xs whitespace-nowrap duration-300;
-    @apply text-xs sm:text-sm lg:text-xs xl:text-sm 2xl:text-base;
-    @apply px-3 py-1.5 sm:px-4 sm:py-2 lg:px-3 lg:py-1.5 xl:px-4 xl:py-2 2xl:px-6 2xl:py-2.5;
+    @apply text-[12px] sm:text-[14px] lg:text-[12px] xl:text-[14px] 2xl:text-[16px];
+    @apply px-[12px] py-[6px] sm:px-[16px] sm:py-[8px] lg:px-[12px] lg:py-[6px] xl:px-[16px] xl:py-[8px] 2xl:px-[24px] 2xl:py-[10px];
   }
 
   /* Mobile Drawer Menu Links */
   .nav-mobile-link {
     @apply flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-all duration-300;
-    @apply text-xs sm:text-sm font-bold tracking-wide;
+    @apply text-[12px] sm:text-[14px] font-bold tracking-wide;
   }
 
   .nav-mobile-sublink {
     @apply flex items-center gap-2.5 py-1.5 transition-all;
-    @apply text-xs-plus sm:text-xs font-semibold tracking-wide;
+    @apply text-[11px] sm:text-[12px] font-semibold tracking-wide;
   }
 }
 
 :root {
   --radius: 0.75rem;
-  --color-background: oklch(0.985 0.005 255);
-  /* Very light brand tint instead of pure white */
-  --color-foreground: oklch(0.18 0.02 255);
-  --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.18 0.02 255);
-  --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.18 0.02 255);
-  --color-primary: #000066;
-  /* Deep Brand Navy Blue */
-  --color-primary-foreground: #ffffff;
-  --color-secondary: oklch(0.5 0.25 25);
-  /* Brand Red */
-  --color-secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.95 0.01 255);
-  --muted-foreground: oklch(0.35 0.02 253);
-  /* Higher contrast for muted text */
-  --accent: oklch(0.95 0.01 255);
-  --accent-foreground: oklch(0.35 0.15 255);
-  --destructive: oklch(0.5 0.2 25);
-  --border: oklch(0.9 0.01 255);
-  --input: oklch(0.9 0.01 255);
-  --ring: oklch(0.35 0.15 255 / 0.2);
+  /* IJITEST brand palette: navy is primary, red is secondary. */
+  --brand-primary: #000066;
+  --brand-secondary: #b4232f;
+  --brand-orange: #d97706;
+  --brand-pink: #c02678;
+  --brand-accent: var(--brand-secondary);
+  --brand-background: oklch(0.985 0.005 255);
+  --brand-foreground: oklch(0.18 0.02 255);
+  --brand-muted-foreground: oklch(0.35 0.02 253);
+  --brand-accent-foreground: oklch(0.35 0.15 255);
+  --brand-destructive: #b4232f;
+  --brand-border: oklch(0.9 0.01 255);
+  --brand-ring: oklch(0.35 0.15 255 / 0.2);
+  --surface-card: oklch(1 0 0);
+  --surface-muted: oklch(0.95 0.01 255);
+
+  /* Shadcn-compatible semantic aliases. */
+  --card: var(--surface-card);
+  --card-foreground: var(--brand-foreground);
+  --popover: var(--surface-card);
+  --popover-foreground: var(--brand-foreground);
+  --primary-foreground: #ffffff;
+  --secondary-foreground: #ffffff;
+  --muted: var(--surface-muted);
+  --muted-foreground: var(--brand-muted-foreground);
+  --accent: var(--brand-accent);
+  --accent-foreground: var(--brand-accent-foreground);
+  --destructive: var(--brand-destructive);
+  --border: var(--brand-border);
+  --input: var(--brand-border);
+  --ring: var(--brand-ring);
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.35 0.15 255);
@@ -583,16 +595,14 @@ html {
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom,
-      #1e3a8a,
-      #ec4899) !important;
+  background: var(--brand-secondary) !important;
 }
 
 /* Standard properties as fallback (Firefox) */
 @supports not selector(::-webkit-scrollbar) {
   * {
     scrollbar-width: thin;
-    scrollbar-color: #1e3a8a transparent;
+    scrollbar-color: var(--brand-primary) transparent;
   }
 }
 

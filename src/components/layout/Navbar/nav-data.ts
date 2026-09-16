@@ -7,7 +7,6 @@ import {
     FileText,
     Users,
     ShieldCheck,
-    ScrollText,
     UserPlus,
     Hash,
     LockOpen,
@@ -24,6 +23,7 @@ import {
     Sparkles,
     Building2,
     HelpCircle,
+    FilePlus,
     type LucideIcon
 } from 'lucide-react';
 
@@ -54,50 +54,75 @@ export const navigation: NavItem[] = [
         href: '/about',
         icon: Info,
         children: [
-            { name: 'About the Journal', href: '/about', icon: Layout },
-            { name: 'Announcements', href: '/announcements', icon: Megaphone },
+            { name: 'About IJITEST', href: '/about', icon: Layout },
+            { name: 'Aims and Scope', href: '/aims-scope', icon: Target },
             { name: 'Editorial Board', href: '/editorial-board', icon: Users },
-            { name: 'Join As Reviewer', href: '/join-us', icon: UserPlus },
+            { name: 'Publisher Information', href: '/publisher-info', icon: Building2 },
+            { name: 'Join as a Reviewer', href: '/join-us', icon: UserPlus },
             { name: 'Frequently Asked Questions', href: '/faqs', icon: HelpCircle },
         ]
     },
-    { name: 'Editorial Board', href: '/editorial-board', icon: Users },
-    { name: 'Author Guidelines', href: '/guidelines', icon: FileText },
-    { name: 'Current Issue', href: '/current-issue', icon: Layout },
-    { name: 'Archive', href: '/archives', icon: Archive },
+    {
+        name: 'Publish',
+        href: '/submit',
+        icon: FilePlus,
+        children: [
+            { name: 'Submit a Manuscript', href: '/submit', icon: FilePlus },
+            { name: 'Author Guidelines', href: '/guidelines', icon: FileText },
+            { name: 'How Review Works', href: '/peer-review', icon: GitBranch },
+            { name: 'Publication Fees', href: '/apc-fees', icon: CreditCard },
+            { name: 'Track Manuscript', href: '/track', icon: SearchCheck },
+        ]
+    },
+    {
+        name: 'Research',
+        href: '/current-issue',
+        icon: Layout,
+        children: [
+            { name: 'Current Issue', href: '/current-issue', icon: Layout },
+            { name: 'All Archives', href: '/archives', icon: Archive },
+            { name: 'Indexing and Abstracting', href: '/indexing', icon: Hash },
+            { name: 'Open Access', href: '/open-access', icon: LockOpen },
+            { name: 'Announcements', href: '/announcements', icon: Megaphone },
+        ]
+    },
     {
         name: 'Policies',
-        href: '#',
-        icon: ScrollText,
+        href: '/ethics',
+        icon: ShieldCheck,
         isMegaMenu: true,
         columns: [
             {
-                heading: 'Editorial & Quality Policies',
+                heading: 'Review and Ethics',
                 items: [
-                    { name: 'Aims & Scope', href: '/aims-scope', icon: Target },
                     { name: 'Peer Review Process', href: '/peer-review', icon: GitBranch },
                     { name: 'Publication Ethics', href: '/ethics', icon: ShieldCheck },
-                    { name: 'Plagiarism & Similarity', href: '/plagiarism-policy', icon: SearchCheck },
+                    { name: 'Plagiarism Policy', href: '/plagiarism-policy', icon: SearchCheck },
                     { name: 'Conflict of Interest', href: '/conflict-of-interest', icon: AlertTriangle },
                     { name: 'Research Misconduct', href: '/research-misconduct', icon: Scale },
-                    { name: 'Corrections & Retractions', href: '/corrections-retractions', icon: RefreshCw },
+                    { name: 'Corrections and Retractions', href: '/corrections-retractions', icon: RefreshCw },
                 ]
             },
             {
-                heading: 'Access, Rights & Governance',
+                heading: 'Access and Rights',
                 items: [
                     { name: 'Open Access Policy', href: '/open-access', icon: LockOpen },
-                    { name: 'Copyright & Author Rights', href: '/copyright-policy', icon: Copyright },
-                    { name: 'Licensing Terms (CC-BY 4.0)', href: '/licensing-policy', icon: FileCheck },
-                    { name: 'APC & Fee Disclosure', href: '/apc-fees', icon: CreditCard },
-                    { name: 'Digital Archiving & Preservation', href: '/archiving-policy', icon: Archive },
-                    { name: 'AI & Generative AI Policy', href: '/ai-policy', icon: Sparkles },
+                    { name: 'Copyright and Author Rights', href: '/copyright-policy', icon: Copyright },
+                    { name: 'Licensing Policy', href: '/licensing-policy', icon: FileCheck },
+                    { name: 'Publication Fees', href: '/apc-fees', icon: CreditCard },
+                ]
+            },
+            {
+                heading: 'Governance and Preservation',
+                items: [
+                    { name: 'Digital Archiving and Preservation', href: '/archiving-policy', icon: Archive },
+                    { name: 'AI and Generative AI Policy', href: '/ai-policy', icon: Sparkles },
+                    { name: 'Privacy Policy', href: '/privacy', icon: ShieldCheck },
+                    { name: 'Terms of Use', href: '/terms', icon: FileText },
                     { name: 'Publisher Information', href: '/publisher-info', icon: Building2 },
                 ]
             }
         ]
     },
-    { name: 'Indexing', href: '/indexing', icon: Hash },
-    { name: 'Contact Us', href: '/contact', icon: Mail },
+    { name: 'Contact', href: '/contact', icon: Mail },
 ];
-

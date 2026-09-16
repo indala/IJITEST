@@ -27,8 +27,8 @@ export default function AnnouncementBar({ latestPaper }: AnnouncementBarProps) {
                         <Megaphone className="size-5 2xl:size-6" />
                     </div>
                     <p className="text-white/80 m-0 flex items-center gap-2">
-                        Latest Publication <span className="text-orange-600 font-bold">:</span> <span className="text-white pl-1 sparkle-text">{monthYear} Issue Now Live</span>
-                        <Sparkles className="size-6 text-red-600 animate-bounce" />
+                        Latest Publication <span className="text-orange font-bold">:</span> <span className="text-white pl-1 sparkle-text">{monthYear} Issue Now Live</span>
+                        <Sparkles className="size-6 text-secondary animate-bounce" />
                     </p>
                 </div>
                 

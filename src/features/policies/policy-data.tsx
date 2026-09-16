@@ -27,13 +27,14 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
     const supportEmail = settings['supportEmail'] || settings['support_email'] || 'support@ijitest.org';
     const apcInr = settings['apcInr'] || settings['apc_inr'] || '2000';
     const apcUsd = settings['apcUsd'] || settings['apc_usd'] || '50';
-    const currentYear = '2026';
+    const currentYear = settings['startingYear'] || '2026';
+    const publicationFrequency = settings['publicationFrequency'] || 'Monthly';
 
     return {
         'aims-scope': {
             slug: 'aims-scope',
-            title: 'Aims & Scope',
-            description: `Core academic objectives, subject domains, and manuscript categories accepted by ${journalShort}.`,
+            title: 'Aims and Scope',
+            description: `The journal's academic purpose, subject coverage, and manuscript categories accepted by ${journalShort}.`,
             metaDescription: `Discover the aims, scope, and engineering research coverage of ${journalName} (ISSN: ${issn}). Peer-reviewed open access engineering journal.`,
             relatedLinks: [
                 { name: 'Peer Review Process', href: '/peer-review' },
@@ -44,32 +45,32 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
             sections: [
                 {
                     id: 'core-objectives',
-                    title: 'Core Academic Objectives',
+                    title: 'Journal Aim',
                     content: (
                         <div className="space-y-4">
                             <p>
-                                <strong>{journalName}</strong> (ISSN: {issn}) is a monthly, multidisciplinary, open-access, peer-reviewed international scholarly journal dedicated to publishing high-quality, innovative, and original research spanning all domains of engineering, technological sciences, and computer systems.
+                                <strong>{journalName}</strong> (ISSN: {issn}) is a peer-reviewed, open-access journal publishing original research, review articles, and technical contributions in engineering, science, and technology.
                             </p>
                             <p>
-                                The primary mission of {journalShort} is to bridge foundational theoretical formulations and applied engineering methodologies, serving researchers, academics, graduate scholars, and industrial practitioners globally.
+                                {journalShort} aims to provide a rigorous and accessible platform for researchers, academics, and practitioners to communicate sound theoretical, experimental, computational, and applied work. Interdisciplinary studies are welcome when they make a clear contribution to the journal's subject areas.
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-1">
                                     <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
                                         <Globe className="size-4" />
-                                        <span>Global Scientific Exchange</span>
+                                        <span>Scholarly Exchange</span>
                                     </div>
                                     <p className="text-muted-foreground text-caption m-0">
-                                        Providing a zero-barrier dissemination venue for cutting-edge engineering discoveries.
+                                        Supporting the responsible communication of research findings.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15 space-y-1">
                                     <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-body-sm">
                                         <Cpu className="size-4" />
-                                        <span>Applied Innovation</span>
+                                        <span>Research Quality</span>
                                     </div>
                                     <p className="text-muted-foreground text-caption m-0">
-                                        Prioritizing empirical validation, computational modeling, and industrial scalability.
+                                        Valuing clear methods, evidence, and meaningful conclusions.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-blue-500/5 border border-blue-500/15 space-y-1">
@@ -78,7 +79,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                         <span>Open Science</span>
                                     </div>
                                     <p className="text-muted-foreground text-caption m-0">
-                                        Immediate unrestricted global access under Creative Commons Attribution 4.0 (CC-BY).
+                                        Making published research available under the journal's open-access terms.
                                     </p>
                                 </div>
                             </div>
@@ -185,7 +186,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                     content: (
                         <div className="space-y-4">
                             <p>
-                                {journalShort} operates on a continuous publication model. Manuscripts are published online in their final Version of Record immediately following editorial acceptance, APC settlement, and galley proof verification.
+                                {journalShort} follows a {publicationFrequency.toLowerCase()} publication schedule. Accepted manuscripts are published online as the Version of Record after editorial approval and final proof verification.
                             </p>
                             <p>
                                 Articles are aggregated into 12 regular monthly issues per annual volume. Each published paper receives a persistent digital object identifier (DOI) minted through CrossRef and full-text JATS XML archival deposit.

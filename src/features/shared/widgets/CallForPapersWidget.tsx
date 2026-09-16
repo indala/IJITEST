@@ -4,15 +4,15 @@ import { memo } from 'react';
 
 function CallForPapersWidget() {
     return (
-        <div className="bg-primary text-white rounded-xl p-3.5 sm:p-4 2xl:p-5 space-y-2.5 2xl:space-y-3.5 shadow-md relative overflow-hidden">
+        <div className="bg-card border border-border/70 border-l-4 border-l-secondary rounded-xl p-3.5 sm:p-4 2xl:p-5 space-y-2.5 2xl:space-y-3.5 shadow-2xs relative overflow-hidden">
             <div className="flex items-center gap-2">
-                <div className="w-8 h-8 2xl:w-10 2xl:h-10 rounded-lg bg-white/10 flex items-center justify-center text-secondary">
+                <div className="w-8 h-8 2xl:w-10 2xl:h-10 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
                     <MessageSquare className="w-4 h-4 2xl:w-5 2xl:h-5" />
                 </div>
-                <h3 className="card-title-brand text-white m-0">Call for Papers</h3>
+                <h3 className="card-title-brand m-0">Call for Papers</h3>
             </div>
-            <p className="text-white/80 leading-relaxed m-0">
-                Rolling monthly submissions with fast-track double-blind review. Open to all engineering disciplines.
+            <p className="text-muted-foreground leading-relaxed m-0">
+                IJITEST welcomes original research and review contributions in engineering, science, and technology.
             </p>
             <Link 
                 href="/submit" 

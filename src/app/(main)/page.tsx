@@ -6,12 +6,10 @@ import { getAnnouncements } from '@/actions/announcements';
 import type { Metadata } from 'next';
 import HomeCarousel from '@/features/home/components/HomeCarousel';
 import WelcomeSection from '@/features/home/components/WelcomeSection';
-import HomeCurrentIssue from '@/features/home/components/HomeCurrentIssue';
 import AimAndScope from '@/features/home/components/AimAndScope';
 import AnnouncementsWidget from '@/features/shared/widgets/AnnouncementsWidget';
 import PublisherSection from '@/features/home/components/PublisherSection';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
-import AuthorQuickLinks from '@/features/home/components/AuthorQuickLinks';
 import CallForPapersWidget from '@/features/shared/widgets/CallForPapersWidget';
 import ResourceDeskWidget from '@/features/shared/widgets/ResourceDeskWidget';
 import EthicsWidget from '@/features/shared/widgets/EthicsWidget';
@@ -21,7 +19,6 @@ import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import {
   AnnouncementBarSkeleton,
   AnnouncementsWidgetSkeleton,
-  HomeCurrentIssueSkeleton,
 } from '@/features/home/components/HomeSkeletons';
 
 async function AnnouncementBarSection() {
@@ -38,16 +35,6 @@ async function AnnouncementsWidgetSection() {
   const latestIssue = latestIssueRes.success ? latestIssueRes.data : null;
   const announcements = announcementsRes.success ? (announcementsRes.data ?? []) : [];
   return <AnnouncementsWidget latestIssue={latestIssue} announcements={announcements} />;
-}
-
-async function HomeCurrentIssueSection() {
-  const [latestIssueRes, latestPapersRes] = await Promise.all([
-    getLatestPublishedIssue(),
-    getLatestIssuePapers()
-  ]);
-  const latestIssue = latestIssueRes.success ? latestIssueRes.data : null;
-  const latestPapers = latestPapersRes.success ? (latestPapersRes.data ?? []) : [];
-  return <HomeCurrentIssue latestIssue={latestIssue} papers={latestPapers} />;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -84,38 +71,30 @@ export default async function Home() {
         <AnnouncementBarSection />
       </Suspense>
       
-      {/* Background Decorative Blob */}
-      <div className="absolute top-[20%] right-0 w-[800px] h-[800px] bg-primary/2 rounded-full blur-[150px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-[10%] left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
-
       <HomeCarousel />
 
-      {/* Institutional Core Section */}
       <Section className="relative z-10" padding={false}>
         <SidebarLayout
-          className="my-6 sm:my-8"
+          className="my-6 sm:my-8 lg:my-10"
+          sidebarClassName="space-y-4 sm:space-y-5"
+          mainClassName="space-y-6 sm:space-y-8"
           sidebar={
-              <div className="space-y-4 sm:space-y-5">
-                <TrackManuscriptWidget />
-                <CallForPapersWidget />
-                <Suspense fallback={<AnnouncementsWidgetSkeleton />}>
-                  <AnnouncementsWidgetSection />
-                </Suspense>
-                <AuthorQuickLinks />
-                <ResourceDeskWidget settings={settings} />
-                <EthicsWidget />
-              </div>
+            <div className="space-y-4 sm:space-y-5">
+              <TrackManuscriptWidget />
+              <CallForPapersWidget />
+              <Suspense fallback={<AnnouncementsWidgetSkeleton />}>
+                <AnnouncementsWidgetSection />
+              </Suspense>
+              <ResourceDeskWidget settings={settings} />
+              <EthicsWidget />
+            </div>
           }
         >
           <WelcomeSection settings={settings} />
           <AimAndScope settings={settings} shortName={settings['journalShortName']} />
-          <Suspense fallback={<HomeCurrentIssueSkeleton />}>
-            <HomeCurrentIssueSection />
-          </Suspense>
+          <PublisherSection settings={settings} embedded />
         </SidebarLayout>
       </Section>
-
-      <PublisherSection settings={settings} />
     </div>
   );
 }

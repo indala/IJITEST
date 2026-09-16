@@ -7,17 +7,17 @@ interface HomeStatsProps {
 
 export default function HomeStats({ settings }: HomeStatsProps) {
     const list = [
-        { 
-            label: "Peer Review", 
-            value: "Double-Blind (2-3 Wks)" 
+        {
+            label: "Peer Review",
+            value: "Double-Blind (2-3 Wks)"
+        },
+        {
+            label: "Frequency",
+            value: settings?.['publicationFrequency'] || "Monthly"
         },
         { 
-            label: "Publication", 
-            value: settings?.['publicationFrequency'] ? `${settings['publicationFrequency']} Issues` : "Monthly Issues" 
-        },
-        { 
-            label: "Open Access", 
-            value: "100% Gold Access" 
+            label: "Access",
+            value: "Gold Open Access"
         },
     ];
 
@@ -52,7 +52,7 @@ export default function HomeStats({ settings }: HomeStatsProps) {
                     className="h-full animate-in fade-in zoom-in-95 duration-500"
                 >
                     <Card className="h-full border border-border/60 bg-card hover:border-primary/30 transition-all group overflow-hidden">
-                        <CardContent className="p-3 sm:p-4 2xl:p-5 flex flex-col justify-between h-full">
+                        <CardContent className="p-3 sm:p-4 2xl:p-5 flex flex-col justify-between h-full border-t-2 border-secondary/70">
                             <div>
                                 <p className="text-label text-muted-foreground mb-1 m-0">
                                     {stat.label}

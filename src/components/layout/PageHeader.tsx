@@ -54,7 +54,7 @@ export default function PageHeader({
                 <BreadcrumbJsonLd items={breadcrumbs} baseUrl={baseUrl.replace(/\/$/, '')} />
             )}
             {scrollOnComplete && <PageHeaderScroll targetId={headerId} />}
-            <section id={headerId} className="relative py-5 sm:py-7 bg-primary border-b border-white/10 overflow-hidden">
+            <header id={headerId} className="relative py-5 sm:py-7 bg-primary border-b border-white/10 overflow-hidden">
                 <div className="container-responsive relative z-10 space-y-2">
                     <nav aria-label="Breadcrumb">
                         <ol className="flex items-center gap-1.5 list-none p-0 m-0">
@@ -95,7 +95,7 @@ export default function PageHeader({
                         </div>
                     </div>
                 </div>
-            </section>
+            </header>
         </>
     );
 }

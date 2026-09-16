@@ -91,10 +91,10 @@ function DisciplineTaxonomyGrid() {
                 </div>
 
                 <Link
-                    href="/submit"
+                    href="/aims-scope"
                     className="inline-flex items-center gap-1.5 text-body-sm font-bold text-secondary hover:text-primary transition-colors shrink-0"
                 >
-                    <span>Submit to Track</span>
+                    <span>View Aims and Scope</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
             </div>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, ArrowLeft, Send, FileText } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { announcementContentToHtml } from "@/lib/announcement-content";
 
 export async function generateStaticParams() {
     try {
@@ -101,7 +102,7 @@ export default async function AnnouncementDetailPage({
                 ]}
             />
 
-            <main className="container-narrow max-w-4xl 2xl:max-w-5xl section-vertical space-y-6 2xl:space-y-8">
+            <div className="container-narrow max-w-4xl 2xl:max-w-5xl section-vertical space-y-6 2xl:space-y-8">
                 {/* Navigation Bar & Tags */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-2">
                     <Link
@@ -175,8 +176,10 @@ export default async function AnnouncementDetailPage({
                     )}
 
                     {/* Body Content */}
-                    <div className="whitespace-pre-wrap font-sans text-foreground/85 leading-relaxed text-body-sm space-y-4">
-                        {item.description}
+                    <div
+                        className="prose prose-sm max-w-none font-sans text-foreground/85 leading-relaxed [&_a]:font-semibold [&_a]:text-primary [&_a]:underline [&_blockquote]:my-5 [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_h3]:mb-3 [&_h3]:mt-7 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-primary [&_h4]:mb-2 [&_h4]:mt-5 [&_h4]:font-semibold [&_li]:my-1 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-4 [&_strong]:font-semibold [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6"
+                        dangerouslySetInnerHTML={{ __html: announcementContentToHtml(item.description) }}
+                    >
                     </div>
 
                     {/* Contextual Action Banner for Call for Papers */}
@@ -207,7 +210,7 @@ export default async function AnnouncementDetailPage({
                         </div>
                     )}
                 </article>
-            </main>
+            </div>
         </div>
     );
 }

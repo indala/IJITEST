@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { navigation } from './nav-data';
-import { X, ChevronRight, FilePlus, RefreshCw, Award } from 'lucide-react';
+import { X, ChevronRight, ChevronDown } from 'lucide-react';
 
 interface MobileMenuProps {
     isOpen: boolean;
@@ -15,6 +15,29 @@ interface MobileMenuProps {
 function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
     const pathname = usePathname();
     const [mounted, setMounted] = useState(false);
+    const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
+    // Auto-expand if the active route is a child of an item
+    useEffect(() => {
+        if (isOpen) {
+            const initialExpanded: Record<string, boolean> = {};
+            navigation.forEach(item => {
+                const isChildActive = (item.children?.some(c => pathname === c.href)) ||
+                    (item.columns?.some(col => col.items.some(c => pathname === c.href)));
+                if (isChildActive) {
+                    initialExpanded[item.name] = true;
+                }
+            });
+            setExpandedItems(initialExpanded);
+        }
+    }, [isOpen, pathname]);
+
+    const toggleExpand = useCallback((name: string) => {
+        setExpandedItems(prev => ({
+            ...prev,
+            [name]: !prev[name]
+        }));
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => setMounted(true), 0);
@@ -105,99 +128,139 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                             className="block w-full"
                                         >
                                             <div className="space-y-1">
-                                                <Link
-                                                    href={item.href}
-                                                    onClick={handleClose}
-                                                    className={cn(
-                                                        "nav-mobile-link group",
-                                                        isActive
-                                                            ? "bg-primary/5 text-primary"
-                                                            : "text-foreground/80 hover:bg-primary/5 hover:text-primary"
-                                                    )}
-                                                >
-                                                    <div className="flex items-center gap-3.5">
-                                                        <div className={cn(
-                                                            "w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-500",
-                                                            isActive ? "bg-primary text-white shadow-md shadow-primary/20" : "bg-primary/5 text-primary/40 group-hover:bg-primary/10 group-hover:text-primary"
-                                                        )}>
-                                                            {item.icon && <item.icon className="w-4 h-4" />}
+                                                {Boolean(item.children?.length || item.columns?.length) ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => toggleExpand(item.name)}
+                                                        aria-expanded={Boolean(expandedItems[item.name])}
+                                                        className={cn(
+                                                            "nav-mobile-link group w-full cursor-pointer text-left",
+                                                            isActive
+                                                                ? "bg-primary/5 text-primary"
+                                                                : "text-foreground/80 hover:bg-primary/5 hover:text-primary"
+                                                        )}
+                                                    >
+                                                        <div className="flex items-center gap-3.5">
+                                                            <div className={cn(
+                                                                "w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300",
+                                                                isActive ? "bg-primary text-white shadow-md shadow-primary/20" : "bg-primary/5 text-primary/40 group-hover:bg-primary/10 group-hover:text-primary"
+                                                            )}>
+                                                                {item.icon && <item.icon className="w-4 h-4" />}
+                                                            </div>
+                                                            <span>{item.name}</span>
                                                         </div>
-                                                        <span>{item.name}</span>
-                                                    </div>
-                                                    <ChevronRight className={cn(
-                                                        "w-3.5 h-3.5 transition-all duration-500",
-                                                        isActive ? "text-secondary translate-x-0" : "text-primary/20 -translate-x-1 group-hover:translate-x-0 group-hover:text-primary/40"
-                                                    )} />
-                                                </Link>
-
-                                                {item.children && (
-                                                    <ul className="ml-12 space-y-1 border-l border-primary/5 pl-4 pb-1 list-none p-0">
-                                                        {item.children.map((child) => {
-                                                            const isSubActive = pathname === child.href;
-                                                            return (
-                                                                <li key={child.name}>
-                                                                    <Link
-                                                                        href={child.href}
-                                                                        onClick={handleClose}
-                                                                        className={cn(
-                                                                            "nav-mobile-sublink",
-                                                                            isSubActive ? "text-secondary font-bold" : "text-muted-foreground hover:text-primary"
-                                                                        )}
-                                                                    >
-                                                                        <div className={cn(
-                                                                            "w-1.5 h-1.5 rounded-full transition-all duration-500",
-                                                                            isSubActive ? "bg-secondary scale-110 shadow-[0_0_8px_rgba(234,179,8,0.5)]" : "bg-primary/10"
-                                                                        )} />
-                                                                        {child.name}
-                                                                    </Link>
-                                                                </li>
-                                                            );
-                                                        })}
-                                                    </ul>
+                                                        <ChevronDown className={cn(
+                                                            "w-4 h-4 transition-transform duration-300",
+                                                            expandedItems[item.name] ? "rotate-180 text-secondary" : "text-primary/30 group-hover:text-primary"
+                                                        )} />
+                                                    </button>
+                                                ) : (
+                                                    <Link
+                                                        href={item.href}
+                                                        onClick={handleClose}
+                                                        className={cn(
+                                                            "nav-mobile-link group",
+                                                            isActive
+                                                                ? "bg-primary/5 text-primary"
+                                                                : "text-foreground/80 hover:bg-primary/5 hover:text-primary"
+                                                        )}
+                                                    >
+                                                        <div className="flex items-center gap-3.5">
+                                                            <div className={cn(
+                                                                "w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300",
+                                                                isActive ? "bg-primary text-white shadow-md shadow-primary/20" : "bg-primary/5 text-primary/40 group-hover:bg-primary/10 group-hover:text-primary"
+                                                            )}>
+                                                                {item.icon && <item.icon className="w-4 h-4" />}
+                                                            </div>
+                                                            <span>{item.name}</span>
+                                                        </div>
+                                                        <ChevronRight className={cn(
+                                                            "w-3.5 h-3.5 transition-all duration-300",
+                                                            isActive ? "text-secondary translate-x-0" : "text-primary/20 -translate-x-1 group-hover:translate-x-0 group-hover:text-primary/40"
+                                                        )} />
+                                                    </Link>
                                                 )}
 
-                                                {item.columns && (
-                                                    <div className="ml-8 space-y-3 border-l border-primary/10 pl-3.5 pb-2 pt-1">
-                                                        {item.columns.map((col) => (
-                                                            <div key={col.heading} className="space-y-1">
-                                                                <span className="text-label font-bold uppercase tracking-wider text-primary/40 block px-1 pt-1">
-                                                                    {col.heading}
-                                                                </span>
-                                                                <ul className="space-y-0.5 list-none p-0">
-                                                                    {col.items.map((child) => {
+                                                <AnimatePresence initial={false}>
+                                                    {Boolean(item.children?.length || item.columns?.length) && expandedItems[item.name] && (
+                                                        <motion.div
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: "auto", opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            transition={{ duration: 0.25, ease: "easeInOut" }}
+                                                            className="overflow-hidden"
+                                                        >
+                                                            {item.children && (
+                                                                <ul className="ml-12 space-y-1 border-l border-primary/5 pl-4 pb-1 pt-1 list-none p-0">
+                                                                    {item.children.map((child) => {
                                                                         const isSubActive = pathname === child.href;
-                                                                        const IconComponent = child.icon;
                                                                         return (
                                                                             <li key={child.name}>
                                                                                 <Link
                                                                                     href={child.href}
                                                                                     onClick={handleClose}
                                                                                     className={cn(
-                                                                                        "nav-mobile-sublink py-1.5",
+                                                                                        "nav-mobile-sublink",
                                                                                         isSubActive ? "text-secondary font-bold" : "text-muted-foreground hover:text-primary"
                                                                                     )}
                                                                                 >
-                                                                                    {IconComponent ? (
-                                                                                        <IconComponent className={cn(
-                                                                                            "w-3.5 h-3.5 shrink-0 transition-all duration-500",
-                                                                                            isSubActive ? "text-secondary" : "text-primary/30"
-                                                                                        )} />
-                                                                                    ) : (
-                                                                                        <div className={cn(
-                                                                                            "w-1.5 h-1.5 rounded-full transition-all duration-500",
-                                                                                            isSubActive ? "bg-secondary scale-110 shadow-[0_0_8px_rgba(234,179,8,0.5)]" : "bg-primary/10"
-                                                                                        )} />
-                                                                                    )}
-                                                                                    <span className="truncate">{child.name}</span>
+                                                                                    <div className={cn(
+                                                                                        "w-1.5 h-1.5 rounded-full transition-all duration-500",
+                                                                                        isSubActive ? "bg-secondary scale-110 shadow-[0_0_8px_rgba(234,179,8,0.5)]" : "bg-primary/10"
+                                                                                    )} />
+                                                                                    {child.name}
                                                                                 </Link>
                                                                             </li>
                                                                         );
                                                                     })}
                                                                 </ul>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                                            )}
+
+                                                            {item.columns && (
+                                                                <div className="ml-8 space-y-3 border-l border-primary/10 pl-3.5 pb-2 pt-1">
+                                                                    {item.columns.map((col) => (
+                                                                        <div key={col.heading} className="space-y-1">
+                                                                            <span className="text-label text-primary/60 block px-1 pt-1">
+                                                                                {col.heading}
+                                                                            </span>
+                                                                            <ul className="space-y-0.5 list-none p-0">
+                                                                                {col.items.map((child) => {
+                                                                                    const isSubActive = pathname === child.href;
+                                                                                    const IconComponent = child.icon;
+                                                                                    return (
+                                                                                        <li key={child.name}>
+                                                                                            <Link
+                                                                                                href={child.href}
+                                                                                                onClick={handleClose}
+                                                                                                className={cn(
+                                                                                                    "nav-mobile-sublink py-1.5",
+                                                                                                    isSubActive ? "text-secondary font-bold" : "text-muted-foreground hover:text-primary"
+                                                                                                )}
+                                                                                            >
+                                                                                                {IconComponent ? (
+                                                                                                    <IconComponent className={cn(
+                                                                                                        "w-3.5 h-3.5 shrink-0 transition-all duration-500",
+                                                                                                        isSubActive ? "text-secondary" : "text-primary/30"
+                                                                                                    )} />
+                                                                                                ) : (
+                                                                                                    <div className={cn(
+                                                                                                        "w-1.5 h-1.5 rounded-full transition-all duration-500",
+                                                                                                        isSubActive ? "bg-secondary scale-110 shadow-[0_0_8px_rgba(234,179,8,0.5)]" : "bg-primary/10"
+                                                                                                    )} />
+                                                                                                )}
+                                                                                                <span className="truncate">{child.name}</span>
+                                                                                            </Link>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
                                             </div>
                                         </motion.li>
                                     );
@@ -205,33 +268,34 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                             </ul>
                         </div>
 
-                        {/* Footer / CTA: 3 Paper Submission Options */}
-                        <div className="px-5 py-4 border-t border-primary/5 shrink-0 bg-muted/20 space-y-2">
-                            <p className="text-meta font-bold text-muted-foreground uppercase tracking-widest pl-1 m-0">Paper Submission</p>
-                            <div className="grid grid-cols-3 gap-2">
+                        {/* Footer / Actions */}
+                        <div className="px-5 py-4 border-t border-primary/10 shrink-0 bg-muted/20 space-y-2.5">
+                            {/* Track Manuscript */}
+                            <Link
+                                href="/track"
+                                onClick={handleClose}
+                                className="w-full py-2 px-3 rounded-xl border border-primary/25 text-primary font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-primary/5 transition-all no-underline"
+                            >
+                                Track Manuscript
+                            </Link>
+
+                            {/* Submit Manuscript (Full-width Primary Action) */}
+                            <Link
+                                href="/submit"
+                                onClick={handleClose}
+                                className="nav-btn-action w-full py-2.5 px-4 rounded-xl text-center block font-semibold text-xs-plus sm:text-sm shadow-md no-underline"
+                            >
+                                Submit Manuscript
+                            </Link>
+
+                            {/* Portal Login */}
+                            <div className="text-center pt-1">
                                 <Link
-                                    href="/submit?type=new"
-                                    className="flex flex-col items-center justify-center p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all text-center gap-1 group no-underline"
+                                    href="/login"
                                     onClick={handleClose}
+                                    className="text-caption font-semibold text-muted-foreground hover:text-primary transition-colors inline-block"
                                 >
-                                    <FilePlus className="w-4 h-4" />
-                                    <span className="text-meta font-bold leading-tight">New</span>
-                                </Link>
-                                <Link
-                                    href="/submit?type=revised"
-                                    className="flex flex-col items-center justify-center p-2 rounded-xl bg-secondary/15 text-secondary hover:bg-secondary hover:text-white transition-all text-center gap-1 group no-underline"
-                                    onClick={handleClose}
-                                >
-                                    <RefreshCw className="w-4 h-4" />
-                                    <span className="text-meta font-bold leading-tight">Revised</span>
-                                </Link>
-                                <Link
-                                    href="/submit?type=final"
-                                    className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-500/15 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-all text-center gap-1 group no-underline"
-                                    onClick={handleClose}
-                                >
-                                    <Award className="w-4 h-4" />
-                                    <span className="text-meta font-bold leading-tight">Final</span>
+                                    Portal Login
                                 </Link>
                             </div>
                         </div>

@@ -18,6 +18,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath, cacheLife, cacheTag } from "next/cache";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
+import { sanitizeAnnouncementHtml } from "@/lib/announcement-content";
 
 const DEFAULT_ANNOUNCEMENTS = [
     {
@@ -209,7 +210,7 @@ export async function createAnnouncement(formData: FormData): Promise<ActionResp
         const title = (formData.get("title") as string || "").trim();
         const type = (formData.get("type") as AnnouncementType) || "news";
         const descriptionShort = (formData.get("descriptionShort") as string || "").trim() || null;
-        const description = (formData.get("description") as string || "").trim();
+        const description = sanitizeAnnouncementHtml((formData.get("description") as string || "").trim());
         const imageAltText = (formData.get("imageAltText") as string || "").trim() || null;
         const priorityStr = formData.get("priority") as string;
         const priority = priorityStr ? parseInt(priorityStr, 10) || 0 : 0;
@@ -293,7 +294,7 @@ export async function updateAnnouncement(id: number, formData: FormData): Promis
         const title = (formData.get("title") as string || "").trim();
         const type = (formData.get("type") as AnnouncementType) || "news";
         const descriptionShort = (formData.get("descriptionShort") as string || "").trim() || null;
-        const description = (formData.get("description") as string || "").trim();
+        const description = sanitizeAnnouncementHtml((formData.get("description") as string || "").trim());
         const imageAltText = (formData.get("imageAltText") as string || "").trim() || null;
         const priorityStr = formData.get("priority") as string;
         const priority = priorityStr !== null && priorityStr !== undefined ? parseInt(priorityStr, 10) || 0 : existing.priority;

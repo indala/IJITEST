@@ -129,18 +129,18 @@ When submitting, select the appropriate journal section:
     },
     {
         slug: "aims-scope",
-        title: "Aims & Scope",
+        title: "Aims and Scope",
         content: `## Aims and Scope of {{journalName}}
 
-**{{journalName}}** (ISSN: {{issnNumber}}) is a monthly, multidisciplinary, open-access, peer-reviewed international journal dedicated to publishing high-quality, innovative, and original research spanning all domains of engineering, technological sciences, and computer systems.
+**{{journalName}}** (ISSN: {{issnNumber}}) is a peer-reviewed, open-access journal publishing original research, review articles, and technical contributions in engineering, science, and technology.
 
 ### Core Objectives
-1. **Foster Global Scientific Exchange**: Provide an accessible, zero-barrier platform for researchers, academicians, and industrial professionals to disseminate groundbreaking engineering breakthroughs.
-2. **Bridge Theoretical Models and Applied Engineering**: Prioritize research that bridges fundamental science, mathematical modeling, and real-world engineering applications.
-3. **Promote Open Science**: Ensure immediate, unrestricted global access to all research artifacts, datasets, and methodologies under the Creative Commons Attribution 4.0 International (CC-BY 4.0) license.
+1. **Support Scholarly Communication**: Provide an accessible platform for researchers, academics, and practitioners to communicate sound research findings.
+2. **Connect Theory and Application**: Welcome theoretical, experimental, computational, and applied work with clear engineering or scientific contributions.
+3. **Support Open Research**: Make published work available under the journal's open-access and licensing terms.
 
 ### Subject Coverage & Disciplines
-{{journalName}} welcomes high-caliber original research, critical review papers, and technical case studies across the following core thematic areas:
+{{journalName}} welcomes original research, review articles, and technical case studies across the following core thematic areas:
 
 - **Computer Science & Information Technology**: Artificial Intelligence, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, Cloud Computing, Distributed Ledger Technologies / Blockchain, Big Data Analytics, Cyber Security, and Software Engineering.
 - **Electrical & Electronics Engineering**: VLSI Design, Embedded Systems, Renewable Energy Integration, Microgrids, Power Electronics, Wireless Sensor Networks, Internet of Things (IoT), Signal & Image Processing, and Robotics.
@@ -156,10 +156,10 @@ When submitting, select the appropriate journal section:
 - **Industrial Case Studies**: Real-world engineering implementations, failure analyses, or technological deployments of significant interest to practitioners (up to 6,000 words).
 
 ### Publication Frequency
-{{journalName}} operates on a continuous publication model aggregated into 12 regular monthly issues per annual volume. Articles are published online in their final Version of Record immediately following editorial acceptance and galley proof sign-off.`,
+{{journalName}} publishes accepted articles online as the Version of Record after editorial approval and final proof sign-off. Articles are grouped into the journal's scheduled issues.`,
         isPublished: true,
         showInNav: false,
-        navLabel: "Aims & Scope",
+        navLabel: "Aims and Scope",
         navOrder: 5,
     },
     {

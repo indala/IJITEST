@@ -48,11 +48,11 @@ export default function SubmissionStats({ stats }: SubmissionStatsProps) {
     ];
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {items.map((item) => (
                 <div key={item.label}>
                     <Card className="border-border/70 shadow-2xs bg-card hover:shadow-xs transition-all duration-300 rounded-xl overflow-hidden group">
-                        <CardContent className="p-3.5 sm:p-4">
+                        <CardContent className="p-3 sm:p-3.5">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <p className="text-label text-muted-foreground m-0">

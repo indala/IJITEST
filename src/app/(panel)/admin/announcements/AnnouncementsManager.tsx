@@ -12,7 +12,8 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { AnnouncementEditor } from "@/components/admin/AnnouncementEditor";
+import { announcementContentToHtml } from "@/lib/announcement-content";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -112,7 +113,7 @@ export default function AnnouncementsManager() {
         setTitle(item.title);
         setType(item.type);
         setDescriptionShort(item.descriptionShort || "");
-        setDescription(item.description);
+        setDescription(announcementContentToHtml(item.description));
         setPriority(item.priority);
         setIsActive(item.isActive);
         setDateExpire(item.dateExpire ? new Date(item.dateExpire).toISOString().split('T')[0] || "" : "");
@@ -416,7 +417,7 @@ export default function AnnouncementsManager() {
 
             {/* Create/Edit Modal */}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="w-[90vw] max-w-[90vw] max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>
                             {editingItem ? "Edit Announcement" : "Create Announcement"}
@@ -479,15 +480,17 @@ export default function AnnouncementsManager() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label htmlFor="ann-desc">Full Content (Markdown supported) *</Label>
-                            <Textarea
-                                id="ann-desc"
-                                placeholder="Detailed announcement, topics of interest, submission deadlines, instructions..."
+                            <Label htmlFor="ann-desc">Full Content *</Label>
+                            <p className="text-caption text-muted-foreground">
+                                Use the formatting toolbar to structure the announcement for readers.
+                            </p>
+                            <AnnouncementEditor
                                 value={description}
-                                onChange={e => setDescription(e.target.value)}
-                                rows={8}
-                                required
+                                onChange={setDescription}
+                                placeholder="Detailed announcement, topics of interest, submission deadlines, instructions..."
+                                disabled={submitting}
                             />
+                            <input id="ann-desc" type="text" value={description.replace(/<[^>]*>/g, "").trim()} readOnly required className="sr-only" aria-hidden="true" tabIndex={-1} />
                         </div>
 
                         {/* Banner Image Upload with storage-service preview */}

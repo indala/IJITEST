@@ -70,7 +70,7 @@ export default async function Archives() {
                 description="Digital repository of peer-reviewed research and technical reports."
                 breadcrumbs={[
                     { name: 'Home', href: '/' },
-                    { name: 'Publication', href: '#' },
+                    { name: 'Research', href: '/current-issue' },
                     { name: 'Archives', href: '/archives' },
                 ]}
                 scrollOnComplete={true}

@@ -19,11 +19,11 @@ const TYPE_TAGS: Record<string, { label: string; badgeClass: string }> = {
     },
     editorial_update: {
         label: "Notice",
-        badgeClass: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
+        badgeClass: "bg-secondary/10 text-secondary border-secondary/20",
     },
     event: {
         label: "Event",
-        badgeClass: "bg-amber-500/10 text-amber-700 border-amber-500/20",
+        badgeClass: "bg-orange/10 text-orange border-orange/20",
     },
 };
 
@@ -41,7 +41,7 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
     };
 
     return (
-        <div className="bg-card p-3.5 sm:p-4 2xl:p-5 rounded-xl border border-border/70 shadow-2xs space-y-3 2xl:space-y-4">
+        <div className="bg-card p-3 sm:p-3.5 2xl:p-4 rounded-xl border border-border/70 shadow-2xs space-y-2.5 2xl:space-y-3">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -52,10 +52,10 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
                         Announcements
                     </h3>
                 </div>
-                <span className="badge-brand inline-flex items-center gap-1.5">
-                    <span className="relative flex h-1.5 w-1.5">
+                <span className="badge-brand inline-flex items-center gap-1 px-1.5 py-0.5">
+                    <span className="relative flex h-1 w-1">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                        <span className="relative inline-flex rounded-full h-1 w-1 bg-emerald-500" />
                     </span>
                     <span>Live</span>
                 </span>
@@ -63,7 +63,7 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
 
             {/* Content */}
             {hasCustomAnnouncements ? (
-                <div className="space-y-2 2xl:space-y-2.5">
+                <div className="space-y-1.5 2xl:space-y-2">
                     {announcements.slice(0, 3).map((item) => {
                         const tag = TYPE_TAGS[item.type] || TYPE_TAGS["news"]!;
                         const formattedDate = new Date(item.createdAt).toLocaleDateString("en-US", {
@@ -75,22 +75,22 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
                             <Link
                                 key={item.id}
                                 href={`/announcements/${item.id}`}
-                                className="block p-2.5 2xl:p-3 bg-muted/40 hover:bg-muted/70 rounded-lg border border-border/50 hover:border-primary/20 transition-all space-y-1.5 group no-underline"
+                                className="block p-2 2xl:p-2.5 bg-muted/40 hover:bg-muted/70 rounded-lg border border-border/50 hover:border-primary/20 transition-all space-y-1 group no-underline"
                             >
                                 <div className="flex items-center justify-between gap-1.5">
-                                    <span className={`inline-block px-1.5 py-0.5 rounded border text-badge ${tag.badgeClass}`}>
+                                    <span className={`inline-block px-1 py-0.5 rounded border text-[10px] leading-tight ${tag.badgeClass}`}>
                                         {tag.label}
                                     </span>
-                                    <span className="text-meta text-muted-foreground flex items-center gap-1 shrink-0">
-                                        <Calendar className="w-3 h-3 text-muted-foreground/70" />
+                                    <span className="text-[10px] leading-tight text-muted-foreground flex items-center gap-1 shrink-0">
+                                        <Calendar className="w-2.5 h-2.5 text-muted-foreground/70" />
                                         <span>{formattedDate}</span>
                                     </span>
                                 </div>
-                                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 m-0 leading-snug">
+                                <h4 className="font-semibold text-[13px] 2xl:text-sm text-foreground group-hover:text-primary transition-colors line-clamp-1 m-0 leading-snug">
                                     {item.title}
                                 </h4>
                                 {item.descriptionShort && (
-                                    <p className="text-caption line-clamp-1 m-0">
+                                    <p className="text-[11px] 2xl:text-xs text-muted-foreground line-clamp-1 m-0 leading-snug">
                                         {item.descriptionShort}
                                     </p>
                                 )}
@@ -99,7 +99,7 @@ function AnnouncementsWidget({ latestIssue, announcements }: AnnouncementsWidget
                     })}
 
                     {/* Footer Links */}
-                    <div className="pt-2 flex items-center justify-between border-t border-border/50">
+                    <div className="pt-1.5 flex items-center justify-between border-t border-border/50">
                         <Link
                             href="/announcements"
                             className="font-semibold text-primary hover:text-secondary transition-colors inline-flex items-center gap-1 group no-underline"
