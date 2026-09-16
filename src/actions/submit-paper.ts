@@ -244,21 +244,23 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 try {
                     const coAuthors = JSON.parse(validated.data.coAuthors);
                     if (Array.isArray(coAuthors)) {
-                        coAuthors.forEach((ca, idx) => {
-                            if (!ca.name || !ca.email) return; // Skip empty rows if any
-                            authorsList.push({
-                                submissionId: subId,
-                                name: ca.name,
-                                email: ca.email,
-                                phone: ca.phone || null,
-                                designation: ca.designation || null,
-                                institution: ca.institution || null,
-                                orcidId: ca.orcidId ? String(ca.orcidId).trim() : null,
-                                creditRoles: Array.isArray(ca.creditRoles) ? ca.creditRoles : null,
-                                isCorresponding: false,
-                                orderIndex: idx + 1,
-                            });
+                    coAuthors.forEach((ca, idx) => {
+                        const parsed = coAuthorSchema.safeParse(ca);
+                        if (!parsed.success || !parsed.data.name || !parsed.data.email) return;
+                        const d = parsed.data;
+                        authorsList.push({
+                            submissionId: subId,
+                            name: d.name,
+                            email: d.email,
+                            phone: d.phone || null,
+                            designation: d.designation || null,
+                            institution: d.institution || null,
+                            orcidId: d.orcidId ? String(d.orcidId).trim() : null,
+                            creditRoles: Array.isArray(d.creditRoles) ? d.creditRoles : null,
+                            isCorresponding: false,
+                            orderIndex: idx + 1,
                         });
+                    });
                     }
                 } catch {
                     throw new Error("Invalid co-author data format. Please check your inputs.");

@@ -13,7 +13,7 @@ import {
     settings,
 } from "@/db/schema";
 import { type Submission } from "@/db/types";
-import { eq, desc, sql, and, inArray } from "drizzle-orm";
+import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { logSubmissionEvent } from "./event-log";
@@ -379,7 +379,7 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
                         priority: "high",
                         message: `Revision (v${txResult!.nextVersion}) submitted for manuscript ${paperId}: "${paperTitle}"`,
                         actionLink: `/admin/submissions/${submissionId}`,
-                        metadata: { submissionId, paperId }
+                        metadata: { submissionId: submissionId!, paperId }
                     })
                 )
             );

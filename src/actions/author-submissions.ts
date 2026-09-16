@@ -38,6 +38,8 @@ import {
     serverError
 } from "@/lib/action-response";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { MAX_MANUSCRIPT_SIZE, MAX_DOCUMENT_SIZE } from "@/lib/upload-limits";
 
 /**
  * Utility to get the current authenticated author.
@@ -277,7 +279,7 @@ export async function checkResubmissionEligibility(submissionId: number): Promis
         if (!sub) return actionError<{ eligible: boolean; daysRemaining: number }>("Submission not found");
         if (sub.correspondingAuthorId !== author.id) return actionError<{ eligible: boolean; daysRemaining: number }>("Unauthorized access");
 
-        if (!['revisionRequested', 'rejected'].includes(sub.status)) {
+        if (sub.status !== 'revisionRequested') {
             return actionError<{ eligible: boolean; daysRemaining: number }>(`Manuscript status '${sub.status}' does not allow resubmission.`);
         }
 
@@ -302,6 +304,15 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         const author = await getAuthorSession();
         if (!author) return { success: false, error: "Unauthorized" };
 
+        const resubmitRate = await checkRateLimit({
+            key: `resubmit:${author.id}:${submissionId}`,
+            max: 3,
+            windowMs: 10 * 60_000,
+        });
+        if (!resubmitRate.allowed) {
+            return actionError(`Too many resubmission attempts. Please wait ${resubmitRate.retryAfterSeconds} seconds.`);
+        }
+
         const eligibility = await checkResubmissionEligibility(submissionId);
         if (!eligibility.success) {
             return actionError(eligibility.error);
@@ -317,6 +328,12 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         const blindedFile = formData.get("blindedManuscript") as File | null;
 
         if (!manuscriptFile || manuscriptFile.size === 0) return { success: false, error: "Revised manuscript is required." };
+        if (manuscriptFile.size > MAX_MANUSCRIPT_SIZE) {
+            return { success: false, error: "Revised manuscript exceeds the 20MB size limit." };
+        }
+        if (rebuttalFile && rebuttalFile.size > MAX_DOCUMENT_SIZE) {
+            return { success: false, error: "Rebuttal letter exceeds the 10MB size limit." };
+        }
 
         // Enforce .docx only policy (same as original submission)
         const docxMime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -590,7 +607,7 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
         } catch (dbError) {
             // DB transaction failed - roll back file system upload
             try {
-                await safeDeleteFile(cUrl);
+                await safeDeleteFile(relativeCopyrightPath);
             } catch (cleanupErr) {
                 console.error("Failed to delete newly uploaded copyright file after DB transaction failure:", cleanupErr);
             }
