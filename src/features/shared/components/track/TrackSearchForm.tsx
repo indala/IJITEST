@@ -9,7 +9,7 @@ function TrackButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full h-12 2xl:h-14 bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm transition-all active:scale-[0.99] hover:shadow-md hover:-translate-y-0.5 cursor-pointer font-bold text-label duration-300"
+            className="w-full h-12 2xl:h-14 bg-primary hover:bg-primary/90 !text-white rounded-xl shadow-sm transition-all active:scale-[0.99] hover:shadow-md hover:-translate-y-0.5 cursor-pointer font-bold text-label duration-300"
         >
             {pending ? (
                 <div className="flex items-center gap-3">

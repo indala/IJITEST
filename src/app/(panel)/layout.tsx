@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import { getServerSession } from 'next-auth/next';
+import { connection } from 'next/server';
 import { authOptions } from '@/lib/auth';
 import { PanelShell } from './PanelShell';
 import AuthProvider from '@/components/providers/AuthProvider';
@@ -25,6 +26,7 @@ async function PanelLayoutContent({
 }: {
     children: React.ReactNode;
 }) {
+    await connection();
     const session = await getServerSession(authOptions) ?? null;
 
     return (

@@ -25,7 +25,11 @@ import { getSettingsData } from "./settings";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import { downloadFileFromStorage, triggerPdfBranding } from "@/lib/fs-utils";
+import {
+    downloadFileFromStorage,
+    triggerPdfBranding,
+} from "@/lib/fs-utils";
+import { getStorageServiceClient, type IssueBookMetadata } from "@/lib/storage-service-client";
 import { getSubmissionById } from "./submissions";
 import { createNotification, invalidateAuthorActionsCount } from "./notifications";
 import { logSubmissionEvent } from "./event-log";
@@ -1029,9 +1033,6 @@ export async function generateCompleteIssueBook(issueId: number): Promise<Action
             .where(inArray(submissionVersions.submissionId, subIds))
             .orderBy(desc(submissionVersions.versionNumber));
 
-        const storageUrl = process.env["STORAGE_SERVICE_URL"] || 'http://localhost:3001';
-        const apiKey = process.env["STORAGE_SERVICE_API_KEY"] || '';
-
         const articlesPayload = pubRows.map(p => {
             const authors = authorsList
                 .filter(a => a.submissionId === p.submission.id)
@@ -1039,44 +1040,44 @@ export async function generateCompleteIssueBook(issueId: number): Promise<Action
 
             const version = versionsList.find(v => v.submissionId === p.submission.id);
 
-            return {
+            const article: IssueBookMetadata['articles'][number] = {
                 paperId: p.submission.paperId,
                 title: version?.title || "Untitled Paper",
                 authors: authors.length > 0 ? authors : ["Contributing Author"],
                 pdfPath: p.publication.finalPdfUrl,
-                startPage: p.publication.startPage ?? undefined,
-                endPage: p.publication.endPage ?? undefined,
-                doi: p.publication.doi ?? undefined,
             };
+
+            if (p.publication.startPage !== null) {
+                article.startPage = p.publication.startPage;
+            }
+            if (p.publication.endPage !== null) {
+                article.endPage = p.publication.endPage;
+            }
+            if (p.publication.doi !== null) {
+                article.doi = p.publication.doi;
+            }
+
+            return article;
         });
 
         const outputPath = `issues/volume-${issue.volumeNumber}-issue-${issue.issueNumber}-fullbook.pdf`;
 
-        const response = await fetch(`${storageUrl}/process/issue-book?outputPath=${encodeURIComponent(outputPath)}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': apiKey,
-            },
-            body: JSON.stringify({
-                journalName: "International Journal of Innovative Trends in Engineering Science and Technology",
-                journalShortName: "IJITEST",
-                volume: issue.volumeNumber,
-                issue: issue.issueNumber,
-                year: issue.year,
-                monthRange: issue.monthRange || "",
-                issn: "2584-XXXX",
-                website: "https://ijitest.org",
-                articles: articlesPayload,
-            }),
-        });
+        const issueBookMetadata: IssueBookMetadata = {
+            journalName: "International Journal of Innovative Trends in Engineering Science and Technology",
+            journalShortName: "IJITEST",
+            volume: issue.volumeNumber,
+            issue: issue.issueNumber,
+            year: issue.year,
+            monthRange: issue.monthRange || "",
+            issn: "2584-XXXX",
+            website: "https://ijitest.org",
+            articles: articlesPayload,
+        };
 
-        if (!response.ok) {
-            const errBody = await response.text();
-            throw new Error(`Storage service error: ${errBody}`);
-        }
-
-        const result = await response.json();
+        const result = await getStorageServiceClient().generateIssueBook(
+            outputPath,
+            issueBookMetadata,
+        );
 
         // Update database with generated full book PDF path
         await db.update(volumesIssues)
@@ -1095,5 +1096,3 @@ export async function generateCompleteIssueBook(issueId: number): Promise<Action
         return serverError(error, "generate complete issue book");
     }
 }
-
-
