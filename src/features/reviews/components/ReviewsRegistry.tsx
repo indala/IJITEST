@@ -7,14 +7,13 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { Badge } from "@/components/ui/badge";
-import { useActiveReviews, useUnassignedPapers, reviewKeys } from '@/features/reviews';
+import { useActiveReviews, useUnassignedPapers, reviewKeys, reviewQueryOptions } from '@/features/reviews';
 import type { ReviewAssignment } from '@/features/reviews';
 import { useUsers } from '@/features/users';
 import { type UserRole } from "@/db/types";
 import { decideSubmission, autoSyncManuscriptToPdf, requestResubmissionWithComments } from '@/actions/submissions';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
-import { assignReviewer, submitReview, getReviewerMetrics } from '@/actions/reviews';
-import { unwrapAction } from '@/lib/query/action-query';
+import { assignReviewer, submitReview } from '@/actions/reviews';
 
 import { ReviewItemCard } from './ReviewItemCard';
 import { GroupedReviewCard, type GroupedReview } from './GroupedReviewCard';
@@ -32,11 +31,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
     const { data: reviews = [], isLoading: loadingReviews, refetch: refetchReviews } = useActiveReviews(reviewerId);
     const { data: unassigned = [], isLoading: loadingUnassigned } = useUnassignedPapers();
     const { data: staff = [], isLoading: loadingStaff } = useUsers('reviewer');
-    const { data: reviewerMetrics } = useQuery({
-        queryKey: reviewKeys.metrics(),
-        queryFn: () => unwrapAction(() => getReviewerMetrics()),
-        enabled: role !== 'reviewer'
-    });
+    const { data: reviewerMetrics } = useQuery(reviewQueryOptions.metrics(role !== 'reviewer'));
     const sortedStaff = useMemo(() => {
         return [...staff].sort((a, b) => {
             const aTime = a.lastActiveAt ? new Date(a.lastActiveAt).getTime() : 0;

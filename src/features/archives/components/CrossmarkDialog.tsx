@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, AlertTriangle, AlertOctagon, ExternalLink, ShieldCheck, FileCheck, RefreshCw } from "lucide-react";
-import type { PublishedPaperUI } from "@/db/types";
+import type { PublishedPaperUI } from "@/db/contracts";
 import Link from "next/link";
 
 interface CrossmarkDialogProps {

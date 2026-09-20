@@ -1,6 +1,6 @@
 import { ShieldCheck, BookOpen, ChevronRight, ShieldAlert, MessageCircle, Mail, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';
 

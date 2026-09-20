@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import ContactClient from '@/features/shared/components/ContactClient';
+import ContactClient from '@/features/contact/components/ContactClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 

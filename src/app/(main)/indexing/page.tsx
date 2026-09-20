@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import IndexingClient from '@/features/shared/components/IndexingClient';
+import IndexingClient from '@/features/indexing/components/IndexingClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 

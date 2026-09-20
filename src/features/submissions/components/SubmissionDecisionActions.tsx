@@ -7,9 +7,10 @@ import { waivePayment } from "@/actions/payments";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { RequestResubmissionModal } from "@/components/panels/RequestResubmissionModal";
+import { RequestResubmissionModal } from "@/features/submissions/components/RequestResubmissionModal";
 
-import type { ActionResponse, Submission, Version, SubmissionStatus, FinalDecision } from "@/db/types";
+import type { ActionResponse } from "@/db/contracts";
+import type { Submission, Version, SubmissionStatus, FinalDecision } from "@/db/models";
 
 interface SubmissionDecisionActionsProps {
     submissionId: Submission['id'];

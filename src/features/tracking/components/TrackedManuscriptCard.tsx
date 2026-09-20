@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, CreditCard, CheckCircle2, ArrowRight } from 'lucide-react';
-import type { TrackedManuscript } from "@/db/types";
+import type { TrackedManuscript } from "@/db/contracts";
 import { MilestoneTimeline } from "./MilestoneTimeline";
 
 interface TrackedManuscriptCardProps {

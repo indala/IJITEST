@@ -25,14 +25,14 @@ import { getSecureUrl } from "@/lib/utils";
 import type { ReviewWithReviewer, SubmissionUI } from "@/db/contracts";
 import type { UserRole, SubmissionStatus } from "@/db/models";
 import { PdfViewer } from "@/components/reviewer/PdfViewer";
-import { ExpertiseDossier } from "@/features/shared/components/profile/ExpertiseDossier";
+import { ExpertiseDossier } from "@/features/profile/components/ExpertiseDossier";
 import DeleteSubmissionButton from "@/features/submissions/components/DeleteSubmissionButton";
 import AdminPdfUpload from "@/features/submissions/components/AdminPdfUpload";
 import PublicationAssignment from "@/features/submissions/components/PublicationAssignment";
 import RebrandPdfButton from "@/features/submissions/components/RebrandPdfButton";
 import EditDoiModal from "@/features/submissions/components/EditDoiModal";
 import { SubmissionTimeline } from "@/features/submissions/components/SubmissionTimeline";
-import { SubmissionDecisionActions } from "@/app/(panel)/admin/submissions/[id]/_components/SubmissionDecisionActions";
+import { SubmissionDecisionActions } from "@/features/submissions/components/SubmissionDecisionActions";
 
 interface SubmissionDetailContainerProps {
     role: Extract<UserRole, "admin" | "editor">;

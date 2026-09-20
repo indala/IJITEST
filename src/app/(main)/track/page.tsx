@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import TrackClient from '@/features/shared/components/TrackClient';
+import TrackClient from '@/features/tracking/components/TrackClient';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import type { Metadata } from 'next';

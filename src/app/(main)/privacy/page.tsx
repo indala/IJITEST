@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import PrivacyClient from '@/features/shared/components/PrivacyClient';
+import PrivacyClient from '@/features/policies/components/PrivacyClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 

@@ -5,12 +5,12 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import PaperCard from '@/features/archives/components/PaperCard';
 import { Button } from "@/components/ui/button";
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import { useLatestIssuePapers, useArchivePapers } from '@/features/public';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { type PublishedPaperUI } from '@/db/types';
+import type { PublishedPaperUI } from '@/db/contracts';
 
 interface ArchivesClientProps {
     mode?: 'current' | 'archive' | undefined;

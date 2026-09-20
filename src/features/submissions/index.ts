@@ -8,3 +8,4 @@ export type {
     SubmissionUI,
     AuthorSubmissionDetail,
 } from "./types";
+export { default as SubmitClient } from "./components/SubmitClient";

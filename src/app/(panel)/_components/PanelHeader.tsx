@@ -1,6 +1,6 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator";
-import NotificationCenter from '@/features/shared/components/NotificationCenter';
+import NotificationCenter from '@/features/notifications/components/NotificationCenter';
 import { UserNav } from './UserNav';
 
 import type { Session } from "next-auth";

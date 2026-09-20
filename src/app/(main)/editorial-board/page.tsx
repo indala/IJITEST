@@ -3,7 +3,7 @@ import PageHeader from "@/components/layout/PageHeader";
 import Link from 'next/link';
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import EditorialBoardClient from '@/features/shared/components/EditorialBoardClient';
+import EditorialBoardClient from '@/features/public/components/EditorialBoardClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 import { getEditorialBoard } from '@/actions/users';
@@ -74,4 +74,3 @@ export default async function EditorialBoard() {
         </div>
     );
 }
-

@@ -6,7 +6,7 @@ import { Camera, User as UserIcon, Mail } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import type { User, UserProfile, UserRole } from "@/db/types";
+import type { User, UserProfile, UserRole } from "@/db/models";
 
 interface ProfileHeaderProps {
     fullName: UserProfile['fullName'];

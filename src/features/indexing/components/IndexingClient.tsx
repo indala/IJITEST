@@ -1,6 +1,6 @@
 import { Search, Database, ChevronRight, Globe, Layers, BarChart3, Binary, CheckCircle2, ExternalLink, ShieldCheck, Sparkles, BookCheck } from 'lucide-react';
 import RoadmapSection from '@/features/indexing/components/RoadmapSection';
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import { NowIndexingGrid } from '@/features/indexing/components/IndexingLogos';
 import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';

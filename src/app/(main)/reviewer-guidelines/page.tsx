@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import ReviewerGuidelinesClient from '@/features/shared/components/ReviewerGuidelinesClient';
+import ReviewerGuidelinesClient from '@/features/policies/components/ReviewerGuidelinesClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 
@@ -35,5 +35,4 @@ export default async function ReviewerGuidelines() {
         </div>
     );
 }
-
 

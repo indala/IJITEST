@@ -5,10 +5,10 @@ import { updateUserProfile } from '@/actions/users';
 import { type User, type UserProfile } from "@/db/types";
 
 // Import sub-components
-import { ProfileHeader } from './profile/ProfileHeader';
-import { ProfileInfoCards } from './profile/ProfileInfoCards';
-import { ExpertiseDossier } from './profile/ExpertiseDossier';
-import { ProfileFormActions } from './profile/ProfileFormActions';
+import { ProfileHeader } from '@/features/profile/components/ProfileHeader';
+import { ProfileInfoCards } from '@/features/profile/components/ProfileInfoCards';
+import { ExpertiseDossier } from '@/features/profile/components/ExpertiseDossier';
+import { ProfileFormActions } from '@/features/profile/components/ProfileFormActions';
 
 interface ProfileFormProps {
     user: {

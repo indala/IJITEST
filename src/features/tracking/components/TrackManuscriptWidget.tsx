@@ -6,7 +6,8 @@ import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { type ActionResponse, type Submission } from "@/db/types";
+import type { ActionResponse } from "@/db/contracts";
+import type { Submission } from "@/db/models";
 
 function TrackManuscriptWidget() {
     const [paperId, setPaperId] = useState<Submission['paperId']>('');

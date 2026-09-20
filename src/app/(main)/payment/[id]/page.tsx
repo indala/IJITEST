@@ -1,4 +1,4 @@
-import PaymentClient from '@/features/shared/components/PaymentClient';
+import PaymentClient from '@/features/payments/components/PaymentClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 import type { SubmissionIdParam } from '@/db/types';

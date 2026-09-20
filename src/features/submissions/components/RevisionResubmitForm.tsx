@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Upload, AlertCircle, CheckCircle, FileText, Loader2 } from "lucide-react";
-import { type ActionResponse, type Submission, type Version } from "@/db/types";
+import type { ActionResponse } from "@/db/contracts";
+import type { Submission, Version } from "@/db/models";
 
 interface ResubmitFormProps {
     submissionId: Submission['id'];
@@ -19,7 +20,7 @@ interface ResubmitFormProps {
     currentStatus: Submission['status'];
 }
 
-export function ResubmitForm({ submissionId, paperId, title, daysRemaining, currentStatus }: ResubmitFormProps) {
+export function RevisionResubmitForm({ submissionId, paperId, title, daysRemaining, currentStatus }: ResubmitFormProps) {
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);

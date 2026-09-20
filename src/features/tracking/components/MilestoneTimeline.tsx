@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import { FileText, Search, ShieldAlert } from 'lucide-react';
-import type { TrackedManuscript } from "@/db/types";
+import type { TrackedManuscript } from "@/db/contracts";
 
 interface MilestoneProps {
     title: string;

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { ShieldCheck, Clock, ChevronRight, Search, Gavel, Users } from 'lucide-react';
 import Link from 'next/link';
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
 
 import type { JournalSettings } from '@/db/protocols';

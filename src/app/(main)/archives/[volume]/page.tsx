@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Calendar, ChevronRight, FileText } from "lucide-react";
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 
 export async function generateStaticParams() {
     try {

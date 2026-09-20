@@ -1,6 +1,6 @@
 import { getAuthorSubmission, checkResubmissionEligibility } from "@/actions/author-submissions";
 import { notFound } from "next/navigation";
-import { ResubmissionForm } from "../_components/ResubmissionForm";
+import { ResubmissionForm } from "@/features/submissions/components/ResubmissionForm";
 import { CopyrightUpload } from "@/features/author/components/CopyrightUpload";
 import { ZenodoDepositCard } from "@/features/author/components/ZenodoDepositCard";
 import { getSettingsData } from "@/actions/settings";

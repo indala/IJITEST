@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import EthicsClient from '@/features/shared/components/EthicsClient';
+import EthicsClient from '@/features/policies/components/EthicsClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 

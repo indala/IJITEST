@@ -7,6 +7,7 @@ export {
 export { paymentKeys } from "./queries/payment.keys";
 export { paymentQueryOptions } from "./queries/payment.options";
 export { paymentMutationOptions } from "./queries/payment.mutations";
+export { default as PaymentClient } from "./components/PaymentClient";
 export type {
     InitializePaymentInput,
     PaymentRow,

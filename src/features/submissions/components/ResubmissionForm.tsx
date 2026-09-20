@@ -11,7 +11,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Upload, CheckCircle2, AlertCircle, Loader2, Info } from "lucide-react";
 import { resubmitPaper } from "@/actions/author-submissions";
 import { toast } from "sonner";
-import { type ActionResponse, type Submission } from "@/db/types";
+import type { ActionResponse } from "@/db/contracts";
+import type { Submission } from "@/db/models";
 
 interface ResubmissionFormProps {
     submissionId: Submission['id'];

@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import PeerReviewClient from '@/features/shared/components/PeerReviewClient';
+import PeerReviewClient from '@/features/policies/components/PeerReviewClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 

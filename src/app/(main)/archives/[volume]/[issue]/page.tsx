@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { getPublishedPapers } from '@/actions/archives';
 import { notFound } from 'next/navigation';
 import PaperCard from '@/features/archives/components/PaperCard';
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import { BookOpen, Download } from 'lucide-react';
 
 export async function generateStaticParams() {

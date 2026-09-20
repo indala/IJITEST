@@ -7,7 +7,7 @@ import Link from 'next/link';
 import SubmissionForm from '@/features/submissions/components/SubmissionForm';
 import RevisedSubmissionForm from '@/features/submissions/components/RevisedSubmissionForm';
 import FinalSubmissionForm from '@/features/submissions/components/FinalSubmissionForm';
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
 import type { Section } from "@/db/models";
 

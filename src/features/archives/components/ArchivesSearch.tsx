@@ -6,7 +6,8 @@ import { Search, Archive, Layers, BookOpen, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import type { PublishedPaperUI, Issue } from '@/db/types';
+import type { PublishedPaperUI } from '@/db/contracts';
+import type { Issue } from '@/db/models';
 
 export interface VolumeData {
     volumeNumber: Issue['volumeNumber'];

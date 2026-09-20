@@ -7,9 +7,9 @@ import { trackManuscript } from '@/actions/track';
 import type { ActionResponse, TrackedManuscript } from "@/db/contracts";
 import type { Submission, User as DBUser } from "@/db/models";
 import type { JournalSettings } from "@/db/protocols";
-import { TrackSearchForm } from './track/TrackSearchForm';
-import { TrackedManuscriptCard } from './track/TrackedManuscriptCard';
-import { TrackErrorCard } from './track/TrackErrorCard';
+import { TrackSearchForm } from './TrackSearchForm';
+import { TrackedManuscriptCard } from './TrackedManuscriptCard';
+import { TrackErrorCard } from './TrackErrorCard';
 
 interface TrackClientProps {
     journalShortName?: JournalSettings['journalShortName'];

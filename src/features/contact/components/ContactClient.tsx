@@ -1,7 +1,7 @@
 import { Mail, MapPin, ShieldAlert, ChevronRight, Clock, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import ContactForm from '@/features/contact/components/ContactForm';
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import { Card } from '@/components/ui/card';
 import type { JournalSettings } from '@/db/protocols';
 

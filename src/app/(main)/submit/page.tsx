@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import SubmitClient from '@/features/shared/components/SubmitClient';
+import SubmitClient from '@/features/submissions/components/SubmitClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 import { getSectionsData } from '@/actions/sections';
@@ -37,4 +37,3 @@ export default async function SubmitPaper() {
         </div>
     );
 }
-

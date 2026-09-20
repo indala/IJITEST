@@ -2,7 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { checkResubmissionEligibility, getAuthorSubmission } from "@/actions/author-submissions";
-import { ResubmitForm } from "@/components/forms/ResubmitForm";
+import { RevisionResubmitForm } from "@/features/submissions/components/RevisionResubmitForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { XCircle, ArrowLeft } from "lucide-react";
@@ -61,7 +61,7 @@ export default async function ResubmitPage({ params }: { params: Promise<Submiss
                     </CardContent>
                 </Card>
             ) : (
-                <ResubmitForm
+                <RevisionResubmitForm
                     submissionId={submissionId}
                     paperId={submission.paperId}
                     title={submission.title}

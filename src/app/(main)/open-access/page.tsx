@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import OpenAccessClient from '@/features/shared/components/OpenAccessClient';
+import OpenAccessClient from '@/features/policies/components/OpenAccessClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 

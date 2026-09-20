@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Quote, Share2, Copy, Check, Download } from "lucide-react";
 import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { toast } from "sonner";
-import type { Author } from "@/db/types";
+import type { Author } from "@/db/models";
 
 interface CitationSectionProps {
     paper: {

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useActionState, useState } from 'react';
 import { contactSchema, type ContactFormData } from "@/lib/validations/contact";
 import { submitContactMessage } from '@/actions/messages';
-import { type ActionResponse } from '@/db/types';
+import type { ActionResponse } from '@/db/contracts';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

@@ -13,7 +13,7 @@ import {
     Code2
 } from "lucide-react";
 import Link from "next/link";
-import type { PublishedPaperUI, RelatedArticle } from "@/db/types";
+import type { PublishedPaperUI, RelatedArticle } from "@/db/contracts";
 import CitationSection from "./CitationSection";
 import { PaperViewTracker, DownloadPaperButton } from "./PaperActions";
 import { CrossrefLogo } from "@/features/indexing/components/IndexingLogos";

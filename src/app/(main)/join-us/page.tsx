@@ -1,6 +1,6 @@
 
 import PageHeader from "@/components/layout/PageHeader";
-import JoinUsClient from '@/features/shared/components/JoinUsClient';
+import JoinUsClient from '@/features/public/components/JoinUsClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 

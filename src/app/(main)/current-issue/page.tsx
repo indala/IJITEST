@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import ArchivesClient from '@/features/shared/components/ArchivesClient';
+import ArchivesClient from '@/features/archives/components/ArchivesClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 import { getLatestIssuePapers } from '@/actions/archives';

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 import { getPublishedPapers } from '@/actions/archives';
 import ArchivesSearch from '@/features/archives/components/ArchivesSearch';
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import type { Issue } from '@/db/types';
 import { Rss, Radio } from 'lucide-react';
 

@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import TermsClient from '@/features/shared/components/TermsClient';
+import TermsClient from '@/features/policies/components/TermsClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 

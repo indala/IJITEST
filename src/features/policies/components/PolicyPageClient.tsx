@@ -5,7 +5,7 @@ import { BookOpen } from 'lucide-react';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import { ScrollSpyNav } from '@/components/common/ScrollSpyNav';
-import type { PolicySection, RelatedPolicyLink } from './types';
+import type { PolicySection, RelatedPolicyLink } from '../types';
 
 interface PolicyPageClientProps {
     sections: PolicySection[];

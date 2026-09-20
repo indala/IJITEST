@@ -1,6 +1,6 @@
 import { ShieldAlert } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import type { ActionResponse } from '@/db/types';
+import type { ActionResponse } from '@/db/contracts';
 
 interface TrackErrorCardProps {
     errorMessage?: Extract<ActionResponse, { success: false }>['error'] | null | undefined;

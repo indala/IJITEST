@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { RelatedArticle } from "@/db/types";
+import type { RelatedArticle } from "@/db/contracts";
 
 interface RelatedArticlesPanelProps {
     articles: RelatedArticle[];

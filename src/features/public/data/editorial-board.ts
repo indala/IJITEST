@@ -1,4 +1,4 @@
-import type { UserProfile, User, UserRole } from "@/db/types";
+import type { UserProfile, User, UserRole } from "@/db/models";
 
 export interface BoardMember {
     full_name: UserProfile['fullName'];

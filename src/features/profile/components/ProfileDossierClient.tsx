@@ -29,7 +29,7 @@ import {
     updateResearchInterests,
     updateProfilePhoto
 } from "@/actions/profile"
-import type { ProfileData } from "@/db/types"
+import type { ProfileData } from "@/db/contracts"
 import { toast } from "sonner"
 
 interface ProfileDossierClientProps {

@@ -1,11 +1,11 @@
 import { ChevronRight } from 'lucide-react';
 import PageHeader from "@/components/layout/PageHeader";
 import Link from 'next/link';
-import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
+import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import AboutClient from '@/features/shared/components/AboutClient';
-import JournalParticulars from '@/features/shared/widgets/JournalParticulars';
+import AboutClient from '@/features/public/components/AboutClient';
+import JournalParticulars from '@/features/home/components/JournalParticulars';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
 

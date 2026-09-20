@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getSettingsData } from '@/actions/settings';
 import PageHeader from '@/components/layout/PageHeader';
-import PolicyPageClient from '@/features/policies/PolicyPageClient';
+import PolicyPageClient from '@/features/policies/components/PolicyPageClient';
 import { getPolicyDefinitions } from '@/features/policies/policy-data';
 
 const SLUG = 'conflict-of-interest';
