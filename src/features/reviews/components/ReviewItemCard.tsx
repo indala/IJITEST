@@ -21,7 +21,7 @@ import {
     DialogFooter
 } from "@/components/ui/dialog";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import type { ReviewAssignment } from '@/hooks/queries/useReviews';
+import type { ReviewAssignment } from '@/features/reviews';
 import type { User } from '@/db/types';
 import { rateReview } from '@/actions/reviews';
 import { toast } from 'sonner';

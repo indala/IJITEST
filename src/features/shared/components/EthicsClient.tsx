@@ -2,7 +2,7 @@ import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import { ScrollSpyNav } from '@/components/common/ScrollSpyNav';
 
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 interface EthicsClientProps {
     settings: JournalSettings;
@@ -357,4 +357,3 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
         </>
     );
 }
-

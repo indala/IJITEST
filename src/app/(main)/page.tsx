@@ -32,7 +32,7 @@ async function AnnouncementsWidgetSection() {
     getLatestPublishedIssue(),
     getAnnouncements({ limit: 3 }),
   ]);
-  const latestIssue = latestIssueRes.success ? latestIssueRes.data : null;
+  const latestIssue = latestIssueRes.success && latestIssueRes.data ? latestIssueRes.data : null;
   const announcements = announcementsRes.success ? (announcementsRes.data ?? []) : [];
   return <AnnouncementsWidget latestIssue={latestIssue} announcements={announcements} />;
 }

@@ -80,10 +80,12 @@ export default function AnnouncementsManager() {
     const loadData = async () => {
         setLoading(true);
         const res = await getAllAnnouncementsAdmin();
-        if (res.success && res.data) {
+        if (!res.success) {
+            toast.error(res.error);
+        } else if (res.data) {
             setAnnouncements(res.data);
         } else {
-            toast.error(res.error || "Failed to load announcements");
+            toast.error("Announcements response returned no data");
         }
         setLoading(false);
     };
@@ -198,11 +200,14 @@ export default function AnnouncementsManager() {
     const handleToggleStatus = (id: number) => {
         startTransition(async () => {
             const res = await toggleAnnouncementStatus(id);
-            if (res.success) {
-                setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, isActive: res.data.isActive } : a));
-                toast.success(`Announcement ${res.data.isActive ? "activated" : "deactivated"}`);
-            } else {
+            if (!res.success) {
                 toast.error(res.error || "Failed to update status");
+            } else if (res.data) {
+                const data = res.data;
+                setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, isActive: data.isActive } : a));
+                toast.success(`Announcement ${data.isActive ? "activated" : "deactivated"}`);
+            } else {
+                toast.error("Announcement status response returned no data");
             }
         });
     };

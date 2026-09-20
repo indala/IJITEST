@@ -1,7 +1,7 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Globe, Mail, Info } from 'lucide-react';
 
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 interface JournalParticularsProps {
     settings: JournalSettings | Record<string, string | undefined>;

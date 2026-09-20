@@ -1,5 +1,6 @@
 import { escapeXml } from "@/lib/crossref-generator";
 import type { PublishedPaperUI, Issue } from "@/db/types";
+import { generateJatsXml } from "@/lib/jats-generator";
 
 export interface OaiParams {
     verb?: string | null;
@@ -126,6 +127,11 @@ export function renderOaiListMetadataFormats(): string {
       <metadataPrefix>oai_dc</metadataPrefix>
       <schema>http://www.openarchives.org/OAI/2.0/oai_dc.xsd</schema>
       <metadataNamespace>http://www.openarchives.org/OAI/2.0/oai_dc/</metadataNamespace>
+    </metadataFormat>
+    <metadataFormat>
+      <metadataPrefix>jats</metadataPrefix>
+      <schema>https://jats.nlm.nih.gov/publishing/0.4/xsd/JATS-journalpublishing0.xsd</schema>
+      <metadataNamespace>http://jats.nlm.nih.gov</metadataNamespace>
     </metadataFormat>
   </ListMetadataFormats>`;
 }
@@ -283,6 +289,74 @@ export function renderOaiGetRecord(
       </header>
       <metadata>
 ${dcXml}
+      </metadata>
+    </record>
+  </GetRecord>`;
+}
+
+export function renderOaiJatsRecord(
+    paper: PublishedPaperUI,
+    settings: Record<string, string>,
+    config: OaiRepositoryConfig,
+): string {
+    const identifier = paperIdToOaiIdentifier(config.repositoryIdentifier, paper.paperId);
+    const datestamp = formatOaiDatestamp(paper.updatedAt || paper.publishedAt);
+    const setSpec = `vol_${paper.volumeNumber}:iss_${paper.issueNumber}`;
+    const jatsXml = generateJatsXml({ settings, paper })
+        .replace(/^<\?xml[^>]*>\s*/, '')
+        .replace(/^<!DOCTYPE[^>]*>\s*/, '')
+        .replace(
+            '<article ',
+            '<article xmlns="https://jats.nlm.nih.gov/publishing/1.1/" ',
+        );
+
+    return `    <record>
+      <header>
+        <identifier>${escapeXml(identifier)}</identifier>
+        <datestamp>${datestamp}</datestamp>
+        <setSpec>${escapeXml(setSpec)}</setSpec>
+      </header>
+      <metadata>
+${jatsXml}
+      </metadata>
+    </record>`;
+}
+
+export function renderOaiJatsListRecords(
+    papers: PublishedPaperUI[],
+    settings: Record<string, string>,
+    config: OaiRepositoryConfig,
+): string {
+    return `<ListRecords>
+${papers.map((paper) => renderOaiJatsRecord(paper, settings, config)).join('\n')}
+  </ListRecords>`;
+}
+
+export function renderOaiJatsGetRecord(
+    paper: PublishedPaperUI,
+    settings: Record<string, string>,
+    config: OaiRepositoryConfig,
+): string {
+    const identifier = paperIdToOaiIdentifier(config.repositoryIdentifier, paper.paperId);
+    const datestamp = formatOaiDatestamp(paper.updatedAt || paper.publishedAt);
+    const setSpec = `vol_${paper.volumeNumber}:iss_${paper.issueNumber}`;
+    const jatsXml = generateJatsXml({ settings, paper })
+        .replace(/^<\?xml[^>]*>\s*/, '')
+        .replace(/^<!DOCTYPE[^>]*>\s*/, '')
+        .replace(
+            '<article ',
+            '<article xmlns="https://jats.nlm.nih.gov/publishing/1.1/" ',
+        );
+
+    return `<GetRecord>
+    <record>
+      <header>
+        <identifier>${escapeXml(identifier)}</identifier>
+        <datestamp>${datestamp}</datestamp>
+        <setSpec>${escapeXml(setSpec)}</setSpec>
+      </header>
+      <metadata>
+${jatsXml}
       </metadata>
     </record>
   </GetRecord>`;

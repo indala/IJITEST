@@ -4,7 +4,7 @@ import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidg
 import { Button } from "@/components/ui/button";
 import { Card } from '@/components/ui/card';
 
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 interface ReviewerGuidelinesClientProps {
     settings: JournalSettings;
@@ -119,4 +119,3 @@ export default function ReviewerGuidelinesClient({ settings }: ReviewerGuideline
         </section>
     );
 }
-

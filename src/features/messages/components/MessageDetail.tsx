@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import dayjs from "@/lib/dayjs"
 import { cn } from "@/lib/utils"
-import { useUpdateMessageStatus, useRevertMessage, useReplyToMessage } from "@/hooks/queries/useMessages"
+import { useUpdateMessageStatus, useRevertMessage, useReplyToMessage } from "@/features/messages"
 
 interface Message {
     id: number
@@ -249,4 +249,3 @@ export function MessageDetail({
         </div>
     )
 }
-

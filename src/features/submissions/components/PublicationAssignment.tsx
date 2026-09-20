@@ -17,14 +17,16 @@ import {
 } from "@/components/ui/dialog"
 import {
     useVolumesIssues
-} from '@/hooks/queries/usePublications'
+} from '@/features/publications'
+import { publicationKeys } from '@/features/publications'
+import { submissionKeys } from '@/features/submissions'
 import {
     createVolumeIssue,
     assignPaperToIssue
 } from '@/actions/publications'
 import { depositToCrossref } from '@/actions/doi-registration'
 import { useQueryClient } from '@tanstack/react-query'
-import { type ActionResponse } from '@/db/types'
+import type { ActionResponse } from '@/db/contracts'
 import { useSettingsContext } from '@/components/providers/SettingsContext'
 
 interface PublicationAssignmentProps {
@@ -58,7 +60,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
         if (res.success) {
             setShowCreateModal(false);
             toast.success("Publication cycle initialized");
-            queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+            queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
         } else {
             toast.error(res.error || "Failed to initialize cycle");
         }
@@ -93,14 +95,20 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                     doiChoice === 'official' ? 'crossref' : doiChoice
                 );
                 if (res.success) {
-                    queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
-                    queryClient.invalidateQueries({ queryKey: ['submissions'] });
+                    queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
+                    queryClient.invalidateQueries({ queryKey: submissionKeys.all });
 
                     if (doiChoice === 'official') {
                         setDepositStatus({ status: 'depositing' });
                         toast.info("Manuscript archived. Submitting to CrossRef...");
                         const depRes = await depositToCrossref(submissionId);
-                        if (depRes.success) {
+                        if (!depRes.success) {
+                            setDepositStatus({
+                                status: 'error',
+                                message: depRes.error
+                            });
+                            toast.warning(`Archived, but CrossRef deposit needs review: ${depRes.error}`);
+                        } else if (depRes.data) {
                             setDepositStatus({
                                 status: 'success',
                                 batchId: depRes.data.batchId,
@@ -110,9 +118,9 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                         } else {
                             setDepositStatus({
                                 status: 'error',
-                                message: depRes.error
+                                message: "CrossRef deposit returned no batch information."
                             });
-                            toast.warning(`Archived, but CrossRef deposit needs review: ${depRes.error}`);
+                            toast.warning("Archived, but CrossRef deposit returned no batch information.");
                         }
                     } else {
                         toast.success("Manuscript committed to archive");

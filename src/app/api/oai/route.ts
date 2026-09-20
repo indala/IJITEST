@@ -12,6 +12,8 @@ import {
     renderOaiListIdentifiers,
     renderOaiListRecords,
     renderOaiGetRecord,
+    renderOaiJatsListRecords,
+    renderOaiJatsGetRecord,
     oaiIdentifierToPaperId,
 } from "@/lib/oai-pmh";
 
@@ -126,7 +128,7 @@ async function handleOaiRequest(request: NextRequest): Promise<NextResponse> {
                 contentXml = renderOaiError('badArgument', 'Missing required argument: metadataPrefix');
                 break;
             }
-            if (params.metadataPrefix && params.metadataPrefix !== 'oai_dc') {
+            if (params.metadataPrefix && !['oai_dc', 'jats'].includes(params.metadataPrefix)) {
                 contentXml = renderOaiError('cannotDisseminateFormat', `Unsupported metadataPrefix: ${params.metadataPrefix}`);
                 break;
             }
@@ -187,7 +189,7 @@ async function handleOaiRequest(request: NextRequest): Promise<NextResponse> {
                 contentXml = renderOaiError('badArgument', 'Missing required argument: metadataPrefix');
                 break;
             }
-            if (params.metadataPrefix && params.metadataPrefix !== 'oai_dc') {
+            if (params.metadataPrefix && !['oai_dc', 'jats'].includes(params.metadataPrefix)) {
                 contentXml = renderOaiError('cannotDisseminateFormat', `Unsupported metadataPrefix: ${params.metadataPrefix}`);
                 break;
             }
@@ -238,7 +240,9 @@ async function handleOaiRequest(request: NextRequest): Promise<NextResponse> {
                 break;
             }
 
-            contentXml = renderOaiListRecords(papers, settings, config);
+            contentXml = params.metadataPrefix === 'jats'
+                ? renderOaiJatsListRecords(papers, settings, config)
+                : renderOaiListRecords(papers, settings, config);
             break;
         }
 
@@ -252,7 +256,7 @@ async function handleOaiRequest(request: NextRequest): Promise<NextResponse> {
                 contentXml = renderOaiError('badArgument', 'Missing required argument: metadataPrefix');
                 break;
             }
-            if (params.metadataPrefix !== 'oai_dc') {
+            if (!['oai_dc', 'jats'].includes(params.metadataPrefix)) {
                 contentXml = renderOaiError('cannotDisseminateFormat', `Unsupported metadataPrefix: ${params.metadataPrefix}`);
                 break;
             }
@@ -269,7 +273,9 @@ async function handleOaiRequest(request: NextRequest): Promise<NextResponse> {
                 break;
             }
 
-            contentXml = renderOaiGetRecord(paperRes.data, settings, config);
+            contentXml = params.metadataPrefix === 'jats'
+                ? renderOaiJatsGetRecord(paperRes.data, settings, config)
+                : renderOaiGetRecord(paperRes.data, settings, config);
             break;
         }
 

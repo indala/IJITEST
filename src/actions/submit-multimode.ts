@@ -21,7 +21,10 @@ import { type ActionResponse, actionSuccess, actionError, serverError } from "@/
 import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
 import { MAX_MANUSCRIPT_SIZE, MAX_DOCUMENT_SIZE } from "@/lib/upload-limits";
-import { createNotification } from "./notifications";
+import {
+    createNotification,
+    invalidateSubmittedSubmissionsCount,
+} from "./notifications";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 
 export interface ManuscriptVerificationResult {
@@ -246,9 +249,8 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
 
         // Verify eligibility again
         const verifyRes = await verifyManuscriptForRevision(paperId, authorEmail);
-        if (!verifyRes.success || !verifyRes.data) {
-            return actionError(verifyRes.error || "Eligibility verification failed.");
-        }
+        if (!verifyRes.success) return actionError(verifyRes.error);
+        if (!verifyRes.data) return actionError("Eligibility verification failed.");
 
         submissionId = verifyRes.data.submissionId;
 
@@ -408,6 +410,7 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
         // 5. Invalidation
         updateTag(CACHE_TAGS.SUBMISSION(submissionId!));
         updateTag(CACHE_TAGS.SUBMISSIONS);
+        await invalidateSubmittedSubmissionsCount();
         revalidatePath('/submit');
         revalidatePath('/track');
         revalidatePath(`/admin/submissions/${submissionId}`);
@@ -459,9 +462,8 @@ export async function submitPublicFinalSubmission(formData: FormData): Promise<A
 
         // Verify eligibility
         const verifyRes = await verifyManuscriptForFinalSubmission(paperId, authorEmail);
-        if (!verifyRes.success || !verifyRes.data) {
-            return actionError(verifyRes.error || "Eligibility verification failed.");
-        }
+        if (!verifyRes.success) return actionError(verifyRes.error);
+        if (!verifyRes.data) return actionError("Eligibility verification failed.");
 
         const { submissionId } = verifyRes.data;
 

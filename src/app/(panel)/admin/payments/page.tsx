@@ -7,7 +7,8 @@ import {
     useUnpaidPapers,
     useInitializePayment,
     useUpdatePaymentStatus
-} from '@/hooks/queries/usePayments';
+} from '@/features/payments';
+import type { PaymentStatus } from '@/features/payments';
 import Link from 'next/link';
 import React, { useState, useCallback, useMemo, useActionState, useDeferredValue } from 'react';
 import { toast } from 'sonner';
@@ -47,7 +48,7 @@ const getStatusVariant = (status: string) => {
 
 import type { PaymentRow, ActionResponse } from '@/db/types';
 
-const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow, onUpdateStatus: (id: number, status: 'pending' | 'paid' | 'verified' | 'failed' | 'waived', txId: string) => Promise<void> }) => (
+const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow, onUpdateStatus: (id: number, status: PaymentStatus, txId: string) => Promise<void> }) => (
     <Card key={item.id} className="border-border/70 shadow-2xs hover:border-primary/30 transition-all group overflow-hidden bg-card relative rounded-xl">
         <div className={`absolute top-0 left-0 w-1 h-full ${item.status === 'verified' ? 'bg-emerald-500' : item.status === 'paid' ? 'bg-blue-500' : item.status === 'waived' ? 'bg-purple-500' : 'bg-orange-500'} `} />
         <CardContent className="p-4 sm:p-5">
@@ -186,7 +187,7 @@ export default function PaymentManagement() {
         null
     );
 
-    const handleStatusUpdate = useCallback(async (id: number, status: 'pending' | 'paid' | 'verified' | 'failed' | 'waived', transactionId: string) => {
+    const handleStatusUpdate = useCallback(async (id: number, status: PaymentStatus, transactionId: string) => {
         try {
             const res = await updateMutation.mutateAsync({ id, status, transactionId });
             if (res.success) {

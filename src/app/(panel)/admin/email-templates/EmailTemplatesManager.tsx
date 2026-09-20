@@ -313,7 +313,9 @@ export default function EmailTemplatesManager() {
         setSaving(true);
         try {
             const res = await updateEmailTemplate(selectedId, subject, body);
-            if (res.success && res.data) {
+            if (!res.success) {
+                toast.error("Update Failed", { description: res.error });
+            } else if (res.data) {
                 toast.success("Email Template Updated", {
                     description: `Template "${res.data.name}" has been saved.`,
                 });
@@ -321,7 +323,7 @@ export default function EmailTemplatesManager() {
                     prev.map((t) => (t.id === selectedId ? res.data! : t))
                 );
             } else {
-                toast.error("Update Failed", { description: res.error });
+                toast.error("Update Failed", { description: "No updated template was returned." });
             }
         } catch {
             toast.error("Failed to update template.");
@@ -336,7 +338,9 @@ export default function EmailTemplatesManager() {
         setResetting(true);
         try {
             const res = await resetEmailTemplate(selectedId);
-            if (res.success && res.data) {
+            if (!res.success) {
+                toast.error("Reset Failed", { description: res.error });
+            } else if (res.data) {
                 toast.success("Template Reset to Default");
                 setSubject(res.data.subjectTemplate);
                 setBody(res.data.bodyTemplate);
@@ -347,7 +351,7 @@ export default function EmailTemplatesManager() {
                     prev.map((t) => (t.id === selectedId ? res.data! : t))
                 );
             } else {
-                toast.error("Reset Failed", { description: res.error });
+                toast.error("Reset Failed", { description: "No reset template was returned." });
             }
         } catch {
             toast.error("Failed to reset template.");

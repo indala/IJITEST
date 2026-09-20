@@ -1,10 +1,8 @@
 // 🧪 Common Return Types (Discriminated Union)
 // 🛡️ Elite: Discriminated union with conditional requirement for 'data'
 export type ActionResponse<T = void> =
-    | (T extends void
-        ? { success: true; data?: T; message?: string }
-        : { success: true; data: T; message?: string })
-    | { success: false; error: string; data?: never; message?: string };
+    | { success: true; data?: T; message?: string }
+    | { success: false; error: string; message?: string };
 
 // 🛠️ Utility Helpers
 export type SuccessResponse<T> = Extract<ActionResponse<T>, { success: true }>;
@@ -16,14 +14,22 @@ export type ErrorResponse = Extract<ActionResponse, { success: false }>;
 export function actionSuccess<T = void>(data: T, message?: string): ActionResponse<T>;
 export function actionSuccess(data?: undefined, message?: string): ActionResponse<void>;
 export function actionSuccess<T>(data?: T, message?: string): ActionResponse<T> {
-    return { success: true, data: data as T, message } as ActionResponse<T>;
+    if (data === undefined) {
+        return message === undefined
+            ? { success: true }
+            : { success: true, message };
+    }
+
+    return message === undefined
+        ? { success: true, data }
+        : { success: true, data, message };
 }
 
 /**
  * 🛡️ Elite: Helper to create a failed ActionResponse
  */
 export function actionError<T = void>(error: string): ActionResponse<T> {
-    return { success: false, error } as ActionResponse<T>;
+    return { success: false, error };
 }
 
 /**
@@ -43,5 +49,5 @@ export function serverError<T = void>(
         ? `Failed to ${context.toLowerCase()}. Please try again.`
         : "An unexpected error occurred. Please try again.";
 
-    return { success: false, error: userMessage, data: undefined } as unknown as ActionResponse<T>;
+    return { success: false, error: userMessage };
 }

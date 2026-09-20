@@ -26,7 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getSubmissionEvents } from "@/actions/event-log";
-import type { SubmissionEventWithActor } from "@/db/types";
+import type { SubmissionEventWithActor } from "@/db/contracts";
 
 interface SubmissionTimelineProps {
     submissionId: number;

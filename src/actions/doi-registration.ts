@@ -79,9 +79,8 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
             getSettingsData()
         ]);
 
-        if (!paperRes.success || !paperRes.data) {
-            return actionError(paperRes.error || "Failed to load paper metadata for CrossRef export.");
-        }
+        if (!paperRes.success) return actionError(paperRes.error);
+        if (!paperRes.data) return actionError("Failed to load paper metadata for CrossRef export.");
 
         const paper = paperRes.data;
         const batchId = `cr-${Date.now()}-${paper.paperId}`;

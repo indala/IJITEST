@@ -15,7 +15,7 @@ import {
     DialogFooter
 } from "@/components/ui/dialog";
 import type { Submission, Version, SubmissionStatus } from '@/db/types';
-import type { ReviewAssignment } from '@/hooks/queries/useReviews';
+import type { ReviewAssignment } from '@/features/reviews';
 
 export interface GroupedReview {
     submissionId: Submission['id'];

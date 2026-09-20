@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, type ReactNode } from 'react';
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 const SettingsContext = createContext<JournalSettings | null>(null);
 

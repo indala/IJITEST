@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getNotificationCounts } from '@/actions/notifications';
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
+import { notificationKeys } from '@/features/notifications';
 import {
     Tooltip,
     TooltipContent,
@@ -27,7 +28,7 @@ export default function NotificationCenter() {
     const userRole = (session?.user as { role?: string })?.role;
 
     const { data: counts = { messages: 0, submissions: 0 } } = useQuery({
-        queryKey: ['notificationCounts'],
+        queryKey: notificationKeys.counts(),
         queryFn: getNotificationCounts,
         enabled: !!session?.user,
         select: (res) => res.success ? res.data : { messages: 0, submissions: 0 },

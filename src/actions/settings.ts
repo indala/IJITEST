@@ -1,9 +1,12 @@
 "use server";
 import "server-only"
 import { cache } from "react";
+import {
+    readSettingsRows,
+    upsertSetting,
+    upsertSettings,
+} from "@/features/settings/server/settings.repository";
 
-import { db } from "@/lib/db";
-import { settings } from "@/db/schema";
 import { type ActionResponse, actionSuccess, actionError, serverError } from "@/lib/action-response";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -68,7 +71,7 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
 
     try {
         cacheLogger.miss(CACHE_TAGS.SETTINGS, "settings");
-        const rows = await db.select().from(settings);
+        const rows = await readSettingsRows();
 
         const result: Record<string, string> = { ...DEFAULT_SETTINGS };
 
@@ -92,7 +95,8 @@ export async function getSettings(): Promise<ActionResponse<Record<string, strin
 const getCachedSettingsData = cache(async (): Promise<Record<string, string>> => {
     try {
         const res = await getSettings();
-        return res.data || DEFAULT_SETTINGS;
+        if (!res.success || !res.data) return { ...DEFAULT_SETTINGS };
+        return res.data;
     } catch {
         return { ...DEFAULT_SETTINGS };
     }
@@ -143,14 +147,7 @@ export async function updateSettings(formData: FormData): Promise<ActionResponse
         }
 
         // Check if doiPrefix was provided and is not empty
-        await db.transaction(async (tx) => {
-            for (const [key, value] of resolvedEntries) {
-                // Store as camelCase in DB as requested
-                await tx.insert(settings)
-                    .values({ settingKey: key, settingValue: value })
-                    .onDuplicateKeyUpdate({ set: { settingValue: value } });
-            }
-        });
+        await upsertSettings(resolvedEntries);
 
         cacheLogger.invalidation(CACHE_TAGS.SETTINGS, "settings updated");
         updateTag(CACHE_TAGS.SETTINGS);
@@ -182,9 +179,7 @@ export async function updateSingleSetting(key: string, value: string): Promise<A
                 .trim();
         }
 
-        await db.insert(settings)
-            .values({ settingKey: key, settingValue: stringVal })
-            .onDuplicateKeyUpdate({ set: { settingValue: stringVal } });
+        await upsertSetting(key, stringVal);
 
         cacheLogger.invalidation(CACHE_TAGS.SETTINGS, `setting [${key}] updated`);
         updateTag(CACHE_TAGS.SETTINGS);
@@ -220,9 +215,7 @@ export async function uploadSettingFile(key: string, formData: FormData): Promis
         await uploadFileToStorage(relativeDocsPath, Buffer.from(bytes), file.name);
         const fileUrl = `/api/files/docs/${fileName}`;
 
-        await db.insert(settings)
-            .values({ settingKey: key, settingValue: fileUrl })
-            .onDuplicateKeyUpdate({ set: { settingValue: fileUrl } });
+        await upsertSetting(key, fileUrl);
 
         cacheLogger.invalidation(CACHE_TAGS.SETTINGS, `file asset [${key}] updated`);
         updateTag(CACHE_TAGS.SETTINGS);
@@ -244,9 +237,7 @@ export async function togglePromotionStatus(isActive: boolean): Promise<ActionRe
 
         const value = isActive ? "true" : "false";
 
-        await db.insert(settings)
-            .values({ settingKey: 'isPromotionActive', settingValue: value })
-            .onDuplicateKeyUpdate({ set: { settingValue: value } });
+        await upsertSetting('isPromotionActive', value);
 
         cacheLogger.invalidation(CACHE_TAGS.SETTINGS, `promotion status toggled to ${value}`);
         updateTag(CACHE_TAGS.SETTINGS);
@@ -302,5 +293,3 @@ export async function getSystemTelemetry(): Promise<ActionResponse<{
         return serverError(error, "fetch system telemetry");
     }
 }
-
-

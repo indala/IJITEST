@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 interface IndexingClientProps {
     settings: JournalSettings;

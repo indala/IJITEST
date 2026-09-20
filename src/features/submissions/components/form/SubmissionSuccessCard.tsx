@@ -1,6 +1,6 @@
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Submission } from "@/db/types";
+import type { Submission } from "@/db/models";
 
 interface SubmissionSuccessCardProps {
     paperId?: Submission['paperId'] | undefined;

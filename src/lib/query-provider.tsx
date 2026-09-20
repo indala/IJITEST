@@ -1,8 +1,9 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { createQueryClient } from "@/lib/query/query-client";
 
 const ReactQueryDevtools =
     process.env.NODE_ENV === "production"
@@ -17,15 +18,7 @@ const ReactQueryDevtools =
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(
-        () =>
-            new QueryClient({
-                defaultOptions: {
-                    queries: {
-                        staleTime: 60 * 1000 * 5, // 5 minutes cache before background refetch
-                        refetchOnWindowFocus: false, // Prevents aggressive reloading
-                    },
-                },
-            })
+        createQueryClient
     );
 
     return (

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import PaperCard from '@/features/archives/components/PaperCard';
 import { Button } from "@/components/ui/button";
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
-import { useLatestIssuePapers, useArchivePapers } from '@/hooks/queries/usePublic';
+import { useLatestIssuePapers, useArchivePapers } from '@/features/public';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

@@ -71,11 +71,12 @@ export function LiveChatContent() {
     const response = await searchChatUsers(query);
     setIsSearching(false);
     if (response.success && response.data) {
-      setContacts(response.data);
+      const contacts = response.data;
+      setContacts(contacts);
       // Initialize lastMessageTime from backend database records
       setLastMessageTime((prev) => {
         const next = { ...prev };
-        response.data.forEach((user) => {
+        contacts.forEach((user) => {
           if (user.lastMessageAt) {
             next[user.id] = new Date(user.lastMessageAt);
           }

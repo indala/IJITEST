@@ -19,8 +19,11 @@ export async function GET(
             getSettingsData()
         ]);
 
-        if (!issueRes.success || !issueRes.data) {
-            return new NextResponse(issueRes.error || "Issue not found", { status: 404 });
+        if (!issueRes.success) {
+            return new NextResponse(issueRes.error, { status: 404 });
+        }
+        if (!issueRes.data) {
+            return new NextResponse("Issue not found", { status: 404 });
         }
 
         const { issue, papers } = issueRes.data;

@@ -37,7 +37,31 @@ export const formSchema = z.object({
     }),
 });
 
+export const submissionIdSchema = z.number().int().positive();
+
+export const editorialDecisionSchema = z.enum(["accepted", "rejected"]);
+
+export const resubmissionCommentsSchema = z.string()
+    .trim()
+    .min(1, "Editorial comments are required")
+    .max(10000, "Editorial comments are too long");
+
+export const retractionSchema = z.object({
+    submissionId: submissionIdSchema,
+    reason: z.string().trim().min(1, "A formal retraction rationale is required").max(10000),
+    noticeUrl: z.string().trim().url("Notice URL must be valid").optional().or(z.literal("")),
+});
+
+export const corrigendumSchema = z.object({
+    submissionId: submissionIdSchema,
+    amendmentDetails: z.string().trim().min(1, "Amendment details are required").max(10000),
+    noticeUrl: z.string().trim().url("Notice URL must be valid").optional().or(z.literal("")),
+});
+
+/**
+ * Kept here as compatibility aliases for existing form imports.
+ * New consumers should import these from ../types.
+ */
 export type FormValues = z.infer<typeof formSchema>;
 export type CoAuthorValues = z.infer<typeof coAuthorSchema>;
 export type ReviewerSuggestionValues = z.infer<typeof reviewerSuggestionSchema>;
-

@@ -1,7 +1,7 @@
 import { Lock, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 interface PrivacyClientProps {
     settings: JournalSettings;

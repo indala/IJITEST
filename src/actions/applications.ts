@@ -6,9 +6,7 @@ import {
     applications,
     users,
     userProfiles,
-    userInvitations,
-    applicationInterests,
-    masterInterests
+    userInvitations
 } from "@/db/schema";
 import {
     type Application
@@ -17,97 +15,28 @@ import {
     type ActionResponse,
     serverError
 } from "@/lib/action-response";
-import { eq, and, desc, SQL, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { emailTemplates, sendEmail, sendEmailWithRetry } from "@/lib/mail";
 import crypto from "crypto";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { getAuthorizedSession } from "@/lib/auth/guards";
+import { listApplications } from "@/features/applications/server/application.repository";
+import type { ApplicationFilters } from "@/features/applications/types/application.types";
 
 /**
  * Fetch all applications with optional filters
  */
-export async function getApplications(filters?: { role?: string, status?: string, interest?: string }): Promise<ActionResponse<Application[]>> {
+export async function getApplications(filters?: ApplicationFilters): Promise<ActionResponse<Application[]>> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
             return { success: false, error: "Unauthorized" };
         }
 
-        const whereClauses: SQL[] = [];
-
-        if (filters?.role && filters.role !== 'all') {
-            whereClauses.push(eq(applications.type, filters.role as "editor" | "reviewer"));
-        }
-        if (filters?.status && filters.status !== 'all') {
-            whereClauses.push(eq(applications.status, filters.status as "pending" | "approved" | "rejected"));
-        }
-
-        // 1. Fetch base applications
-        const apps = await db.select()
-            .from(applications)
-            .where(whereClauses.length > 0 ? and(...whereClauses) : undefined)
-            .orderBy(desc(applications.createdAt))
-            .limit(200);
-
-        // 2. Fetch all interests for these applications
-        const appIds = apps.map(a => a.id);
-        if (appIds.length === 0) return { success: true, data: [] };
-
-        const allInterestsRaw = await db
-            .select({
-                id: applicationInterests.id,
-                applicationId: applicationInterests.applicationId,
-                interestId: applicationInterests.interestId,
-                interestIdNullable: masterInterests.id,
-                interestName: masterInterests.name,
-                interestCreatedAt: masterInterests.createdAt,
-            })
-            .from(applicationInterests)
-            .leftJoin(masterInterests, eq(applicationInterests.interestId, masterInterests.id))
-            .where(inArray(applicationInterests.applicationId, appIds));
-
-        const allInterests = allInterestsRaw
-            .filter((row): row is typeof row & { interestIdNullable: number; interestName: string; interestCreatedAt: Date } =>
-                row.interestIdNullable !== null &&
-                row.interestName !== null &&
-                row.interestCreatedAt !== null
-            )
-            .map(row => ({
-                id: row.id,
-                applicationId: row.applicationId,
-                interestId: row.interestId,
-                interest: {
-                    id: row.interestIdNullable,
-                    name: row.interestName,
-                    createdAt: row.interestCreatedAt,
-                }
-            }));
-
-        // 3. Map interests back to applications
-        const mappedData: Application[] = apps.map(app => {
-            const appInterests = allInterests
-                .filter(i => i.applicationId === app.id)
-                .map(i => i.interest.name);
-
-            return {
-                ...app,
-                researchInterests: appInterests
-            };
-        });
-
-        // 4. Client-side filter for interest if needed (since it's a join/relation filter)
-        // Note: For large datasets, this should be done in SQL with an EXISTS clause.
-        let finalData = mappedData;
-        if (filters?.interest) {
-            const search = filters.interest.toLowerCase();
-            finalData = mappedData.filter(app =>
-                app.researchInterests?.some(interest => interest.toLowerCase().includes(search))
-            );
-        }
-
-        return { success: true, data: finalData };
+        return { success: true, data: await listApplications(filters) };
     } catch (error) {
         console.error("Get Applications Error:", error);
         return serverError(error, "fetch applications");

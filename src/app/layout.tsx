@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Crimson_Pro } from "next/font/google";
-import { MotionProvider } from "@/providers/MotionProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -90,17 +89,11 @@ export const viewport: Viewport = {
 };
 
 import { Suspense } from "react";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "sonner";
-import { QueryProvider } from "@/lib/query-provider";
 import ServiceWorkerRegister from "@/components/common/ServiceWorkerRegister";
-
-import { NuqsAdapter } from "nuqs/adapters/next";
-
 import { JsonLd } from "@/components/shared/JsonLd";
 import { getSettingsData } from "@/actions/settings";
-import { SettingsProvider } from "@/components/providers/SettingsContext";
-import type { JournalSettings } from "@/db/types";
+import { AppProviders } from "@/components/providers/AppProviders";
+import type { JournalSettings } from "@/db/protocols";
 
 async function SettingsLayer({ children }: { children: React.ReactNode }) {
   const dynamicSettings = await getSettingsData() as JournalSettings;
@@ -136,18 +129,7 @@ async function SettingsLayer({ children }: { children: React.ReactNode }) {
     <>
       <JsonLd data={organizationSchema} id="global-org" />
       <JsonLd data={journalSchema} id="global-journal" />
-      <MotionProvider>
-        <NuqsAdapter>
-          <QueryProvider>
-            <SettingsProvider settings={dynamicSettings}>
-              <TooltipProvider>
-                {children}
-                <Toaster position="top-right" offset={50} richColors closeButton />
-              </TooltipProvider>
-            </SettingsProvider>
-          </QueryProvider>
-        </NuqsAdapter>
-      </MotionProvider>
+      <AppProviders settings={dynamicSettings}>{children}</AppProviders>
     </>
   );
 }

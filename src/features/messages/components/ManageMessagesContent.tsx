@@ -5,8 +5,9 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { InboxFilters, type InboxFilterTab } from "./InboxFilters"
 import { MessageList } from "./MessageList"
 import { MessageDetail } from "./MessageDetail"
-import { useMessages } from "@/hooks/queries/useMessages"
+import { useMessages } from "@/features/messages"
 import { Button } from "@/components/ui/button"
+import { QueryState } from "@/components/shared/QueryState"
 import { X } from "lucide-react"
 import type { ContactMessageRow } from "@/db/types"
 
@@ -18,7 +19,7 @@ export function ManageMessagesContent() {
     const activeStatus = (searchParams.get('status') as InboxFilterTab) || 'all'
     const search = searchParams.get('search') || ""
 
-    const { data: messages = [], isLoading } = useMessages({ search })
+    const { data: messages = [], isLoading, isError, error } = useMessages({ search })
 
     const [selectedMessage, setSelectedMessage] = useState<ContactMessageRow | null>(null)
 
@@ -77,12 +78,14 @@ export function ManageMessagesContent() {
                 </div>
 
                 <div className="flex-1 min-h-0 relative">
-                    <MessageList 
-                        messages={filteredMessages}
-                        loading={isLoading}
-                        selectedId={selectedMessage?.id ?? 0}
-                        onSelect={handleSelectMessage}
-                    />
+                    <QueryState isLoading={isLoading} isError={isError} error={error}>
+                        <MessageList
+                            messages={filteredMessages}
+                            loading={false}
+                            selectedId={selectedMessage?.id ?? 0}
+                            onSelect={handleSelectMessage}
+                        />
+                    </QueryState>
                 </div>
             </section>
 

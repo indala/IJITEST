@@ -3,7 +3,7 @@ import Link from 'next/link';
 import ContactForm from '@/features/contact/components/ContactForm';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Card } from '@/components/ui/card';
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 interface ContactClientProps {
     settings: JournalSettings | Record<string, string | undefined>;

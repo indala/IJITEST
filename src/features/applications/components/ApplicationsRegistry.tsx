@@ -4,7 +4,8 @@ import { useState, useCallback, useMemo, Suspense, useTransition } from 'react';
 import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryStates, parseAsString } from 'nuqs';
-import { useApplications } from "@/hooks/queries/useApplications";
+import { useApplications } from "@/features/applications";
+import { applicationKeys } from "@/features/applications";
 import { useQueryClient } from '@tanstack/react-query';
 import {
     approveApplication,
@@ -17,6 +18,7 @@ import { ApplicationItemCard } from './ApplicationItemCard';
 import { ApplicationFilterBar } from './ApplicationFilterBar';
 import { BulkActionsBar } from './BulkActionsBar';
 import { ApplicationDrawerInspector } from './ApplicationDrawerInspector';
+import { QueryState } from "@/components/shared/QueryState";
 
 export type ApplicationsRegistryRole = Extract<UserRole, 'admin' | 'editor'>;
 
@@ -33,7 +35,12 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
     if (role && role !== 'all') queryParams.role = role as ApplicationType;
     if (status && status !== 'all') queryParams.status = status as ApplicationStatus;
 
-    const { data: applications = [], isLoading: loading } = useApplications(queryParams);
+    const {
+        data: applications = [],
+        isLoading: loading,
+        isError,
+        error,
+    } = useApplications(queryParams);
 
     const queryClient = useQueryClient();
     const [isPendingAction, startActionTransition] = useTransition();
@@ -84,7 +91,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
                     toast.success("Personnel candidacy authorized", { id: toastId });
                     setInspectApp(null);
                     setApproveConfirm(false);
-                    queryClient.invalidateQueries({ queryKey: ['applications'] });
+                    queryClient.invalidateQueries({ queryKey: applicationKeys.all });
                 } else {
                     toast.error(res.error || "Authorization failed", { id: toastId });
                 }
@@ -108,7 +115,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
                     setInspectApp(null);
                     setRejectionMode(false);
                     setRejectionReason("");
-                    queryClient.invalidateQueries({ queryKey: ['applications'] });
+                    queryClient.invalidateQueries({ queryKey: applicationKeys.all });
                 } else {
                     toast.error(res.error || "Rejection failed", { id: toastId });
                 }
@@ -127,7 +134,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
                 if (res.success) {
                     toast.success("Collective authorization complete", { id: toastId });
                     setSelectedIds([]);
-                    queryClient.invalidateQueries({ queryKey: ['applications'] });
+                    queryClient.invalidateQueries({ queryKey: applicationKeys.all });
                 } else {
                     toast.error(res.error || "Bulk processing failed", { id: toastId });
                 }
@@ -152,7 +159,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
                     setSelectedIds([]);
                     setBulkRejectionMode(false);
                     setBulkRejectionReason("");
-                    queryClient.invalidateQueries({ queryKey: ['applications'] });
+                    queryClient.invalidateQueries({ queryKey: applicationKeys.all });
                 } else {
                     toast.error(res.error || "Bulk processing failed", { id: toastId });
                 }
@@ -162,17 +169,14 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
         });
     };
 
-    if (loading) {
-        return (
-            <div className="p-32 flex flex-col items-center justify-center gap-6">
-                <div className="w-14 h-14 border-[3px] border-primary/10 border-t-primary rounded-full animate-spin" />
-                <p className="font-bold text-label tracking-[0.3em] uppercase animate-pulse text-muted-foreground">Accessing vetting pipeline...</p>
-            </div>
-        );
-    }
-
     return (
-        <section className="flex-1 flex flex-col min-h-0 space-y-3 sm:space-y-4">
+        <QueryState
+            isLoading={loading}
+            isError={isError}
+            error={error}
+            loadingLabel="Accessing vetting pipeline..."
+        >
+          <section className="flex-1 flex flex-col min-h-0 space-y-3 sm:space-y-4">
             <ApplicationFilterBar
                 interest={interest}
                 role={role}
@@ -237,7 +241,8 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
                 onReject={handleReject}
                 isPendingAction={isPendingAction}
             />
-        </section>
+          </section>
+        </QueryState>
     );
 }
 

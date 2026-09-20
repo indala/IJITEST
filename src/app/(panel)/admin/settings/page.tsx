@@ -20,7 +20,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from "@/lib/utils";
-import { useSettings } from '@/hooks/queries/useSettings';
+import { useSettings } from '@/features/settings';
+import { settingsKeys } from '@/features/settings';
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { updateSingleSetting, uploadSettingFile, togglePromotionStatus, getSystemTelemetry } from '@/actions/settings';
@@ -138,7 +139,7 @@ export default function SystemSettings() {
         setSavingFields(prev => ({ ...prev, [key]: true }));
 
         // Optimistically update React Query cache
-        queryClient.setQueryData(['settings'], (old: Record<string, string> = {}) => ({
+        queryClient.setQueryData(settingsKeys.all, (old: Record<string, string> = {}) => ({
             ...old,
             [key]: trimmed
         }));
@@ -153,13 +154,13 @@ export default function SystemSettings() {
                 toast.error(`Failed to update ${label}`, {
                     description: (!res.success && res.error) ? res.error : "Please try again."
                 });
-                queryClient.invalidateQueries({ queryKey: ['settings'] });
+                queryClient.invalidateQueries({ queryKey: settingsKeys.all });
             }
         } catch {
             toast.error(`Failed to update ${label}`, {
                 description: "An unexpected error occurred."
             });
-            queryClient.invalidateQueries({ queryKey: ['settings'] });
+            queryClient.invalidateQueries({ queryKey: settingsKeys.all });
         } finally {
             setSavingFields(prev => ({ ...prev, [key]: false }));
         }
@@ -173,7 +174,7 @@ export default function SystemSettings() {
         try {
             const res = await uploadSettingFile(key, formData);
             if (res.success && res.data?.fileUrl) {
-                queryClient.setQueryData(['settings'], (old: Record<string, string> = {}) => ({
+                queryClient.setQueryData(settingsKeys.all, (old: Record<string, string> = {}) => ({
                     ...old,
                     [key]: res.data!.fileUrl
                 }));
@@ -198,7 +199,7 @@ export default function SystemSettings() {
         setIsPromotionActive(checked);
         setIsTogglingPromotion(true);
 
-        queryClient.setQueryData(['settings'], (old: Record<string, string> = {}) => ({
+        queryClient.setQueryData(settingsKeys.all, (old: Record<string, string> = {}) => ({
             ...old,
             isPromotionActive: checked ? 'true' : 'false'
         }));
@@ -213,14 +214,14 @@ export default function SystemSettings() {
                 });
             } else {
                 setIsPromotionActive(!checked);
-                queryClient.invalidateQueries({ queryKey: ['settings'] });
+                queryClient.invalidateQueries({ queryKey: settingsKeys.all });
                 toast.error("Update Failed", {
                     description: (!res.success && res.error) ? res.error : "Failed to update promotion status."
                 });
             }
         } catch {
             setIsPromotionActive(!checked);
-            queryClient.invalidateQueries({ queryKey: ['settings'] });
+            queryClient.invalidateQueries({ queryKey: settingsKeys.all });
             toast.error("Update Failed", {
                 description: "An unexpected error occurred while toggling promotion status."
             });

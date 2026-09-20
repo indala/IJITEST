@@ -130,8 +130,12 @@ export default function SocketProvider({ children }: { children: React.ReactNode
     async function initSocket() {
       const response = await getSocketToken();
       if (!isMounted) return;
-      if (!response.success || !response.data) {
+      if (!response.success) {
         console.warn("Failed to get socket token:", response.error);
+        return;
+      }
+      if (!response.data) {
+        console.warn("Socket token response returned no data");
         return;
       }
 

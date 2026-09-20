@@ -8,7 +8,9 @@ import {
 import {
     useVolumesIssues,
     usePapersByIssue
-} from '@/hooks/queries/usePublications';
+} from '@/features/publications';
+import { publicationKeys } from '@/features/publications';
+import { submissionKeys } from '@/features/submissions';
 import {
     createVolumeIssue,
     updateVolumeIssue,
@@ -59,12 +61,14 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
         setRetryingPaperId(submissionId);
         try {
             const res = await depositToCrossref(submissionId);
-            if (res.success) {
-                toast.success(`CrossRef deposit queued ✓ (Batch: ${res.data.batchId})`);
-                queryClient.invalidateQueries({ queryKey: ['issue-papers', expandedIssue] });
-                queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
-            } else {
+            if (!res.success) {
                 toast.error(res.error || "Deposit failed");
+            } else if (!res.data) {
+                toast.error("CrossRef deposit returned no batch information");
+            } else {
+                toast.success(`CrossRef deposit queued ✓ (Batch: ${res.data.batchId})`);
+                queryClient.invalidateQueries({ queryKey: publicationKeys.issuePapers(expandedIssue) });
+                queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
             }
         } catch {
             toast.error("Failed to retry CrossRef deposit");
@@ -78,7 +82,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
         if (res.success) {
             setShowCreateModal(false);
             toast.success("Publication cycle initialized");
-            queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+            queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
         } else {
             toast.error(res.error || "Failed to initialize cycle");
         }
@@ -91,7 +95,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
         if (res.success) {
             setShowEditModal(null);
             toast.success("Metadata updated successfully");
-            queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+            queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
         } else {
             toast.error(res.error || "Failed to update metadata");
         }
@@ -105,8 +109,8 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                 const res = await publishIssue(id);
                 if (res.success) {
                     toast.success("Issue published successfully");
-                    queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
-                    queryClient.invalidateQueries({ queryKey: ['submissions'] });
+                    queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
+                    queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                 } else {
                     toast.error(res.error || "Failed to publish issue");
                 }
@@ -128,8 +132,8 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                 const res = await unassignPaperFromIssue(paperId);
                 if (res.success) {
                     toast.success("Paper unassigned successfully");
-                    queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
-                    queryClient.invalidateQueries({ queryKey: ['issue-papers', expandedIssue] });
+                    queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
+                    queryClient.invalidateQueries({ queryKey: publicationKeys.issuePapers(expandedIssue) });
                 } else {
                     toast.error(res.error || "Failed to unassign paper");
                 }
@@ -146,7 +150,7 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                 const res = await deleteVolumeIssue(id);
                 if (res.success) {
                     toast.success("Issue deleted successfully");
-                    queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+                    queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
                 } else {
                     toast.error(res.error || "Failed to delete issue");
                 }

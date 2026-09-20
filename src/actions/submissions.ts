@@ -13,31 +13,21 @@ import {
     reviews,
     reviewAssignments,
     settings,
-    volumesIssues,
-    publications,
-    sections,
-    reviewerSuggestions,
 } from "@/db/schema";
 import { logSubmissionEvent } from "./event-log";
-import {
-    type SubmissionDetail,
-    type SubmissionUI,
-    type UserWithProfile,
-    type SubmissionFile,
-    type ReviewWithReviewer,
-} from "@/db/types";
+import type { SubmissionUI } from "@/db/contracts";
 import {
     type ActionResponse,
     actionSuccess,
     actionError,
     serverError,
 } from "@/lib/action-response";
-import { cacheLife, cacheTag, revalidatePath, updateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount, invalidateReviewerAssignmentsCount, createNotification } from "./notifications";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";
 import { sendEmail, emailTemplates } from "@/lib/mail";
-import { eq, desc, and, isNull, inArray, or, like, sql, SQL } from "drizzle-orm";
+import { eq, desc, and, inArray } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { 
@@ -45,129 +35,17 @@ import {
     uploadFileToStorage, 
     triggerDocxToPdfConversion 
 } from "@/lib/fs-utils";
-
-const fetchRawSubmissionData = async (id: number): Promise<SubmissionUI | null> => {
-    "use cache";
-    cacheLife("hours");
-    cacheTag(CACHE_TAGS.SUBMISSION(id), CACHE_TAGS.SUBMISSIONS);
-
-    try {
-        cacheLogger.miss(CACHE_TAGS.SUBMISSION(id), `fetchRawSubmissionData id=${id}`);
-        // 1. Fetch Core Submission + Profile + Latest Version + Publication + Issue + Section
-        const submissionRows = await db.select({
-            submission: submissions,
-            author: users,
-            authorProfile: userProfiles,
-            issue: volumesIssues,
-            publication: publications,
-            payment: payments,
-            section: sections
-        })
-            .from(submissions)
-            .where(and(eq(submissions.id, id), isNull(submissions.deletedAt)))
-            .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
-            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-            .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
-            .leftJoin(publications, eq(submissions.id, publications.submissionId))
-            .leftJoin(payments, eq(submissions.id, payments.submissionId))
-            .leftJoin(sections, eq(submissions.sectionId, sections.id))
-            .limit(1);
-
-        const row = submissionRows[0];
-        if (!row) return null;
-
-        // 2-5. Parallel fetch: version, authors, assignments, reviewerSuggestions (independent queries)
-        const [versionRows, authors, assignments, suggestions] = await Promise.all([
-            db.select()
-                .from(submissionVersions)
-                .where(eq(submissionVersions.submissionId, id))
-                .orderBy(desc(submissionVersions.versionNumber))
-                .limit(1),
-            db.select()
-                .from(submissionAuthors)
-                .where(eq(submissionAuthors.submissionId, id))
-                .orderBy(submissionAuthors.orderIndex),
-            db.select({
-                ra: reviewAssignments,
-                reviewer: users,
-                profile: userProfiles,
-                review: reviews
-            })
-                .from(reviewAssignments)
-                .where(eq(reviewAssignments.submissionId, id))
-                .leftJoin(users, eq(reviewAssignments.reviewerId, users.id))
-                .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-                .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId)),
-            db.select()
-                .from(reviewerSuggestions)
-                .where(eq(reviewerSuggestions.submissionId, id)),
-        ]);
-
-        const latestVersion = versionRows[0];
-
-        // 5. Fetch Files for the Latest Version (depends on version query)
-        const files = latestVersion
-            ? await db.select().from(submissionFiles).where(eq(submissionFiles.versionId, latestVersion.id))
-            : [];
-
-        // 6. Map to Domain Types
-        const typedAssignments: ReviewWithReviewer[] = assignments.map(a => ({
-            ...a.ra,
-            reviewer: (a.reviewer && a.profile) ? { ...a.reviewer, profile: a.profile } : ({} as UserWithProfile),
-            review: a.review
-        }));
-
-        const submissionData: SubmissionDetail = {
-            ...row.submission,
-            correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } as UserWithProfile : undefined,
-            versions: latestVersion ? [{ ...latestVersion, files: files as SubmissionFile[] }] : [],
-            authors,
-            section: row.section || null,
-            reviewerSuggestions: suggestions,
-            payment: row.payment,
-            reviewAssignments: typedAssignments,
-            issue: row.issue,
-            publication: row.publication
-        };
-
-        // 7. Map to UI-Friendly Composite Object (Flat properties for historical compatibility)
-        const mainManuscript = files.find(f => f.fileType === 'mainManuscript');
-        const pdfVersion = files.find(f => f.fileType === 'pdfVersion');
-        const finalPdf = row.publication?.finalPdfUrl;
-        const publishedAt = row.publication?.publishedAt;
-
-        const data: SubmissionUI = {
-            ...submissionData,
-            section: row.section || null,
-            reviewerSuggestions: suggestions,
-            title: latestVersion?.title || "Untitled Manuscript",
-            abstract: latestVersion?.abstract || null,
-            keywords: latestVersion?.keywords || null,
-            filePath: mainManuscript?.fileUrl || "",
-            // Priority: Published PDF > Styled PDF. Cache-bust with publishedAt so
-            // rebranded PDFs are fetched fresh by the browser (iframe in Secure preview).
-            pdfUrl: finalPdf
-                ? `${finalPdf}?v=${publishedAt ? new Date(publishedAt).getTime() : Date.now()}`
-                : (pdfVersion?.fileUrl || ""),
-            authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
-            authorEmail: submissionData.correspondingAuthor?.email || "",
-            coAuthors: submissionData.authors,
-            doi: submissionData.publication?.doi || null,
-            volumeNumber: submissionData.issue?.volumeNumber,
-            issueNumber: submissionData.issue?.issueNumber,
-            startPage: submissionData.publication?.startPage,
-            endPage: submissionData.publication?.endPage,
-            latestVersion: latestVersion ? { ...latestVersion, files: files as SubmissionFile[] } : undefined,
-            allFiles: files as SubmissionFile[],
-            allReviews: typedAssignments,
-        };
-
-        return data;
-    } catch (error) {
-        cacheLogger.error(CACHE_TAGS.SUBMISSION(id), error);
-        return null;
-    }
-};
+import {
+    findSubmissionById,
+    listSubmissions,
+} from "@/features/submissions/server/submission.repository";
+import {
+    corrigendumSchema,
+    editorialDecisionSchema,
+    retractionSchema,
+    resubmissionCommentsSchema,
+    submissionIdSchema,
+} from "@/features/submissions/schemas/submission.schema";
 
 /**
  * Fetch a unified submission object with all related data joined.
@@ -178,7 +56,7 @@ export async function getSubmissionById(id: number): Promise<ActionResponse<Subm
         const session = await getServerSession(authOptions);
         if (!session?.user) return { success: false, error: "Authentication required" };
 
-        const data = await fetchRawSubmissionData(id);
+        const data = await findSubmissionById(id);
         if (!data) return { success: false, error: "Submission not found" };
 
         // RBAC: Verify user has permission to see this submission
@@ -209,108 +87,10 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
             return { success: false, error: "Unauthorized" };
         }
 
-        // 1. Fetch core data + latest versions in one JOIN query
-        const conditions: SQL[] = [isNull(submissions.deletedAt)];
-        if (filters?.status && filters.status !== 'all') {
-            conditions.push(eq(submissions.status, filters.status as "submitted" | "editorAssigned" | "underReview" | "revisionRequested" | "accepted" | "rejected" | "paymentPending" | "published"));
-        }
-        if (filters?.q) {
-            const searchVal = `%${filters.q}%`;
-            const searchCondition = or(
-                like(submissions.paperId, searchVal),
-                like(submissionVersions.title, searchVal)
-            ) as SQL;
-            if (searchCondition) {
-                conditions.push(searchCondition);
-            }
-        }
-
-        const latestVersions = db.select({
-            submissionId: submissionVersions.submissionId,
-            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
-        })
-            .from(submissionVersions)
-            .groupBy(submissionVersions.submissionId)
-            .as('lv');
-
-        const rows = await db.select({
-            submission: submissions,
-            author: users,
-            authorProfile: userProfiles,
-            latestVersion: submissionVersions,
-            payment: payments,
-            issue: volumesIssues,
-            publication: publications
-        })
-            .from(submissions)
-            .leftJoin(users, eq(submissions.correspondingAuthorId, users.id))
-            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-            .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
-            .leftJoin(submissionVersions, and(
-                eq(submissions.id, submissionVersions.submissionId),
-                eq(submissionVersions.versionNumber, latestVersions.maxVersion)
-            ))
-            .leftJoin(payments, eq(submissions.id, payments.submissionId))
-            .leftJoin(volumesIssues, eq(submissions.issueId, volumesIssues.id))
-            .leftJoin(publications, eq(submissions.id, publications.submissionId))
-            .where(and(...conditions))
-            .orderBy(desc(submissions.submittedAt))
-            .limit(200);
-
-        if (rows.length === 0) return { success: true, data: [] };
-
-        const subIds = rows.map(r => r.submission.id);
-        const versionIds = rows.filter(r => r.latestVersion).map(r => r.latestVersion!.id);
-
-        // 2. Bulk fetch Co-Authors
-        const allCoAuthors = await db.select().from(submissionAuthors).where(inArray(submissionAuthors.submissionId, subIds));
-
-        // 3. Bulk fetch Files
-        const allFiles = versionIds.length > 0
-            ? await db.select().from(submissionFiles).where(inArray(submissionFiles.versionId, versionIds))
-            : [];
-
-        // 4. Map everything to SubmissionUI
-        const data: SubmissionUI[] = rows.map(row => {
-            const subAuthors = allCoAuthors.filter(a => a.submissionId === row.submission.id);
-            const subFiles = row.latestVersion ? allFiles.filter(f => f.versionId === row.latestVersion!.id) : [];
-
-            const mainManuscript = subFiles.find(f => f.fileType === 'mainManuscript');
-            const pdfVersion = subFiles.find(f => f.fileType === 'pdfVersion');
-            const finalPdf = row.publication?.finalPdfUrl;
-
-            return {
-                ...row.submission,
-                title: row.latestVersion?.title || "Untitled Manuscript",
-                abstract: row.latestVersion?.abstract || "",
-                keywords: row.latestVersion?.keywords || "",
-                filePath: mainManuscript?.fileUrl || "",
-                pdfUrl: finalPdf || pdfVersion?.fileUrl || "",
-                authorName: row.authorProfile?.fullName || "Unknown Author",
-                authorEmail: row.author?.email || "",
-                coAuthors: subAuthors,
-                doi: row.publication?.doi || null,
-                volumeNumber: row.issue?.volumeNumber,
-                issueNumber: row.issue?.issueNumber,
-                startPage: row.publication?.startPage,
-                endPage: row.publication?.endPage,
-                latestVersion: row.latestVersion ? { ...row.latestVersion, files: subFiles as SubmissionFile[] } : undefined,
-                allFiles: subFiles as SubmissionFile[],
-                allReviews: [],
-                payment: row.payment,
-                correspondingAuthor: (row.author && row.authorProfile) ? { ...row.author, profile: row.authorProfile } : undefined,
-                authors: subAuthors,
-                versions: row.latestVersion ? [{ ...row.latestVersion, files: subFiles as SubmissionFile[] }] : [],
-                reviewAssignments: [],
-                issue: row.issue,
-                publication: row.publication
-            };
-        });
-
-        return { success: true, data };
+        return { success: true, data: await listSubmissions(filters) };
     } catch (error) {
         console.error("Get All Submissions Error:", error);
-        return serverError(error, "reassign editor");
+        return serverError(error, "fetch submissions");
     }
 }
 
@@ -319,13 +99,20 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
  */
 export async function decideSubmission(id: number, decision: 'accepted' | 'rejected'): Promise<ActionResponse> {
     try {
+        const idResult = submissionIdSchema.safeParse(id);
+        const decisionResult = editorialDecisionSchema.safeParse(decision);
+        if (!idResult.success || !decisionResult.success) {
+            return actionError("Invalid submission decision input.");
+        }
+
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Unauthorized" };
         }
 
         const subRes = await getSubmissionById(id);
-        if (!subRes.success || !subRes.data) return { success: false, error: subRes.error || "Submission not found" };
+        if (!subRes.success) return { success: false, error: subRes.error };
+        if (!subRes.data) return { success: false, error: "Submission not found" };
         const submission = subRes.data;
 
         const apcRows = await db.select().from(settings).where(eq(settings.settingKey, 'apcInr')).limit(1);
@@ -413,13 +200,20 @@ export async function requestResubmissionWithComments(
     comments: string
 ): Promise<ActionResponse> {
     try {
+        const idResult = submissionIdSchema.safeParse(submissionId);
+        const commentsResult = resubmissionCommentsSchema.safeParse(comments);
+        if (!idResult.success || !commentsResult.success) {
+            return actionError("Invalid resubmission request input.");
+        }
+
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Unauthorized" };
         }
 
         const subRes = await getSubmissionById(submissionId);
-        if (!subRes.success || !subRes.data) return { success: false, error: subRes.error || 'Submission not found' };
+        if (!subRes.success) return { success: false, error: subRes.error };
+        if (!subRes.data) return { success: false, error: "Submission not found" };
         const submission = subRes.data;
 
         await db.update(submissions)
@@ -476,7 +270,8 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
         }
 
         const subRes = await getSubmissionById(id);
-        if (!subRes.success || !subRes.data) return { success: false, error: subRes.error || "Submission not found" };
+        if (!subRes.success) return { success: false, error: subRes.error };
+        if (!subRes.data) return { success: false, error: "Submission not found" };
         const authorId = subRes.data.correspondingAuthorId;
         // 1. Fetch ALL files for ALL versions of this submission
         const allSubmissionFiles = await db.select({
@@ -949,6 +744,11 @@ export async function retractPaper(
     noticeUrl?: string
 ): Promise<ActionResponse> {
     try {
+        const inputResult = retractionSchema.safeParse({ submissionId, reason, noticeUrl });
+        if (!inputResult.success) {
+            return actionError(inputResult.error.issues[0]?.message || "Invalid retraction input.");
+        }
+
         const session = await getServerSession(authOptions);
         if (!session?.user || session.user.role !== 'admin') {
             return actionError("Unauthorized: Admin privileges required for retraction.");
@@ -1005,6 +805,11 @@ export async function issueCorrigendum(
     noticeUrl?: string
 ): Promise<ActionResponse> {
     try {
+        const inputResult = corrigendumSchema.safeParse({ submissionId, amendmentDetails, noticeUrl });
+        if (!inputResult.success) {
+            return actionError(inputResult.error.issues[0]?.message || "Invalid corrigendum input.");
+        }
+
         const session = await getServerSession(authOptions);
         if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'editor')) {
             return actionError("Unauthorized: Editorial privileges required.");

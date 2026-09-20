@@ -9,8 +9,9 @@ import SubmissionDetailContainer from "@/features/submissions/components/Submiss
 export async function generateMetadata({ params }: { params: Promise<SubmissionIdParam> }): Promise<Metadata> {
     const { id } = await params;
     const response = await getSubmissionById(parseInt(id));
+    if (!response.success) return { title: 'Submission Not Found | Admin' };
     const submission = response.data;
-    if (!response.success || !submission) return { title: 'Submission Not Found | Admin' };
+    if (!submission) return { title: 'Submission Not Found | Admin' };
 
     return {
         title: `Manage: ${submission.paperId} | IJITEST Admin`,
@@ -36,9 +37,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
     }
 
     const response = await getSubmissionById(id);
-    const submission = response.data;
-
-    if (!response.success || !submission) {
+    if (!response.success || !response.data) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
                 <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6">
@@ -52,6 +51,7 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
             </div>
         );
     }
+    const submission = response.data;
 
     return (
         <SubmissionDetailContainer role="admin" submission={submission} />

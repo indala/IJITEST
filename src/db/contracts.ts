@@ -15,6 +15,7 @@ export type {
     SubmissionDetail,
     SubmissionUI,
     SubmissionStats,
+    ReviewWithReviewer,
     PaymentRow,
     UnpaidPaperRow,
     PaperWithPublication,

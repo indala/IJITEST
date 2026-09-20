@@ -1,6 +1,6 @@
 import { Mail } from 'lucide-react';
 import Link from 'next/link';
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 interface PublisherSectionProps {
     settings: JournalSettings | Record<string, string | undefined>;

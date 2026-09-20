@@ -17,6 +17,8 @@ import { toast } from "sonner";
 import { updatePublicationDoi } from "@/actions/publications";
 import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { useQueryClient } from "@tanstack/react-query";
+import { publicationKeys } from "@/features/publications";
+import { submissionKeys } from "@/features/submissions";
 
 interface EditDoiModalProps {
     submissionId: number;
@@ -77,8 +79,8 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                             : "DOI removed & PDF re-branded without DOI.",
                         { icon: <CheckCircle2 className="w-5 h-5 text-emerald-500" /> }
                     );
-                    queryClient.invalidateQueries({ queryKey: ['submissions'] });
-                    queryClient.invalidateQueries({ queryKey: ['volumes-issues'] });
+                    queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+                    queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
                     setOpen(false);
                 } else {
                     toast.error(res.error || "Failed to update publication DOI.");

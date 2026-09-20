@@ -31,7 +31,7 @@ import {
 import { motion } from 'framer-motion';
 import SubmissionSearch from './SubmissionSearch';
 import DeleteSubmissionButton from './DeleteSubmissionButton';
-import type { SubmissionUI } from '@/db/types';
+import type { SubmissionUI } from '@/db/contracts';
 
 const getStatusVariant = (status: string) => {
     switch (status) {

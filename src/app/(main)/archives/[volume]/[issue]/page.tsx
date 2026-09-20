@@ -49,7 +49,7 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
     if (isNaN(volNumber) || isNaN(issueNumber)) notFound();
 
     const papersRes = await getPublishedPapers();
-    const papers = papersRes.success ? papersRes.data : [];
+    const papers = papersRes.success && papersRes.data ? papersRes.data : [];
 
     // Filter papers for this volume and issue
     const issuePapers = papers.filter(p => p.volumeNumber === volNumber && p.issueNumber === issueNumber);

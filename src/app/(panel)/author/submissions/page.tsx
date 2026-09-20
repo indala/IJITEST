@@ -36,7 +36,9 @@ export default async function AuthorSubmissionsList() {
     if (session.user.role !== 'author') redirect(`/${session.user.role}`);
 
     const dashboardResponse = await getAuthorDashboard();
-    const submissions = dashboardResponse.data?.submissions || [];
+    const submissions = dashboardResponse.success && dashboardResponse.data
+        ? dashboardResponse.data.submissions
+        : [];
 
     // Attach eligibility data in parallel
     const withEligibility = await Promise.all(
@@ -74,7 +76,8 @@ export default async function AuthorSubmissionsList() {
             ) : (
                 <div className="grid grid-cols-1 gap-4">
                     {withEligibility.map((sub) => {
-                        const eligibility = (sub.eligibility as ActionResponse<Eligibility> | null)?.data;
+                        const eligibilityResponse = sub.eligibility as ActionResponse<Eligibility> | null;
+                        const eligibility = eligibilityResponse?.success ? eligibilityResponse.data : undefined;
                         const cfg = STATUS_CONFIG[sub.status] || { label: sub.status, color: 'text-muted-foreground', bg: 'bg-muted/30' };
                         const eligible = eligibility?.eligible;
                         const daysLeft = eligibility?.daysRemaining;

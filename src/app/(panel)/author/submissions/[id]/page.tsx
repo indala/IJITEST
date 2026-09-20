@@ -30,10 +30,12 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
     const eligResponse = await checkResubmissionEligibility(submissionId);
     let eligibility = { eligible: false, daysRemaining: 0 };
     let eligError = "";
-    if (eligResponse.success) {
+    if (eligResponse.success && eligResponse.data) {
         eligibility = eligResponse.data;
-    } else {
+    } else if (!eligResponse.success) {
         eligError = eligResponse.error;
+    } else {
+        eligError = "Eligibility response returned no data.";
     }
 
     const copyrightFile = sub.files.find((file: SubmissionFile) => file.fileType === 'copyrightForm');

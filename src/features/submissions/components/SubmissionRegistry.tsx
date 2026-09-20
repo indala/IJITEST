@@ -7,7 +7,7 @@ import SubmissionContainer from '@/features/submissions/components/SubmissionCon
 import SubmissionTabs from '@/features/submissions/components/SubmissionTabs';
 import SubmissionStats from '@/features/submissions/components/SubmissionStats';
 
-import type { SubmissionUI, SubmissionStats as SubmissionStatsData } from '@/db/types';
+import type { SubmissionUI, SubmissionStats as SubmissionStatsData } from '@/db/contracts';
 
 interface SubmissionRegistryProps {
     submissions: SubmissionUI[];

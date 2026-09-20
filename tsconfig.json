@@ -40,6 +40,24 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@app/*": [
+        "./src/app/*"
+      ],
+      "@features/*": [
+        "./src/features/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@db/*": [
+        "./src/db/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
       ]
     }
   },

@@ -19,7 +19,7 @@ import {
     actionError,
     serverError
 } from "@/lib/action-response";
-import { eq, and, sql, desc, count, inArray, asc } from "drizzle-orm";
+import { eq, and, sql, desc, inArray, asc } from "drizzle-orm";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { getSettingsData } from "./settings";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -39,6 +39,10 @@ import { headers } from "next/headers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { submitToIndexNow } from "@/lib/indexnow";
 import { isBot } from "@/lib/bot-detector";
+import {
+    listIssuesWithPaperCounts,
+    listPapersByIssue,
+} from "@/features/publications/server/publication.repository";
 
 
 /**
@@ -100,19 +104,7 @@ export async function getVolumesIssues(): Promise<ActionResponse<(Issue & { pape
             return actionError("Unauthorized");
         }
 
-        const rows = await db.select({
-            vi: volumesIssues,
-            paperCount: count(submissions.id)
-        })
-            .from(volumesIssues)
-            .leftJoin(submissions, eq(submissions.issueId, volumesIssues.id))
-            .groupBy(volumesIssues.id)
-            .orderBy(desc(volumesIssues.year), desc(volumesIssues.volumeNumber), desc(volumesIssues.issueNumber));
-
-        const data = rows.map(r => ({
-            ...r.vi,
-            paperCount: r.paperCount
-        }));
+        const data = await listIssuesWithPaperCounts();
         return actionSuccess(data);
     } catch (error) {
         console.error("Fetch Volumes/Issues Error:", error);
@@ -162,9 +154,8 @@ export async function assignPaperToIssue(
 
         // 1. Fetch Composite Submission Details OUTSIDE transaction
         const subRes = await getSubmissionById(submissionId);
-        if (!subRes.success || !subRes.data) {
-            return actionError(subRes.error || "Submission not found");
-        }
+        if (!subRes.success) return actionError(subRes.error);
+        if (!subRes.data) return actionError("Submission not found");
         const submission = subRes.data;
 
         // 2. Enforce status gate — only accepted/published papers can be assigned
@@ -517,37 +508,7 @@ export async function getPapersByIssueId(issueId: number): Promise<ActionRespons
         }
 
         // Return structured data for the issue listing
-        const latestVersions = db.select({
-            submissionId: submissionVersions.submissionId,
-            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
-        })
-            .from(submissionVersions)
-            .groupBy(submissionVersions.submissionId)
-            .as('lv');
-
-        const rows = await db.select({
-            id: submissions.id,
-            paperId: submissions.paperId,
-            status: submissions.status,
-            publication: publications,
-            latestVersion: submissionVersions
-        })
-            .from(submissions)
-            .where(eq(submissions.issueId, issueId))
-            .leftJoin(publications, eq(submissions.id, publications.submissionId))
-            .leftJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
-            .leftJoin(submissionVersions, and(
-                eq(submissions.id, submissionVersions.submissionId),
-                eq(submissionVersions.versionNumber, latestVersions.maxVersion)
-            ));
-
-        const data = rows.map(r => ({
-            id: r.id,
-            paperId: r.paperId,
-            title: r.latestVersion?.title || "Untitled",
-            status: r.status,
-            publication: r.publication
-        }));
+        const data = await listPapersByIssue(issueId);
 
         return actionSuccess(data);
     } catch (error) {
@@ -841,9 +802,8 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
 
         // 2. Fetch Latest Versions of this submission to get the original unbranded pdf
         const subRes = await getSubmissionById(submissionId);
-        if (!subRes.success || !subRes.data) {
-            return actionError(subRes.error || "Submission details not found");
-        }
+        if (!subRes.success) return actionError(subRes.error);
+        if (!subRes.data) return actionError("Submission details not found");
         const submission = subRes.data;
 
         const latestPdf = submission.allFiles.find(f => f.fileType === 'pdfVersion');

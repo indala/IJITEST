@@ -1,5 +1,6 @@
 import SubmissionRegistry from '@/features/submissions/components/SubmissionRegistry';
 import { getAllSubmissions } from '@/actions/submissions';
+import { connection } from 'next/server';
 
 export const metadata = {
     title: "Submissions | IJITEST",
@@ -10,6 +11,7 @@ export default async function AdminSubmissions({
 }: {
     searchParams: Promise<{ status?: string, q?: string }>
 }) {
+    await connection();
     const res = await getAllSubmissions();
 
     if (!res.success) {

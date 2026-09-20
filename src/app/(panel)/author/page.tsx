@@ -55,7 +55,7 @@ const getCachedAuthorDashboard = cache(async () => {
 async function AuthorStatsSection() {
     try {
         const response = await getCachedAuthorDashboard();
-        const submissions = (response.data?.submissions || []) as AuthorDashboardSubmission[];
+        const submissions = (response.success && response.data?.submissions ? response.data.submissions : []) as AuthorDashboardSubmission[];
 
         const stats: DashboardStat[] = [
             { label: 'Submitted', value: submissions.length, icon: <FileStack className="w-5 h-5 text-primary" /> },
@@ -93,7 +93,7 @@ async function AuthorStatsSection() {
 async function AuthorSubmissionsSection() {
     try {
         const response = await getCachedAuthorDashboard();
-        const submissions = (response.data?.submissions || []) as AuthorDashboardSubmission[];
+        const submissions = (response.success && response.data?.submissions ? response.data.submissions : []) as AuthorDashboardSubmission[];
 
         if (submissions.length === 0) {
             return (
@@ -226,7 +226,7 @@ async function AuthorSubmissionsSection() {
 async function AuthorImpactSection() {
     try {
         const response = await getCachedAuthorDashboard();
-        const submissions = (response.data?.submissions || []) as AuthorDashboardSubmission[];
+        const submissions = (response.success && response.data?.submissions ? response.data.submissions : []) as AuthorDashboardSubmission[];
 
         const totalViews = submissions.reduce((acc: number, sub) => acc + (sub.views || 0), 0);
         const totalDownloads = submissions.reduce((acc: number, sub) => acc + (sub.downloads || 0), 0);

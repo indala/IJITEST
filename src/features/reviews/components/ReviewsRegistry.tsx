@@ -7,13 +7,14 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { Badge } from "@/components/ui/badge";
-import { useActiveReviews, useUnassignedPapers } from '@/hooks/queries/useReviews';
-import type { ReviewAssignment } from '@/hooks/queries/useReviews';
-import { useUsers } from '@/hooks/queries/useUsers';
+import { useActiveReviews, useUnassignedPapers, reviewKeys } from '@/features/reviews';
+import type { ReviewAssignment } from '@/features/reviews';
+import { useUsers } from '@/features/users';
 import { type UserRole } from "@/db/types";
 import { decideSubmission, autoSyncManuscriptToPdf, requestResubmissionWithComments } from '@/actions/submissions';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { assignReviewer, submitReview, getReviewerMetrics } from '@/actions/reviews';
+import { unwrapAction } from '@/lib/query/action-query';
 
 import { ReviewItemCard } from './ReviewItemCard';
 import { GroupedReviewCard, type GroupedReview } from './GroupedReviewCard';
@@ -32,11 +33,8 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
     const { data: unassigned = [], isLoading: loadingUnassigned } = useUnassignedPapers();
     const { data: staff = [], isLoading: loadingStaff } = useUsers('reviewer');
     const { data: reviewerMetrics } = useQuery({
-        queryKey: ['reviewerMetrics'],
-        queryFn: async () => {
-            const res = await getReviewerMetrics();
-            return res.success ? res.data : undefined;
-        },
+        queryKey: reviewKeys.metrics(),
+        queryFn: () => unwrapAction(() => getReviewerMetrics()),
         enabled: role !== 'reviewer'
     });
     const sortedStaff = useMemo(() => {
@@ -67,7 +65,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
             const res = await autoSyncManuscriptToPdf(parseInt(selectedSubmissionId));
             if (res.success) {
                 toast.success("Manuscript synchronized", { id: tid });
-                queryClient.invalidateQueries({ queryKey: ['unassignedPapers'] });
+                queryClient.invalidateQueries({ queryKey: reviewKeys.unassignedPapers() });
                 router.refresh();
             } else {
                 toast.error(res.error || "Conversion failed", { id: tid });
@@ -97,7 +95,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
                     const res = await decideSubmission(item.submissionId, 'accepted');
                     if (res.success) {
                         toast.success('Accepted');
-                        queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
+                        queryClient.invalidateQueries({ queryKey: reviewKeys.notifications() });
                         refetchReviews();
                     } else toast.error(res.error);
                 }
@@ -117,7 +115,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
                     const res = await decideSubmission(item.submissionId, 'rejected');
                     if (res.success) {
                         toast.success('Rejected');
-                        queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
+                        queryClient.invalidateQueries({ queryKey: reviewKeys.notifications() });
                         refetchReviews();
                     } else toast.error(res.error);
                 }
@@ -135,7 +133,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
             const result = await submitReview(item.id, formData);
             if (result.success) {
                 toast.success('Feedback committed', { id: toastId });
-                queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
+                queryClient.invalidateQueries({ queryKey: reviewKeys.notifications() });
                 await refetchReviews();
             } else {
                 toast.error(result.error, { id: toastId });
@@ -153,7 +151,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
                     const res = await decideSubmission(submissionId, 'accepted');
                     if (res.success) {
                         toast.success('Accepted');
-                        queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
+                        queryClient.invalidateQueries({ queryKey: reviewKeys.notifications() });
                         refetchReviews();
                     } else toast.error(res.error);
                 }
@@ -173,7 +171,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
                     const res = await decideSubmission(submissionId, 'rejected');
                     if (res.success) {
                         toast.success('Rejected');
-                        queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
+                        queryClient.invalidateQueries({ queryKey: reviewKeys.notifications() });
                         refetchReviews();
                     } else toast.error(res.error);
                 }
@@ -191,7 +189,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
             const res = await requestResubmissionWithComments(submissionId, comments);
             if (res.success) {
                 toast.success('Revision request committed', { id: toastId });
-                queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
+                queryClient.invalidateQueries({ queryKey: reviewKeys.notifications() });
                 refetchReviews();
             } else {
                 toast.error(res.error, { id: toastId });
@@ -207,9 +205,9 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
             if (res.success) {
                 toast.success('Reviewer assigned');
                 setShowAssignModal(false);
-                queryClient.invalidateQueries({ queryKey: ['reviews'] });
-                queryClient.invalidateQueries({ queryKey: ['unassignedPapers'] });
-                queryClient.invalidateQueries({ queryKey: ['notificationCounts'] });
+                queryClient.invalidateQueries({ queryKey: reviewKeys.all });
+                queryClient.invalidateQueries({ queryKey: reviewKeys.unassignedPapers() });
+                queryClient.invalidateQueries({ queryKey: reviewKeys.notifications() });
             } else {
                 toast.error(res.error);
             }

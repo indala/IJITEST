@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Archives() {
     const papersRes = await getPublishedPapers();
-    const papers = papersRes.success ? papersRes.data : [];
+    const papers = papersRes.success && papersRes.data ? papersRes.data : [];
 
     // Group papers by volumeNumber
     const volumeMap = new Map<Issue['volumeNumber'], {

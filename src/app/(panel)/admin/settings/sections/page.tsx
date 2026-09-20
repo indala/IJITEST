@@ -92,10 +92,12 @@ export default function AdminSectionsPage() {
         setIsLoading(true);
         try {
             const res = await getAllSectionsAdmin();
-            if (res.success && res.data) {
+            if (!res.success) {
+                toast.error(res.error);
+            } else if (res.data) {
                 setSectionsList(res.data);
             } else {
-                toast.error(res.error || "Failed to load journal sections");
+                toast.error("Sections response returned no data");
             }
         } catch (error) {
             console.error("Load sections error:", error);

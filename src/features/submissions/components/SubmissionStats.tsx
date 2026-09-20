@@ -5,7 +5,7 @@ import {
     AlertCircle
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import type { SubmissionStats as SubmissionStatsData } from '@/db/types';
+import type { SubmissionStats as SubmissionStatsData } from '@/db/contracts';
 
 interface SubmissionStatsProps {
     stats: SubmissionStatsData;

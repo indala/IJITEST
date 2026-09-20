@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FileText, Download, Check, Upload, Loader2, ChevronRight } from "lucide-react";
 import type { FormValues } from "../../schemas/submission.schema";
-import type { JournalSettings } from "@/db/types";
+import type { JournalSettings } from "@/db/protocols";
 
 interface ManuscriptUploadDropzoneProps {
     control: Control<FormValues>;

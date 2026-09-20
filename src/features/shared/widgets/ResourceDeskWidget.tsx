@@ -1,7 +1,7 @@
 import { Download, FileDown, FileText } from 'lucide-react';
 import { memo } from 'react';
 
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 interface ResourceDeskWidgetProps {
     settings: JournalSettings;

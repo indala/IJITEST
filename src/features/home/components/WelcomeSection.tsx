@@ -1,4 +1,4 @@
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 interface WelcomeSectionProps {
     settings: JournalSettings | Record<string, string | undefined>;

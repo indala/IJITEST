@@ -51,12 +51,15 @@ export default function FinalSubmissionForm() {
 
         startVerifyTransition(async () => {
             const res = await verifyManuscriptForFinalSubmission(paperId, authorEmail);
-            if (res.success && res.data) {
+            if (!res.success) {
+                setVerifiedPaper(null);
+                toast.error(res.error);
+            } else if (res.data) {
                 setVerifiedPaper(res.data);
                 toast.success("Manuscript verified for final camera-ready submission.");
             } else {
                 setVerifiedPaper(null);
-                toast.error(res.error || "Verification failed. Check your credentials.");
+                toast.error("Verification returned no manuscript data.");
             }
         });
     };
@@ -98,11 +101,13 @@ export default function FinalSubmissionForm() {
 
         startSubmitTransition(async () => {
             const res = await submitPublicFinalSubmission(formData);
-            if (res.success && res.data) {
+            if (!res.success) {
+                toast.error(res.error);
+            } else if (res.data) {
                 toast.success("Final camera-ready package received successfully!");
                 setSubmissionSuccess(res.data);
             } else {
-                toast.error(res.error || "Failed to submit final package.");
+                toast.error("Final submission returned no confirmation.");
             }
         });
     };

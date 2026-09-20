@@ -11,7 +11,7 @@ export async function GET() {
             getSettingsData()
         ]);
 
-        const allPapers = papersRes.success ? papersRes.data : [];
+        const allPapers = papersRes.success && papersRes.data ? papersRes.data : [];
         const papers = allPapers.slice(0, 30);
         const baseUrl = (settings['journalWebsite'] || process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
         const feedUrl = `${baseUrl}/api/feed`;
@@ -34,4 +34,3 @@ export async function GET() {
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
-

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import PageHeader from "@/components/layout/PageHeader";
-import { useTrackManuscript } from '@/hooks/queries/usePublic';
+import { useTrackManuscript } from '@/features/public';
 import Script from 'next/script';
 import dynamic from 'next/dynamic';
 
@@ -21,10 +21,12 @@ export default function PaymentClient({ id }: { id: string }) {
     const apcIndexing = apcTotal - apcFee;
 
     const { data: queryData, isLoading: loading, error: queryError } = useTrackManuscript(id, "", true);
-    const manuscript = queryData?.success && queryData.data?.manuscript ? queryData.data.manuscript : null;
+    const manuscript = queryData?.manuscript ?? null;
     const [paid, setPaid] = useState(false);
 
-    const error = queryError ? "Failed to fetch manuscript details." : (queryData && !queryData.success ? queryData.error : (!manuscript && !loading ? "Manuscript not found or invalid link." : ""));
+    const error = queryError
+        ? "Failed to fetch manuscript details."
+        : (!manuscript && !loading ? "Manuscript not found or invalid link." : "");
 
     // Real payment is handled by the RazorpayPayment component
     // handlePayment removed as it was a mock

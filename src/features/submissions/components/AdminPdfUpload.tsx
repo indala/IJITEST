@@ -7,7 +7,7 @@ import { FileUp, FileCheck, Loader2, Download, RefreshCw, X } from "lucide-react
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { uploadManuscriptPdf, autoSyncManuscriptToPdf } from "@/actions/submissions";
-import { type ActionResponse } from "@/db/types";
+import type { ActionResponse } from "@/db/contracts";
 
 export default function AdminPdfUpload({ submissionId, currentUrl }: { submissionId: number, currentUrl?: string | null }) {
     const router = useRouter();

@@ -1,7 +1,8 @@
 "use client";
 
 import { Users, UserPlus, Shield, Mail, Trash2, ShieldCheck, UserCog, CheckCircle, AlertCircle, ShieldAlert, Search } from 'lucide-react';
-import { useUsers } from '@/hooks/queries/useUsers';
+import { useUsers } from '@/features/users';
+import { userKeys } from '@/features/users';
 import { useSession } from 'next-auth/react';
 import React, { useState, useTransition, useCallback, useMemo, useActionState } from 'react';
 import { toast } from 'sonner';
@@ -176,7 +177,7 @@ export default function UserManagement() {
         if (result.success) {
             toast.success("Staff member invited successfully");
             setShowAddModal(false);
-            queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: userKeys.all });
         } else {
             toast.error(result.error);
         }
@@ -217,7 +218,7 @@ export default function UserManagement() {
                 const result = await updateUserRole(userId, role);
                 if (result.success) {
                     toast.success("Designation updated successfully", { id: toastId });
-                    queryClient.invalidateQueries({ queryKey: ['users'] });
+                    queryClient.invalidateQueries({ queryKey: userKeys.all });
                 } else {
                     toast.error(result.error || "Execution fault", { id: toastId });
                 }
@@ -239,7 +240,7 @@ export default function UserManagement() {
                 if (result.success) {
                     toast.success("Staff member removed successfully");
                     setUserToDelete(null);
-                    queryClient.invalidateQueries({ queryKey: ['users'] });
+                    queryClient.invalidateQueries({ queryKey: userKeys.all });
                 } else {
                     toast.error(result.error);
                 }

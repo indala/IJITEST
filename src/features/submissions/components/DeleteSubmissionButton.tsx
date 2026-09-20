@@ -16,7 +16,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { type ActionResponse } from "@/db/types";
+import type { ActionResponse } from "@/db/contracts";
 
 interface DeleteSubmissionButtonProps {
     submissionId: number;

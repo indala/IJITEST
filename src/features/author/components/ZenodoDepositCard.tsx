@@ -55,7 +55,9 @@ export function ZenodoDepositCard({
         startTransition(async () => {
             try {
                 const res = await depositToZenodo(submissionId);
-                if (res.success && res.data) {
+                if (!res.success) {
+                    toast.error(res.error);
+                } else if (res.data) {
                     setDeposit({
                         doi: res.data.zenodoDoi,
                         recordUrl: res.data.recordUrl,
@@ -65,7 +67,7 @@ export function ZenodoDepositCard({
                     });
                     router.refresh();
                 } else {
-                    toast.error(res.error || "Failed to deposit to Zenodo.");
+                    toast.error("Zenodo deposit returned no result.");
                 }
             } catch (err: unknown) {
                 const msg = err instanceof Error ? err.message : "Deposit request failed";

@@ -3,7 +3,7 @@ import "server-only"
 
 import { db } from "@/lib/db";
 import { payments, submissions, submissionVersions, userProfiles, users } from "@/db/schema";
-import { eq, desc, and, isNull, sql } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { invalidateAuthorActionsCount, createNotification } from "./notifications";
@@ -11,51 +11,24 @@ import { type PaymentRow, type UnpaidPaperRow, type PaymentStatus } from "@/db/t
 import { type ActionResponse, serverError, actionSuccess } from "@/lib/action-response";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { getAuthorizedSession } from "@/lib/auth/guards";
 import { generateInvoicePdf } from "@/lib/invoice-generator";
 import { sendEmailWithRetry } from "@/lib/mail";
+import {
+    listAcceptedUnpaidPapers,
+    listPayments,
+} from "@/features/payments/server/payment.repository";
 
 
 
 export async function getPayments(): Promise<ActionResponse<PaymentRow[]>> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
             return { success: false, error: "Unauthorized" };
         }
 
-        const latestVersions = db.select({
-            submissionId: submissionVersions.submissionId,
-            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
-        })
-        .from(submissionVersions)
-        .groupBy(submissionVersions.submissionId)
-        .as('lv');
-
-        const results = await db.select({
-            id: payments.id,
-            submissionId: payments.submissionId,
-            amount: payments.amount,
-            currency: payments.currency,
-            status: payments.status,
-            transactionId: payments.transactionId,
-            paidAt: payments.paidAt,
-            createdAt: payments.createdAt,
-            title: submissionVersions.title,
-            paperId: submissions.paperId,
-            authorName: userProfiles.fullName,
-            authorEmail: users.email
-        })
-        .from(payments)
-        .innerJoin(submissions, eq(payments.submissionId, submissions.id))
-        .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
-        .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
-        .innerJoin(submissionVersions, and(
-            eq(submissionVersions.submissionId, submissions.id),
-            eq(submissionVersions.versionNumber, latestVersions.maxVersion)
-        ))
-        .orderBy(desc(payments.createdAt))
-        .limit(200);
+        const results = await listPayments();
 
         return { success: true, data: results as PaymentRow[] };
     } catch (error) {
@@ -66,8 +39,8 @@ export async function getPayments(): Promise<ActionResponse<PaymentRow[]>> {
 
 export async function updatePaymentStatus(paymentId: number, status: PaymentStatus, transactionId?: string): Promise<ActionResponse> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
             return { success: false, error: "Unauthorized" };
         }
 
@@ -155,8 +128,8 @@ export async function updatePaymentStatus(paymentId: number, status: PaymentStat
 
 export async function initializePayment(submissionId: number, amount: number, currency: string = 'INR'): Promise<ActionResponse> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
             return { success: false, error: "Unauthorized" };
         }
 
@@ -206,34 +179,7 @@ export async function getAcceptedUnpaidPapers(): Promise<ActionResponse<UnpaidPa
             return { success: false, error: "Unauthorized" };
         }
 
-        const latestVersions = db.select({
-            submissionId: submissionVersions.submissionId,
-            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
-        })
-        .from(submissionVersions)
-        .groupBy(submissionVersions.submissionId)
-        .as('lv');
-
-        // Find submissions that are 'accepted' but have no entry in 'payments'
-        const results = await db.select({
-            id: submissions.id,
-            paperId: submissions.paperId,
-            title: submissionVersions.title,
-            authorName: userProfiles.fullName
-        })
-        .from(submissions)
-        .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
-        .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
-        .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
-        .innerJoin(submissionVersions, and(
-            eq(submissionVersions.submissionId, submissions.id),
-            eq(submissionVersions.versionNumber, latestVersions.maxVersion)
-        ))
-        .leftJoin(payments, eq(submissions.id, payments.submissionId))
-        .where(and(
-            eq(submissions.status, 'accepted'),
-            isNull(payments.id)
-        ));
+        const results = await listAcceptedUnpaidPapers();
 
         return { success: true, data: results };
     } catch (error) {

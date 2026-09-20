@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, User, Mail, Phone, Briefcase, School, BookOpen, Tag, Bookmark } from "lucide-react";
 import type { FormValues } from "../../schemas/submission.schema";
-import type { Section } from "@/db/types";
+import type { Section } from "@/db/models";
 
 interface AuthorDetailsFieldsProps {
     form: UseFormReturn<FormValues>;

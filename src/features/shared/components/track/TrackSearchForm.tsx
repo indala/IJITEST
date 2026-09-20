@@ -24,7 +24,8 @@ function TrackButton() {
     );
 }
 
-import type { Submission, User as DBUser, JournalSettings } from "@/db/types";
+import type { Submission, User as DBUser } from "@/db/models";
+import type { JournalSettings } from "@/db/protocols";
 
 interface TrackSearchFormProps {
     paperIdInput: Submission['paperId'];

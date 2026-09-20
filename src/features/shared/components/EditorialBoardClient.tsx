@@ -4,7 +4,8 @@ import { useState, useMemo } from 'react';
 import { Mail, Search, Globe, Users, Sparkles, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { staticEditorialBoardMembers, type BoardMember } from '../data/editorial-board';
-import type { SafeUserWithProfile, JournalSettings } from '@/db/types';
+import type { SafeUserWithProfile } from '@/db/contracts';
+import type { JournalSettings } from '@/db/protocols';
 
 interface EditorialBoardClientProps {
     initialMembers: SafeUserWithProfile[];

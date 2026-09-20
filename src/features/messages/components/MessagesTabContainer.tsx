@@ -11,6 +11,7 @@ const ManageMessagesContent = dynamic(() => import("@/features/messages/componen
 const LiveChatContent = dynamic(() => import("@/features/chat/components/LiveChatContent").then(m => m.LiveChatContent), { ssr: false });
 import { MessageSquare, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { notificationKeys } from "@/features/notifications";
 
 interface MessagesTabContainerProps {
     defaultTab?: 'inquiry' | 'chat';
@@ -22,7 +23,7 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
     const { unreadCount } = useSocket();
 
     const { data: counts = { messages: 0, submissions: 0 } } = useQuery({
-        queryKey: ['notificationCounts'],
+        queryKey: notificationKeys.counts(),
         queryFn: getNotificationCounts,
         enabled: !!session?.user,
         select: (res) => res.success ? res.data : { messages: 0, submissions: 0 },

@@ -27,10 +27,12 @@ export default async function ResubmitPage({ params }: { params: Promise<Submiss
     const submission = submissionRes.data;
     let eligibility = { eligible: false, daysRemaining: 0 };
     let eligError = "";
-    if (eligibilityRes.success) {
+    if (eligibilityRes.success && eligibilityRes.data) {
         eligibility = eligibilityRes.data;
-    } else {
+    } else if (!eligibilityRes.success) {
         eligError = eligibilityRes.error;
+    } else {
+        eligError = "Eligibility response returned no data.";
     }
 
     return (

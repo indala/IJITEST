@@ -17,14 +17,13 @@ import {
     users,
     userProfiles,
     userInvitations,
-    sections,
-    reviewerSuggestions,
 } from "@/db/schema";
 import { logSubmissionEvent } from "./event-log";
 
 import crypto from "crypto";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { getAuthorizedSession } from "@/lib/auth/guards";
 import { 
     uploadFileToStorage, 
     triggerDocxToPdfConversion 
@@ -32,13 +31,17 @@ import {
 
 import { type ActiveReview, type UnassignedPaper, type ReviewerPerformanceMetrics } from "@/db/types";
 import { type ActionResponse, serverError } from "@/lib/action-response";
+import {
+    listActiveReviews,
+    listUnassignedPapers,
+} from "@/features/reviews/server/review.repository";
 
 /**
  * Assign a reviewer to a submission.
  * Enforces a strict limit of 6 reviewers per submission.
  */
 export async function assignReviewer(formData: FormData): Promise<ActionResponse> {
-    const session = await getServerSession(authOptions);
+    const session = await getAuthorizedSession();
     if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
         return { success: false, error: "Unauthorized: Admin or Editor access required." };
     }
@@ -513,59 +516,7 @@ export async function getActiveReviews(reviewerId?: string): Promise<ActionRespo
         if (reviewerId && session.user.role !== 'admin' && session.user.role !== 'editor' && session.user.id !== reviewerId) {
             return { success: false, error: "Unauthorized" };
         }
-        const manuscriptSubquery = db.select({
-            manuscriptUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('manuscriptUrl'),
-            versionId: submissionFiles.versionId
-        })
-            .from(submissionFiles)
-            .where(eq(submissionFiles.fileType, 'pdfVersion'))
-            .groupBy(submissionFiles.versionId)
-            .as('ms');
-
-        const feedbackSubquery = db.select({
-            feedbackUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('feedbackUrl'),
-            versionId: submissionFiles.versionId
-        })
-            .from(submissionFiles)
-            .where(eq(submissionFiles.fileType, 'feedback'))
-            .groupBy(submissionFiles.versionId)
-            .as('fs');
-
-        let query = db.select({
-            id: reviewAssignments.id,
-            status: reviewAssignments.status,
-            assignedAt: reviewAssignments.assignedAt,
-            deadline: reviewAssignments.deadline,
-            reviewRound: reviewAssignments.reviewRound,
-            submissionId: reviewAssignments.submissionId,
-            paperId: submissions.paperId,
-            submissionStatus: submissions.status,
-            title: submissionVersions.title,
-            reviewerName: userProfiles.fullName,
-            reviewId: reviews.id,
-            decision: reviews.decision,
-            editorRating: reviews.editorRating,
-            editorRatingRemarks: reviews.editorRatingRemarks,
-            commentsToAuthor: reviews.commentsToAuthor,
-            submittedAt: reviews.submittedAt,
-            manuscriptPath: manuscriptSubquery.manuscriptUrl,
-            feedbackFilePath: feedbackSubquery.feedbackUrl
-        })
-            .from(reviewAssignments)
-            .innerJoin(submissions, eq(reviewAssignments.submissionId, submissions.id))
-            .innerJoin(submissionVersions, eq(reviewAssignments.versionId, submissionVersions.id))
-            .leftJoin(userProfiles, eq(reviewAssignments.reviewerId, userProfiles.userId))
-            .leftJoin(reviews, eq(reviewAssignments.id, reviews.assignmentId))
-            .leftJoin(manuscriptSubquery, eq(reviewAssignments.versionId, manuscriptSubquery.versionId))
-            .leftJoin(feedbackSubquery, eq(reviewAssignments.versionId, feedbackSubquery.versionId))
-            .$dynamic();
-
-        if (reviewerId) {
-            query = query.where(eq(reviewAssignments.reviewerId, reviewerId));
-        }
-
-        const rows = await query.orderBy(desc(reviewAssignments.assignedAt)).limit(200);
-        return { success: true, data: rows as ActiveReview[] };
+        return { success: true, data: await listActiveReviews(reviewerId) };
     } catch (error) {
         console.error("Get Reviews Error:", error);
         return serverError(error, "fetch review assignments");
@@ -581,72 +532,7 @@ export async function getUnassignedAcceptedPapers(): Promise<ActionResponse<Unas
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
             return { success: false, error: "Unauthorized" };
         }
-
-        const latestVersions = db.select({
-            submissionId: submissionVersions.submissionId,
-            maxVersion: sql<number>`MAX(${submissionVersions.versionNumber})`.as('max_version')
-        })
-            .from(submissionVersions)
-            .groupBy(submissionVersions.submissionId)
-            .as('lv');
-
-        const manuscriptPaths = db.select({
-            versionId: submissionFiles.versionId,
-            pdfUrl: sql<string>`MAX(${submissionFiles.fileUrl})`.as('pdfUrl')
-        })
-            .from(submissionFiles)
-            .where(eq(submissionFiles.fileType, 'pdfVersion'))
-            .groupBy(submissionFiles.versionId)
-            .as('mp');
-
-        const blindedSubquery = db.select({
-            versionId: submissionFiles.versionId,
-            blindedCount: count().as('blinded_count')
-        })
-            .from(submissionFiles)
-            .where(eq(submissionFiles.fileType, 'blindedManuscript'))
-            .groupBy(submissionFiles.versionId)
-            .as('bs');
-
-        const rows = await db.select({
-            id: submissions.id,
-            paperId: submissions.paperId,
-            title: submissionVersions.title,
-            pdfUrl: manuscriptPaths.pdfUrl,
-            isBlinded: sql<boolean>`COALESCE(${blindedSubquery.blindedCount}, 0) > 0`,
-            sectionTitle: sections.title
-        })
-            .from(submissions)
-            .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
-            .innerJoin(latestVersions, eq(submissions.id, latestVersions.submissionId))
-            .leftJoin(sections, eq(submissions.sectionId, sections.id))
-            .leftJoin(manuscriptPaths, eq(submissionVersions.id, manuscriptPaths.versionId))
-            .leftJoin(blindedSubquery, eq(submissionVersions.id, blindedSubquery.versionId))
-            .where(and(
-                inArray(submissions.status, ['submitted', 'editorAssigned', 'underReview', 'revisionRequested']),
-                eq(submissionVersions.versionNumber, latestVersions.maxVersion)
-            ));
-
-        // Fetch author reviewer suggestions for these papers
-        const subIds = rows.map(r => r.id);
-        const suggestions = subIds.length > 0 
-            ? await db.select().from(reviewerSuggestions).where(inArray(reviewerSuggestions.submissionId, subIds))
-            : [];
-
-        const suggestionsMap = new Map<number, typeof suggestions>();
-        for (const s of suggestions) {
-            const list = suggestionsMap.get(s.submissionId) || [];
-            list.push(s);
-            suggestionsMap.set(s.submissionId, list);
-        }
-
-        const enriched: UnassignedPaper[] = rows.map(r => ({
-            ...r,
-            sectionTitle: r.sectionTitle || null,
-            reviewerSuggestions: suggestionsMap.get(r.id) || []
-        }));
-
-        return { success: true, data: enriched };
+        return { success: true, data: await listUnassignedPapers() };
     } catch (error) {
         console.error("Get Unassigned Error:", error);
         return serverError(error, "fetch review details");

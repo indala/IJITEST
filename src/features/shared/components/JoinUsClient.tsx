@@ -1,7 +1,7 @@
 import ReviewerApplicationForm from "@/features/reviewer/components/ReviewerApplicationForm";
 import { CheckCircle2, Globe, Users, Award } from 'lucide-react';
 
-import type { JournalSettings } from '@/db/types';
+import type { JournalSettings } from '@/db/protocols';
 
 
 const BENEFITS = [

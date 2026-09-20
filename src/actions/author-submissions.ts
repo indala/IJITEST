@@ -317,6 +317,9 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
         if (!eligibility.success) {
             return actionError(eligibility.error);
         }
+        if (!eligibility.data) {
+            return actionError("Eligibility check returned no data.");
+        }
         if (!eligibility.data.eligible) {
             return actionError("Resubmission window expired or ineligible status.");
         }

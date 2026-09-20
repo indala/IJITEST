@@ -9,7 +9,7 @@ import RevisedSubmissionForm from '@/features/submissions/components/RevisedSubm
 import FinalSubmissionForm from '@/features/submissions/components/FinalSubmissionForm';
 import TrackManuscriptWidget from '@/features/shared/widgets/TrackManuscriptWidget';
 import { Button } from "@/components/ui/button";
-import type { Section } from "@/db/types";
+import type { Section } from "@/db/models";
 
 export type SubmissionType = 'new' | 'revised' | 'final';
 

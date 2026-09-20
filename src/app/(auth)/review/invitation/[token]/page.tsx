@@ -28,12 +28,15 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
     const handleAction = (action: "accept" | "decline") => {
         startTransition(async () => {
             const res = await respondToReviewInvitation(token, action, action === "decline" ? declineReason : undefined);
-            if (res.success && res.data) {
+            if (!res.success) {
+                setStatus("error");
+                setErrorMessage(res.error);
+            } else if (res.data) {
                 setPaperInfo(res.data);
                 setStatus(action === "accept" ? "success_accepted" : "success_declined");
             } else {
                 setStatus("error");
-                setErrorMessage(res.error || "Failed to process review invitation response.");
+                setErrorMessage("Review invitation response returned no data.");
             }
         });
     };

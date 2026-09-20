@@ -3,61 +3,38 @@ import "server-only"
 
 import { db } from "@/lib/db";
 import { contactMessages } from "@/db/schema";
-import { eq, and, like, or, desc, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { emailTemplates, sendEmail, sendEmailWithRetry } from "@/lib/mail";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getAuthorizedSession } from "@/lib/auth/guards";
 
 import { type ContactMessageRow } from "@/db/types";
 import { type ActionResponse, actionSuccess, actionError, serverError } from "@/lib/action-response";
 import { insertContactSchema } from "@/db/validation";
 import { invalidateMessagesCount } from "./notifications";
+import {
+    findMessage,
+    listMessages,
+    removeMessage,
+    setMessageStatus,
+    setMessagesStatus,
+} from "@/features/messages/server/message.repository";
+import type { MessageFilters, MessageStatus } from "@/features/messages/types/message.types";
 
 /**
  * Fetch contact messages for the admin panel with filtering and search.
  */
-export async function getMessages(filters?: { status?: 'pending' | 'resolved' | 'archived', search?: string }): Promise<ActionResponse<ContactMessageRow[]>> {
+export async function getMessages(filters?: MessageFilters): Promise<ActionResponse<ContactMessageRow[]>> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
             return actionError("Unauthorized access.");
         }
 
-        const whereConditions: import("drizzle-orm").SQL[] = [];
+        const rows = await listMessages(filters);
 
-        if (filters?.status && (filters.status as string) !== 'all') {
-            whereConditions.push(eq(contactMessages.status, filters.status));
-        }
-
-        if (filters?.search) {
-            const pattern = `%${filters.search}%`;
-            const searchClause = or(
-                like(contactMessages.name, pattern),
-                like(contactMessages.email, pattern),
-                like(contactMessages.subject, pattern)
-            );
-            if (searchClause) {
-                whereConditions.push(searchClause);
-            }
-        }
-
-        const rows = await db.select({
-            id: contactMessages.id,
-            name: contactMessages.name,
-            email: contactMessages.email,
-            subject: contactMessages.subject,
-            message: contactMessages.message,
-            status: contactMessages.status,
-            createdAt: contactMessages.createdAt,
-        })
-        .from(contactMessages)
-        .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-        .orderBy(desc(contactMessages.createdAt))
-        .limit(200);
-
-        return actionSuccess(rows as ContactMessageRow[]);
+        return actionSuccess(rows);
     } catch (error) {
         return serverError(error, 'fetch messages');
     }
@@ -66,16 +43,14 @@ export async function getMessages(filters?: { status?: 'pending' | 'resolved' | 
 /**
  * Update the status of a contact message.
  */
-export async function updateMessageStatus(id: number, status: 'resolved' | 'archived' | 'pending'): Promise<ActionResponse> {
+export async function updateMessageStatus(id: number, status: MessageStatus): Promise<ActionResponse> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
             return actionError("Unauthorized access.");
         }
 
-        await db.update(contactMessages)
-            .set({ status })
-            .where(eq(contactMessages.id, id));
+        await setMessageStatus(id, status);
 
         await invalidateMessagesCount();
         revalidatePath('/admin/messages');
@@ -88,16 +63,14 @@ export async function updateMessageStatus(id: number, status: 'resolved' | 'arch
 /**
  * Bulk update statuses for multiple messages.
  */
-export async function bulkUpdateMessageStatus(ids: number[], status: 'resolved' | 'archived' | 'pending'): Promise<ActionResponse<{ count: number }>> {
+export async function bulkUpdateMessageStatus(ids: number[], status: MessageStatus): Promise<ActionResponse<{ count: number }>> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
             return actionError("Unauthorized access.");
         }
 
-        await db.update(contactMessages)
-            .set({ status })
-            .where(inArray(contactMessages.id, ids));
+        await setMessagesStatus(ids, status);
 
         await invalidateMessagesCount();
         revalidatePath('/admin/messages');
@@ -112,12 +85,12 @@ export async function bulkUpdateMessageStatus(ids: number[], status: 'resolved' 
  */
 export async function deleteMessage(id: number): Promise<ActionResponse> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
             return actionError("Unauthorized access.");
         }
 
-        await db.delete(contactMessages).where(eq(contactMessages.id, id));
+        await removeMessage(id);
         await invalidateMessagesCount();
         revalidatePath('/admin/messages');
         return actionSuccess();
@@ -131,15 +104,12 @@ export async function deleteMessage(id: number): Promise<ActionResponse> {
  */
 export async function replyToMessage(id: number, replyContent: string): Promise<ActionResponse> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
             return actionError("Unauthorized access.");
         }
 
-        const [message] = await db.select()
-            .from(contactMessages)
-            .where(eq(contactMessages.id, id))
-            .limit(1);
+        const message = await findMessage(id);
 
         if (!message) return actionError("Message not found.");
 

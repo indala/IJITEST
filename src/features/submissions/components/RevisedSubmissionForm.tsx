@@ -45,12 +45,15 @@ export default function RevisedSubmissionForm() {
 
         startVerifyTransition(async () => {
             const res = await verifyManuscriptForRevision(paperId, authorEmail);
-            if (res.success && res.data) {
+            if (!res.success) {
+                setVerifiedPaper(null);
+                toast.error(res.error);
+            } else if (res.data) {
                 setVerifiedPaper(res.data);
                 toast.success("Manuscript verified for revision submission.");
             } else {
                 setVerifiedPaper(null);
-                toast.error(res.error || "Verification failed. Check your credentials.");
+                toast.error("Verification returned no manuscript data.");
             }
         });
     };
@@ -83,11 +86,13 @@ export default function RevisedSubmissionForm() {
 
         startSubmitTransition(async () => {
             const res = await submitPublicRevision(formData);
-            if (res.success && res.data) {
+            if (!res.success) {
+                toast.error(res.error);
+            } else if (res.data) {
                 toast.success("Revised manuscript submitted successfully!");
                 setSubmissionSuccess(res.data);
             } else {
-                toast.error(res.error || "Failed to submit revision.");
+                toast.error("Revision submission returned no confirmation.");
             }
         });
     };
