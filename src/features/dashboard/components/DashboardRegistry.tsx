@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NumberTicker } from '@/components/ui/number-ticker';
 
-import type { Application } from '@/db/types';
+import type { Application, UserRole } from '@/db/types';
 import { cn, formatDate } from '@/lib/utils';
 import {
     DashboardStatsSkeleton,
@@ -65,7 +65,7 @@ export interface DashboardStaff {
 }
 
 export interface DashboardRegistryProps {
-    role: 'admin' | 'editor' | 'author';
+    role: Extract<UserRole, 'admin' | 'editor' | 'author'>;
     user: DashboardUser | null | undefined;
     stats?: Stat[];
     statsSlot?: React.ReactNode;

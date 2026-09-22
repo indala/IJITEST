@@ -41,8 +41,8 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
     const initialMode: 'none' | 'official' | 'custom' = isCurrentlyOfficial
         ? 'official'
         : isCurrentlyCustom
-        ? 'custom'
-        : 'none';
+            ? 'custom'
+            : 'none';
 
     const [doiMode, setDoiMode] = useState<'none' | 'official' | 'custom'>(initialMode);
     const [customDoiValue, setCustomDoiValue] = useState(isCurrentlyCustom ? (currentDoi || '') : '');
@@ -127,7 +127,7 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                         <span className="text-label font-bold text-muted-foreground uppercase tracking-wider">Current Status</span>
                         <p className="font-mono font-medium text-foreground break-all">
                             {currentDoi ? (
-                                <span className="text-emerald-700 dark:text-emerald-400 font-semibold">{currentDoi}</span>
+                                <span className="text-emerald-700  font-semibold">{currentDoi}</span>
                             ) : (
                                 <span className="text-muted-foreground italic">No DOI assigned (Unindexed)</span>
                             )}
@@ -141,33 +141,30 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                             <button
                                 type="button"
                                 onClick={() => setDoiMode('none')}
-                                className={`py-2 px-2 rounded-lg text-center transition-all cursor-pointer font-medium ${
-                                    doiMode === 'none'
+                                className={`py-2 px-2 rounded-lg text-center transition-all cursor-pointer font-medium ${doiMode === 'none'
                                         ? 'bg-white text-foreground shadow-xs font-bold'
                                         : 'text-muted-foreground hover:text-foreground'
-                                } `}
+                                    } `}
                             >
                                 No DOI
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setDoiMode('official')}
-                                className={`py-2 px-2 rounded-lg text-center transition-all cursor-pointer font-medium ${
-                                    doiMode === 'official'
+                                className={`py-2 px-2 rounded-lg text-center transition-all cursor-pointer font-medium ${doiMode === 'official'
                                         ? 'bg-emerald-600 text-white shadow-xs font-bold'
                                         : 'text-muted-foreground hover:text-foreground'
-                                } `}
+                                    } `}
                             >
                                 Official CrossRef
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setDoiMode('custom')}
-                                className={`py-2 px-2 rounded-lg text-center transition-all cursor-pointer font-medium ${
-                                    doiMode === 'custom'
+                                className={`py-2 px-2 rounded-lg text-center transition-all cursor-pointer font-medium ${doiMode === 'custom'
                                         ? 'bg-white text-foreground shadow-xs font-bold'
                                         : 'text-muted-foreground hover:text-foreground'
-                                } `}
+                                    } `}
                             >
                                 Zenodo / Custom
                             </button>
@@ -177,10 +174,10 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
                     {/* Detail for Mode */}
                     {doiMode === 'official' && (
                         <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-body-sm space-y-1">
-                            <p className="text-label font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+                            <p className="text-label font-bold text-emerald-700  uppercase tracking-wider">
                                 Official Journal DOI Target
                             </p>
-                            <p className="font-mono text-emerald-950 dark:text-emerald-200 break-all font-semibold">
+                            <p className="font-mono text-emerald-950  break-all font-semibold">
                                 {officialTargetDoi}
                             </p>
                             <p className="text-caption text-muted-foreground pt-1">
@@ -206,7 +203,7 @@ export default function EditDoiModal({ submissionId, paperId, currentDoi }: Edit
 
                     {doiMode === 'none' && (
                         <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-body-sm space-y-1">
-                            <p className="text-label font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
+                            <p className="text-label font-bold text-amber-700  uppercase tracking-wider">
                                 Unassigned Mode
                             </p>
                             <p className="text-caption text-muted-foreground leading-relaxed">

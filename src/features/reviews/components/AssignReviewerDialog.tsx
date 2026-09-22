@@ -72,7 +72,7 @@ export function AssignReviewerDialog({
     const chosenReviewer = sortedStaff.find(r => r.id === selectedReviewerId);
     const selectedIsOpposed = chosenReviewer && opposedSuggestions.find(
         s => (s.email && s.email.toLowerCase() === chosenReviewer.email.toLowerCase()) ||
-             (s.mappedReviewerId && s.mappedReviewerId === chosenReviewer.id)
+            (s.mappedReviewerId && s.mappedReviewerId === chosenReviewer.id)
     );
 
     const handleSubmit = (formData: FormData) => {
@@ -142,7 +142,7 @@ export function AssignReviewerDialog({
                                 </p>
                                 <div className="space-y-1">
                                     {preferredSuggestions.map((s, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                                        <div key={idx} className="flex items-center gap-2 text-emerald-700 
                                             <ThumbsUp className="w-3.5 h-3.5 shrink-0" />
                                             <span>
                                                 <strong>Suggested:</strong> {s.givenName} {s.familyName || ""} ({s.email})
@@ -151,7 +151,7 @@ export function AssignReviewerDialog({
                                         </div>
                                     ))}
                                     {opposedSuggestions.map((s, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-medium">
+                                        <div key={idx} className="flex items-center gap-2 text-rose-600  font-medium">
                                             <ThumbsDown className="w-3.5 h-3.5 shrink-0" />
                                             <span>
                                                 <strong>Opposed:</strong> {s.givenName} {s.familyName || ""} ({s.email})
@@ -216,13 +216,13 @@ export function AssignReviewerDialog({
 
                         {/* Active Warning Banner if Opposed Reviewer is Selected */}
                         {selectedIsOpposed && (
-                            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2.5 text-rose-700 dark:text-rose-400">
+                            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2.5 text-rose-700 
                                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                                 <div className="text-body-sm space-y-0.5">
                                     <p className="font-bold m-0">Author Conflict of Interest Warning</p>
                                     <p className="m-0 text-muted-foreground leading-snug">
                                         The author explicitly requested not to assign this reviewer:
-                                        <span className="font-semibold text-rose-600 dark:text-rose-400 ml-1">
+                                        <span className="font-semibold text-rose-600  ml-1">
                                             "{selectedIsOpposed.suggestionReason || 'Conflict of interest stated by author'}"
                                         </span>
                                     </p>
@@ -302,8 +302,8 @@ export function AssignReviewerDialog({
                             {isAssigning ? 'SYNCHRONIZING...' : 'COMMIT ASSIGNMENT'}
                         </Button>
                     </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                </form >
+            </DialogContent >
+        </Dialog >
     );
 }

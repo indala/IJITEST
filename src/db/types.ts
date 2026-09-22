@@ -51,6 +51,8 @@ export type GalleyStatus = InferSelectModel<typeof submissions>['galleyStatus'];
 export type NotificationType = InferSelectModel<typeof notifications>['type'];
 export type DoiProvider = InferSelectModel<typeof publications>['doiProvider'];
 export type DoiRegistrationStatus = InferSelectModel<typeof publications>['doiRegistrationStatus'];
+export type EditorialDecision = Extract<SubmissionStatus, 'accepted' | 'rejected'>;
+export type StaffRole = Extract<UserRole, 'admin' | 'editor'>;
 
 // 👤 Users & Profiles
 export type User = InferSelectModel<typeof users>;

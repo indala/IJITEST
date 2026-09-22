@@ -9,10 +9,9 @@ import {
     reviewAssignments
 } from '@/db/schema';
 import { eq, and, or } from 'drizzle-orm';
-import { downloadFileFromStorage } from '@/lib/fs-utils';
+import { getStorageServiceRequestConfig } from '@/lib/storage-service-client';
+import { type FileType } from '@/db/types';
 import path from 'path';
-
-
 
 /**
  * Secure file serving route.
@@ -29,7 +28,7 @@ export async function GET(
         return new NextResponse("Forbidden", { status: 403 });
     }
 
-    const category = pathSegments[0]; // e.g., "submissions", "reviewer-apps"
+    const category = pathSegments[0]; // e.g., "submissions", "reviewer-apps", "issues"
     const filename = pathSegments.slice(1).join('/');
 
     // Handle case-insensitive redirects for published files starting with "ijitest-"
@@ -43,8 +42,8 @@ export async function GET(
 
     const relativePath = `${category}/${filename}`;
 
-    // 0. Published, docs, profile, and announcement banner files are public to all
-    if (category && ['published', 'docs', 'profiles', 'announcements'].includes(category)) {
+    // 0. Published, docs, profiles, announcements, and compiled issue books are public open-access
+    if (category && ['published', 'docs', 'profiles', 'announcements', 'issues'].includes(category)) {
         return serveFile(relativePath);
     }
 
@@ -66,13 +65,10 @@ export async function GET(
         } 
         
         if (category === 'reviewer-apps') {
-            // Only admin can see CVs (checked above), or the user themselves?
-            // Usually, applicants don't have accounts yet, so just admin.
             return new NextResponse("Forbidden", { status: 403 });
         }
 
         if (category === 'reviews') {
-            // Handled similarly to submissions or specific logic for review docs
             const isAuthorized = await checkReviewAccess(session.user.id, relativePath);
             if (isAuthorized) return serveFile(relativePath);
         }
@@ -86,36 +82,67 @@ export async function GET(
 }
 
 async function serveFile(relativePath: string) {
-    try {
-        let fileBuffer: Buffer;
-        try {
-            fileBuffer = await downloadFileFromStorage(relativePath);
-        } catch (storageErr) {
-            // Fallback for public static assets like docs
-            const localPublicPath = path.resolve(process.cwd(), 'public', relativePath);
-            const fs = await import('fs/promises');
-            fileBuffer = await fs.readFile(localPublicPath);
-        }
-        
-        const ext = path.extname(relativePath).toLowerCase();
-        const mimeTypes: Record<string, string> = {
-            '.pdf': 'application/pdf',
-            '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            '.png': 'image/png',
-            '.jpg': 'image/jpeg',
-            '.jpeg': 'image/jpeg',
-            '.webp': 'image/webp',
-            '.svg': 'image/svg+xml',
-            '.gif': 'image/gif',
-        };
+    const cleanRelativePath = relativePath.replace(/^\/+/, '');
+    const ext = path.extname(relativePath).toLowerCase();
+    const mimeTypes: Record<string, string> = {
+        '.pdf': 'application/pdf',
+        '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.webp': 'image/webp',
+        '.svg': 'image/svg+xml',
+        '.gif': 'image/gif',
+    };
 
-        let safeFilename = path.basename(relativePath).replace(/["\r\n]/g, '');
-        const lowerName = safeFilename.toLowerCase();
-        if (lowerName.includes('template')) {
-            safeFilename = 'IJITEST-Manuscript-Template.docx';
-        } else if (lowerName.includes('copyright') || lowerName.includes('license') || lowerName.includes('agreement')) {
-            safeFilename = 'IJITEST-Publication-License-Agreement.docx';
+    let safeFilename = path.basename(relativePath).replace(/["\r\n]/g, '');
+    const lowerName = safeFilename.toLowerCase();
+    if (lowerName.includes('template')) {
+        safeFilename = 'IJITEST-Manuscript-Template.docx';
+    } else if (lowerName.includes('copyright') || lowerName.includes('license') || lowerName.includes('agreement')) {
+        safeFilename = 'IJITEST-Publication-License-Agreement.docx';
+    }
+
+    // Attempt zero-buffer direct stream piping from storage-service
+    try {
+        const { serviceUrl, headers } = getStorageServiceRequestConfig();
+        const downloadUrl = new URL('storage/download', `${serviceUrl}/`);
+        downloadUrl.searchParams.set('path', cleanRelativePath);
+
+        const storageRes = await fetch(downloadUrl.toString(), {
+            headers,
+            cache: 'no-store',
+        });
+
+        if (storageRes.ok && storageRes.body) {
+            const responseHeaders: Record<string, string> = {
+                'Content-Type': mimeTypes[ext] || storageRes.headers.get('content-type') || 'application/octet-stream',
+                'Content-Disposition': `inline; filename="${safeFilename}"`,
+            };
+
+            const contentLength = storageRes.headers.get('content-length');
+            if (contentLength) {
+                responseHeaders['Content-Length'] = contentLength;
+            }
+
+            if (cleanRelativePath.startsWith('published/') || cleanRelativePath.startsWith('issues/')) {
+                responseHeaders['Cache-Control'] = 'public, max-age=86400, stale-while-revalidate=604800';
+            }
+
+            return new NextResponse(storageRes.body, {
+                status: 200,
+                headers: responseHeaders,
+            });
         }
+    } catch (storageErr) {
+        console.warn(`Storage service stream unavailable for ${relativePath}, attempting local fallback:`, storageErr);
+    }
+
+    // Fallback for public static assets stored locally in public/
+    try {
+        const localPublicPath = path.resolve(process.cwd(), 'public', cleanRelativePath);
+        const fs = await import('fs/promises');
+        const fileBuffer = await fs.readFile(localPublicPath);
 
         return new NextResponse(new Uint8Array(fileBuffer), {
             headers: {
@@ -138,6 +165,7 @@ async function checkSubmissionAccess(userId: string, role: string, fileUrl: stri
     const files = await db.select({
         submissionId: submissionVersions.submissionId,
         authorId: submissions.correspondingAuthorId,
+        fileType: submissionFiles.fileType,
     })
     .from(submissionFiles)
     .innerJoin(submissionVersions, eq(submissionFiles.versionId, submissionVersions.id))
@@ -152,13 +180,20 @@ async function checkSubmissionAccess(userId: string, role: string, fileUrl: stri
 
     const fileData = files[0];
     if (!fileData) return false;
-    const { submissionId, authorId } = fileData;
+    const { submissionId, authorId, fileType } = fileData;
 
     if (role === 'author') {
         return authorId === userId;
     }
 
     if (role === 'reviewer') {
+        // Strict double-blind confidentiality:
+        // Reviewers can ONLY access anonymized blinded manuscripts or system review PDFs
+        const allowedReviewerFileTypes: FileType[] = ['blindedManuscript', 'pdfVersion', 'supplementary'];
+        if (!allowedReviewerFileTypes.includes(fileType)) {
+            return false;
+        }
+
         const assignments = await db.select()
             .from(reviewAssignments)
             .where(and(
@@ -173,6 +208,5 @@ async function checkSubmissionAccess(userId: string, role: string, fileUrl: stri
 }
 
 async function checkReviewAccess(userId: string, fileUrl: string) {
-    // Reviews usually follow the same logic as submissions for now
     return checkSubmissionAccess(userId, 'reviewer', fileUrl);
 }

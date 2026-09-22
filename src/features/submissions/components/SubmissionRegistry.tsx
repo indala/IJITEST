@@ -4,16 +4,17 @@ import { AlertTriangle, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import SubmissionContainer from '@/features/submissions/components/SubmissionContainer';
-import SubmissionTabs from '@/features/submissions/components/SubmissionTabs';
+import SubmissionTabs, { type SubmissionTabValue } from '@/features/submissions/components/SubmissionTabs';
 import SubmissionStats from '@/features/submissions/components/SubmissionStats';
 
 import type { SubmissionUI, SubmissionStats as SubmissionStatsData } from '@/db/contracts';
+import type { StaffRole } from '@/db/types';
 
 interface SubmissionRegistryProps {
     submissions: SubmissionUI[];
     stats: SubmissionStatsData;
-    currentStatus?: string;
-    role: 'admin' | 'editor';
+    currentStatus?: SubmissionTabValue;
+    role: StaffRole;
 }
 
 export default function SubmissionRegistry({ 
@@ -22,15 +23,10 @@ export default function SubmissionRegistry({
     currentStatus = 'all',
     role 
 }: SubmissionRegistryProps) {
-    const [selectedStatus, setSelectedStatus] = useState(currentStatus);
+    const [selectedStatus, setSelectedStatus] = useState<SubmissionTabValue>(currentStatus);
 
     const filteredSubmissions = useMemo(() => {
         if (selectedStatus === 'all') return submissions;
-        if (selectedStatus === 'pending') {
-            return submissions.filter(sub =>
-                ['editorAssigned', 'underReview', 'revisionRequested'].includes(sub.status)
-            );
-        }
         return submissions.filter(sub => sub.status === selectedStatus);
     }, [selectedStatus, submissions]);
 

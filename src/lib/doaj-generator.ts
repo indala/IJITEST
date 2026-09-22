@@ -44,11 +44,18 @@ export function generateDoajXml({ settings, papers, issue }: GenerateDoajXmlOpti
         const rawAuthors: Author[] = (Array.isArray(paper.coAuthors) && paper.coAuthors.length > 0)
             ? paper.coAuthors
             : [{
+                id: 0,
+                submissionId: paper.id,
                 name: paper.authorName,
                 email: paper.authorEmail || '',
+                phone: null,
+                designation: null,
                 institution: paper.affiliation || '',
                 orcidId: null,
-            } as unknown as Author];
+                creditRoles: null,
+                isCorresponding: true,
+                orderIndex: 0,
+            }];
 
         // Gather affiliations
         const affList: string[] = [];

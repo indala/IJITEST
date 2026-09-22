@@ -335,7 +335,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
     );
 }
 
-export default function ReviewsRegistrySuspense(props: { role: 'admin' | 'editor' | 'reviewer' }) {
+export default function ReviewsRegistrySuspense(props: { role: ReviewsRegistryRole }) {
     return (
         <Suspense fallback={<div className="p-20 text-center text-label font-bold text-primary/20 tracking-widest animate-pulse">SYNCHRONIZING INTERFACE...</div>}>
             <ReviewsRegistry {...props} />

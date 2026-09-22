@@ -28,6 +28,7 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 import {
     downloadFileFromStorage,
     triggerPdfBranding,
+    getRelativePath,
 } from "@/lib/fs-utils";
 import { getStorageServiceClient, type IssueBookMetadata } from "@/lib/storage-service-client";
 import { getSubmissionById } from "./submissions";
@@ -43,6 +44,32 @@ import {
     listIssuesWithPaperCounts,
     listPapersByIssue,
 } from "@/features/publications/server/publication.repository";
+import type { SubmissionUI } from "@/db/contracts";
+
+function formatPublicationDate(d: Date | string | null | undefined): string | null {
+    if (!d) return null;
+    try {
+        const dateObj = typeof d === 'string' ? new Date(d) : d;
+        if (isNaN(dateObj.getTime())) return null;
+        return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(dateObj);
+    } catch {
+        return null;
+    }
+}
+
+function extractFirstAuthor(submission: SubmissionUI): string | null {
+    if (submission.authors && submission.authors.length > 0) {
+        const sorted = [...submission.authors].sort((a, b) => a.orderIndex - b.orderIndex);
+        return sorted[0]?.name?.trim() || submission.authorName || null;
+    }
+    return submission.authorName || null;
+}
+
+function extractRunningTitle(title: string | null | undefined): string | null {
+    if (!title) return null;
+    const clean = title.trim();
+    return clean.length > 80 ? `${clean.slice(0, 77)}...` : clean;
+}
 
 
 /**
@@ -242,8 +269,8 @@ export async function assignPaperToIssue(
         const cleanInput = latestPdf.fileUrl;
 
         await triggerPdfBranding(cleanInput, brandedRelativePath, {
-            journalName: settings['journalName'] || "IJITEST",
-            journalShortName: "IJITEST",
+            journalName: settings['journalName'] || "International Journal of Innovative Trends in Engineering Science and Technology",
+            journalShortName: settings['journalShortName'] || "IJITEST",
             volume: issue.volumeNumber,
             issue: issue.issueNumber,
             year: issue.year,
@@ -254,7 +281,11 @@ export async function assignPaperToIssue(
             startPage: confirmedStartPage,
             endPage: confirmedEndPage,
             doi: resolvedDoi,
-            license: "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+            license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+            receivedDate: formatPublicationDate(submission.submittedAt),
+            acceptedDate: formatPublicationDate(submission.decisionAt || new Date()),
+            firstAuthor: extractFirstAuthor(submission),
+            runningTitle: extractRunningTitle(submission.title),
         });
 
         // 7. Database transaction — only pure DB ops
@@ -817,19 +848,23 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
 
         // 3. Trigger branding again on NestJS backend
         await triggerPdfBranding(cleanInput, brandedRelativePath, {
-            journalName: settings['journalName'] || "IJITEST",
-            journalShortName: "IJITEST",
+            journalName: settings['journalName'] || "International Journal of Innovative Trends in Engineering Science and Technology",
+            journalShortName: settings['journalShortName'] || "IJITEST",
             volume: issue.volumeNumber,
             issue: issue.issueNumber,
             year: issue.year,
             monthRange: issue.monthRange || "",
-            issn: settings['issnNumber'] || "XXXX-XXXX",
+            issn: settings['issnNumber'] || "3139-6887",
             website: settings['journalWebsite'] || "https://ijitest.org",
             paperId: sub.paperId,
             startPage: pub.startPage,
             endPage: pub.endPage,
             doi: pub.doi,
-            license: "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+            license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+            receivedDate: formatPublicationDate(submission.submittedAt),
+            acceptedDate: formatPublicationDate(submission.decisionAt || new Date()),
+            firstAuthor: extractFirstAuthor(submission),
+            runningTitle: extractRunningTitle(submission.title),
         });
 
         // 4. Update the published date/time in the db or just revalidate
@@ -901,8 +936,8 @@ export async function updatePublicationDoi(submissionId: number, doi: string | n
                 const settings = await getSettingsData();
                 try {
                     await triggerPdfBranding(latestPdf.fileUrl, pub.finalPdfUrl, {
-                        journalName: settings['journalName'] || "IJITEST",
-                        journalShortName: "IJITEST",
+                        journalName: settings['journalName'] || "International Journal of Innovative Trends in Engineering Science and Technology",
+                        journalShortName: settings['journalShortName'] || "IJITEST",
                         volume: issue.volumeNumber,
                         issue: issue.issueNumber,
                         year: issue.year,
@@ -913,7 +948,11 @@ export async function updatePublicationDoi(submissionId: number, doi: string | n
                         startPage: pub.startPage,
                         endPage: pub.endPage,
                         doi: cleanDoi,
-                        license: "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+                        license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+                        receivedDate: formatPublicationDate(subRes.data.submittedAt),
+                        acceptedDate: formatPublicationDate(subRes.data.decisionAt || new Date()),
+                        firstAuthor: extractFirstAuthor(subRes.data),
+                        runningTitle: extractRunningTitle(subRes.data.title),
                     });
                 } catch (brandErr) {
                     console.error("Failed to re-brand PDF during DOI update:", brandErr);
@@ -1004,7 +1043,7 @@ export async function generateCompleteIssueBook(issueId: number): Promise<Action
                 paperId: p.submission.paperId,
                 title: version?.title || "Untitled Paper",
                 authors: authors.length > 0 ? authors : ["Contributing Author"],
-                pdfPath: p.publication.finalPdfUrl,
+                pdfPath: getRelativePath(p.publication.finalPdfUrl),
             };
 
             if (p.publication.startPage !== null) {
@@ -1021,16 +1060,17 @@ export async function generateCompleteIssueBook(issueId: number): Promise<Action
         });
 
         const outputPath = `issues/volume-${issue.volumeNumber}-issue-${issue.issueNumber}-fullbook.pdf`;
+        const settings = await getSettingsData();
 
         const issueBookMetadata: IssueBookMetadata = {
-            journalName: "International Journal of Innovative Trends in Engineering Science and Technology",
-            journalShortName: "IJITEST",
+            journalName: settings['journalName'] || "International Journal of Innovative Trends in Engineering Science and Technology",
+            journalShortName: settings['journalShortName'] || "IJITEST",
             volume: issue.volumeNumber,
             issue: issue.issueNumber,
             year: issue.year,
             monthRange: issue.monthRange || "",
-            issn: "2584-XXXX",
-            website: "https://ijitest.org",
+            issn: settings['issnNumber'] || "3139-6887",
+            website: settings['journalWebsite'] || "https://ijitest.org",
             articles: articlesPayload,
         };
 

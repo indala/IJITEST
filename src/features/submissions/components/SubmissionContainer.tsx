@@ -32,6 +32,7 @@ import { motion } from 'framer-motion';
 import SubmissionSearch from './SubmissionSearch';
 import DeleteSubmissionButton from './DeleteSubmissionButton';
 import type { SubmissionUI } from '@/db/contracts';
+import type { StaffRole } from '@/db/types';
 
 const getStatusVariant = (status: string) => {
     switch (status) {
@@ -215,7 +216,7 @@ SubmissionDesktopRow.displayName = 'SubmissionDesktopRow';
 
 interface SubmissionContainerProps {
     submissions: SubmissionUI[];
-    role: 'admin' | 'editor';
+    role: StaffRole;
 }
 
 export default function SubmissionContainer({ submissions, role }: SubmissionContainerProps) {

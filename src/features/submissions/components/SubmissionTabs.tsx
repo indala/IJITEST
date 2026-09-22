@@ -2,12 +2,22 @@
 
 import { motion } from 'framer-motion';
 import { useCallback } from 'react';
+import { type SubmissionStatus } from '@/db/types';
 
-const statuses = [
+export type SubmissionTabValue = 'all' | Extract<SubmissionStatus, 'submitted' | 'underReview' | 'revisionRequested' | 'accepted' | 'paymentPending' | 'published' | 'rejected'>;
+
+interface TabDefinition {
+    label: string;
+    value: SubmissionTabValue;
+}
+
+const statuses: readonly TabDefinition[] = [
     { label: 'All', value: 'all' },
     { label: 'Submitted', value: 'submitted' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Paid / Waive Free', value: 'paymentPending' },
+    { label: 'In Review', value: 'underReview' },
+    { label: 'Revisions', value: 'revisionRequested' },
+    { label: 'Accepted', value: 'accepted' },
+    { label: 'Payment Pending', value: 'paymentPending' },
     { label: 'Published', value: 'published' },
     { label: 'Rejected', value: 'rejected' },
 ];
@@ -16,10 +26,10 @@ export default function SubmissionTabs({
     currentStatus = 'all',
     onStatusChange,
 }: {
-    currentStatus?: string;
-    onStatusChange: (status: string) => void;
+    currentStatus?: SubmissionTabValue | string;
+    onStatusChange: (status: SubmissionTabValue) => void;
 }) {
-    const handleTabClick = useCallback((status: string) => {
+    const handleTabClick = useCallback((status: SubmissionTabValue) => {
         onStatusChange(status);
     }, [onStatusChange]);
 

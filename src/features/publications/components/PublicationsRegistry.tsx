@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition, useActionState } from 'react';
-import { 
-    Plus, BookOpen, Clock, CheckCircle2, 
-    CheckCircle, Save, ChevronDown as ChevronDownIcon, ChevronUp, FileText, Eye, Unlink, Loader2 
+import {
+    Plus, BookOpen, Clock, CheckCircle2,
+    CheckCircle, Save, ChevronDown as ChevronDownIcon, ChevronUp, FileText, Eye, Unlink, Loader2
 } from 'lucide-react';
 import {
     useVolumesIssues,
@@ -21,7 +21,7 @@ import {
 import { depositToCrossref } from '@/actions/doi-registration';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import type { Issue, ActionResponse } from '@/db/types';
+import type { Issue, ActionResponse, StaffRole } from '@/db/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/dialog";
 
 interface PublicationsRegistryProps {
-    role: 'admin' | 'editor';
+    role: StaffRole;
 }
 
 export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
@@ -361,24 +361,24 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                                             <div className="min-w-0 flex-1">
                                                                                 <div className="flex items-center gap-2 flex-wrap mb-0.5">
                                                                                     <p className="font-semibold text-foreground leading-tight line-clamp-1">{paper.title}</p>
-                                                                                    
+
                                                                                     {/* DOI Source & Registration Status Badges */}
                                                                                     {provider === 'crossref' ? (
                                                                                         regStatus === 'registered' ? (
-                                                                                            <span className="text-body-sm bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                            <span className="text-body-sm bg-emerald-500/15 text-emerald-700  font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
                                                                                                 CrossRef ✓
                                                                                             </span>
                                                                                         ) : regStatus === 'failed' ? (
-                                                                                            <span className="text-body-sm bg-rose-500/15 text-rose-700 dark:text-rose-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                            <span className="text-body-sm bg-rose-500/15 text-rose-700  font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
                                                                                                 CrossRef ✗ Failed
                                                                                             </span>
                                                                                         ) : (
-                                                                                            <span className="text-body-sm bg-amber-500/15 text-amber-700 dark:text-amber-400 font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                            <span className="text-body-sm bg-amber-500/15 text-amber-700  font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
                                                                                                 CrossRef ⏳ Pending
                                                                                             </span>
                                                                                         )
                                                                                     ) : provider === 'zenodo' ? (
-                                                                                        <span className="text-body-sm bg-sky-500/15 text-sky-700 dark:text-sky-400 font-semibold px-1.5 py-0.2 rounded-md">
+                                                                                        <span className="text-body-sm bg-sky-500/15 text-sky-700  font-semibold px-1.5 py-0.2 rounded-md">
                                                                                             Zenodo
                                                                                         </span>
                                                                                     ) : doi ? (

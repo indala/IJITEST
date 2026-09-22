@@ -3,16 +3,16 @@ import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import { ScrollSpyNav } from '@/components/common/ScrollSpyNav';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-    BookOpen, 
-    CheckCircle2, 
-    ExternalLink, 
-    FileText, 
-    Globe, 
-    LockOpen, 
-    Scale, 
-    Sparkles, 
-    UploadCloud 
+import {
+    BookOpen,
+    CheckCircle2,
+    ExternalLink,
+    FileText,
+    Globe,
+    LockOpen,
+    Scale,
+    Sparkles,
+    UploadCloud
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -51,7 +51,7 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
                             </p>
                         </div>
                         <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15 space-y-1">
-                            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-body-sm">
+                            <div className="flex items-center gap-2 text-emerald-700  font-bold text-body-sm">
                                 <Globe className="size-4" />
                                 <span>Universal Reach</span>
                             </div>
@@ -60,7 +60,7 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
                             </p>
                         </div>
                         <div className="p-3.5 rounded-xl bg-blue-500/5 border border-blue-500/15 space-y-1">
-                            <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-body-sm">
+                            <div className="flex items-center gap-2 text-blue-700  font-bold text-body-sm">
                                 <Scale className="size-4" />
                                 <span>BOAI Compliant</span>
                             </div>

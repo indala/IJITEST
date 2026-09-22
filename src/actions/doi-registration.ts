@@ -20,6 +20,7 @@ import { logSubmissionEvent } from "@/actions/event-log";
 import { revalidatePath } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { updateTag } from "next/cache";
+import type { DoiRegistrationStatus } from "@/db/types";
 
 /**
  * Live CrossRef Deposit Server Action
@@ -27,7 +28,7 @@ import { updateTag } from "next/cache";
  */
 export async function depositToCrossref(submissionId: number): Promise<ActionResponse<{
     batchId: string;
-    status: 'pending' | 'registered' | 'failed';
+    status: Extract<DoiRegistrationStatus, 'pending' | 'registered' | 'failed'>;
     message: string;
 }>> {
     try {

@@ -16,6 +16,7 @@ import {
 } from "@/db/schema";
 import { logSubmissionEvent } from "./event-log";
 import type { SubmissionUI } from "@/db/contracts";
+import type { EditorialDecision } from "@/db/types";
 import {
     type ActionResponse,
     actionSuccess,
@@ -97,7 +98,7 @@ export async function getAllSubmissions(filters?: { status?: string, q?: string 
 /**
  * Admin/Editor: Final accept/reject decision
  */
-export async function decideSubmission(id: number, decision: 'accepted' | 'rejected'): Promise<ActionResponse> {
+export async function decideSubmission(id: number, decision: EditorialDecision): Promise<ActionResponse> {
     try {
         const idResult = submissionIdSchema.safeParse(id);
         const decisionResult = editorialDecisionSchema.safeParse(decision);

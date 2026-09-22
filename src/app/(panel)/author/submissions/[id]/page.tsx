@@ -90,7 +90,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                 <h3 className="font-black text-primary leading-tight">{sub.title}</h3>
                                 <p className="text-caption text-primary/60 italic leading-relaxed">{sub.abstract}</p>
                             </div>
-                            
+
                             <div className="flex flex-wrap gap-2">
                                 {sub.keywords?.split(',').map((kw: string) => (
                                     <Badge key={kw} variant="outline" className="px-3 py-1 rounded-lg border-primary/10 text-badge font-bold text-primary/50">
@@ -181,9 +181,9 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
 
                     {/* Resubmission Section / Copyright Upload Section */}
                     {eligibility.eligible ? (
-                        <ResubmissionForm 
-                            submissionId={submissionId} 
-                            daysRemaining={eligibility.daysRemaining || 28} 
+                        <ResubmissionForm
+                            submissionId={submissionId}
+                            daysRemaining={eligibility.daysRemaining || 28}
                         />
                     ) : isAcceptedOrPublished ? (
                         copyrightFile ? (
@@ -207,9 +207,9 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                 </CardContent>
                             </Card>
                         ) : (
-                            <CopyrightUpload 
-                                submissionId={submissionId} 
-                                copyrightUrl={settings['copyrightUrl']} 
+                            <CopyrightUpload
+                                submissionId={submissionId}
+                                copyrightUrl={settings['copyrightUrl']}
                             />
                         )
                     ) : null}
@@ -237,9 +237,9 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                         </CardHeader>
                         <CardContent className="pt-6 space-y-3">
                             {sub.files.map((file: SubmissionFile) => (
-                                <Link 
-                                    key={file.id} 
-                                    href={getSecureUrl(file.fileUrl)} 
+                                <Link
+                                    key={file.id}
+                                    href={getSecureUrl(file.fileUrl)}
                                     target="_blank"
                                     className="flex items-center justify-between p-4 rounded-xl border border-primary/5 hover:bg-primary/5 hover:border-secondary transition-all group"
                                 >
@@ -294,20 +294,18 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                 {sub.reviewerSuggestions.map((sug, idx) => (
                                     <div
                                         key={idx}
-                                        className={`p-3 rounded-xl border text-body-sm space-y-1 ${
-                                            sug.type === 'opposed'
-                                                ? 'border-rose-200 bg-rose-50/40 dark:bg-rose-950/20'
-                                                : 'border-emerald-200 bg-emerald-50/40 dark:bg-emerald-950/20'
-                                        } `}
+                                        className={`p-3 rounded-xl border text-body-sm space-y-1 ${sug.type === 'opposed'
+                                                ? 'border-rose-200 bg-rose-50/40 
+                                                : 'border-emerald-200 bg-emerald-50/40 
+                                            } `}
                                     >
                                         <div className="flex items-center justify-between font-bold">
                                             <span className="flex items-center gap-1.5">
                                                 {sug.type === 'opposed' ? <ThumbsDown className="w-3.5 h-3.5 text-rose-600" /> : <ThumbsUp className="w-3.5 h-3.5 text-emerald-600" />}
                                                 {sug.givenName} {sug.familyName || ""}
                                             </span>
-                                            <span className={`text-label uppercase px-1.5 py-0.5 rounded font-black ${
-                                                sug.type === 'opposed' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
-                                            } `}>
+                                            <span className={`text-label uppercase px-1.5 py-0.5 rounded font-black ${sug.type === 'opposed' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
+                                                } `}>
                                                 {sug.type}
                                             </span>
                                         </div>
@@ -331,13 +329,12 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                     <CardTitle className="font-black text-primary uppercase tracking-widest">
                                         APC Remittance
                                     </CardTitle>
-                                    <Badge className={`text-badge font-black uppercase tracking-wider px-2 py-0.5 ${
-                                        ['paid', 'verified'].includes(sub.payment.status)
+                                    <Badge className={`text-badge font-black uppercase tracking-wider px-2 py-0.5 ${['paid', 'verified'].includes(sub.payment.status)
                                             ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
                                             : sub.payment.status === 'waived'
-                                            ? 'bg-purple-100 text-purple-700 border-purple-200'
-                                            : 'bg-amber-100 text-amber-700 border-amber-200'
-                                    } `}>
+                                                ? 'bg-purple-100 text-purple-700 border-purple-200'
+                                                : 'bg-amber-100 text-amber-700 border-amber-200'
+                                        } `}>
                                         {sub.payment.status === 'verified' ? 'Verified' : sub.payment.status}
                                     </Badge>
                                 </div>
@@ -381,7 +378,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                     {/* Published Link & Certificate (if applicable) */}
                     {sub.publication && (
                         <div className="space-y-3">
-                            <Link 
+                            <Link
                                 href={getSecureUrl(sub.publication.finalPdfUrl)}
                                 target="_blank"
                                 className="flex flex-col items-center justify-center gap-4 p-8 bg-primary rounded-3xl text-white text-center shadow-2xl shadow-primary/40 hover:scale-[1.02] transition-transform"

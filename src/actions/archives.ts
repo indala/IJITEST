@@ -335,7 +335,6 @@ type PublicationInput = Partial<Omit<Publication, 'issueId'>> & {
     ) | null;
     issue?: Partial<Pick<Issue, 'volumeNumber' | 'issueNumber' | 'year' | 'monthRange' | 'title' | 'description' | 'datePublished' | 'coverImageUrl' | 'coverImageAltText'>> | null;
     section?: { title?: string | null; identifyType?: string | null } | null;
-    [key: string]: unknown; // allow Drizzle leftJoin spreads with extra fields
 };
 
 function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
@@ -352,8 +351,8 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
 
     const supplementaryFiles = pub.submission?.files?.filter(f => f.fileType === 'supplementary') || [];
 
-    const sectionTitle = pub.section?.title || (pub.submission as any)?.section?.title || "Original Research Articles";
-    const sectionIdentifyType = pub.section?.identifyType || (pub.submission as any)?.section?.identifyType || "Research Article";
+    const sectionTitle = pub.section?.title || pub.submission?.section?.title || "Original Research Articles";
+    const sectionIdentifyType = pub.section?.identifyType || pub.submission?.section?.identifyType || "Research Article";
     const issueDatePublished = pub.issue?.datePublished || null;
     const issueTitle = pub.issue?.title || null;
 

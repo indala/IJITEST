@@ -59,8 +59,8 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                         </p>
                     </div>
                     {paper.retractionNoticeUrl && (
-                        <a 
-                            href={paper.retractionNoticeUrl} 
+                        <a
+                            href={paper.retractionNoticeUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="bg-red-900 text-white px-8 py-4 rounded-xl font-black text-label tracking-[0.2em] hover:bg-red-800 transition-colors shadow-lg shadow-red-900/20"
@@ -83,8 +83,8 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                         </p>
                     </div>
                     {paper.retractionNoticeUrl && (
-                        <a 
-                            href={paper.retractionNoticeUrl} 
+                        <a
+                            href={paper.retractionNoticeUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="bg-amber-900 text-white px-8 py-4 rounded-xl font-black text-label tracking-[0.2em] hover:bg-amber-800 transition-colors shadow-lg shadow-amber-900/20"
@@ -192,7 +192,7 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
 
                             {paper.doi && (
                                 <a
-                                    href={paper.doiProvider === 'zenodo' || paper.doi.includes('zenodo') 
+                                    href={paper.doiProvider === 'zenodo' || paper.doi.includes('zenodo')
                                         ? (paper.doi.startsWith('http') ? paper.doi : `https://doi.org/${paper.doi}`)
                                         : `https://search.crossref.org/?q=${encodeURIComponent(paper.doi)}`
                                     }
@@ -351,7 +351,7 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                             <Download className="w-4 h-4" /> Download Full Paper
                         </DownloadPaperButton>
                     </div>
-                    
+
                     {/* Citation Widget (Client Component) */}
                     <CitationSection paper={{
                         ...paper,
@@ -392,7 +392,7 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                             <a
                                 href={`/api/export/crossref/${paper.paperId}`}
                                 download={`crossref-${paper.paperId}.xml`}
-                                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold border border-emerald-500/20 transition-all cursor-pointer"
+                                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700  font-bold border border-emerald-500/20 transition-all cursor-pointer"
                                 title="Download CrossRef Schema 5.3.1 XML Deposit"
                             >
                                 <Download className="w-3 h-3" /> CrossRef Schema XML

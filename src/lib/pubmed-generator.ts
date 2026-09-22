@@ -1,15 +1,10 @@
-import type { PublishedPaperUI, Author } from "@/db/types";
+import type { PublishedPaperUI, Author, Issue } from "@/db/types";
 import { escapeXml, splitAuthorName } from "@/lib/crossref-generator";
 
 interface GeneratePubMedXmlOptions {
     settings: Record<string, string>;
     papers: PublishedPaperUI[];
-    issue?: {
-        volumeNumber: number;
-        issueNumber: number;
-        year: number;
-        monthRange?: string | null;
-    };
+    issue?: Partial<Pick<Issue, 'volumeNumber' | 'issueNumber' | 'year' | 'monthRange' | 'datePublished'>> | null;
 }
 
 /**
@@ -46,7 +41,7 @@ export function generatePubMedXml({ settings, papers, issue }: GeneratePubMedXml
         const volNum = issue?.volumeNumber ?? paper.volumeNumber ?? 1;
         const issNum = issue?.issueNumber ?? paper.issueNumber ?? 1;
 
-        const resolvedPubDate = paper.publishedAt || paper.issueDatePublished || (issue as any)?.datePublished;
+        const resolvedPubDate = paper.publishedAt || paper.issueDatePublished || issue?.datePublished;
         const pubDate = parseDateParts(resolvedPubDate, issue?.year ?? paper.publicationYear ?? undefined);
         const subDate = parseDateParts(paper.submittedAt, issue?.year ?? paper.publicationYear ?? undefined);
         const accDate = parseDateParts(paper.acceptedAt || resolvedPubDate, issue?.year ?? paper.publicationYear ?? undefined);
@@ -55,11 +50,18 @@ export function generatePubMedXml({ settings, papers, issue }: GeneratePubMedXml
         const rawAuthors: Author[] = (Array.isArray(paper.coAuthors) && paper.coAuthors.length > 0)
             ? paper.coAuthors
             : [{
+                id: 0,
+                submissionId: paper.id,
                 name: paper.authorName,
-                email: paper.authorEmail,
+                email: paper.authorEmail || '',
+                phone: null,
+                designation: null,
                 institution: paper.affiliation,
                 orcidId: null,
-            } as unknown as Author];
+                creditRoles: null,
+                isCorresponding: true,
+                orderIndex: 0,
+            }];
 
         const authorsXml = rawAuthors.map((author) => {
             const { givenName, surname } = splitAuthorName(author.name);

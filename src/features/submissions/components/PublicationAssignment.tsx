@@ -204,9 +204,9 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                                         />
                                     </div>
                                     <DialogFooter className="pt-2">
-                                         <Button disabled={isCreating} type="submit" className="w-full h-12 bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-600/10 cursor-pointer">
-                                             {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create'}
-                                         </Button>
+                                        <Button disabled={isCreating} type="submit" className="w-full h-12 bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-600/10 cursor-pointer">
+                                            {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create'}
+                                        </Button>
                                     </DialogFooter>
                                 </form>
                             </DialogContent>
@@ -265,36 +265,32 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                         <button
                             type="button"
                             onClick={() => setDoiChoice('none')}
-                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
-                                doiChoice === 'none' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-                            } `}
+                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${doiChoice === 'none' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                                } `}
                         >
                             No DOI
                         </button>
                         <button
                             type="button"
                             onClick={() => setDoiChoice('official')}
-                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
-                                doiChoice === 'official' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-                            } `}
+                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${doiChoice === 'official' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                                } `}
                         >
                             CrossRef
                         </button>
                         <button
                             type="button"
                             onClick={() => setDoiChoice('zenodo')}
-                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
-                                doiChoice === 'zenodo' ? 'bg-sky-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-                            } `}
+                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${doiChoice === 'zenodo' ? 'bg-sky-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                                } `}
                         >
                             Zenodo
                         </button>
                         <button
                             type="button"
                             onClick={() => setDoiChoice('custom')}
-                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${
-                                doiChoice === 'custom' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-                            } `}
+                            className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${doiChoice === 'custom' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                                } `}
                         >
                             Custom
                         </button>
@@ -303,17 +299,17 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                     {doiChoice === 'official' && (
                         <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-body-sm space-y-1">
                             <div className="flex items-center justify-between">
-                                <p className="text-label font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Official CrossRef DOI</p>
+                                <p className="text-label font-bold text-emerald-700  uppercase tracking-wider">Official CrossRef DOI</p>
                                 <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Auto-Deposit</span>
                             </div>
-                            <p className="font-mono text-emerald-900 dark:text-emerald-300 break-all">{doiPrefix}/{paperId || '...'}</p>
+                            <p className="font-mono text-emerald-900  break-all">{doiPrefix}/{paperId || '...'}</p>
                             <p className="text-caption text-muted-foreground">Generates CrossRef Schema 5.3 XML & queues live deposit to CrossRef API.</p>
                         </div>
                     )}
 
                     {doiChoice === 'zenodo' && (
                         <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 rounded-lg text-body-sm space-y-1">
-                            <p className="text-label font-bold text-sky-700 dark:text-sky-400 uppercase tracking-wider">Zenodo Self-Archiving</p>
+                            <p className="text-label font-bold text-sky-700  uppercase tracking-wider">Zenodo Self-Archiving</p>
                             <p className="text-caption text-muted-foreground">Paper will be published immediately; authors or editors can deposit directly to Zenodo from the manuscript console.</p>
                         </div>
                     )}

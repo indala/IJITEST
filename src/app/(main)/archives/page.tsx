@@ -108,7 +108,7 @@ export default async function Archives() {
                                     href="/api/feed/rss"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-700 dark:text-orange-400 font-bold border border-orange-500/20 transition-all cursor-pointer"
+                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-700  font-bold border border-orange-500/20 transition-all cursor-pointer"
                                 >
                                     <Rss className="w-3.5 h-3.5" /> RSS 2.0
                                 </a>
@@ -116,7 +116,7 @@ export default async function Archives() {
                                     href="/api/feed/atom"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-400 font-bold border border-blue-500/20 transition-all cursor-pointer"
+                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-700  font-bold border border-blue-500/20 transition-all cursor-pointer"
                                 >
                                     <Radio className="w-3.5 h-3.5" /> Atom 1.0
                                 </a>

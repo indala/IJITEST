@@ -19,13 +19,13 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import { safeDeleteFile, uploadFileToStorage } from "@/lib/fs-utils";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { type ProfileData } from "@/db/types";
+import { type ProfileData, type UserRole } from "@/db/types";
 import { type ActionResponse, actionSuccess, actionError, serverError } from "@/lib/action-response";
 import { insertProfileSchema } from "@/db/validation";
 
 
 
-export async function getProfileData(userId: string, role: 'admin' | 'editor' | 'reviewer' | 'author'): Promise<ActionResponse<ProfileData>> {
+export async function getProfileData(userId: string, role: UserRole): Promise<ActionResponse<ProfileData>> {
     try {
         const session = await getServerSession(authOptions);
         if (!session) return actionError("Unauthorized");

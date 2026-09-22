@@ -209,31 +209,32 @@ async function ReviewerMySubmissionsSection() {
                         <div className="p-3.5 sm:p-4 space-y-2.5">
                             <div className="flex items-center justify-between">
                                 <Badge variant="outline" className="text-badge border-border/70 bg-muted/30 px-2 py-0.5">ID: {paper.paperId}</Badge>
-                                <Badge className={`text-badge font-semibold py-0.5 px-2 border-none ${paper.status === 'published' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30' :
-                                    paper.status === 'rejected' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/30' :
-                                        'badge-brand'
+                                <Badge className={`text-badge font-semibold py-0.5 px-2 border-none ${paper.status === 'published' ? 'bg-emerald-50 text-emerald-600  :
+                                    paper.status === 'rejected' ? 'bg-rose-50 text-rose-600  :
+                                'badge-brand'
                                     } `}>
-                                    {paper.status}
-                                </Badge>
-                            </div>
-                            <h3 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">{paper.title}</h3>
-                            <div className="flex items-center justify-between text-caption text-muted-foreground pt-2.5 border-t border-border/70">
-                                <span className="flex items-center gap-1.5 font-medium"><Clock className="w-3.5 h-3.5 opacity-60" /> {paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : 'N/A'}</span>
-                                <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-primary hover:bg-primary/10 rounded-md font-semibold">
-                                    <Link href={`/track?id=${paper.paperId}`} className="flex items-center gap-1">
-                                        Trace <ExternalLink className="w-3 h-3" />
-                                    </Link>
-                                </Button>
-                            </div>
+                                {paper.status}
+                            </Badge>
                         </div>
+                        <h3 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">{paper.title}</h3>
+                        <div className="flex items-center justify-between text-caption text-muted-foreground pt-2.5 border-t border-border/70">
+                            <span className="flex items-center gap-1.5 font-medium"><Clock className="w-3.5 h-3.5 opacity-60" /> {paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : 'N/A'}</span>
+                            <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-primary hover:bg-primary/10 rounded-md font-semibold">
+                                <Link href={`/track?id=${paper.paperId}`} className="flex items-center gap-1">
+                                    Trace <ExternalLink className="w-3 h-3" />
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
                     </Card>
-                ))}
-            </div>
-        );
-    } catch (err) {
-        console.error("ReviewerMySubmissionsSection error:", err);
-        return <div className="p-8 text-center text-caption text-muted-foreground">Unable to load personal records</div>;
+        ))
     }
+            </div >
+        );
+} catch (err) {
+    console.error("ReviewerMySubmissionsSection error:", err);
+    return <div className="p-8 text-center text-caption text-muted-foreground">Unable to load personal records</div>;
+}
 }
 
 function ReviewerDashboardSkeleton() {

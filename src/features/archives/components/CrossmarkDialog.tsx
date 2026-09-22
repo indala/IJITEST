@@ -60,10 +60,10 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                             <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-start gap-3">
                                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="font-bold text-emerald-800 dark:text-emerald-300 m-0">
+                                    <p className="font-bold text-emerald-800  m-0">
                                         Record Status: Current &amp; Active
                                     </p>
-                                    <p className="text-emerald-700/90 dark:text-emerald-400 m-0 mt-0.5 leading-relaxed">
+                                    <p className="text-emerald-700/90  m-0 mt-0.5 leading-relaxed">
                                         No updates, retractions, or corrigenda have been reported for this publication.
                                     </p>
                                 </div>
@@ -74,10 +74,10 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                             <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3">
                                 <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="font-bold text-amber-800 dark:text-amber-300 m-0">
+                                    <p className="font-bold text-amber-800  m-0">
                                         Notice: Corrigendum / Correction Issued
                                     </p>
-                                    <p className="text-amber-700/90 dark:text-amber-400 m-0 mt-0.5 leading-relaxed">
+                                    <p className="text-amber-700/90  m-0 mt-0.5 leading-relaxed">
                                         An editorial amendment has been issued for this published article.
                                     </p>
                                 </div>
@@ -88,10 +88,10 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                             <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-start gap-3">
                                 <AlertOctagon className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="font-bold text-rose-800 dark:text-rose-300 m-0">
+                                    <p className="font-bold text-rose-800  m-0">
                                         Notice: Formally Retracted
                                     </p>
-                                    <p className="text-rose-700/90 dark:text-rose-400 m-0 mt-0.5 leading-relaxed">
+                                    <p className="text-rose-700/90  m-0 mt-0.5 leading-relaxed">
                                         {paper.retractionReason || "This article has been formally retracted in accordance with COPE publishing guidelines."}
                                     </p>
                                 </div>
@@ -119,51 +119,51 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                                 </div>
                                 <div>
                                     <span className="text-muted-foreground">Licence:</span>
-                                    <p className="font-medium text-emerald-600 dark:text-emerald-400">CC BY 4.0 (Open Access)</p>
+                                    <p className="font-medium text-emerald-600  BY 4.0 (Open Access)</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Scholarly Integrity Checklist */}
                         <div className="space-y-1.5 text-body-sm">
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                                <span>Published under official peer-review and COPE standards</span>
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                                        <span>Published under official peer-review and COPE standards</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                                        <span>
+                                            {paper.doi
+                                                ? "Crossref permanent DOI registration and crawler archiving"
+                                                : "Permanent open-access digital archival preservation"}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                                <span>
-                                    {paper.doi 
-                                        ? "Crossref permanent DOI registration and crawler archiving"
-                                        : "Permanent open-access digital archival preservation"}
-                                </span>
+
+                            <div className="flex items-center justify-between gap-3 pt-3 border-t border-border/60">
+                                <Link
+                                    href="/ethics"
+                                    target="_blank"
+                                    className="text-body-sm text-primary hover:underline font-semibold"
+                                >
+                                    Editorial &amp; Retraction Policies &rarr;
+                                </Link>
+
+                                {paper.doi ? (
+                                    <Button asChild size="sm" variant="outline" className="gap-1.5">
+                                        <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer">
+                                            <ExternalLink className="w-3.5 h-3.5" /> Resolve DOI
+                                        </a>
+                                    </Button>
+                                ) : (
+                                    <Button size="sm" variant="ghost" onClick={() => setIsOpen(false)} className="">
+                                        Close
+                                    </Button>
+                                )}
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-3 pt-3 border-t border-border/60">
-                        <Link
-                            href="/ethics"
-                            target="_blank"
-                            className="text-body-sm text-primary hover:underline font-semibold"
-                        >
-                            Editorial &amp; Retraction Policies &rarr;
-                        </Link>
-
-                        {paper.doi ? (
-                            <Button asChild size="sm" variant="outline" className="gap-1.5">
-                                <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer">
-                                    <ExternalLink className="w-3.5 h-3.5" /> Resolve DOI
-                                </a>
-                            </Button>
-                        ) : (
-                            <Button size="sm" variant="ghost" onClick={() => setIsOpen(false)} className="">
-                                Close
-                            </Button>
-                        )}
-                    </div>
-                </DialogContent>
-            </Dialog>
-        </>
-    );
+                        </DialogContent>
+                    </Dialog>
+                </>
+                );
 }

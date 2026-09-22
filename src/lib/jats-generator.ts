@@ -56,7 +56,7 @@ export function generateJatsXml({ settings, paper }: GenerateJatsXmlOptions): st
             isCorresponding: true,
             orcidId: null,
             creditRoles: null,
-        } as Author];
+        }];
 
     // Collect unique affiliations to construct <aff id="aff1"> mappings
     const affMap = new Map<string, { id: string; name: string; country?: string | null }>();
@@ -64,7 +64,7 @@ export function generateJatsXml({ settings, paper }: GenerateJatsXmlOptions): st
         const inst = (author.institution || '').trim();
         if (inst && !affMap.has(inst)) {
             const affId = `aff${affMap.size + 1}`;
-            affMap.set(inst, { id: affId, name: inst, country: (author as unknown as { country?: string }).country || null });
+            affMap.set(inst, { id: affId, name: inst, country: null });
         }
     });
 

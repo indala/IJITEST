@@ -30,11 +30,12 @@ import {
     updateProfilePhoto
 } from "@/actions/profile"
 import type { ProfileData } from "@/db/contracts"
+import type { UserRole } from "@/db/types"
 import { toast } from "sonner"
 
 interface ProfileDossierClientProps {
     data: ProfileData
-    role: 'admin' | 'editor' | 'reviewer' | 'author'
+    role: UserRole
     userId: string
 }
 

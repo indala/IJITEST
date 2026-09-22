@@ -20,13 +20,17 @@ import {
     CircleDot,
     RefreshCw,
     Loader2,
-    Clock
+    Clock,
+    XCircle,
+    AlertCircle,
+    CreditCard
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getSubmissionEvents } from "@/actions/event-log";
 import type { SubmissionEventWithActor } from "@/db/contracts";
+import type { SubmissionEventType } from "@/db/types";
 
 interface SubmissionTimelineProps {
     submissionId: number;
@@ -41,96 +45,138 @@ interface EventConfig {
     bgBadge: string;
 }
 
-const EVENT_CONFIGS: Record<string, EventConfig> = {
+const EVENT_CONFIGS: Partial<Record<SubmissionEventType, EventConfig>> = {
     submission_created: {
         label: "Manuscript Submitted",
         icon: FilePlus2,
-        color: "text-blue-500 border-blue-200 bg-blue-50 dark:bg-blue-950/40",
-        bgBadge: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
+        color: "text-blue-500 border-blue-200 bg-blue-50 
+        bgBadge: "bg-blue-500/10 text-blue-700 
     },
     editor_assigned: {
         label: "Editor Assigned",
         icon: UserCheck,
-        color: "text-indigo-500 border-indigo-200 bg-indigo-50 dark:bg-indigo-950/40",
-        bgBadge: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
+        color: "text-indigo-500 border-indigo-200 bg-indigo-50 
+        bgBadge: "bg-indigo-500/10 text-indigo-700 
     },
     reviewer_assigned: {
         label: "Reviewer Assigned",
         icon: Users,
-        color: "text-purple-500 border-purple-200 bg-purple-50 dark:bg-purple-950/40",
-        bgBadge: "bg-purple-500/10 text-purple-700 dark:text-purple-300",
+        color: "text-purple-500 border-purple-200 bg-purple-50 
+        bgBadge: "bg-purple-500/10 text-purple-700 
     },
     review_submitted: {
         label: "Peer Review Submitted",
         icon: ClipboardCheck,
-        color: "text-emerald-500 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/40",
-        bgBadge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+        color: "text-emerald-500 border-emerald-200 bg-emerald-50 
+        bgBadge: "bg-emerald-500/10 text-emerald-700 
     },
     revision_requested: {
         label: "Revision Requested",
         icon: RefreshCcw,
-        color: "text-amber-500 border-amber-200 bg-amber-50 dark:bg-amber-950/40",
-        bgBadge: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+        color: "text-amber-500 border-amber-200 bg-amber-50 
+        bgBadge: "bg-amber-500/10 text-amber-700 
     },
     revision_submitted: {
         label: "Revision Submitted",
         icon: UploadCloud,
-        color: "text-cyan-500 border-cyan-200 bg-cyan-50 dark:bg-cyan-950/40",
-        bgBadge: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
+        color: "text-cyan-500 border-cyan-200 bg-cyan-50 
+        bgBadge: "bg-cyan-500/10 text-cyan-700 
     },
     decision_recorded: {
         label: "Editorial Decision",
         icon: Gavel,
-        color: "text-violet-500 border-violet-200 bg-violet-50 dark:bg-violet-950/40",
-        bgBadge: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
+        color: "text-violet-500 border-violet-200 bg-violet-50 
+        bgBadge: "bg-violet-500/10 text-violet-700 
+    },
+    paper_accepted: {
+        label: "Manuscript Accepted",
+        icon: CheckCircle2,
+        color: "text-emerald-500 border-emerald-200 bg-emerald-50 
+        bgBadge: "bg-emerald-500/10 text-emerald-700 
+    },
+    paper_rejected: {
+        label: "Manuscript Rejected",
+        icon: XCircle,
+        color: "text-rose-500 border-rose-200 bg-rose-50 
+        bgBadge: "bg-rose-500/10 text-rose-700 
+    },
+    galley_requested: {
+        label: "Galley Proof Dispatched",
+        icon: FileText,
+        color: "text-sky-500 border-sky-200 bg-sky-50 
+        bgBadge: "bg-sky-500/10 text-sky-700 
+    },
+    galley_approved: {
+        label: "Galley Proof Approved",
+        icon: CheckCircle2,
+        color: "text-emerald-500 border-emerald-200 bg-emerald-50 
+        bgBadge: "bg-emerald-500/10 text-emerald-700 
+    },
+    galley_corrections_requested: {
+        label: "Galley Corrections Requested",
+        icon: AlertCircle,
+        color: "text-amber-500 border-amber-200 bg-amber-50 
+        bgBadge: "bg-amber-500/10 text-amber-700 
     },
     galley_proof_requested: {
         label: "Galley Proof Dispatched",
         icon: FileText,
-        color: "text-sky-500 border-sky-200 bg-sky-50 dark:bg-sky-950/40",
-        bgBadge: "bg-sky-500/10 text-sky-700 dark:text-sky-300",
+        color: "text-sky-500 border-sky-200 bg-sky-50 
+        bgBadge: "bg-sky-500/10 text-sky-700 
     },
     galley_proof_responded: {
         label: "Galley Proof Approved",
         icon: CheckCircle2,
-        color: "text-emerald-500 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/40",
-        bgBadge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+        color: "text-emerald-500 border-emerald-200 bg-emerald-50 
+        bgBadge: "bg-emerald-500/10 text-emerald-700 
     },
     copyright_uploaded: {
         label: "Copyright Agreement Uploaded",
         icon: ShieldCheck,
-        color: "text-teal-500 border-teal-200 bg-teal-50 dark:bg-teal-950/40",
-        bgBadge: "bg-teal-500/10 text-teal-700 dark:text-teal-300",
+        color: "text-teal-500 border-teal-200 bg-teal-50 
+        bgBadge: "bg-teal-500/10 text-teal-700 
+    },
+    payment_verified: {
+        label: "Payment Verified",
+        icon: CreditCard,
+        color: "text-emerald-600 border-emerald-300 bg-emerald-50 
+        bgBadge: "bg-emerald-600/15 text-emerald-800  font-bold",
     },
     paper_published: {
         label: "Manuscript Published",
         icon: Globe,
-        color: "text-emerald-600 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40",
-        bgBadge: "bg-emerald-600/15 text-emerald-800 dark:text-emerald-300 font-bold",
+        color: "text-emerald-600 border-emerald-300 bg-emerald-50 
+        bgBadge: "bg-emerald-600/15 text-emerald-800  font-bold",
     },
     paper_scheduled: {
         label: "Scheduled for Publication",
         icon: Calendar,
-        color: "text-indigo-600 border-indigo-200 bg-indigo-50 dark:bg-indigo-950/40",
-        bgBadge: "bg-indigo-600/10 text-indigo-700 dark:text-indigo-300",
+        color: "text-indigo-600 border-indigo-200 bg-indigo-50 
+        bgBadge: "bg-indigo-600/10 text-indigo-700 
     },
     doi_assigned: {
         label: "DOI Allocated",
         icon: Tag,
-        color: "text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-950/40",
-        bgBadge: "bg-blue-600/10 text-blue-700 dark:text-blue-300",
+        color: "text-blue-600 border-blue-200 bg-blue-50 
+        bgBadge: "bg-blue-600/10 text-blue-700 
     },
     paper_retracted: {
         label: "Paper Retracted",
         icon: AlertOctagon,
-        color: "text-rose-600 border-rose-300 bg-rose-50 dark:bg-rose-950/40",
-        bgBadge: "bg-rose-600/15 text-rose-800 dark:text-rose-300 font-bold",
+        color: "text-rose-600 border-rose-300 bg-rose-50 
+        bgBadge: "bg-rose-600/15 text-rose-800  font-bold",
+    },
+    retraction_issued: {
+        label: "Retraction Notice Issued",
+        icon: AlertOctagon,
+        color: "text-rose-600 border-rose-300 bg-rose-50 
+        bgBadge: "bg-rose-600/15 text-rose-800  font-bold",
     },
     corrigendum_issued: {
         label: "Corrigendum Issued",
         icon: FileSignature,
-        color: "text-amber-600 border-amber-300 bg-amber-50 dark:bg-amber-950/40",
-        bgBadge: "bg-amber-600/15 text-amber-800 dark:text-amber-300 font-bold",
+        color: "text-amber-600 border-amber-300 bg-amber-50 
+        bgBadge: "bg-amber-600/15 text-amber-800  font-bold",
     },
 };
 

@@ -1,7 +1,8 @@
 import { getProfileData } from "@/actions/profile"
 import { ProfileDossierClient } from "./ProfileDossierClient"
+import type { UserRole } from "@/db/types"
 
-export default async function ProfileDossier({ role, userId }: { role: 'admin' | 'editor' | 'reviewer' | 'author', userId: string }) {
+export default async function ProfileDossier({ role, userId }: { role: UserRole, userId: string }) {
     const profileResponse = await getProfileData(userId, role)
     if (!profileResponse.success) {
         return <div>Error loading profile data: {profileResponse.error}</div>

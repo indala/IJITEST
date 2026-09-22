@@ -1,5 +1,11 @@
 import 'server-only'
 import nodemailer from 'nodemailer';
+import type { StaffRole } from '@/db/types';
+
+interface SmtpErrorInfo {
+    code?: string;
+    response?: string;
+}
 
 const allowInsecureTls = process.env["SMTP_ALLOW_INSECURE_TLS"] === 'true';
 
@@ -46,9 +52,13 @@ export async function sendEmail({ to, subject, text, html, attachments }: SendEm
         return { success: true, messageId: info.messageId };
     } catch (error) {
         console.error("--- SMTP Error Diagnosis ---");
-        const err = error as Error & { code?: string, response?: unknown };
-        console.error("Error Code:", err?.code);
-        console.error("SMTP Response:", err?.response);
+        if (error && typeof error === 'object') {
+            const err = error as SmtpErrorInfo;
+            console.error("Error Code:", err.code);
+            console.error("SMTP Response:", err.response);
+        } else {
+            console.error("Error:", error);
+        }
         console.error("---------------------------");
         return { success: false, error: "Failed to send email. Please try again later." };
     }
@@ -216,7 +226,7 @@ export const emailTemplates = {
         });
     },
 
-    resubmissionReceived: async (authorName: string, paperTitle: string, paperId: string, subId: number, role: 'admin' | 'editor' = 'admin') => {
+    resubmissionReceived: async (authorName: string, paperTitle: string, paperId: string, subId: number, role: StaffRole = 'admin') => {
         const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const dashboardLink = role === 'admin' ? `${baseUrl}/admin/submissions/${subId}` : `${baseUrl}/editor/submissions/${subId}`;
         return getCompiledEmailTemplate("REVISION_RECEIVED", {

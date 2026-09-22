@@ -337,9 +337,8 @@ export default function AdminSectionsPage() {
             ) : (
                 <div className="space-y-4">
                     {filteredSections.map((sec) => (
-                        <Card key={sec.id} className={`border transition-all ${
-                            sec.isInactive ? "opacity-70 bg-muted/20 border-border/40" : "border-border/70 bg-card shadow-2xs hover:border-primary/30"
-                        } `}>
+                        <Card key={sec.id} className={`border transition-all ${sec.isInactive ? "opacity-70 bg-muted/20 border-border/40" : "border-border/70 bg-card shadow-2xs hover:border-primary/30"
+                            } `}>
                             <CardContent className="p-5 sm:p-6">
                                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                                     <div className="space-y-2 flex-1 min-w-0">
@@ -364,7 +363,7 @@ export default function AdminSectionsPage() {
                                                 </Badge>
                                             )}
                                             {sec.editorRestricted && (
-                                                <Badge variant="outline" className="text-badge text-amber-700 dark:text-amber-400 border-amber-500/30 bg-amber-500/5">
+                                                <Badge variant="outline" className="text-badge text-amber-700  border-amber-500/30 bg-amber-500/5">
                                                     Editor Restricted
                                                 </Badge>
                                             )}
@@ -394,298 +393,297 @@ export default function AdminSectionsPage() {
                                                 </span>
                                             )}
 
-                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${
-                                                sec.metaReviewed ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-muted/40 text-muted-foreground"
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${sec.metaReviewed ? "bg-emerald-500/10 text-emerald-700  : "bg-muted /40 text-muted-foreground"
                                             } `}>
-                                                <ShieldCheck className="w-3.5 h-3.5" />
-                                                {sec.metaReviewed ? "Peer Reviewed" : "Not Peer Reviewed"}
-                                            </span>
+                                            <ShieldCheck className="w-3.5 h-3.5" />
+                                            {sec.metaReviewed ? "Peer Reviewed" : "Not Peer Reviewed"}
+                                        </span>
 
-                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${
-                                                sec.metaIndexed ? "bg-blue-500/10 text-blue-700 dark:text-blue-400" : "bg-muted/40 text-muted-foreground"
+                                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${sec.metaIndexed ? "bg-blue-500/10 text-blue-700  : "bg-muted /40 text-muted-foreground"
                                             } `}>
-                                                <Hash className="w-3.5 h-3.5" />
-                                                {sec.metaIndexed ? "Indexed in Feeds & DOI" : "Not Indexed"}
-                                            </span>
+                                        <Hash className="w-3.5 h-3.5" />
+                                        {sec.metaIndexed ? "Indexed in Feeds & DOI" : "Not Indexed"}
+                                    </span>
 
-                                            <span className="inline-flex items-center gap-1 text-muted-foreground px-2 py-1 rounded bg-muted/40 font-medium">
-                                                <Layers className="w-3.5 h-3.5" />
-                                                {sec.submissionCount} {sec.submissionCount === 1 ? "submission" : "submissions"}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* Action buttons */}
-                                    <div className="flex items-center gap-2 shrink-0 border-t lg:border-t-0 pt-3 lg:pt-0">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleQuickToggleActive(sec)}
-                                            disabled={isPending}
-                                            className="h-8 text-body-sm font-semibold"
-                                        >
-                                            {sec.isInactive ? "Activate" : "Deactivate"}
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleOpenEdit(sec)}
-                                            className="h-8 text-body-sm font-semibold"
-                                        >
-                                            <Edit2 className="w-3.5 h-3.5 mr-1" />
-                                            Edit
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setDeleteTarget(sec)}
-                                            className="h-8 text-caption text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                        >
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            )}
-
-            {/* Create / Edit Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <form onSubmit={handleSave} className="space-y-5">
-                        <DialogHeader>
-                            <DialogTitle className="font-bold flex items-center gap-2">
-                                <Bookmark className="w-5 h-5 text-primary" />
-                                {editingSection ? "Edit Journal Section" : "Create New Journal Section"}
-                            </DialogTitle>
-                            <DialogDescription className="">
-                                Manage classification details, word limitations, and editorial review requirements.
-                            </DialogDescription>
-                        </DialogHeader>
-
-                        <div className="space-y-4 py-2">
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div className="sm:col-span-2 space-y-1.5">
-                                    <Label htmlFor="sec-title" className="font-semibold">
-                                        Section Title *
-                                    </Label>
-                                    <Input
-                                        id="sec-title"
-                                        placeholder="e.g. Original Research Articles"
-                                        value={formState.title}
-                                        onChange={(e) => setFormState(prev => ({ ...prev, title: e.target.value }))}
-                                        className="h-9 text-body-sm"
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="sec-abbrev" className="font-semibold">
-                                        Abbreviation *
-                                    </Label>
-                                    <Input
-                                        id="sec-abbrev"
-                                        placeholder="e.g. RES"
-                                        maxLength={10}
-                                        value={formState.abbrev}
-                                        onChange={(e) => setFormState(prev => ({ ...prev, abbrev: e.target.value.toUpperCase() }))}
-                                        className="h-9 text-meta font-mono uppercase"
-                                        required
-                                    />
+                                    <span className="inline-flex items-center gap-1 text-muted-foreground px-2 py-1 rounded bg-muted/40 font-medium">
+                                        <Layers className="w-3.5 h-3.5" />
+                                        {sec.submissionCount} {sec.submissionCount === 1 ? "submission" : "submissions"}
+                                    </span>
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <Label htmlFor="sec-policy" className="font-semibold">
-                                    Section Policy & Scope
-                                </Label>
-                                <Textarea
-                                    id="sec-policy"
-                                    placeholder="Describe the scope, thematic criteria, and standards for papers submitted to this section..."
-                                    rows={3}
-                                    value={formState.policy}
-                                    onChange={(e) => setFormState(prev => ({ ...prev, policy: e.target.value }))}
-                                    className="text-body-sm leading-relaxed"
-                                />
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <div className="flex items-center justify-between">
-                                    <Label htmlFor="sec-identify-type" className="font-semibold">
-                                        Content Identification Genre (OJS identifyType)
-                                    </Label>
-                                    <span className="text-caption text-muted-foreground">Used in JATS & CrossRef metadata</span>
-                                </div>
-                                <Input
-                                    id="sec-identify-type"
-                                    placeholder="e.g. Research Article, Review Article, Short Communication, Case Study"
-                                    value={formState.identifyType}
-                                    onChange={(e) => setFormState(prev => ({ ...prev, identifyType: e.target.value }))}
-                                    className="h-9 text-body-sm"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="sec-wordcount" className="font-semibold">
-                                        Word Count Limit
-                                    </Label>
-                                    <Input
-                                        id="sec-wordcount"
-                                        type="number"
-                                        placeholder="e.g. 8000 (leave blank for unlimited)"
-                                        value={formState.wordCount}
-                                        onChange={(e) => setFormState(prev => ({ ...prev, wordCount: e.target.value }))}
-                                        className="h-9 text-body-sm"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="sec-sequence" className="font-semibold">
-                                        Display Sequence Order
-                                    </Label>
-                                    <Input
-                                        id="sec-sequence"
-                                        type="number"
-                                        placeholder="1, 2, 3..."
-                                        value={formState.sequence}
-                                        onChange={(e) => setFormState(prev => ({ ...prev, sequence: Number(e.target.value) || 0 }))}
-                                        className="h-9 text-body-sm"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Switches / Policy checkboxes */}
-                            <div className="pt-2 border-t border-border/50 space-y-3">
-                                <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
-                                    <div className="space-y-0.5">
-                                        <p className="font-bold text-foreground">Active for Submissions</p>
-                                        <p className="text-caption text-muted-foreground">
-                                            Allow authors to select this section when submitting manuscripts.
-                                        </p>
-                                    </div>
-                                    <Switch
-                                        checked={!formState.isInactive}
-                                        onCheckedChange={(checked) => setFormState(prev => ({ ...prev, isInactive: !checked }))}
-                                    />
-                                </div>
-
-                                <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
-                                    <div className="space-y-0.5">
-                                        <p className="font-bold text-foreground">Peer Reviewed</p>
-                                        <p className="text-caption text-muted-foreground">
-                                            Manuscripts submitted to this section require formal peer review before acceptance.
-                                        </p>
-                                    </div>
-                                    <Switch
-                                        checked={formState.metaReviewed}
-                                        onCheckedChange={(checked) => setFormState(prev => ({ ...prev, metaReviewed: checked }))}
-                                    />
-                                </div>
-
-                                <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
-                                    <div className="space-y-0.5">
-                                        <p className="font-bold text-foreground">Indexing & Metadata Feeds</p>
-                                        <p className="text-caption text-muted-foreground">
-                                            Include papers in this section in journal search indexing, DOAJ, and Crossref DOI feeds.
-                                        </p>
-                                    </div>
-                                    <Switch
-                                        checked={formState.metaIndexed}
-                                        onCheckedChange={(checked) => setFormState(prev => ({ ...prev, metaIndexed: checked }))}
-                                    />
-                                </div>
-
-                                <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
-                                    <div className="space-y-0.5">
-                                        <p className="font-bold text-foreground">Editor-Restricted Section</p>
-                                        <p className="text-caption text-muted-foreground">
-                                            Items can only be submitted by Editors (e.g., Editorials, Retractions, Announcements).
-                                        </p>
-                                    </div>
-                                    <Switch
-                                        checked={formState.editorRestricted}
-                                        onCheckedChange={(checked) => setFormState(prev => ({ ...prev, editorRestricted: checked }))}
-                                    />
-                                </div>
+                            {/* Action buttons */}
+                            <div className="flex items-center gap-2 shrink-0 border-t lg:border-t-0 pt-3 lg:pt-0">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleQuickToggleActive(sec)}
+                                    disabled={isPending}
+                                    className="h-8 text-body-sm font-semibold"
+                                >
+                                    {sec.isInactive ? "Activate" : "Deactivate"}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleOpenEdit(sec)}
+                                    className="h-8 text-body-sm font-semibold"
+                                >
+                                    <Edit2 className="w-3.5 h-3.5 mr-1" />
+                                    Edit
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setDeleteTarget(sec)}
+                                    className="h-8 text-caption text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
                             </div>
                         </div>
+                            </CardContent>
+                        </Card>
+    ))
+}
+                </div >
+            )}
 
-                        <DialogFooter className="gap-2 sm:gap-0">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setIsDialogOpen(false)}
-                                disabled={isSaving}
-                                className="h-9 text-body-sm"
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                type="submit"
-                                disabled={isSaving}
-                                className="bg-primary hover:bg-primary/90 text-white font-bold h-9 text-body-sm px-5"
-                            >
-                                {isSaving ? (
-                                    <>
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />
-                                        Saving...
-                                    </>
-                                ) : (
-                                    editingSection ? "Save Changes" : "Create Section"
-                                )}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
+{/* Create / Edit Dialog */ }
+<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <form onSubmit={handleSave} className="space-y-5">
+            <DialogHeader>
+                <DialogTitle className="font-bold flex items-center gap-2">
+                    <Bookmark className="w-5 h-5 text-primary" />
+                    {editingSection ? "Edit Journal Section" : "Create New Journal Section"}
+                </DialogTitle>
+                <DialogDescription className="">
+                    Manage classification details, word limitations, and editorial review requirements.
+                </DialogDescription>
+            </DialogHeader>
 
-            {/* Delete Confirmation Dialog */}
-            <Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="font-bold flex items-center gap-2 text-destructive">
-                            <AlertTriangle className="w-5 h-5" />
-                            Delete Journal Section
-                        </DialogTitle>
-                        <DialogDescription className="">
-                            Are you sure you want to delete <span className="font-bold text-foreground">"{deleteTarget?.title}"</span>?
-                            {deleteTarget?.submissionCount && deleteTarget.submissionCount > 0 ? (
-                                <span className="block mt-2 font-semibold text-destructive">
-                                    Warning: {deleteTarget.submissionCount} submissions are currently associated with this section. Deleting it will detach them.
-                                </span>
-                            ) : null}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="gap-2 sm:gap-0">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setDeleteTarget(null)}
-                            disabled={isDeleting}
+            <div className="space-y-4 py-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2 space-y-1.5">
+                        <Label htmlFor="sec-title" className="font-semibold">
+                            Section Title *
+                        </Label>
+                        <Input
+                            id="sec-title"
+                            placeholder="e.g. Original Research Articles"
+                            value={formState.title}
+                            onChange={(e) => setFormState(prev => ({ ...prev, title: e.target.value }))}
                             className="h-9 text-body-sm"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            onClick={handleDelete}
-                            disabled={isDeleting}
-                            className="h-9 text-body-sm font-bold"
-                        >
-                            {isDeleting ? (
-                                <>
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />
-                                    Deleting...
-                                </>
-                            ) : (
-                                "Confirm Delete"
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </div>
+                            required
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="sec-abbrev" className="font-semibold">
+                            Abbreviation *
+                        </Label>
+                        <Input
+                            id="sec-abbrev"
+                            placeholder="e.g. RES"
+                            maxLength={10}
+                            value={formState.abbrev}
+                            onChange={(e) => setFormState(prev => ({ ...prev, abbrev: e.target.value.toUpperCase() }))}
+                            className="h-9 text-meta font-mono uppercase"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-1.5">
+                    <Label htmlFor="sec-policy" className="font-semibold">
+                        Section Policy & Scope
+                    </Label>
+                    <Textarea
+                        id="sec-policy"
+                        placeholder="Describe the scope, thematic criteria, and standards for papers submitted to this section..."
+                        rows={3}
+                        value={formState.policy}
+                        onChange={(e) => setFormState(prev => ({ ...prev, policy: e.target.value }))}
+                        className="text-body-sm leading-relaxed"
+                    />
+                </div>
+
+                <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="sec-identify-type" className="font-semibold">
+                            Content Identification Genre (OJS identifyType)
+                        </Label>
+                        <span className="text-caption text-muted-foreground">Used in JATS & CrossRef metadata</span>
+                    </div>
+                    <Input
+                        id="sec-identify-type"
+                        placeholder="e.g. Research Article, Review Article, Short Communication, Case Study"
+                        value={formState.identifyType}
+                        onChange={(e) => setFormState(prev => ({ ...prev, identifyType: e.target.value }))}
+                        className="h-9 text-body-sm"
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                        <Label htmlFor="sec-wordcount" className="font-semibold">
+                            Word Count Limit
+                        </Label>
+                        <Input
+                            id="sec-wordcount"
+                            type="number"
+                            placeholder="e.g. 8000 (leave blank for unlimited)"
+                            value={formState.wordCount}
+                            onChange={(e) => setFormState(prev => ({ ...prev, wordCount: e.target.value }))}
+                            className="h-9 text-body-sm"
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="sec-sequence" className="font-semibold">
+                            Display Sequence Order
+                        </Label>
+                        <Input
+                            id="sec-sequence"
+                            type="number"
+                            placeholder="1, 2, 3..."
+                            value={formState.sequence}
+                            onChange={(e) => setFormState(prev => ({ ...prev, sequence: Number(e.target.value) || 0 }))}
+                            className="h-9 text-body-sm"
+                        />
+                    </div>
+                </div>
+
+                {/* Switches / Policy checkboxes */}
+                <div className="pt-2 border-t border-border/50 space-y-3">
+                    <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
+                        <div className="space-y-0.5">
+                            <p className="font-bold text-foreground">Active for Submissions</p>
+                            <p className="text-caption text-muted-foreground">
+                                Allow authors to select this section when submitting manuscripts.
+                            </p>
+                        </div>
+                        <Switch
+                            checked={!formState.isInactive}
+                            onCheckedChange={(checked) => setFormState(prev => ({ ...prev, isInactive: !checked }))}
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
+                        <div className="space-y-0.5">
+                            <p className="font-bold text-foreground">Peer Reviewed</p>
+                            <p className="text-caption text-muted-foreground">
+                                Manuscripts submitted to this section require formal peer review before acceptance.
+                            </p>
+                        </div>
+                        <Switch
+                            checked={formState.metaReviewed}
+                            onCheckedChange={(checked) => setFormState(prev => ({ ...prev, metaReviewed: checked }))}
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
+                        <div className="space-y-0.5">
+                            <p className="font-bold text-foreground">Indexing & Metadata Feeds</p>
+                            <p className="text-caption text-muted-foreground">
+                                Include papers in this section in journal search indexing, DOAJ, and Crossref DOI feeds.
+                            </p>
+                        </div>
+                        <Switch
+                            checked={formState.metaIndexed}
+                            onCheckedChange={(checked) => setFormState(prev => ({ ...prev, metaIndexed: checked }))}
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/10">
+                        <div className="space-y-0.5">
+                            <p className="font-bold text-foreground">Editor-Restricted Section</p>
+                            <p className="text-caption text-muted-foreground">
+                                Items can only be submitted by Editors (e.g., Editorials, Retractions, Announcements).
+                            </p>
+                        </div>
+                        <Switch
+                            checked={formState.editorRestricted}
+                            onCheckedChange={(checked) => setFormState(prev => ({ ...prev, editorRestricted: checked }))}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <DialogFooter className="gap-2 sm:gap-0">
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsDialogOpen(false)}
+                    disabled={isSaving}
+                    className="h-9 text-body-sm"
+                >
+                    Cancel
+                </Button>
+                <Button
+                    type="submit"
+                    disabled={isSaving}
+                    className="bg-primary hover:bg-primary/90 text-white font-bold h-9 text-body-sm px-5"
+                >
+                    {isSaving ? (
+                        <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />
+                            Saving...
+                        </>
+                    ) : (
+                        editingSection ? "Save Changes" : "Create Section"
+                    )}
+                </Button>
+            </DialogFooter>
+        </form>
+    </DialogContent>
+</Dialog>
+
+{/* Delete Confirmation Dialog */ }
+<Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+    <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+            <DialogTitle className="font-bold flex items-center gap-2 text-destructive">
+                <AlertTriangle className="w-5 h-5" />
+                Delete Journal Section
+            </DialogTitle>
+            <DialogDescription className="">
+                Are you sure you want to delete <span className="font-bold text-foreground">"{deleteTarget?.title}"</span>?
+                {deleteTarget?.submissionCount && deleteTarget.submissionCount > 0 ? (
+                    <span className="block mt-2 font-semibold text-destructive">
+                        Warning: {deleteTarget.submissionCount} submissions are currently associated with this section. Deleting it will detach them.
+                    </span>
+                ) : null}
+            </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDeleteTarget(null)}
+                disabled={isDeleting}
+                className="h-9 text-body-sm"
+            >
+                Cancel
+            </Button>
+            <Button
+                type="button"
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="h-9 text-body-sm font-bold"
+            >
+                {isDeleting ? (
+                    <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />
+                        Deleting...
+                    </>
+                ) : (
+                    "Confirm Delete"
+                )}
+            </Button>
+        </DialogFooter>
+    </DialogContent>
+</Dialog>
+        </div >
     );
 }

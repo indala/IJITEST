@@ -242,20 +242,18 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                             {submission.reviewerSuggestions.map((sug, idx) => (
                                                 <div
                                                     key={idx}
-                                                    className={`p-3 rounded-xl border space-y-1.5 shadow-2xs ${
-                                                        sug.type === 'opposed'
-                                                            ? 'bg-rose-500/5 border-rose-300 dark:border-rose-900/40 text-rose-700 dark:text-rose-400'
-                                                            : 'bg-emerald-500/5 border-emerald-300 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-400'
-                                                    } `}
+                                                    className={`p-3 rounded-xl border space-y-1.5 shadow-2xs ${sug.type === 'opposed'
+                                                            ? 'bg-rose-500/5 border-rose-300  text-rose-700 
+                                                            : 'bg-emerald-500/5 border-emerald-300  text-emerald-700 
+                                                        } `}
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-1.5 font-bold text-body-sm">
                                                             {sug.type === 'opposed' ? <ThumbsDown className="w-3.5 h-3.5 text-rose-600" /> : <ThumbsUp className="w-3.5 h-3.5 text-emerald-600" />}
                                                             <span>{sug.givenName} {sug.familyName || ""}</span>
                                                         </div>
-                                                        <span className={`text-label font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                                                            sug.type === 'opposed' ? 'bg-rose-500/10 text-rose-600' : 'bg-emerald-500/10 text-emerald-600'
-                                                        } `}>
+                                                        <span className={`text-label font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${sug.type === 'opposed' ? 'bg-rose-500/10 text-rose-600' : 'bg-emerald-500/10 text-emerald-600'
+                                                            } `}>
                                                             {sug.type === 'opposed' ? 'Opposed' : 'Preferred'}
                                                         </span>
                                                     </div>

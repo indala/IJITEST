@@ -1,17 +1,17 @@
-import { 
-    CheckCircle2, 
-    ExternalLink, 
-    LockOpen, 
-    Globe, 
-    FileText, 
-    Sparkles, 
-    UploadCloud, 
-    ShieldCheck, 
-    AlertTriangle, 
-    Cpu, 
-    Database, 
-    RefreshCw, 
-    Building2, 
+import {
+    CheckCircle2,
+    ExternalLink,
+    LockOpen,
+    Globe,
+    FileText,
+    Sparkles,
+    UploadCloud,
+    ShieldCheck,
+    AlertTriangle,
+    Cpu,
+    Database,
+    RefreshCw,
+    Building2,
     Layers
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -65,7 +65,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15 space-y-1">
-                                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-body-sm">
+                                    <div className="flex items-center gap-2 text-emerald-700  font-bold text-body-sm">
                                         <Cpu className="size-4" />
                                         <span>Research Quality</span>
                                     </div>
@@ -74,7 +74,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-blue-500/5 border border-blue-500/15 space-y-1">
-                                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-body-sm">
+                                    <div className="flex items-center gap-2 text-blue-700  font-bold text-body-sm">
                                         <LockOpen className="size-4" />
                                         <span>Open Science</span>
                                     </div>
@@ -431,7 +431,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15 space-y-1">
-                                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-body-sm">
+                                    <div className="flex items-center gap-2 text-emerald-700  font-bold text-body-sm">
                                         <CheckCircle2 className="size-4" />
                                         <span>100% Free Submission</span>
                                     </div>
@@ -440,7 +440,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-blue-500/5 border border-blue-500/15 space-y-1">
-                                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-body-sm">
+                                    <div className="flex items-center gap-2 text-blue-700  font-bold text-body-sm">
                                         <CheckCircle2 className="size-4" />
                                         <span>No Peer Review Charges</span>
                                     </div>

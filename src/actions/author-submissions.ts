@@ -470,7 +470,7 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                             paper.title || 'Untitled',
                             paper.paperId || '',
                             submissionId,
-                            s.role as 'admin' | 'editor'
+                            s.role === 'admin' ? 'admin' : 'editor'
                         );
                         return sendEmail({ to: s.email, subject: template.subject, html: template.html });
                     }));

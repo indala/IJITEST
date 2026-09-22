@@ -32,10 +32,16 @@ export function useSocket() {
   return context;
 }
 
+declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext;
+  }
+}
+
 // Synthesize a short, pleasant browser chime using Web Audio API (no external file assets required)
 function playNotificationSound() {
   try {
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioContextClass = typeof window !== 'undefined' ? (window.AudioContext || window.webkitAudioContext) : undefined;
     if (!AudioContextClass) return;
     const ctx = new AudioContextClass();
     
