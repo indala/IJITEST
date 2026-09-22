@@ -186,6 +186,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    text-wrap: pretty;
     @apply font-sans antialiased bg-background text-foreground tracking-tight text-[13px] sm:text-[14px] lg:text-[15px] 2xl:text-[16px];
   }
 
@@ -233,6 +234,8 @@
      Body, Lists & Blockquotes
      -------------------------------------------------------------------------- */
   p {
+    text-align: left;
+    text-wrap: pretty;
     @apply text-foreground/80 font-normal leading-relaxed mb-2.5;
     @apply text-[13px] sm:text-[14px] lg:text-[15px] xl:text-[16px] 2xl:text-[18px];
   }
@@ -338,19 +341,19 @@
   }
 
   .btn-primary {
-    @apply bg-primary text-white rounded-lg hover:bg-primary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm;
+    @apply bg-primary text-white rounded-lg hover:bg-primary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2;
     @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
     @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[10px] 2xl:px-[24px] 2xl:py-[12px];
   }
 
   .btn-secondary {
-    @apply bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm;
+    @apply bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/30 focus-visible:ring-offset-2;
     @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
     @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[10px] 2xl:px-[24px] 2xl:py-[12px];
   }
 
   .btn-outline {
-    @apply border border-primary/20 text-primary rounded-lg hover:bg-primary/5 transition-all inline-block text-center cursor-pointer font-semibold;
+    @apply border border-primary/20 text-primary rounded-lg hover:bg-primary/5 transition-all inline-block text-center cursor-pointer font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2;
     @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
     @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[10px] 2xl:px-[24px] 2xl:py-[12px];
   }
@@ -408,6 +411,7 @@
      -------------------------------------------------------------------------- */
   .container-responsive {
     @apply w-full mx-auto px-[16px] sm:px-[24px] lg:px-[32px] xl:px-[56px] 2xl:px-[64px];
+    max-width: 1520px;
   }
 
   .container-narrow {
@@ -458,7 +462,7 @@
 
   /* Desktop Top-level Nav Link */
   .nav-link {
-    @apply font-sans font-semibold tracking-normal whitespace-nowrap transition-all duration-200;
+    @apply font-sans font-semibold tracking-normal whitespace-nowrap transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2;
     @apply flex items-center gap-1 relative;
     @apply text-[12px] lg:text-[13px] xl:text-[14px] 2xl:text-[15px];
     @apply px-[8px] lg:px-[10px] xl:px-[12px] 2xl:px-[16px];
@@ -466,7 +470,7 @@
 
   /* Desktop Submenu / Dropdown Item */
   .nav-dropdown-item {
-    @apply font-sans font-semibold tracking-normal transition-all duration-200 relative;
+    @apply font-sans font-semibold tracking-normal transition-all duration-200 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2;
     @apply block py-[8px] 2xl:py-[10px] px-[16px] 2xl:px-[20px];
     @apply text-[12px] xl:text-[13px] 2xl:text-[14px];
   }
@@ -488,6 +492,7 @@
     @apply flex items-center gap-2.5 py-1.5 transition-all;
     @apply text-[11px] sm:text-[12px] font-semibold tracking-wide;
   }
+
 }
 
 :root {

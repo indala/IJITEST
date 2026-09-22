@@ -22,7 +22,7 @@ export default function WelcomeSection({ settings }: WelcomeSectionProps) {
             </h2>
 
             <div className="border-l-2 border-secondary/60 pl-4 space-y-3 text-left">
-                <p title="welcome description" className="text-body text-justify m-0">
+                <p title="welcome description" className="text-body text-left m-0 leading-relaxed">
                     {name} ({shortName}) is an international, peer-reviewed, open-access journal for original research in engineering, science, technology, and applied disciplines. The journal welcomes theoretical, experimental, and interdisciplinary studies that contribute to responsible scientific and technological progress.
                 </p>
 

@@ -373,14 +373,14 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                         </div>
                                                         <div className="space-y-0.5">
                                                             <p className="text-label font-semibold text-emerald-400 tracking-widest">In Archive</p>
-                                                            <h3 className="font-semibold tracking-wider">Live Index</h3>
+                                                            <h3 className="font-semibold tracking-wider text-white">Live Index</h3>
                                                         </div>
                                                     </div>
                                                     <Separator className="bg-white/10" />
                                                     <div className="space-y-3">
                                                         <div className="flex items-center justify-between">
                                                             <p className="text-label font-semibold text-white/40 tracking-widest uppercase">Archive Node</p>
-                                                            <p className="font-semibold">
+                                                            <p className="font-semibold text-white">
                                                                 {submission.volumeNumber && `Vol ${submission.volumeNumber}, Issue ${submission.issueNumber}`}
                                                                 {submission.startPage && `, pp. ${submission.startPage}-${submission.endPage}`}
                                                             </p>
