@@ -209,10 +209,10 @@ async function ReviewerMySubmissionsSection() {
                         <div className="p-3.5 sm:p-4 space-y-2.5">
                             <div className="flex items-center justify-between">
                                 <Badge variant="outline" className="text-badge border-border/70 bg-muted/30 px-2 py-0.5">ID: {paper.paperId}</Badge>
-                                <Badge className={`text-badge font-semibold py-0.5 px-2 border-none ${paper.status === 'published' ? 'bg-emerald-50 text-emerald-600  :
-                                    paper.status === 'rejected' ? 'bg-rose-50 text-rose-600  :
-                                'badge-brand'
-                                    } `}>
+                                <Badge className={`text-badge font-semibold py-0.5 px-2 border-none ${paper.status === 'published' ? 'bg-emerald-50 text-emerald-600' :
+                                    paper.status === 'rejected' ? 'bg-rose-50 text-rose-600' :
+                                    'badge-brand'
+                                } `}>
                                 {paper.status}
                             </Badge>
                         </div>

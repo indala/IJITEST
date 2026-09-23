@@ -46,14 +46,22 @@ import Image from "next/image";
 
 const TYPE_CONFIG: Record<AnnouncementType, { label: string; color: string }> = {
     call_for_papers: {
-        label: "Call for Papers", color: "bg-purple-100 text-purple-800 border-purple-200   },
+        label: "Call for Papers",
+        color: "bg-purple-100 text-purple-800 border-purple-200",
+    },
     news: {
-            label: "Journal News", color: "bg-blue-100 text-blue-800 border-blue-200   },
+        label: "Journal News",
+        color: "bg-blue-100 text-blue-800 border-blue-200",
+    },
     editorial_update: {
-                label: "Editorial Update", color: "bg-emerald-100 text-emerald-800 border-emerald-200   },
+        label: "Editorial Update",
+        color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    },
     event: {
-                    label: "Scholarly Event", color: "bg-amber-100 text-amber-800 border-amber-200   },
-                };
+        label: "Scholarly Event",
+        color: "bg-amber-100 text-amber-800 border-amber-200",
+    },
+};
 
                 export default function AnnouncementsManager() {
                     const [announcements, setAnnouncements] = useState<Announcement[]>([]);

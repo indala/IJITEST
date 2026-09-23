@@ -71,13 +71,13 @@ export default async function Footer() {
                     <div className="lg:col-span-1 space-y-3">
                         <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Explore</h3>
                         <ul className="space-y-1.5 text-white/80 list-none p-0 text-body-sm m-0">
-                            <li><Link href="/about" className="hover:text-secondary transition-colors">About IJITEST</Link></li>
-                            <li><Link href="/current-issue" className="hover:text-secondary transition-colors">Current Issue</Link></li>
-                            <li><Link href="/archives" className="hover:text-secondary transition-colors">All Archives</Link></li>
-                            <li><Link href="/editorial-board" className="hover:text-secondary transition-colors">Editorial Board</Link></li>
-                            <li><Link href="/indexing" className="hover:text-secondary transition-colors">Indexing and Abstracting</Link></li>
-                            <li><Link href="/announcements" className="hover:text-secondary transition-colors">Announcements</Link></li>
-                            <li><Link href="/contact" className="hover:text-secondary transition-colors">Contact</Link></li>
+                            <li><Link href="/about" className="hover:text-rose-300 transition-colors">About IJITEST</Link></li>
+                            <li><Link href="/current-issue" className="hover:text-rose-300 transition-colors">Current Issue</Link></li>
+                            <li><Link href="/archives" className="hover:text-rose-300 transition-colors">All Archives</Link></li>
+                            <li><Link href="/editorial-board" className="hover:text-rose-300 transition-colors">Editorial Board</Link></li>
+                            <li><Link href="/indexing" className="hover:text-rose-300 transition-colors">Indexing and Abstracting</Link></li>
+                            <li><Link href="/announcements" className="hover:text-rose-300 transition-colors">Announcements</Link></li>
+                            <li><Link href="/contact" className="hover:text-rose-300 transition-colors">Contact</Link></li>
                         </ul>
                     </div>
 
@@ -85,12 +85,12 @@ export default async function Footer() {
                     <div className="lg:col-span-1 space-y-3">
                         <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">For Authors</h3>
                         <ul className="space-y-1.5 text-white/80 list-none p-0 text-body-sm m-0">
-                            <li><Link href="/submit" className="hover:text-secondary transition-colors">Submit a Manuscript</Link></li>
-                            <li><Link href="/guidelines" className="hover:text-secondary transition-colors">Author Guidelines</Link></li>
-                            <li><Link href="/track" className="hover:text-secondary transition-colors">Track Manuscript</Link></li>
-                            <li><Link href="/apc-fees" className="hover:text-secondary transition-colors">Publication Fees</Link></li>
-                            <li><Link href="/join-us" className="hover:text-secondary transition-colors">Join as a Reviewer</Link></li>
-                            <li><Link href="/login" className="hover:text-secondary transition-colors">Portal Login</Link></li>
+                            <li><Link href="/submit" className="hover:text-rose-300 transition-colors">Submit a Manuscript</Link></li>
+                            <li><Link href="/guidelines" className="hover:text-rose-300 transition-colors">Author Guidelines</Link></li>
+                            <li><Link href="/track" className="hover:text-rose-300 transition-colors">Track Manuscript</Link></li>
+                            <li><Link href="/apc-fees" className="hover:text-rose-300 transition-colors">Publication Fees</Link></li>
+                            <li><Link href="/join-us" className="hover:text-rose-300 transition-colors">Join as a Reviewer</Link></li>
+                            <li><Link href="/login" className="hover:text-rose-300 transition-colors">Portal Login</Link></li>
                         </ul>
                     </div>
 
@@ -102,7 +102,7 @@ export default async function Footer() {
                                 {/* Static — COPE compliance badge */}
                                 <div className="flex items-center gap-3 group/support">
                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:bg-white/10 transition-all">
-                                        <ShieldCheck className="w-4 h-4 text-secondary" />
+                                        <ShieldCheck className="w-4 h-4 text-rose-400" />
                                     </div>
                                     <div>
                                         <p className="text-white/80 m-0 text-label uppercase font-semibold">COPE Compliant</p>
@@ -113,7 +113,7 @@ export default async function Footer() {
                                 {/* Dynamic — phone from Zustand island */}
                                 <div className="flex items-center gap-3 group/support">
                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:bg-white/10 transition-all">
-                                        <Phone className="w-4 h-4 text-secondary" />
+                                        <Phone className="w-4 h-4 text-rose-400" />
                                     </div>
                                     <div>
                                         <p className="text-white/80 m-0 text-label uppercase font-semibold">Direct Line</p>
@@ -124,7 +124,7 @@ export default async function Footer() {
                                 {/* Dynamic — address from Zustand island */}
                                 <div className="flex items-center gap-3 group/support">
                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:bg-white/10 transition-all">
-                                        <MapPin className="w-4 h-4 text-secondary" />
+                                        <MapPin className="w-4 h-4 text-rose-400" />
                                     </div>
                                     <div>
                                         <p className="text-white/80 m-0 text-label uppercase font-semibold">Office Location</p>
@@ -143,9 +143,9 @@ export default async function Footer() {
                         <Suspense><FooterDynamic field="copyright" settings={settings} /></Suspense>
                         <p className="text-white/60 m-0">All Rights Reserved • E-ISSN: 3139-6887</p>
                         <div className="flex flex-wrap justify-center lg:justify-start gap-x-3 gap-y-1 text-white/60 text-caption">
-                            <Link href="/ethics" className="hover:text-secondary transition-colors">Publication Ethics</Link>
-                            <Link href="/privacy" className="hover:text-secondary transition-colors">Privacy</Link>
-                            <Link href="/terms" className="hover:text-secondary transition-colors">Terms</Link>
+                            <Link href="/ethics" className="hover:text-rose-300 transition-colors">Publication Ethics</Link>
+                            <Link href="/privacy" className="hover:text-rose-300 transition-colors">Privacy</Link>
+                            <Link href="/terms" className="hover:text-rose-300 transition-colors">Terms</Link>
                         </div>
                     </div>
 

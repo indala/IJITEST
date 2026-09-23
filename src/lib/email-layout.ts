@@ -27,8 +27,8 @@ export const JOURNAL_EMAIL_CONFIG: JournalEmailConfig = {
     address: 'Felix Academic Publications, Madhurawada, Visakhapatnam, AP, India',
     publisher: 'Felix Academic Publications',
     logo: '/logo.png',
-    primaryColor: '#6d0202',
-    secondaryColor: '#0f172a',
+    primaryColor: '#000066',
+    secondaryColor: '#b4232f',
     accentColor: '#f8fafc',
 };
 

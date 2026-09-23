@@ -69,10 +69,10 @@ export const ApplicationItemCard = React.memo(({
                 </div>
 
                 <div className="p-3.5 sm:p-4 flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-2 bg-muted/5 h-full min-w-0 lg:min-w-[170px] border-t lg:border-t-0 border-border/70">
-                    <Badge className={`h-6 px-3 text-badge font-semibold border-none rounded-md ${
-                        app.status === 'approved' ? 'bg-emerald-500 text-white' :
-                        app.status === 'rejected' ? 'bg-rose-500 text-white' :
-                        'bg-amber-500 text-black'
+                    <Badge className={`h-6 px-3 text-badge font-semibold rounded-md ${
+                        app.status === 'approved' ? 'bg-emerald-600 text-white' :
+                        app.status === 'rejected' ? 'bg-rose-600 text-white' :
+                        'bg-amber-100 text-amber-900 border border-amber-300'
                     } `}>
                         {app.status}
                     </Badge>

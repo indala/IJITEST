@@ -142,7 +142,7 @@ export function AssignReviewerDialog({
                                 </p>
                                 <div className="space-y-1">
                                     {preferredSuggestions.map((s, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 text-emerald-700 
+                                        <div key={idx} className="flex items-center gap-2 text-emerald-700">
                                             <ThumbsUp className="w-3.5 h-3.5 shrink-0" />
                                             <span>
                                                 <strong>Suggested:</strong> {s.givenName} {s.familyName || ""} ({s.email})
@@ -216,7 +216,7 @@ export function AssignReviewerDialog({
 
                         {/* Active Warning Banner if Opposed Reviewer is Selected */}
                         {selectedIsOpposed && (
-                            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2.5 text-rose-700 
+                            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2.5 text-rose-700">
                                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                                 <div className="text-body-sm space-y-0.5">
                                     <p className="font-bold m-0">Author Conflict of Interest Warning</p>

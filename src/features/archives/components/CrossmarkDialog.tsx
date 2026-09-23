@@ -119,7 +119,7 @@ export function CrossmarkDialog({ paper }: CrossmarkDialogProps) {
                                 </div>
                                 <div>
                                     <span className="text-muted-foreground">Licence:</span>
-                                    <p className="font-medium text-emerald-600  BY 4.0 (Open Access)</p>
+                                    <p className="font-medium text-emerald-600">CC BY 4.0 (Open Access)</p>
                                 </div>
                             </div>
                         </div>

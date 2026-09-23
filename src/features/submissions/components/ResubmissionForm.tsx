@@ -91,46 +91,46 @@ export function ResubmissionForm({ submissionId, daysRemaining }: ResubmissionFo
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="manuscript" className="form-label-brand font-bold text-primary/60">Revised Manuscript (Main File)</Label>
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary/10 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
+                        <Label htmlFor="manuscript" className="form-label-brand font-bold text-foreground">Revised Manuscript (Main File)</Label>
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary/15 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <Upload className="w-8 h-8 text-primary/20 mb-2" />
-                                <p className="text-primary/40 font-bold">Strict Policy: .DOCX Only (Max 20MB)</p>
+                                <Upload className="w-8 h-8 text-primary/40 mb-2" />
+                                <p className="text-muted-foreground font-semibold">Strict Policy: .DOCX Only (Max 20MB)</p>
                             </div>
                             <Input id="manuscript" name="manuscript" type="file" accept=".docx" className="hidden" required disabled={isPending} />
                         </label>
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="blindedManuscript" className="form-label-brand font-bold text-primary/60">
-                            Blinded Manuscript <span className="text-primary/40 font-normal">(Author-anonymous version, Optional)</span>
+                        <Label htmlFor="blindedManuscript" className="form-label-brand font-bold text-foreground">
+                            Blinded Manuscript <span className="text-muted-foreground font-normal">(Author-anonymous version, Optional)</span>
                         </Label>
-                        <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-primary/10 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
+                        <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-primary/15 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
                             <div className="flex flex-col items-center justify-center pt-3 pb-4">
-                                <Upload className="w-6 h-6 text-primary/20 mb-1" />
-                                <p className="text-primary/40 font-bold text-sm">.DOCX Only (Optional)</p>
+                                <Upload className="w-6 h-6 text-primary/40 mb-1" />
+                                <p className="text-muted-foreground font-semibold text-sm">.DOCX Only (Optional)</p>
                             </div>
                             <Input id="blindedManuscript" name="blindedManuscript" type="file" accept=".docx" className="hidden" disabled={isPending} />
                         </label>
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="rebuttalFile" className="form-label-brand font-bold text-primary/60">
-                            Rebuttal Letter / Response to Reviewers <span className="text-primary/40 font-normal">(Optional)</span>
+                        <Label htmlFor="rebuttalFile" className="form-label-brand font-bold text-foreground">
+                            Rebuttal Letter / Response to Reviewers <span className="text-muted-foreground font-normal">(Optional)</span>
                         </Label>
-                        <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-primary/10 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
+                        <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-primary/15 rounded-2xl cursor-pointer hover:bg-primary/2 hover:border-secondary/30 transition-all">
                             <div className="flex flex-col items-center justify-center pt-3 pb-4">
-                                <Upload className="w-6 h-6 text-primary/20 mb-1" />
-                                <p className="text-primary/40 font-bold text-sm">.DOCX or .PDF (Optional)</p>
+                                <Upload className="w-6 h-6 text-primary/40 mb-1" />
+                                <p className="text-muted-foreground font-semibold text-sm">.DOCX or .PDF (Optional)</p>
                             </div>
                             <Input id="rebuttalFile" name="rebuttalFile" type="file" accept=".docx,.pdf" className="hidden" disabled={isPending} />
                         </label>
                     </div>
 
                     <Alert className="bg-primary/5 border-primary/10 rounded-2xl">
-                        <Info className="w-4 h-4" />
-                        <AlertTitle className="text-label font-black uppercase tracking-widest text-primary/40">Important Note</AlertTitle>
-                        <AlertDescription className="text-caption text-primary/60 italic">
+                        <Info className="w-4 h-4 text-primary" />
+                        <AlertTitle className="text-label font-black uppercase tracking-widest text-primary">Important Note</AlertTitle>
+                        <AlertDescription className="text-caption text-foreground/80 italic">
                             Uploading a revision will reset the status to &quot;Submitted&quot; and notify the editors. Please ensure all reviewer comments have been addressed.
                         </AlertDescription>
                     </Alert>

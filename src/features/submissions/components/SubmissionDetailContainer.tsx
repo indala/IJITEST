@@ -243,8 +243,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                 <div
                                                     key={idx}
                                                     className={`p-3 rounded-xl border space-y-1.5 shadow-2xs ${sug.type === 'opposed'
-                                                            ? 'bg-rose-500/5 border-rose-300  text-rose-700 
-                                                            : 'bg-emerald-500/5 border-emerald-300  text-emerald-700 
+                                                            ? 'bg-rose-500/5 border-rose-300 text-rose-700'
+                                                            : 'bg-emerald-500/5 border-emerald-300 text-emerald-700'
                                                         } `}
                                                 >
                                                     <div className="flex items-center justify-between">

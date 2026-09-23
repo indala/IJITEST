@@ -63,7 +63,7 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
         <Button
             variant="outline"
             disabled={loading || isRestricted}
-            className="w-full h-14 gap-3 border-red-500/10 text-red-400 font-black tracking-[0.2em] rounded-2xl hover:bg-red-500/5 hover:text-red-600 transition-all shadow-inner cursor-pointer"
+            className="w-full h-14 gap-3 border-destructive/20 text-destructive font-black tracking-[0.2em] rounded-2xl hover:bg-destructive/10 transition-all shadow-inner cursor-pointer"
         >
             {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -77,7 +77,7 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
             variant="ghost"
             size="icon"
             disabled={loading || isRestricted}
-            className="w-12 h-12 bg-red-500/5 text-red-400 rounded-xl hover:bg-red-500/10 hover:text-red-600 transition-all disabled:opacity-50 shadow-inner cursor-pointer"
+            className="w-12 h-12 bg-destructive/10 text-destructive rounded-xl hover:bg-destructive/20 transition-all disabled:opacity-50 shadow-inner cursor-pointer"
             title={isRestricted ? "Termination Restricted" : "Terminate Node"}
             aria-label={isRestricted ? "Termination Restricted" : "Terminate Node"}
         >
@@ -101,12 +101,12 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
                             <AlertTriangle className="w-8 h-8" />
                         </div>
                         <AlertDialogTitle className="text-label font-black text-red-600 tracking-widerer">Critical Termination Protocol</AlertDialogTitle>
-                        <AlertDialogDescription className="text-label font-medium text-red-900/40 leading-relaxed tracking-widest">
+                        <AlertDialogDescription className="text-label font-medium text-foreground/80 leading-relaxed tracking-widest">
                             DANGER: This action will permanently erase this manuscript node and all associated technical dossiers from the global server. This operation is irreversible.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="pt-6 gap-4">
-                        <AlertDialogCancel className="h-14 px-8 rounded-2xl font-black tracking-widest border-primary/10 text-primary/40 hover:bg-primary/5 cursor-pointer">
+                        <AlertDialogCancel className="h-14 px-8 rounded-2xl font-black tracking-widest border-border text-foreground/80 hover:bg-muted hover:text-foreground cursor-pointer">
                             Abort Protocol
                         </AlertDialogCancel>
                         <form action={deleteAction}>
@@ -128,7 +128,7 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
                             <XCircle className="w-8 h-8" />
                         </div>
                         <AlertDialogTitle className="text-label font-black text-primary tracking-widerer">Access Restricted</AlertDialogTitle>
-                        <AlertDialogDescription className="text-label font-medium text-primary/40 leading-relaxed tracking-widest">
+                        <AlertDialogDescription className="text-label font-medium text-foreground/80 leading-relaxed tracking-widest">
                             {errorMessage}
                         </AlertDialogDescription>
                     </AlertDialogHeader>

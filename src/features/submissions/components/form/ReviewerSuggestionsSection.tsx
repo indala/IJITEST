@@ -82,8 +82,7 @@ export function ReviewerSuggestionsSection({ control }: ReviewerSuggestionsSecti
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ duration: 0.25 }}
                             >
-                                <div className={`relative bg-card border rounded-xl overflow-hidden transition-all p-1 shadow-xs ${isOpposed ? 'border-rose-300  : 'border-emerald-300 
-                                } `}>
+                                <div className={`relative bg-card border rounded-xl overflow-hidden transition-all p-1 shadow-xs ${isOpposed ? 'border-rose-300' : 'border-emerald-300'} `}>
                                 <Button
                                     type="button"
                                     variant="ghost"

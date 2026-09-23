@@ -106,7 +106,7 @@ export default function ContactClient({ settings }: ContactClientProps) {
                         </div>
                         <p className="text-white/70 m-0 leading-relaxed">IJITEST strictly adheres to COPE guidelines for scientific integrity and peer-review ethics.</p>
                         <div className="pt-1">
-                            <Link href="/ethics" className="inline-flex items-center gap-1 text-body-sm font-bold text-secondary hover:text-white transition-colors">
+                            <Link href="/ethics" className="inline-flex items-center gap-1 text-body-sm font-bold text-rose-300 hover:text-white transition-colors">
                                 <span>View Policy</span>
                                 <ChevronRight className="w-3.5 h-3.5" />
                             </Link>

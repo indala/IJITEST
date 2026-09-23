@@ -688,7 +688,7 @@ export default function EmailTemplatesManager() {
                         {/* Template List */}
                         <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
                             {filteredTemplates.length === 0 ? (
-                                <div className="p-6 text-center text-body-sm text-slate-400 border border-dashed border-slate-200 rounded-xl">
+                                <div className="p-6 text-center text-body-sm text-slate-500 border border-dashed border-slate-200 rounded-xl">
                                     No notification templates match your search.
                                 </div>
                             ) : (
@@ -757,7 +757,7 @@ export default function EmailTemplatesManager() {
                                         <div className="flex items-center gap-1 text-label font-bold text-slate-600 uppercase tracking-wider">
                                             <Sparkles className="w-3 h-3 text-amber-500" /> Click to Insert Placeholder Variable:
                                         </div>
-                                        <div className="flex items-center gap-2.5 text-body-sm text-slate-400">
+                                        <div className="flex items-center gap-2.5 text-body-sm text-slate-500">
                                             <span className="hidden sm:inline font-medium">
                                                 <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-meta font-mono text-slate-600 shadow-2xs">Ctrl+Z</kbd> Undo / <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-meta font-mono text-slate-600 shadow-2xs">Ctrl+Y</kbd> Redo
                                             </span>
@@ -837,7 +837,7 @@ export default function EmailTemplatesManager() {
                                                                 href={getTemplateCta(selectedTemplate?.templateKey)?.url}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-block px-8 py-3.5 rounded-xl font-bold text-caption text-white shadow-lg shadow-rose-900/20 hover:opacity-95 transition-opacity"
+                                                                className="inline-block px-8 py-3.5 rounded-xl font-bold text-caption text-white shadow-lg shadow-primary/20 hover:opacity-95 transition-opacity"
                                                                 style={{ backgroundColor: JOURNAL_EMAIL_CONFIG.primaryColor }}
                                                             >
                                                                 {getTemplateCta(selectedTemplate?.templateKey)?.text} &rarr;
@@ -850,8 +850,8 @@ export default function EmailTemplatesManager() {
                                                 <div className="p-6 bg-slate-50 border-t border-slate-100 text-center text-body-sm text-slate-500 space-y-2">
                                                     <p className="font-bold text-slate-800 m-0">{JOURNAL_EMAIL_CONFIG.name}</p>
                                                     <p className="text-slate-600 m-0">Published by <strong>{JOURNAL_EMAIL_CONFIG.publisher}</strong></p>
-                                                    <p className="text-slate-400 m-0">{JOURNAL_EMAIL_CONFIG.address}</p>
-                                                    <div className="pt-3 border-t border-slate-200 text-body-sm text-slate-400">
+                                                    <p className="text-slate-500 m-0">{JOURNAL_EMAIL_CONFIG.address}</p>
+                                                    <div className="pt-3 border-t border-slate-200 text-body-sm text-slate-500">
                                                         This is an automated scholarly notification. Direct replies to this mailbox are not monitored.
                                                     </div>
                                                 </div>

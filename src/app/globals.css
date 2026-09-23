@@ -502,11 +502,11 @@
   --brand-secondary: #b4232f;
   --brand-orange: #d97706;
   --brand-pink: #c02678;
-  --brand-accent: var(--brand-secondary);
+  --brand-accent: oklch(0.95 0.015 255);
   --brand-background: oklch(0.985 0.005 255);
   --brand-foreground: oklch(0.18 0.02 255);
   --brand-muted-foreground: oklch(0.35 0.02 253);
-  --brand-accent-foreground: oklch(0.35 0.15 255);
+  --brand-accent-foreground: var(--brand-primary);
   --brand-destructive: #b4232f;
   --brand-border: oklch(0.9 0.01 255);
   --brand-ring: oklch(0.35 0.15 255 / 0.2);

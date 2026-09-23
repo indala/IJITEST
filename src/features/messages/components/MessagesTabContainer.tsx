@@ -43,7 +43,7 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
                         "flex items-center gap-2 px-5 py-2 font-bold tracking-widest uppercase rounded-xl transition-all duration-300 cursor-pointer",
                         activeTab === 'inquiry'
                             ? "bg-card text-foreground shadow-lg shadow-black/10 border border-white/5"
-                            : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/10 border border-transparent"
+                            : "text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30 border border-transparent"
                     )}
                 >
                     <MessageSquare className="w-3.5 h-3.5 text-primary" />
@@ -60,7 +60,7 @@ export function MessagesTabContainer({ defaultTab = 'inquiry' }: MessagesTabCont
                         "flex items-center gap-2 px-5 py-2 font-bold tracking-widest uppercase rounded-xl transition-all duration-300 cursor-pointer",
                         activeTab === 'chat'
                             ? "bg-card text-foreground shadow-lg shadow-black/10 border border-white/5"
-                            : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/10 border border-transparent"
+                            : "text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30 border border-transparent"
                     )}
                 >
                     <MessageCircle className="w-3.5 h-3.5 text-primary" />

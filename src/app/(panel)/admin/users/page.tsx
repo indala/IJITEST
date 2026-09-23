@@ -402,12 +402,12 @@ export default function UserManagement() {
                                         {guide.role === 'Admin' ? <Shield className="w-6 h-6" /> : guide.role === 'Editor' ? <UserCog className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
                                     </div>
                                     <div>
-                                        <h3>{guide.role} <span className="opacity-60 block mt-1">{guide.title}</span></h3>
+                                        <h3>{guide.role} <span className="text-muted-foreground text-sm font-normal block mt-1">{guide.title}</span></h3>
                                     </div>
                                 </div>
                                 <p className="mb-6">{guide.desc}</p>
                                 <div className="space-y-2">
-                                    <p className="text-label font-semibold text-muted-foreground/50 tracking-widest mb-3 uppercase">Key Actions</p>
+                                    <p className="text-label font-semibold text-muted-foreground tracking-widest mb-3 uppercase">Key Actions</p>
                                     {guide.actions.map((action, i) => (
                                         <div key={i} className="flex items-center gap-3 text-body-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded-xl">
                                             <CheckCircle className={`w-4 h-4 ${guide.variant === 'primary' ? 'text-primary' : guide.variant === 'blue' ? 'text-blue-600' : 'text-emerald-600'} `} />

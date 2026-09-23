@@ -231,7 +231,7 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
                             Our editorial process adheres strictly to the Committee on Publication Ethics (COPE) standards to safeguard research integrity.
                         </p>
                         <div className="pt-1">
-                            <Link href="/ethics" className="inline-flex items-center gap-1 text-body-sm font-bold text-secondary hover:text-white transition-colors">
+                            <Link href="/ethics" className="inline-flex items-center gap-1 text-body-sm font-bold text-rose-300 hover:text-white transition-colors">
                                 <span>View Ethics Guide</span>
                                 <ChevronRight className="w-3.5 h-3.5" />
                             </Link>

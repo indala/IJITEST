@@ -346,7 +346,7 @@ export default function AdminSectionsPage() {
                                             <span className="font-mono text-meta px-2 py-0.5 rounded bg-primary/10 text-primary font-bold">
                                                 #{sec.sequence}
                                             </span>
-                                            <span className="font-mono text-meta px-2.5 py-0.5 rounded bg-secondary/10 text-secondary-foreground font-black tracking-wide border border-secondary/20">
+                                            <span className="font-mono text-meta px-2.5 py-0.5 rounded bg-secondary/10 text-secondary font-black tracking-wide border border-secondary/20">
                                                 {sec.abbrev}
                                             </span>
                                             <h3 className="font-bold text-foreground m-0">
@@ -374,7 +374,7 @@ export default function AdminSectionsPage() {
                                                 {sec.policy}
                                             </p>
                                         ) : (
-                                            <p className="text-caption italic text-muted-foreground/60">
+                                            <p className="text-caption italic text-muted-foreground">
                                                 No specific editorial policy defined.
                                             </p>
                                         )}
@@ -393,17 +393,15 @@ export default function AdminSectionsPage() {
                                                 </span>
                                             )}
 
-                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${sec.metaReviewed ? "bg-emerald-500/10 text-emerald-700  : "bg-muted /40 text-muted-foreground"
-                                            } `}>
-                                            <ShieldCheck className="w-3.5 h-3.5" />
-                                            {sec.metaReviewed ? "Peer Reviewed" : "Not Peer Reviewed"}
-                                        </span>
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${sec.metaReviewed ? "bg-emerald-500/10 text-emerald-700" : "bg-muted/40 text-muted-foreground"} `}>
+                                                <ShieldCheck className="w-3.5 h-3.5" />
+                                                {sec.metaReviewed ? "Peer Reviewed" : "Not Peer Reviewed"}
+                                            </span>
 
-                                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${sec.metaIndexed ? "bg-blue-500/10 text-blue-700  : "bg-muted /40 text-muted-foreground"
-                                            } `}>
-                                        <Hash className="w-3.5 h-3.5" />
-                                        {sec.metaIndexed ? "Indexed in Feeds & DOI" : "Not Indexed"}
-                                    </span>
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${sec.metaIndexed ? "bg-blue-500/10 text-blue-700" : "bg-muted/40 text-muted-foreground"} `}>
+                                                <Hash className="w-3.5 h-3.5" />
+                                                {sec.metaIndexed ? "Indexed in Feeds & DOI" : "Not Indexed"}
+                                            </span>
 
                                     <span className="inline-flex items-center gap-1 text-muted-foreground px-2 py-1 rounded bg-muted/40 font-medium">
                                         <Layers className="w-3.5 h-3.5" />

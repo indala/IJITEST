@@ -57,7 +57,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-1">
                     <h1 className="font-black tracking-tight text-primary">Manuscript Details</h1>
-                    <div className="flex items-center gap-3 text-label text-primary/40 font-bold uppercase tracking-widest leading-none">
+                    <div className="flex items-center gap-3 text-label text-muted-foreground font-semibold uppercase tracking-widest leading-none">
                         <span>{sub.paperId}</span>
                         <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
                         <span>Submitted on {dayjs(sub.submittedAt).format("MMMM DD, YYYY")}</span>
@@ -129,7 +129,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                             <CardContent className="pt-6 space-y-6">
                                 {!sub.reviewComments || sub.reviewComments.length === 0 ? (
                                     <div className="text-center py-8 bg-muted/10 rounded-2xl border border-dashed border-primary/10">
-                                        <p className="text-label font-bold text-primary/40 uppercase tracking-widest">No review comments recorded for this decision round.</p>
+                                        <p className="text-label font-bold text-muted-foreground uppercase tracking-widest">No review comments recorded for this decision round.</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
@@ -139,7 +139,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                                     <Badge className="bg-primary/5 text-primary border-none text-badge font-black uppercase tracking-widest px-3 py-1">
                                                         Evaluation Comment #{index + 1}
                                                     </Badge>
-                                                    <span className="text-label font-bold text-primary/30 uppercase tracking-widest">
+                                                    <span className="text-label font-bold text-muted-foreground uppercase tracking-widest">
                                                         {dayjs(comment.submittedAt).format("MMM DD, YYYY")}
                                                     </span>
                                                 </div>
@@ -171,7 +171,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                 </div>
                                 <div className="space-y-1 max-w-sm mx-auto">
                                     <p className="text-label font-black uppercase tracking-widest text-primary">Undergoing Review</p>
-                                    <p className="font-bold text-primary/40 leading-relaxed">
+                                    <p className="font-medium text-muted-foreground leading-relaxed">
                                         Your manuscript is currently undergoing editorial screening and peer evaluation. Reviewer feedback will be presented here once the final decision has been processed.
                                     </p>
                                 </div>
@@ -248,11 +248,11 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                             <Download className="w-4 h-4" />
                                         </div>
                                         <div>
-                                            <p className="font-black text-primary/60 truncate max-w-[120px]">{file.originalName}</p>
-                                            <p className="text-label font-bold text-primary/30 uppercase tracking-widest">{file.fileType.replace('_', ' ')}</p>
+                                            <p className="font-black text-foreground/80 truncate max-w-[120px]">{file.originalName}</p>
+                                            <p className="text-label font-bold text-muted-foreground uppercase tracking-widest">{file.fileType.replace('_', ' ')}</p>
                                         </div>
                                     </div>
-                                    <Badge variant="outline" className="text-badge border-primary/5 text-primary/40">{file.fileSize ? (file.fileSize / 1024 / 1024).toFixed(1) : '0'}MB</Badge>
+                                    <Badge variant="outline" className="text-badge border-border text-muted-foreground">{file.fileSize ? (file.fileSize / 1024 / 1024).toFixed(1) : '0'}MB</Badge>
                                 </Link>
                             ))}
                         </CardContent>
@@ -266,12 +266,12 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                         <CardContent className="pt-6 space-y-4">
                             {sub.authors.map((author: { name: string; institution: string | null; isCorresponding: boolean }, idx: number) => (
                                 <div key={idx} className="flex items-start gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center shrink-0 text-primary/40 font-black text-badge">
+                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-black text-badge">
                                         {idx + 1}
                                     </div>
                                     <div className="space-y-0.5">
                                         <p className="font-black text-primary/80 leading-none">{author.name}</p>
-                                        <p className="text-label font-bold text-primary/30 tracking-tight leading-none">{author.institution || 'No Institution'}</p>
+                                        <p className="text-label font-bold text-muted-foreground tracking-tight leading-none">{author.institution || 'No Institution'}</p>
                                         {author.isCorresponding && (
                                             <Badge className="mt-2 bg-secondary/10 text-secondary border-0 text-badge font-black tracking-widest h-4 px-1.5 uppercase leading-none">Corresponding</Badge>
                                         )}
@@ -295,8 +295,8 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                     <div
                                         key={idx}
                                         className={`p-3 rounded-xl border text-body-sm space-y-1 ${sug.type === 'opposed'
-                                                ? 'border-rose-200 bg-rose-50/40 
-                                                : 'border-emerald-200 bg-emerald-50/40 
+                                                ? 'border-rose-200 bg-rose-50/40'
+                                                : 'border-emerald-200 bg-emerald-50/40'
                                             } `}
                                     >
                                         <div className="flex items-center justify-between font-bold">

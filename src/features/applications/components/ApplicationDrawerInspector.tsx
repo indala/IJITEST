@@ -65,7 +65,7 @@ export function ApplicationDrawerInspector({
                                         </div>
                                         <div className="space-y-1">
                                             <h2 className="font-black uppercase tracking-tight">{inspectApp.fullName}</h2>
-                                            <p className="text-label font-black text-primary uppercase tracking-[0.2em] opacity-60">{inspectApp.designation}</p>
+                                            <p className="text-label font-bold text-muted-foreground uppercase tracking-[0.2em]">{inspectApp.designation}</p>
                                         </div>
                                     </div>
 
@@ -76,16 +76,16 @@ export function ApplicationDrawerInspector({
                                             { label: 'Institution', value: inspectApp.institute },
                                             { label: 'Nationality', value: inspectApp.nationality },
                                             { label: 'Role Target', value: inspectApp.type },
-                                            { label: 'Status', value: inspectApp.status, color: inspectApp.status === 'approved' ? 'text-emerald-500' : inspectApp.status === 'rejected' ? 'text-rose-500' : 'text-amber-500' }
+                                            { label: 'Status', value: inspectApp.status, color: inspectApp.status === 'approved' ? 'text-emerald-600' : inspectApp.status === 'rejected' ? 'text-rose-600' : 'text-amber-700' }
                                         ].map(item => (
                                             <div key={item.label} className="space-y-1">
-                                                <span className="text-label font-black uppercase tracking-widest text-muted-foreground opacity-40">{item.label}</span>
+                                                <span className="text-label font-bold uppercase tracking-widest text-muted-foreground">{item.label}</span>
                                                 <p className={`text-label font-black uppercase tracking-widest ${item.color || 'text-foreground'} `}>{item.value}</p>
                                             </div>
                                         ))}
 
                                         <div className="space-y-3">
-                                            <span className="text-label font-black uppercase tracking-widest text-muted-foreground opacity-40">Core Expertise</span>
+                                            <span className="text-label font-bold uppercase tracking-widest text-muted-foreground">Core Expertise</span>
                                             <div className="flex flex-wrap gap-2">
                                                 {inspectApp.researchInterests?.map((tag: string) => (
                                                     <span key={tag} className="text-label font-black uppercase text-primary px-3 py-1 bg-primary/5 rounded-lg border border-primary/10">

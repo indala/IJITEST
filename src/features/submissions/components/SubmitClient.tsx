@@ -171,7 +171,7 @@ function SubmitClientContent({ initialSections }: SubmitClientProps) {
                         <p className="text-white/70 leading-relaxed m-0">
                             Encountering technical issues? Our editorial desk is available to assist you.
                         </p>
-                        <Link href="/contact" className="text-caption font-bold text-secondary hover:text-white inline-flex items-center gap-1 m-0 transition-colors pt-1">
+                        <Link href="/contact" className="text-caption font-bold text-rose-300 hover:text-white inline-flex items-center gap-1 m-0 transition-colors pt-1">
                             <span>Contact Support</span>
                             <ChevronRight className="w-3.5 h-3.5" />
                         </Link>

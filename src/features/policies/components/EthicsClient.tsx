@@ -346,7 +346,7 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
                         <div className="pt-1">
                             <a
                                 href={`mailto:${supportEmail}`}
-                                className="text-secondary hover:text-white hover:underline transition-all font-bold inline-block"
+                                className="text-rose-300 hover:text-white hover:underline transition-all font-bold inline-block"
                             >
                                 {supportEmail}
                             </a>

@@ -114,12 +114,12 @@ export function MessageDetail({
                         <div className="space-y-0.5 min-w-0">
                             <h2 className="font-bold tracking-tight leading-none lowercase truncate max-w-[150px] sm:max-w-[250px]">{message.name}</h2>
                             <div className="flex flex-col gap-0.5 pt-0.5">
-                                <a href={`mailto:${message.email}`} className="text-caption text-muted-foreground/60 hover:text-primary flex items-center gap-1.5 transition-colors truncate max-w-[200px] sm:max-w-[300px]">
-                                    <Mail className="w-2.5 h-2.5 opacity-40 shrink-0" />
+                                <a href={`mailto:${message.email}`} className="text-caption text-muted-foreground hover:text-primary flex items-center gap-1.5 transition-colors truncate max-w-[200px] sm:max-w-[300px]">
+                                    <Mail className="w-2.5 h-2.5 opacity-60 shrink-0" />
                                     {message.email}
                                 </a>
-                                <div className="flex items-center gap-1.5 text-caption text-muted-foreground/40">
-                                    <Clock className="w-2.5 h-2.5 opacity-40" />
+                                <div className="flex items-center gap-1.5 text-caption text-muted-foreground">
+                                    <Clock className="w-2.5 h-2.5 opacity-60" />
                                     {dayjs(message.createdAt).format("MMM D, YYYY [at] HH:mm")}
                                 </div>
                             </div>
@@ -186,7 +186,7 @@ export function MessageDetail({
             <ScrollArea data-lenis-prevent className="flex-1">
                 <div className="px-4 max-w-3xl mx-auto w-full space-y-4 pb-20">
                     <div className="space-y-2.5">
-                        <div className="flex items-center gap-2 text-label text-muted-foreground/40 lowercase tracking-tight pl-2 border-l-2 border-primary/20">
+                        <div className="flex items-center gap-2 text-label text-muted-foreground font-semibold lowercase tracking-tight pl-2 border-l-2 border-primary/20">
                             message
                         </div>
                         <div className="p-3 bg-muted/5 border border-white/5 rounded-xl">
@@ -203,13 +203,13 @@ export function MessageDetail({
                                 verification details
                             </div>
                             <div className="grid grid-cols-2 gap-4 font-mono text-meta">
-                                <div className="space-y-0.5 text-muted-foreground/60 lowercase">
-                                    <p className="opacity-40">status</p>
+                                <div className="space-y-0.5 text-muted-foreground lowercase">
+                                    <p className="text-muted-foreground font-medium">status</p>
                                     <p className="font-bold text-foreground">{message.status}</p>
                                 </div>
                                 {message.resolvedByName && (
-                                    <div className="space-y-0.5 text-muted-foreground/60 lowercase">
-                                        <p className="opacity-40">admin</p>
+                                    <div className="space-y-0.5 text-muted-foreground lowercase">
+                                        <p className="text-muted-foreground font-medium">admin</p>
                                         <p className="font-bold text-foreground">{message.resolvedByName}</p>
                                     </div>
                                 )}

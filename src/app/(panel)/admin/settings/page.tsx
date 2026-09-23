@@ -839,28 +839,28 @@ export default function SystemSettings() {
                             {/* Live COUNTER & Storage Metrics Grid */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                                 <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                                    <span className="text-label font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Investigations</span>
+                                    <span className="text-label font-bold text-slate-500 uppercase tracking-wider block mb-1">Total Investigations</span>
                                     <p className="font-black text-slate-800 m-0">
                                         {telemetry ? telemetry.counterMetrics.totalInvestigations.toLocaleString() : "--"}
                                     </p>
-                                    <span className="text-body-sm text-slate-400 mt-1 block">Article Page Views</span>
+                                    <span className="text-body-sm text-slate-500 mt-1 block">Article Page Views</span>
                                 </div>
                                 <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                                    <span className="text-label font-bold text-slate-400 uppercase tracking-wider block mb-1">Unique Investigations</span>
+                                    <span className="text-label font-bold text-slate-500 uppercase tracking-wider block mb-1">Unique Investigations</span>
                                     <p className="font-black text-slate-800 m-0">
                                         {telemetry ? telemetry.counterMetrics.uniqueInvestigations.toLocaleString() : "--"}
                                     </p>
-                                    <span className="text-body-sm text-slate-400 mt-1 block">Unique Daily Readers</span>
+                                    <span className="text-body-sm text-slate-500 mt-1 block">Unique Daily Readers</span>
                                 </div>
                                 <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                                    <span className="text-label font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Requests</span>
+                                    <span className="text-label font-bold text-slate-500 uppercase tracking-wider block mb-1">Total Requests</span>
                                     <p className="font-black text-emerald-700 m-0">
                                         {telemetry ? telemetry.counterMetrics.totalRequests.toLocaleString() : "--"}
                                     </p>
                                     <span className="text-body-sm text-emerald-600 mt-1 block">Full-Text PDF Downloads</span>
                                 </div>
                                 <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                                    <span className="text-label font-bold text-slate-400 uppercase tracking-wider block mb-1">Unique Requests</span>
+                                    <span className="text-label font-bold text-slate-500 uppercase tracking-wider block mb-1">Unique Requests</span>
                                     <p className="font-black text-emerald-700 m-0">
                                         {telemetry ? telemetry.counterMetrics.uniqueRequests.toLocaleString() : "--"}
                                     </p>
@@ -934,7 +934,7 @@ export default function SystemSettings() {
                                         placeholder="ijitest"
                                         className="h-10 text-body-sm"
                                     />
-                                    <p className="text-slate-400 m-0">Used as the platform identifier in standard COUNTER headers.</p>
+                                    <p className="text-slate-500 m-0">Used as the platform identifier in standard COUNTER headers.</p>
                                 </div>
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between">
@@ -949,7 +949,7 @@ export default function SystemSettings() {
                                         placeholder="0"
                                         className="h-10 text-body-sm"
                                     />
-                                    <p className="text-slate-400 m-0">Use &apos;0&apos; to represent open-access / global public access (The World).</p>
+                                    <p className="text-slate-500 m-0">Use &apos;0&apos; to represent open-access / global public access (The World).</p>
                                 </div>
                             </div>
                         </CardContent>

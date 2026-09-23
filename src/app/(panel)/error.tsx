@@ -32,7 +32,7 @@ export default function Error({
                 <ShieldAlert className="w-10 h-10 text-gray-400" />
             </div>
             <h2 className="font-black text-foreground tracking-wider uppercase">Portal Access Error</h2>
-            <p className="text-label font-black text-primary/40 uppercase tracking-[0.2em] mb-10 max-w-md mx-auto">
+            <p className="text-body-sm font-medium text-muted-foreground mb-10 max-w-md mx-auto leading-relaxed">
                 The administrative operation could not be completed. This may be due to a session timeout or a database communication failure.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
