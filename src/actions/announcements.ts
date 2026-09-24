@@ -20,84 +20,7 @@ import { revalidatePath, cacheLife, cacheTag } from "next/cache";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
 import { sanitizeAnnouncementHtml } from "@/lib/announcement-content";
 
-const DEFAULT_ANNOUNCEMENTS = [
-    {
-        title: "Call for Papers: Volume 14, Issue 1 (2026)",
-        type: "call_for_papers" as const,
-        descriptionShort: "Submissions are cordially invited for the upcoming issue covering novel research in Engineering, Computer Science, and Emerging Technologies.",
-        description: `We invite researchers, academicians, and industry practitioners worldwide to submit their original, unpublished research papers, review articles, and technical notes for Volume 14, Issue 1 of the International Journal of Innovative Technology and Exploring Science (IJITEST).
 
-### Scope and Topics
-- Artificial Intelligence, Machine Learning & Deep Neural Architectures
-- Distributed Computing, Cloud Services & Edge Analytics
-- Cyber-Physical Systems, IoT & Network Security
-- Advanced Robotics, Mechatronics & Autonomous Navigation
-- Renewable Energy Systems & Green Technology
-- Data Science, Big Data Engineering & Predictive Modeling
-
-### Submission Benefits
-- **Rigorous Peer Review**: Double-blind peer review by international subject matter experts.
-- **Open Access**: Immediate global dissemination with CC-BY 4.0 licensing.
-- **Persistent Identification**: Digital Object Identifier (DOI) assigned to all published articles.
-- **Fast-Track Review**: Initial editorial screening within 48-72 hours.
-
-Manuscripts can be submitted directly through the online submission portal.`,
-        imageUrl: null,
-        imageAltText: "Call for Papers Announcement Banner",
-        dateExpire: null,
-        isActive: true,
-        priority: 10,
-    },
-    {
-        title: "IJITEST Adopts Enhanced Scholarly Metadata Standards (JATS 1.3 & PubMed NLM)",
-        type: "news" as const,
-        descriptionShort: "Our publishing workflow now exports compliant JATS 1.3 XML, PubMed MEDLINE XML, and DOAJ metadata to accelerate global indexing.",
-        description: `In line with international scholarly publishing best practices and Open Journal Systems (OJS) interoperability protocols, IJITEST has officially deployed full-text **JATS 1.3 XML**, **PubMed MEDLINE 2.8 XML**, and **DOAJ 0.2** automated syndication pipelines.
-
-Authors and readers can now download structured XML galleys directly from article landing pages. Furthermore, real-time CrossMark policy verification and RSS/Atom web syndication feeds are active to enhance transparency and discoverability across academic indexers worldwide.`,
-        imageUrl: null,
-        imageAltText: "Scholarly Metadata Standards",
-        dateExpire: null,
-        isActive: true,
-        priority: 5,
-    },
-    {
-        title: "Updated Author Guidelines & Reviewer Ethics Policy",
-        type: "editorial_update" as const,
-        descriptionShort: "Review our revised submission formatting requirements, CRediT authorship taxonomy, and COPE-compliant conflict of interest standards.",
-        description: `The Editorial Board of IJITEST has ratified revised author guidelines to streamline the peer review lifecycle:
-
-1. **Section Classifications**: Submissions must now be categorized into Original Research, Review Articles, Short Communications, or Case Studies.
-2. **Author Reviewer Suggestions**: Authors may now nominate up to three preferred peer reviewers and declare any opposed reviewers with substantiated conflict of interest justifications.
-3. **Audit Trail**: Every manuscript revision and editorial decision is recorded with complete audit transparency.
-
-Please ensure your manuscripts follow the prescribed template before submission.`,
-        imageUrl: null,
-        imageAltText: "Author Guidelines Update",
-        dateExpire: null,
-        isActive: true,
-        priority: 1,
-    }
-];
-
-/**
- * Seeds default announcements if none exist in the database.
- */
-export async function seedDefaultAnnouncements(): Promise<ActionResponse<Announcement[]>> {
-    try {
-        const existing = await db.select().from(announcements).limit(1);
-        if (existing.length === 0) {
-            for (const item of DEFAULT_ANNOUNCEMENTS) {
-                await db.insert(announcements).values(item);
-            }
-        }
-        const all = await db.select().from(announcements).orderBy(desc(announcements.priority), desc(announcements.createdAt));
-        return actionSuccess(all);
-    } catch (error) {
-        console.error("Seed default announcements error:", error);
-        return serverError(error, "seed default announcements");
-    }
-}
 
 /**
  * Public query: Fetch active announcements (auto-seeds if empty).
@@ -112,11 +35,7 @@ export async function getAnnouncements(options?: {
     cacheTag('announcements');
 
     try {
-        // Auto-seed if empty
-        const countCheck = await db.select().from(announcements).limit(1);
-        if (countCheck.length === 0) {
-            await seedDefaultAnnouncements();
-        }
+
 
         const conditions = [
             eq(announcements.isActive, true),
@@ -180,11 +99,7 @@ export async function getAllAnnouncementsAdmin(): Promise<ActionResponse<Announc
             return actionError("Unauthorized. Admin or Editor privileges required.");
         }
 
-        // Auto-seed if empty
-        const countCheck = await db.select().from(announcements).limit(1);
-        if (countCheck.length === 0) {
-            await seedDefaultAnnouncements();
-        }
+
 
         const rows = await db.select()
             .from(announcements)
@@ -262,6 +177,7 @@ export async function createAnnouncement(formData: FormData): Promise<ActionResp
 
         revalidatePath("/announcements");
         revalidatePath("/admin/announcements");
+        revalidatePath("/editor/announcements");
         revalidatePath("/");
 
         if (!createdRow.length || !createdRow[0]) {
@@ -360,6 +276,7 @@ export async function updateAnnouncement(id: number, formData: FormData): Promis
         revalidatePath("/announcements");
         revalidatePath(`/announcements/${id}`);
         revalidatePath("/admin/announcements");
+        revalidatePath("/editor/announcements");
         revalidatePath("/");
 
         if (!updatedRows.length || !updatedRows[0]) {
@@ -393,6 +310,7 @@ export async function deleteAnnouncement(id: number): Promise<ActionResponse<{ i
         revalidatePath("/announcements");
         revalidatePath(`/announcements/${id}`);
         revalidatePath("/admin/announcements");
+        revalidatePath("/editor/announcements");
         revalidatePath("/");
 
         return actionSuccess({ id });
@@ -425,6 +343,7 @@ export async function toggleAnnouncementStatus(id: number): Promise<ActionRespon
         revalidatePath("/announcements");
         revalidatePath(`/announcements/${id}`);
         revalidatePath("/admin/announcements");
+        revalidatePath("/editor/announcements");
         revalidatePath("/");
 
         return actionSuccess({ id, isActive: newStatus });

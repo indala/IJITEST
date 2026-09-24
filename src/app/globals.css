@@ -240,6 +240,11 @@
     @apply text-[13px] sm:text-[14px] lg:text-[15px] xl:text-[16px] 2xl:text-[18px];
   }
 
+  span {
+    @apply text-foreground/80 font-normal leading-relaxed;
+    @apply text-[13px] sm:text-[14px] lg:text-[15px] xl:text-[16px] 2xl:text-[18px];
+  }
+
   ul,
   ol {
     @apply text-foreground/80 font-normal leading-relaxed;
@@ -406,6 +411,12 @@
     @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
+  [data-slot="badge"][data-variant="primary"],
+  [data-slot="badge"][data-variant="secondary"],
+  [data-slot="badge"][data-variant="default"] {
+    color: #ffffff !important;
+  }
+
   /* --------------------------------------------------------------------------
      Responsive Container System (Single Source of Truth)
      -------------------------------------------------------------------------- */
@@ -518,6 +529,8 @@
   --card-foreground: var(--brand-foreground);
   --popover: var(--surface-card);
   --popover-foreground: var(--brand-foreground);
+  --primary: var(--brand-primary);
+  --secondary: var(--brand-secondary);
   --primary-foreground: #ffffff;
   --secondary-foreground: #ffffff;
   --muted: var(--surface-muted);

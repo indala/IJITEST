@@ -31,8 +31,8 @@ export function InboxFilters({
     ]
 
     return (
-        <div className="flex flex-col md:flex-row items-center justify-between gap-3 w-full bg-muted/10 p-1 rounded-xl border border-white/5">
-            <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide w-full">
+        <div className="flex  md:flex-row  justify-between gap-3 w-full bg-muted/10 p-1 rounded-xl border border-white/5">
+            <div className="flex items-center gap-1  scrollbar-hide">
                 {tabs.map((tab) => {
                     const Icon = tab.icon
                     const isActive = status === tab.id
@@ -43,8 +43,8 @@ export function InboxFilters({
                             onClick={() => onStatusChange(tab.id)}
                             className={cn(
                                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200 group text-body-sm whitespace-nowrap shrink-0",
-                                isActive 
-                                    ? "bg-primary text-white  font-bold shadow-sm" 
+                                isActive
+                                    ? "bg-primary text-white  font-bold shadow-sm"
                                     : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground"
                             )}
                         >

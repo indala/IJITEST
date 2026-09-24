@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "IJITEST",
     short_name: "IJITEST",
     description: "Academic publishing portal for innovative research and trends in multidisciplinary sciences.",
-    start_url: "/",
+    start_url: "/login",
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#000066",
