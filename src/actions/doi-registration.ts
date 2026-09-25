@@ -293,17 +293,15 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
             ? `https://sandbox.zenodo.org/record/${depositionId}`
             : `https://zenodo.org/record/${depositionId}`;
 
-        // If paper has no existing CrossRef DOI, record the Zenodo DOI
-        if (!pub.doi || pub.doiProvider === 'none') {
-            await db.update(publications)
-                .set({
-                    doi: zenodoDoi,
-                    doiProvider: 'zenodo',
-                    doiRegistrationStatus: 'registered',
-                    doiRegistrationBatchId: String(depositionId),
-                })
-                .where(eq(publications.id, pub.id));
-        }
+        // Always record Zenodo DOI and provider when deposited via Zenodo API
+        await db.update(publications)
+            .set({
+                doi: zenodoDoi,
+                doiProvider: 'zenodo',
+                doiRegistrationStatus: 'registered',
+                doiRegistrationBatchId: String(depositionId),
+            })
+            .where(eq(publications.id, pub.id));
 
         await logSubmissionEvent({
             submissionId,
@@ -313,8 +311,18 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
             metadata: { depositionId, zenodoDoi, recordUrl }
         });
 
+        if (submission.paperId) {
+            updateTag(CACHE_TAGS.PAPER(submission.paperId));
+        }
+        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        updateTag(CACHE_TAGS.PUBLICATIONS);
+        updateTag(CACHE_TAGS.ARCHIVES);
+        updateTag(CACHE_TAGS.LATEST_ISSUE);
+
         revalidatePath(`/author/submissions/${submissionId}`);
         revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath('/admin/submissions');
+        revalidatePath('/admin/publications');
 
         return actionSuccess({
             zenodoDoi,

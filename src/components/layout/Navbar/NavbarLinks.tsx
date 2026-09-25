@@ -31,6 +31,8 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
             const hasDropdown = Boolean(item.children?.length || item.columns?.length);
             const isMenuOpen = activeIndex === item.name;
 
+            const isAlignRight = item.name === 'Paper Submission';
+
             return (
                 <li
                     key={item.name}
@@ -79,7 +81,9 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
                                 className={`absolute top-[calc(100%-2px)] ${
                                     item.isMegaMenu
                                         ? "left-1/2 -translate-x-1/2 w-[760px] xl:w-[820px] 2xl:w-[880px] p-3.5"
-                                        : "left-[-10px] w-64 2xl:w-72 py-2"
+                                        : isAlignRight
+                                            ? "right-0 left-auto w-64 2xl:w-72 py-2"
+                                            : "left-0 xl:left-[-10px] w-64 2xl:w-72 py-2"
                                 } bg-white/95 backdrop-blur-2xl border border-primary/10 rounded-2xl shadow-2xl z-50 overflow-hidden`}
                             >
                                 <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-secondary via-secondary/50 to-transparent" />

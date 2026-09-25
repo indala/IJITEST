@@ -6,7 +6,6 @@ import { Menu, X } from 'lucide-react';
 import { NavbarBrand } from './NavbarBrand';
 import { NavbarLinks } from './NavbarLinks';
 import { MobileMenu } from './MobileMenu';
-import SubmitPaperDropdown from './SubmitPaperDropdown';
 
 import { useSettingsContext } from '@/components/providers/SettingsContext';
 
@@ -46,7 +45,7 @@ export default function Navbar() {
                     <NavbarLinks isScrolled={isScrolled} />
 
                     {/* Actions */}
-                    <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 xl:gap-3 2xl:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3">
                         {/* Portal Login (subtle text link) */}
                         <Link
                             href="/login"
@@ -55,16 +54,15 @@ export default function Navbar() {
                             Portal Login
                         </Link>
 
-                        {/* Track Manuscript (outlined navy button) */}
+                        {/* Submit Manuscript (direct action button) */}
                         <Link
-                            href="/track"
-                            className="hidden xl:inline-flex items-center gap-1.5 border border-primary/30 text-primary hover:bg-primary/5 rounded-lg font-semibold px-3 py-1.5 text-xs xl:text-13 transition-all whitespace-nowrap"
+                            href="/submit"
+                            style={{ color: '#ffffff' }}
+                            className="nav-btn-action !text-white text-white hover:text-white flex items-center justify-center font-semibold shadow-xs no-underline"
                         >
-                            Track Manuscript
+                            <span style={{ color: '#ffffff' }} className="hidden sm:inline text-white !text-white">Submit Manuscript</span>
+                            <span style={{ color: '#ffffff' }} className="sm:hidden text-white !text-white">Submit</span>
                         </Link>
-
-                        {/* Submit Manuscript (prominent action button/dropdown) */}
-                        <SubmitPaperDropdown />
 
                         {/* Mobile menu button */}
                         <div className="lg:hidden flex items-center">

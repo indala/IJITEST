@@ -190,19 +190,16 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
 
                             <CrossmarkDialog paper={paper} />
 
-                            {paper.doi && (
+                            {paper.doi && paper.doiProvider !== 'zenodo' && !paper.doi.includes('zenodo') && (
                                 <a
-                                    href={paper.doiProvider === 'zenodo' || paper.doi.includes('zenodo')
-                                        ? (paper.doi.startsWith('http') ? paper.doi : `https://doi.org/${paper.doi}`)
-                                        : `https://search.crossref.org/?q=${encodeURIComponent(paper.doi)}`
-                                    }
+                                    href={`https://search.crossref.org/?q=${encodeURIComponent(paper.doi)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-meta font-bold text-amber-900 transition-colors shadow-2xs shrink-0"
-                                    title={paper.doiProvider === 'zenodo' || paper.doi.includes('zenodo') ? "Zenodo DOI Record" : "Crossref Cited-by & Metadata Record"}
+                                    title="Crossref Cited-by & Metadata Record"
                                 >
                                     <CrossrefLogo className="h-3.5 w-auto" />
-                                    <span>{paper.doiProvider === 'zenodo' || paper.doi.includes('zenodo') ? "Zenodo Record" : "Cited-by Record"}</span>
+                                    <span>Cited-by Record</span>
                                 </a>
                             )}
                         </div>

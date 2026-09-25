@@ -31,6 +31,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
 
     const journalName = settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
     const journalShortName = settings['journalShortName'] || 'IJITEST';
+    const issn = settings['issnNumber'] || '3139-6887';
     const baseUrl = settings['journalWebsite'] || (typeof window !== 'undefined' ? window.location.origin : 'https://ijitest.org');
     const year = paper.publicationYear || new Date().getFullYear();
     const vol = paper.volumeNumber || 1;
@@ -63,17 +64,17 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                         ? `${authorsList[0]}, & ${authorsList[1]}`
                         : `${authorsList.slice(0, -1).join(', ')}, & ${authorsList[authorsList.length - 1]}`;
                 const pagesPart = pagesStr ? `, ${pagesStr}` : '';
-                return `${authorsStr} (${year}). ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. ${doiUrl}`;
+                return `${authorsStr} (${year}). ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. E-ISSN: ${issn}. ${doiUrl}`;
             }
             case 'ieee': {
                 const authorsStr = authorsList.join(', ');
                 const pagesPart = pagesStr ? `, pp. ${pagesStr}` : '';
-                return `${authorsStr}, "${paper.title}," ${journalShortName}, vol. ${vol}, no. ${iss}${pagesPart}, ${year}. [Online]. Available: ${doiUrl}`;
+                return `${authorsStr}, "${paper.title}," ${journalShortName}, vol. ${vol}, no. ${iss}${pagesPart}, ${year}, E-ISSN: ${issn}. [Online]. Available: ${doiUrl}`;
             }
             case 'harvard': {
                 const authorsStr = authorsList.join(', ');
                 const pagesPart = pagesStr ? `, pp. ${pagesStr}` : '';
-                return `${authorsStr}, ${year}. ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. Available at: <${doiUrl}>.`;
+                return `${authorsStr}, ${year}. ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}, E-ISSN: ${issn}. Available at: <${doiUrl}>.`;
             }
             case 'mla': {
                 const authorsStr = authorsList.length === 1
@@ -82,12 +83,12 @@ export default function CitationSection({ paper }: CitationSectionProps) {
                         ? `${authorsList[0]}, and ${authorsList[1]}`
                         : `${authorsList[0]}, et al.`;
                 const pagesPart = pagesStr ? `, pp. ${pagesStr}` : '';
-                return `${authorsStr}. "${paper.title}." ${journalName}, vol. ${vol}, no. ${iss}, ${year}${pagesPart}, ${doiUrl}.`;
+                return `${authorsStr}. "${paper.title}." ${journalName}, vol. ${vol}, no. ${iss}, ${year}${pagesPart}, E-ISSN: ${issn}, ${doiUrl}.`;
             }
             case 'chicago': {
                 const authorsStr = authorsList.join(', ');
                 const pagesPart = pagesStr ? `: ${pagesStr}` : '';
-                return `${authorsStr}. ${year}. "${paper.title}." ${journalName} ${vol} (${iss})${pagesPart}. ${doiUrl}.`;
+                return `${authorsStr}. ${year}. "${paper.title}." ${journalName} ${vol} (${iss})${pagesPart}. E-ISSN: ${issn}. ${doiUrl}.`;
             }
             case 'bibtex': {
                 const citeKey = `${(authorsList[0] || 'author').toLowerCase().replace(/[^a-z]/g, '')}${year}${paper.paperId.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
@@ -98,6 +99,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
   title={{${paper.title}}},
   author={${bibAuthors}},
   journal={${journalName}},
+  issn={${issn}},
   volume={${vol}},
   number={${iss}},${pagesField}${doiField}
   year={${year}},
@@ -139,6 +141,7 @@ TI  - ${paper.title}
 ${authorsList.map((a) => `AU  - ${a}`).join('\n')}
 T2  - ${journalName}
 JA  - ${journalShortName}
+SN  - ${issn}
 VL  - ${vol}
 IS  - ${iss}${effectiveStartPage ? `\nSP  - ${effectiveStartPage}` : ''}${effectiveEndPage ? `\nEP  - ${effectiveEndPage}` : ''}
 PY  - ${year}${paper.doi ? `\nDO  - ${paper.doi}` : ''}

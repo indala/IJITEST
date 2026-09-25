@@ -24,7 +24,7 @@ import {
     createVolumeIssue,
     assignPaperToIssue
 } from '@/actions/publications'
-import { depositToCrossref } from '@/actions/doi-registration'
+import { depositToCrossref, depositToZenodo } from '@/actions/doi-registration'
 import { useQueryClient } from '@tanstack/react-query'
 import type { ActionResponse } from '@/db/contracts'
 import { useSettingsContext } from '@/components/providers/SettingsContext'
@@ -52,6 +52,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
         status: 'idle' | 'depositing' | 'success' | 'error';
         batchId?: string;
         message?: string;
+        provider?: 'crossref' | 'zenodo';
     }>({ status: 'idle' });
     const [isAssigning, startAssign] = useTransition();
 
@@ -74,14 +75,24 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
         }
 
         let targetDoi: string | null = null;
+        let provider: 'none' | 'crossref' | 'zenodo' | 'custom' = 'none';
+
         if (doiChoice === 'official') {
             targetDoi = paperId ? `${doiPrefix}/${paperId}` : doiPrefix;
+            provider = 'crossref';
+        } else if (doiChoice === 'zenodo') {
+            targetDoi = null;
+            provider = 'zenodo';
         } else if (doiChoice === 'custom') {
             targetDoi = customDoiValue.trim() || null;
-        } else if (doiChoice === 'zenodo') {
-            targetDoi = customDoiValue.trim() || null;
+            provider = 'custom';
+            if (!targetDoi) {
+                toast.error("Please enter a custom DOI or select 'No DOI'.");
+                return;
+            }
         } else {
             targetDoi = null;
+            provider = 'none';
         }
 
         startAssign(async () => {
@@ -92,25 +103,27 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                     startPage ? parseInt(startPage) : undefined,
                     endPage ? parseInt(endPage) : undefined,
                     targetDoi,
-                    doiChoice === 'official' ? 'crossref' : doiChoice
+                    provider
                 );
                 if (res.success) {
                     queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
                     queryClient.invalidateQueries({ queryKey: submissionKeys.all });
 
                     if (doiChoice === 'official') {
-                        setDepositStatus({ status: 'depositing' });
+                        setDepositStatus({ status: 'depositing', provider: 'crossref' });
                         toast.info("Manuscript archived. Submitting to CrossRef...");
                         const depRes = await depositToCrossref(submissionId);
                         if (!depRes.success) {
                             setDepositStatus({
                                 status: 'error',
+                                provider: 'crossref',
                                 message: depRes.error
                             });
                             toast.warning(`Archived, but CrossRef deposit needs review: ${depRes.error}`);
                         } else if (depRes.data) {
                             setDepositStatus({
                                 status: 'success',
+                                provider: 'crossref',
                                 batchId: depRes.data.batchId,
                                 message: depRes.data.message
                             });
@@ -118,9 +131,31 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                         } else {
                             setDepositStatus({
                                 status: 'error',
+                                provider: 'crossref',
                                 message: "CrossRef deposit returned no batch information."
                             });
                             toast.warning("Archived, but CrossRef deposit returned no batch information.");
+                        }
+                    } else if (doiChoice === 'zenodo') {
+                        setDepositStatus({ status: 'depositing', provider: 'zenodo' });
+                        toast.info("Manuscript archived. Depositing to Zenodo via API...");
+                        const zenodoRes = await depositToZenodo(submissionId);
+                        if (!zenodoRes.success) {
+                            setDepositStatus({
+                                status: 'error',
+                                provider: 'zenodo',
+                                message: zenodoRes.error
+                            });
+                            toast.warning(`Archived, but Zenodo deposit needs review: ${zenodoRes.error}`);
+                        } else if (zenodoRes.data) {
+                            setDepositStatus({
+                                status: 'success',
+                                provider: 'zenodo',
+                                batchId: zenodoRes.data.zenodoDoi,
+                                message: `Zenodo record: ${zenodoRes.data.recordUrl}`
+                            });
+                            toast.success(`Deposited to Zenodo ✓ (DOI: ${zenodoRes.data.zenodoDoi})`);
+                            queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                         }
                     } else {
                         toast.success("Manuscript committed to archive");
@@ -284,7 +319,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                             className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${doiChoice === 'zenodo' ? 'bg-sky-600 text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
                                 } `}
                         >
-                            Zenodo
+                            Zenodo API
                         </button>
                         <button
                             type="button"
@@ -292,44 +327,56 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                             className={`py-1.5 px-1.5 rounded text-center transition-all cursor-pointer font-medium ${doiChoice === 'custom' ? 'bg-white text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
                                 } `}
                         >
-                            Custom
+                            Custom DOI
                         </button>
                     </div>
 
                     {doiChoice === 'official' && (
                         <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-body-sm space-y-1">
                             <div className="flex items-center justify-between">
-                                <p className="text-label font-bold text-emerald-700  uppercase tracking-wider">Official CrossRef DOI</p>
+                                <p className="text-label font-bold text-emerald-700 uppercase tracking-wider">Official CrossRef DOI</p>
                                 <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Auto-Deposit</span>
                             </div>
-                            <p className="font-mono text-emerald-900  break-all">{doiPrefix}/{paperId || '...'}</p>
+                            <p className="font-mono text-emerald-900 break-all">{doiPrefix}/{paperId || '...'}</p>
                             <p className="text-caption text-muted-foreground">Generates CrossRef Schema 5.3 XML & queues live deposit to CrossRef API.</p>
                         </div>
                     )}
 
                     {doiChoice === 'zenodo' && (
                         <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 rounded-lg text-body-sm space-y-1">
-                            <p className="text-label font-bold text-sky-700  uppercase tracking-wider">Zenodo Self-Archiving</p>
-                            <p className="text-caption text-muted-foreground">Paper will be published immediately; authors or editors can deposit directly to Zenodo from the manuscript console.</p>
+                            <div className="flex items-center justify-between">
+                                <p className="text-label font-bold text-sky-700 uppercase tracking-wider">Zenodo REST API Automation</p>
+                                <span className="text-badge bg-sky-600 text-white px-1.5 py-0.2 rounded-full font-bold">Auto-Deposit</span>
+                            </div>
+                            <p className="text-caption text-muted-foreground">
+                                Uploads manuscript metadata & open-access CC-BY 4.0 license directly to Zenodo via API to assign an official <span className="font-mono font-semibold text-foreground">10.5281/zenodo</span> DOI.
+                            </p>
                         </div>
                     )}
 
                     {doiChoice === 'custom' && (
                         <div className="space-y-1 pt-1">
                             <Input
-                                placeholder="e.g. 10.5281/zenodo.12345678"
+                                placeholder="e.g. 10.1234/external-identifier"
                                 value={customDoiValue}
                                 onChange={(e) => setCustomDoiValue(e.target.value)}
                                 className="h-9 bg-background text-meta font-mono"
                             />
-                            <p className="text-caption text-muted-foreground">Enter the persistent digital identifier (external registrar or pre-reserved DOI).</p>
+                            <p className="text-caption text-muted-foreground">Enter an external persistent digital identifier (e.g. from DataCite or institutional repository).</p>
                         </div>
                     )}
 
                     {depositStatus.status === 'success' && depositStatus.batchId && (
                         <div className="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-body-sm text-emerald-800">
-                            <p className="font-bold">CrossRef Deposit Submitted ✓</p>
-                            <p className="text-meta font-mono">Batch ID: {depositStatus.batchId}</p>
+                            <p className="font-bold">
+                                {depositStatus.provider === 'zenodo' ? 'Zenodo Deposit Succeeded ✓' : 'CrossRef Deposit Submitted ✓'}
+                            </p>
+                            <p className="text-meta font-mono">
+                                {depositStatus.provider === 'zenodo' ? `DOI: ${depositStatus.batchId}` : `Batch ID: ${depositStatus.batchId}`}
+                            </p>
+                            {depositStatus.message && (
+                                <p className="text-caption text-muted-foreground mt-0.5">{depositStatus.message}</p>
+                            )}
                         </div>
                     )}
                 </div>

@@ -896,7 +896,11 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
  * Update, assign, or remove the DOI of a specific publication.
  * Re-brands the published PDF if it exists so the header/footer reflects the new DOI.
  */
-export async function updatePublicationDoi(submissionId: number, doi: string | null): Promise<ActionResponse<{ doi: string | null }>> {
+export async function updatePublicationDoi(
+    submissionId: number, 
+    doi: string | null,
+    provider?: 'none' | 'crossref' | 'zenodo' | 'custom'
+): Promise<ActionResponse<{ doi: string | null; provider: 'none' | 'crossref' | 'zenodo' | 'custom' }>> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
@@ -923,9 +927,30 @@ export async function updatePublicationDoi(submissionId: number, doi: string | n
         }
         const { pub, sub, issue } = row;
 
-        // 2. Update DOI in database
+        const settings = await getSettingsData();
+        const doiPrefix = settings['doiPrefix'] || '10.68139';
+
+        let resolvedProvider: 'none' | 'crossref' | 'zenodo' | 'custom' = 'none';
+        if (provider) {
+            resolvedProvider = provider;
+        } else if (cleanDoi) {
+            if (cleanDoi.toLowerCase().includes('zenodo')) {
+                resolvedProvider = 'zenodo';
+            } else if (cleanDoi.startsWith(doiPrefix)) {
+                resolvedProvider = 'crossref';
+            } else {
+                resolvedProvider = 'custom';
+            }
+        } else {
+            resolvedProvider = 'none';
+        }
+
+        // 2. Update DOI & Provider in database
         await db.update(publications)
-            .set({ doi: cleanDoi })
+            .set({ 
+                doi: cleanDoi,
+                doiProvider: resolvedProvider
+            })
             .where(eq(publications.submissionId, submissionId));
 
         // 3. If a published PDF exists, re-brand it with the updated DOI
@@ -984,7 +1009,7 @@ export async function updatePublicationDoi(submissionId: number, doi: string | n
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
 
-        return actionSuccess({ doi: cleanDoi });
+        return actionSuccess({ doi: cleanDoi, provider: resolvedProvider });
     } catch (error) {
         console.error("Update Publication DOI Error:", error);
         return serverError(error, "update publication DOI");

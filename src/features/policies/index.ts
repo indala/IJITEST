@@ -5,3 +5,4 @@ export { default as PeerReviewClient } from "./components/PeerReviewClient";
 export { default as PrivacyClient } from "./components/PrivacyClient";
 export { default as ReviewerGuidelinesClient } from "./components/ReviewerGuidelinesClient";
 export { default as TermsClient } from "./components/TermsClient";
+export { default as PoliciesHubClient } from "./components/PoliciesHubClient";

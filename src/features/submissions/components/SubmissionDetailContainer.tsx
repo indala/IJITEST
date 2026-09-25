@@ -385,7 +385,18 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                         </div>
                                                         <div className="flex items-center justify-between pt-2 border-t border-white/10">
                                                             <div className="space-y-0.5 max-w-[65%]">
-                                                                <p className="text-label font-semibold text-white/40 tracking-widest uppercase">DOI Allocation</p>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <p className="text-label font-semibold text-white/40 tracking-widest uppercase">DOI Allocation</p>
+                                                                    {submission.publication?.doiProvider === 'zenodo' && (
+                                                                        <span className="text-badge px-1.5 py-0.2 rounded font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/30">Zenodo</span>
+                                                                    )}
+                                                                    {submission.publication?.doiProvider === 'crossref' && (
+                                                                        <span className="text-badge px-1.5 py-0.2 rounded font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">CrossRef</span>
+                                                                    )}
+                                                                    {submission.publication?.doiProvider === 'custom' && (
+                                                                        <span className="text-badge px-1.5 py-0.2 rounded font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">Custom</span>
+                                                                    )}
+                                                                </div>
                                                                 <p className="text-meta font-mono font-medium text-emerald-300 break-all">
                                                                     {submission.doi || <span className="text-white/40 italic font-sans text-caption">Unassigned (No DOI)</span>}
                                                                 </p>
@@ -395,6 +406,12 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                                     submissionId={submission.id}
                                                                     paperId={submission.paperId}
                                                                     currentDoi={submission.doi}
+                                                                    currentProvider={submission.publication?.doiProvider}
+                                                                    zenodoRecordUrl={
+                                                                        submission.publication?.doiRegistrationBatchId
+                                                                            ? `https://zenodo.org/record/${submission.publication.doiRegistrationBatchId}`
+                                                                            : undefined
+                                                                    }
                                                                 />
                                                             )}
                                                         </div>

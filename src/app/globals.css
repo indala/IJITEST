@@ -475,8 +475,8 @@
   .nav-link {
     @apply font-sans font-semibold tracking-normal whitespace-nowrap transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2;
     @apply flex items-center gap-1 relative;
-    @apply text-[12px] lg:text-[13px] xl:text-[14px] 2xl:text-[15px];
-    @apply px-[8px] lg:px-[10px] xl:px-[12px] 2xl:px-[16px];
+    @apply text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px];
+    @apply px-[4px] lg:px-[6px] xl:px-[8px] 2xl:px-[12px];
   }
 
   /* Desktop Submenu / Dropdown Item */
@@ -487,10 +487,14 @@
   }
 
   /* Navbar Action Button (Submit Manuscript) */
+  .nav-btn-action,
+  .nav-btn-action * {
+    color: #ffffff !important;
+  }
   .nav-btn-action {
-    @apply bg-primary text-white rounded-lg hover:bg-primary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-xs whitespace-nowrap duration-300;
-    @apply text-[12px] sm:text-[14px] lg:text-[12px] xl:text-[14px] 2xl:text-[16px];
-    @apply px-[12px] py-[6px] sm:px-[16px] sm:py-[8px] lg:px-[12px] lg:py-[6px] xl:px-[16px] xl:py-[8px] 2xl:px-[24px] 2xl:py-[10px];
+    @apply bg-primary rounded-lg hover:bg-primary/90 transition-all inline-flex items-center justify-center text-center cursor-pointer font-semibold shadow-xs whitespace-nowrap duration-300 no-underline text-white;
+    @apply text-[12px] sm:text-[14px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px];
+    @apply px-[12px] py-[6px] sm:px-[14px] sm:py-[7px] lg:px-[12px] lg:py-[6px] xl:px-[14px] xl:py-[7px] 2xl:px-[18px] 2xl:py-[8px];
   }
 
   /* Mobile Drawer Menu Links */

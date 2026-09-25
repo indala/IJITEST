@@ -19,16 +19,20 @@ import { Badge } from '@/components/ui/badge';
 import type { PolicyDefinition } from './types';
 
 export function getPolicyDefinitions(settings: Record<string, string>): Record<string, PolicyDefinition> {
-    const journalName = settings['journalName'] || settings['journal_name'] || 'International Journal of Innovative Technology and Exploring Science (IJITEST)';
+    const journalName = settings['journalName'] || settings['journal_name'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
     const journalShort = settings['journalShortName'] || settings['journal_short_name'] || 'IJITEST';
-    const issn = settings['issnNumber'] || settings['issn_number'] || '2278-3075';
-    const publisher = settings['publisher'] || 'IJITEST Publications';
-    const contactEmail = settings['contactEmail'] || settings['contact_email'] || 'editor@ijitest.org';
+    const issn = settings['issnNumber'] || settings['issn_number'] || '3139-6887';
+    const publisher = settings['publisherName'] || settings['publisher_name'] || settings['publisher'] || 'Felix Academic Publications';
     const supportEmail = settings['supportEmail'] || settings['support_email'] || 'support@ijitest.org';
-    const apcInr = settings['apcInr'] || settings['apc_inr'] || '2000';
+    const contactEmail = settings['contactEmail'] || settings['contact_email'] || supportEmail;
+    const supportPhone = settings['supportPhone'] || settings['support_phone'] || '+91 8919643590';
+    const officeAddress = settings['officeAddress'] || settings['office_address'] || 'Madhurawada, Visakhapatnam, Andhra Pradesh, India - 530048';
+    const udyamRegistration = settings['udyamRegistration'] || settings['udyam_registration'] || 'UDYAM-AP-10-0125617';
+    const journalWebsite = settings['journalWebsite'] || settings['journal_website'] || 'https://ijitest.org';
+    const apcInr = settings['apcInr'] || settings['apc_inr'] || '2500';
     const apcUsd = settings['apcUsd'] || settings['apc_usd'] || '50';
     const currentYear = settings['startingYear'] || '2026';
-    const publicationFrequency = settings['publicationFrequency'] || 'Monthly';
+    const publicationFrequency = settings['publicationFrequency'] || 'Monthly (12 Issues per year)';
 
     return {
         'aims-scope': {
@@ -1006,8 +1010,8 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <p>
                                 <strong>{journalName}</strong> is an international peer-reviewed scholarly publication published by <strong>{publisher}</strong> in accordance with the <strong>Principles of Transparency and Best Practice in Scholarly Publishing</strong> established by COPE, DOAJ, OASPA, and WAME.
                             </p>
-                            <div className="p-4 rounded-xl bg-card border border-border space-y-2 text-body-sm shadow-2xs">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div className="p-4 rounded-xl bg-card border border-border space-y-3 text-body-sm shadow-2xs">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                         <span className="font-bold text-foreground">Journal Title:</span>
                                         <p className="m-0 text-muted-foreground">{journalName}</p>
@@ -1018,19 +1022,31 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                     </div>
                                     <div>
                                         <span className="font-bold text-foreground">Publishing House:</span>
-                                        <p className="m-0 text-muted-foreground">{publisher}</p>
+                                        <p className="m-0 text-primary font-semibold">{publisher}</p>
                                     </div>
                                     <div>
-                                        <span className="font-bold text-foreground">Headquarters:</span>
-                                        <p className="m-0 text-muted-foreground">Andhra Pradesh / Telangana, India</p>
+                                        <span className="font-bold text-foreground">MSME Udyam Registration:</span>
+                                        <p className="m-0 text-muted-foreground font-mono">{udyamRegistration}</p>
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <span className="font-bold text-foreground">Registered Office Address:</span>
+                                        <p className="m-0 text-muted-foreground whitespace-pre-line">{officeAddress}</p>
                                     </div>
                                     <div>
-                                        <span className="font-bold text-foreground">Editorial Inquiries:</span>
-                                        <p className="m-0 text-muted-foreground font-mono">{contactEmail}</p>
-                                    </div>
-                                    <div>
-                                        <span className="font-bold text-foreground">Technical Support:</span>
+                                        <span className="font-bold text-foreground">Editorial & Support Email:</span>
                                         <p className="m-0 text-muted-foreground font-mono">{supportEmail}</p>
+                                    </div>
+                                    <div>
+                                        <span className="font-bold text-foreground">Phone / WhatsApp:</span>
+                                        <p className="m-0 text-muted-foreground font-mono">{supportPhone}</p>
+                                    </div>
+                                    <div>
+                                        <span className="font-bold text-foreground">Official Journal Portal:</span>
+                                        <p className="m-0 text-muted-foreground font-mono">{journalWebsite}</p>
+                                    </div>
+                                    <div>
+                                        <span className="font-bold text-foreground">Publication Frequency:</span>
+                                        <p className="m-0 text-muted-foreground">{publicationFrequency}</p>
                                     </div>
                                 </div>
                             </div>
