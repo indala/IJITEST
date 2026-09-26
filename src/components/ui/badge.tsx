@@ -12,7 +12,7 @@ const badgeVariants = cva(
         default: "bg-primary text-white [a&]:hover:bg-primary/90",
         primary: "bg-primary text-white [a&]:hover:bg-primary/90",
         secondary:
-          "bg-secondary text-white [a&]:hover:bg-secondary/90",
+          "bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive:
           "bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20  ",
         outline:

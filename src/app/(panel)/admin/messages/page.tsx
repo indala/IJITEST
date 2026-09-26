@@ -16,7 +16,7 @@ export default function MessagesPage() {
                     <p className="font-mono text-meta uppercase tracking-[0.5em] animate-pulse">Initializing Comm-Matrix...</p>
                 </div>
             }>
-                <div className="flex-1 min-h-0 px-6 pb-6 flex flex-col overflow-hidden">
+                <div className="flex-1 min-h-0 px-2 pb-3 sm:px-4 sm:pb-4 lg:px-6 lg:pb-6 flex flex-col overflow-hidden">
                     <MessagesTabContainer />
                 </div>
             </Suspense>

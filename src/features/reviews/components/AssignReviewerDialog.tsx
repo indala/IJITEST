@@ -146,7 +146,7 @@ export function AssignReviewerDialog({
                                             <ThumbsUp className="w-3.5 h-3.5 shrink-0" />
                                             <span>
                                                 <strong>Suggested:</strong> {s.givenName} {s.familyName || ""} ({s.email})
-                                                {s.suggestionReason && <em className="text-muted-foreground ml-1">"{s.suggestionReason}"</em>}
+                                                {s.suggestionReason && <em className="text-muted-foreground ml-1">&quot;{s.suggestionReason}&quot;</em>}
                                             </span>
                                         </div>
                                     ))}
@@ -155,7 +155,7 @@ export function AssignReviewerDialog({
                                             <ThumbsDown className="w-3.5 h-3.5 shrink-0" />
                                             <span>
                                                 <strong>Opposed:</strong> {s.givenName} {s.familyName || ""} ({s.email})
-                                                {s.suggestionReason && <em className="text-muted-foreground ml-1">"{s.suggestionReason}"</em>}
+                                                {s.suggestionReason && <em className="text-muted-foreground ml-1">&quot;{s.suggestionReason}&quot;</em>}
                                             </span>
                                         </div>
                                     ))}
@@ -223,7 +223,7 @@ export function AssignReviewerDialog({
                                     <p className="m-0 text-muted-foreground leading-snug">
                                         The author explicitly requested not to assign this reviewer:
                                         <span className="font-semibold text-rose-600  ml-1">
-                                            "{selectedIsOpposed.suggestionReason || 'Conflict of interest stated by author'}"
+                                            &quot;{selectedIsOpposed.suggestionReason || 'Conflict of interest stated by author'}&quot;
                                         </span>
                                     </p>
                                 </div>

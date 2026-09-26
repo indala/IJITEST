@@ -8,21 +8,19 @@ import { useApplications } from "@/features/applications";
 import { applicationKeys } from "@/features/applications";
 import { useQueryClient } from '@tanstack/react-query';
 import {
-    approveApplication,
-    rejectApplication,
     bulkApproveApplications,
     bulkRejectApplications
 } from '@/actions/applications';
-import type { Application, UserRole, ApplicationType, ApplicationStatus } from "@/db/types";
+import type { UserRole, ApplicationType, ApplicationStatus } from "@/db/types";
 import { ApplicationItemCard } from './ApplicationItemCard';
 import { ApplicationFilterBar } from './ApplicationFilterBar';
 import { BulkActionsBar } from './BulkActionsBar';
-import { ApplicationDrawerInspector } from './ApplicationDrawerInspector';
 import { QueryState } from "@/components/shared/QueryState";
 
 export type ApplicationsRegistryRole = Extract<UserRole, 'admin' | 'editor'>;
 
-export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsRegistryRole }) {
+export function ApplicationsRegistry({ role: panelRole }: { role: ApplicationsRegistryRole }) {
+    const applicationsPath = panelRole === "admin" ? "/admin/applications" : "/editor/applications";
     const [filters, setFilters] = useQueryStates({
         role: parseAsString.withDefault('all'),
         status: parseAsString.withDefault('pending'),
@@ -46,12 +44,8 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
     const [isPendingAction, startActionTransition] = useTransition();
 
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const [inspectApp, setInspectApp] = useState<Application | null>(null);
-    const [rejectionMode, setRejectionMode] = useState(false);
-    const [rejectionReason, setRejectionReason] = useState("");
     const [bulkRejectionMode, setBulkRejectionMode] = useState(false);
     const [bulkRejectionReason, setBulkRejectionReason] = useState("");
-    const [approveConfirm, setApproveConfirm] = useState(false);
 
     const filteredApps = useMemo(() => {
         if (!interest) return applications;
@@ -81,49 +75,6 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
             prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
         );
     }, []);
-
-    const handleApprove = async (id: number) => {
-        const toastId = toast.loading("Processing approval...");
-        startActionTransition(async () => {
-            try {
-                const res = await approveApplication(id);
-                if (res.success) {
-                    toast.success("Personnel candidacy authorized", { id: toastId });
-                    setInspectApp(null);
-                    setApproveConfirm(false);
-                    queryClient.invalidateQueries({ queryKey: applicationKeys.all });
-                } else {
-                    toast.error(res.error || "Authorization failed", { id: toastId });
-                }
-            } catch {
-                toast.error("Internal system error", { id: toastId });
-            }
-        });
-    };
-
-    const handleReject = async (id: number, reason: string) => {
-        if (reason.length < 20) {
-            toast.error("Vetting rationale must be at least 20 characters");
-            return;
-        }
-        const toastId = toast.loading("Processing rejection...");
-        startActionTransition(async () => {
-            try {
-                const res = await rejectApplication(id, reason);
-                if (res.success) {
-                    toast.success("Proposal declined", { id: toastId });
-                    setInspectApp(null);
-                    setRejectionMode(false);
-                    setRejectionReason("");
-                    queryClient.invalidateQueries({ queryKey: applicationKeys.all });
-                } else {
-                    toast.error(res.error || "Rejection failed", { id: toastId });
-                }
-            } catch {
-                toast.error("Internal system error", { id: toastId });
-            }
-        });
-    };
 
     const handleBulkApprove = async () => {
         if (currentSelectedIds.length === 0) return;
@@ -177,6 +128,15 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
             loadingLabel="Accessing vetting pipeline..."
         >
           <section className="flex-1 flex flex-col min-h-0 space-y-3 sm:space-y-4">
+            <header className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <h1 className="mb-1 text-2xl font-bold text-foreground">Applications</h1>
+                    <p className="m-0 text-body-sm text-muted-foreground">Review candidate profiles, supporting documents, and appointment requests.</p>
+                </div>
+                <p className="m-0 text-label font-semibold text-muted-foreground">
+                    {filteredApps.length} {filteredApps.length === 1 ? "application" : "applications"}
+                </p>
+            </header>
             <ApplicationFilterBar
                 interest={interest}
                 role={role}
@@ -200,9 +160,9 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
 
             <div className="grid grid-cols-1 gap-3">
                 {filteredApps.length === 0 ? (
-                    <div className="py-20 text-center bg-card border border-dashed border-border/70 rounded-xl space-y-3">
-                        <AlertCircle className="w-10 h-10 text-muted-foreground/30 mx-auto" />
-                        <p className="text-body-sm text-muted-foreground">No matching dossiers found</p>
+                    <div className="flex min-h-[min(55vh,36rem)] w-full flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-card px-6 py-12 text-center">
+                        <AlertCircle className="mb-3 h-10 w-10 text-muted-foreground" aria-hidden="true" />
+                        <p className="m-0 text-body-sm text-muted-foreground">No matching dossiers found</p>
                     </div>
                 ) : (
                     <div 
@@ -216,7 +176,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
                                     app={app}
                                     isSelected={currentSelectedIds.includes(app.id)}
                                     onToggle={toggleSelect}
-                                    onInspect={setInspectApp}
+                                    detailHref={`${applicationsPath}/${app.id}`}
                                 />
                             ))}
                         </div>
@@ -224,23 +184,6 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
                 )}
             </div>
 
-            <ApplicationDrawerInspector
-                inspectApp={inspectApp}
-                onClose={() => {
-                    setInspectApp(null);
-                    setRejectionMode(false);
-                    setApproveConfirm(false);
-                }}
-                rejectionMode={rejectionMode}
-                setRejectionMode={setRejectionMode}
-                rejectionReason={rejectionReason}
-                setRejectionReason={setRejectionReason}
-                approveConfirm={approveConfirm}
-                setApproveConfirm={setApproveConfirm}
-                onApprove={handleApprove}
-                onReject={handleReject}
-                isPendingAction={isPendingAction}
-            />
           </section>
         </QueryState>
     );
@@ -248,7 +191,7 @@ export function ApplicationsRegistry({ role: _panelRole }: { role: ApplicationsR
 
 export default function ApplicationsRegistrySuspense(props: { role: ApplicationsRegistryRole }) {
     return (
-        <Suspense fallback={<div className="p-32 text-center text-label font-black text-primary/20 tracking-[0.3em] animate-pulse">SYNCHRONIZING VETTING PIPELINE...</div>}>
+        <Suspense fallback={<div className="p-32 text-center text-label font-black text-primary tracking-[0.3em] animate-pulse">SYNCHRONIZING VETTING PIPELINE...</div>}>
             <ApplicationsRegistry {...props} />
         </Suspense>
     );

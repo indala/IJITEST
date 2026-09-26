@@ -26,6 +26,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   cacheComponents: true,
+  turbopack: {
+    root: process.cwd(),
+  },
   cacheLife: {
     archive: {
       stale: 86400,       // 1 day

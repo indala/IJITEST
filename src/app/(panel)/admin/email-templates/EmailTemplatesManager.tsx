@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { type EmailTemplate } from "@/db/types";
 import {
     getEmailTemplates,
@@ -87,7 +87,7 @@ export default function EmailTemplatesManager() {
         };
     }, []);
 
-    const initHistory = (initialSubject: string, initialBody: string) => {
+    const initHistory = useCallback((initialSubject: string, initialBody: string) => {
         if (typingTimerRef.current) {
             clearTimeout(typingTimerRef.current);
             typingTimerRef.current = null;
@@ -102,7 +102,7 @@ export default function EmailTemplatesManager() {
         historyIndexRef.current = 0;
         setHistory([initialSnapshot]);
         setHistoryIndex(0);
-    };
+    }, []);
 
     const pushHistory = (snapshot: HistorySnapshot) => {
         const currIndex = historyIndexRef.current;
@@ -269,11 +269,7 @@ export default function EmailTemplatesManager() {
         }
     };
 
-    useEffect(() => {
-        loadTemplates();
-    }, []);
-
-    const loadTemplates = async () => {
+    const loadTemplates = useCallback(async () => {
         setLoading(true);
         try {
             const res = await getEmailTemplates();
@@ -294,7 +290,11 @@ export default function EmailTemplatesManager() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [initHistory]);
+
+    useEffect(() => {
+        void loadTemplates();
+    }, [loadTemplates]);
 
     const selectedTemplate = templates.find((t) => t.id === selectedId);
 
@@ -302,7 +302,6 @@ export default function EmailTemplatesManager() {
         setSelectedId(tpl.id);
         setSubject(tpl.subjectTemplate);
         setBody(tpl.bodyTemplate);
-        setPreviewMode(false);
         setHasUserFocused(false);
         setLastFocusedField("body");
         initHistory(tpl.subjectTemplate, tpl.bodyTemplate);
@@ -641,7 +640,7 @@ export default function EmailTemplatesManager() {
                             <Label className="form-label-brand font-bold text-slate-700 uppercase tracking-wider block">
                                 Notification Events
                             </Label>
-                            <Badge variant="secondary" className="text-badge font-semibold text-slate-500">
+                            <Badge variant="outline" className="border-slate-200 bg-slate-100 text-slate-700 text-badge font-semibold">
                                 {filteredTemplates.length} of {templates.length}
                             </Badge>
                         </div>

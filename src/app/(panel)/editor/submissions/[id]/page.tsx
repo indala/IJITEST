@@ -9,16 +9,10 @@ import { Button } from "@/components/ui/button";
 import { type SubmissionIdParam } from "@/db/types";
 import SubmissionDetailContainer from "@/features/submissions/components/SubmissionDetailContainer";
 
-export async function generateMetadata({ params }: { params: Promise<SubmissionIdParam> }): Promise<Metadata> {
-    const { id } = await params;
-    const response = await getSubmissionById(parseInt(id));
-    if (!response.success) return { title: 'Submission Not Found | Editor' };
-    const submission = response.data;
-    if (!submission) return { title: 'Submission Not Found | Editor' };
-
+export async function generateMetadata(): Promise<Metadata> {
     return {
-        title: `Editorial: ${submission.paperId} | IJITEST`,
-        description: `Editorial management for manuscript ${submission.paperId}: ${submission.title}`,
+        title: 'Submission Management | IJITEST Editor',
+        description: 'Editorial manuscript management for IJITEST.',
     };
 }
 

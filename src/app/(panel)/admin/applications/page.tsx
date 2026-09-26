@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function ManageApplicationsPage() {
     return (
-        <div className="h-[calc(100vh-100px)] flex flex-col overflow-hidden">
+        <div className="min-h-[calc(100vh-100px)] flex flex-col">
             <ApplicationsRegistry role="admin" />
         </div>
     );

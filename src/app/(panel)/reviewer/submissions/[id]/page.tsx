@@ -24,16 +24,10 @@ import AdminPdfUpload from "@/features/submissions/components/AdminPdfUpload";
 import { getSecureUrl } from "@/lib/utils";
 import { type SubmissionIdParam } from "@/db/types";
 
-export async function generateMetadata({ params }: { params: Promise<SubmissionIdParam> }): Promise<Metadata> {
-    const { id } = await params;
-    const response = await getSubmissionById(parseInt(id));
-    if (!response.success || !response.data) return { title: 'Manuscript Not Found | Reviewer' };
-
-    const submission = response.data;
-
+export async function generateMetadata(): Promise<Metadata> {
     return {
-        title: `Review: ${submission.paperId} | IJITEST`,
-        description: `Reviewer evaluation for manuscript ${submission.paperId}`,
+        title: 'Manuscript Review | IJITEST',
+        description: 'Reviewer evaluation workspace for IJITEST manuscripts.',
     };
 }
 

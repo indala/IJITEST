@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { updatePublicationDoi } from "@/actions/publications";
-import { depositToZenodo } from "@/actions/doi-registration";
+import { depositToCrossref, depositToZenodo } from "@/actions/doi-registration";
 import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { publicationKeys } from "@/features/publications";
@@ -39,13 +39,12 @@ export default function EditDoiModal({
     const [open, setOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [isDepositingZenodo, setIsDepositingZenodo] = useState(false);
+    const [isDepositingCrossref, setIsDepositingCrossref] = useState(false);
     const settings = useSettingsContext();
     const queryClient = useQueryClient();
 
     const doiPrefix = settings['doiPrefix'] || '10.68139';
-    const officialTargetDoi = `${doiPrefix}/${paperId}`;
-
-    const isCurrentlyOfficial = currentProvider === 'crossref' || currentDoi === officialTargetDoi;
+    const isCurrentlyOfficial = currentProvider === 'crossref';
     const isCurrentlyZenodo = currentProvider === 'zenodo' || (currentDoi ? currentDoi.toLowerCase().includes('zenodo') : false);
     const isCurrentlyCustom = currentProvider === 'custom' || (Boolean(currentDoi) && !isCurrentlyOfficial && !isCurrentlyZenodo);
 
@@ -58,13 +57,13 @@ export default function EditDoiModal({
                 : 'none';
 
     const [doiMode, setDoiMode] = useState<'none' | 'official' | 'zenodo' | 'custom'>(initialMode);
-    const [customDoiValue, setCustomDoiValue] = useState(isCurrentlyCustom ? (currentDoi || '') : '');
+    const [customDoiValue, setCustomDoiValue] = useState(isCurrentlyCustom || isCurrentlyOfficial ? (currentDoi || '') : '');
     const [zenodoDoiValue, setZenodoDoiValue] = useState(isCurrentlyZenodo ? (currentDoi || '') : '');
 
     const handleOpen = (newOpen: boolean) => {
         if (newOpen) {
             setDoiMode(initialMode);
-            setCustomDoiValue(isCurrentlyCustom ? (currentDoi || '') : '');
+            setCustomDoiValue(isCurrentlyCustom || isCurrentlyOfficial ? (currentDoi || '') : '');
             setZenodoDoiValue(isCurrentlyZenodo ? (currentDoi || '') : '');
         }
         setOpen(newOpen);
@@ -85,7 +84,7 @@ export default function EditDoiModal({
                 queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
                 setOpen(false);
             } else {
-                toast.error(res.error || "Failed to deposit to Zenodo.");
+                toast.error(res.success ? "Zenodo deposit returned no record." : res.error);
             }
         } catch (err) {
             console.error("Zenodo deposit error:", err);
@@ -100,8 +99,12 @@ export default function EditDoiModal({
         let provider: 'none' | 'crossref' | 'zenodo' | 'custom' = 'none';
 
         if (doiMode === 'official') {
-            finalDoi = officialTargetDoi;
+            finalDoi = customDoiValue.trim() || null;
             provider = 'crossref';
+            if (!finalDoi) {
+                toast.error("Please enter the Crossref DOI assigned by the admin.");
+                return;
+            }
         } else if (doiMode === 'zenodo') {
             finalDoi = zenodoDoiValue.trim() || null;
             provider = 'zenodo';
@@ -142,6 +145,27 @@ export default function EditDoiModal({
                 toast.error("An unexpected error occurred while updating DOI.");
             }
         });
+    };
+
+    const handleDepositCrossref = async () => {
+        setIsDepositingCrossref(true);
+        toast.info("Submitting the manually assigned DOI to Crossref...");
+        try {
+            const res = await depositToCrossref(submissionId);
+            if (res.success && res.data) {
+                toast.success(`Crossref deposit submitted. Batch ID: ${res.data.batchId}`);
+                queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+                queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
+                setOpen(false);
+            } else {
+                toast.error(res.success ? "Crossref deposit returned no batch information." : res.error);
+            }
+        } catch (err) {
+            console.error("Crossref deposit error:", err);
+            toast.error("An unexpected error occurred while communicating with Crossref.");
+        } finally {
+            setIsDepositingCrossref(false);
+        }
     };
 
     return (
@@ -243,15 +267,18 @@ export default function EditDoiModal({
                         <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-body-sm space-y-1">
                             <div className="flex items-center justify-between">
                                 <p className="text-label font-bold text-emerald-700 uppercase tracking-wider">
-                                    Official CrossRef DOI Target
+                                    Manually Assigned Crossref DOI
                                 </p>
-                                <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">CrossRef Prefix</span>
+                                <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Admin Entry</span>
                             </div>
-                            <p className="font-mono text-emerald-950 break-all font-semibold">
-                                {officialTargetDoi}
-                            </p>
+                            <Input
+                                placeholder={`e.g. ${doiPrefix}/ijitest.2026.001`}
+                                value={customDoiValue}
+                                onChange={(e) => setCustomDoiValue(e.target.value)}
+                                className="h-9 text-meta font-mono bg-background"
+                            />
                             <p className="text-caption text-muted-foreground pt-1">
-                                Will stamp the journal&apos;s CrossRef prefix onto the PDF and enable CrossRef Schema 5.3 XML metadata submission.
+                                Enter the DOI assigned by the journal. Crossref registration is submitted separately after review.
                             </p>
                         </div>
                     )}
@@ -340,7 +367,7 @@ export default function EditDoiModal({
                         type="button"
                         variant="outline"
                         onClick={() => setOpen(false)}
-                        disabled={isPending || isDepositingZenodo}
+                        disabled={isPending || isDepositingZenodo || isDepositingCrossref}
                         className="h-10 text-body-sm rounded-xl cursor-pointer"
                     >
                         Cancel
@@ -348,12 +375,24 @@ export default function EditDoiModal({
                     <Button
                         type="button"
                         onClick={handleSave}
-                        disabled={isPending || isDepositingZenodo}
+                        disabled={isPending || isDepositingZenodo || isDepositingCrossref}
                         className="h-10 text-body-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20 cursor-pointer"
                     >
                         {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}
                         Save DOI Settings
                     </Button>
+                    {doiMode === 'official' && currentDoi && (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleDepositCrossref}
+                            disabled={isPending || isDepositingZenodo || isDepositingCrossref}
+                            className="h-10 text-body-sm font-semibold border-emerald-300 text-emerald-700 hover:bg-emerald-50 rounded-xl cursor-pointer"
+                        >
+                            {isDepositingCrossref && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}
+                            Submit to Crossref
+                        </Button>
+                    )}
                 </DialogFooter>
             </DialogContent>
         </Dialog>

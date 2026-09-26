@@ -16,6 +16,7 @@ export async function listApplications(
     if (filters?.role && filters.role !== "all") {
         whereClauses.push(eq(applications.type, filters.role));
     }
+
     if (filters?.status && filters.status !== "all") {
         whereClauses.push(eq(applications.status, filters.status));
     }
@@ -64,4 +65,25 @@ export async function listApplications(
             interest.toLowerCase().includes(search),
         ),
     );
+}
+
+export async function findApplicationById(id: number): Promise<Application | null> {
+    const [application] = await db
+        .select()
+        .from(applications)
+        .where(eq(applications.id, id))
+        .limit(1);
+
+    if (!application) return null;
+
+    const interests = await db
+        .select({ name: masterInterests.name })
+        .from(applicationInterests)
+        .leftJoin(masterInterests, eq(applicationInterests.interestId, masterInterests.id))
+        .where(eq(applicationInterests.applicationId, id));
+
+    return {
+        ...application,
+        researchInterests: interests.flatMap((interest) => interest.name ? [interest.name] : []),
+    };
 }

@@ -194,38 +194,32 @@
      Headings (h1 - h6) Single Source of Truth
      -------------------------------------------------------------------------- */
   h1 {
-    color: var(--color-primary);
-    @apply font-sans font-semibold text-primary leading-tight tracking-tight mb-2.5;
+    @apply font-sans font-semibold leading-tight tracking-tight mb-2.5;
     @apply text-[22px] sm:text-[24px] md:text-[28px] lg:text-[30px] xl:text-[34px] 2xl:text-[38px];
   }
 
   h2 {
-    color: var(--color-foreground);
-    @apply font-sans font-semibold text-foreground leading-snug tracking-tight mb-2;
+    @apply font-sans font-semibold leading-snug tracking-tight mb-2;
     @apply text-[20px] sm:text-[22px] md:text-[24px] lg:text-[26px] xl:text-[30px] 2xl:text-[34px];
   }
 
   h3 {
-    color: var(--color-foreground);
-    @apply font-sans font-medium text-foreground/90 leading-snug tracking-normal mb-1.5;
+    @apply font-sans font-medium leading-snug tracking-normal mb-1.5;
     @apply text-[17px] sm:text-[18px] md:text-[20px] lg:text-[20px] xl:text-[22px] 2xl:text-[24px];
   }
 
   h4 {
-    color: var(--color-foreground);
-    @apply font-sans font-medium text-foreground/85 leading-normal mb-1;
+    @apply font-sans font-medium leading-normal mb-1;
     @apply text-[15px] sm:text-[16px] md:text-[18px] lg:text-[18px] xl:text-[20px] 2xl:text-[22px];
   }
 
   h5 {
-    color: var(--color-foreground);
-    @apply font-sans font-medium text-foreground/80 leading-normal mb-1;
+    @apply font-sans font-medium leading-normal mb-1;
     @apply text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px];
   }
 
   h6 {
-    color: var(--color-primary);
-    @apply font-sans font-semibold text-primary tracking-wider mb-0.5;
+    @apply font-sans font-semibold tracking-wider mb-0.5;
     @apply text-[12px] sm:text-[12px] md:text-[14px] xl:text-[15px] 2xl:text-[16px];
   }
 
@@ -236,18 +230,13 @@
   p {
     text-align: left;
     text-wrap: pretty;
-    @apply text-foreground/80 font-normal leading-relaxed mb-2.5;
-    @apply text-[13px] sm:text-[14px] lg:text-[15px] xl:text-[16px] 2xl:text-[18px];
-  }
-
-  span {
-    @apply text-foreground/80 font-normal leading-relaxed;
+    @apply font-normal leading-relaxed mb-2.5;
     @apply text-[13px] sm:text-[14px] lg:text-[15px] xl:text-[16px] 2xl:text-[18px];
   }
 
   ul,
   ol {
-    @apply text-foreground/80 font-normal leading-relaxed;
+    @apply font-normal leading-relaxed;
   }
 
   blockquote {
@@ -409,12 +398,6 @@
     @apply bg-amber-500/10 text-amber-700 border border-amber-500/20 font-semibold rounded-md tracking-wider;
     @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
     @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
-  }
-
-  [data-slot="badge"][data-variant="primary"],
-  [data-slot="badge"][data-variant="secondary"],
-  [data-slot="badge"][data-variant="default"] {
-    color: #ffffff !important;
   }
 
   /* --------------------------------------------------------------------------

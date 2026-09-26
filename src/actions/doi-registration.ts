@@ -16,6 +16,7 @@ import { getPaperById } from "@/actions/archives";
 import { getSettingsData } from "@/actions/settings";
 import { generateCrossRefXml } from "@/lib/crossref-generator";
 import { getCrossrefConfig, getZenodoConfig } from "@/lib/doi-config";
+import { isValidDoi, normalizeDoi } from "@/lib/doi-config";
 import { logSubmissionEvent } from "@/actions/event-log";
 import { revalidatePath } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -56,7 +57,8 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
         }
 
         const config = getCrossrefConfig();
-        if (!pub.doi.startsWith(config.prefix)) {
+        const normalizedDoi = normalizeDoi(pub.doi);
+        if (!isValidDoi(normalizedDoi) || !normalizedDoi.toLowerCase().startsWith(`${config.prefix.toLowerCase()}/`)) {
             return actionError(`DOI '${pub.doi}' does not match journal CrossRef prefix '${config.prefix}'. Only official CrossRef DOIs can be deposited.`);
         }
 

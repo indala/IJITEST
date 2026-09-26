@@ -434,9 +434,9 @@ export default function AnnouncementsManager() {
 
             {/* Create/Edit Modal */}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="w-[90vw] max-w-[90vw] max-h-[90vh] overflow-y-auto">
+                <DialogContent className="w-[90vw] max-w-[90vw] sm:max-w-[90vw] max-h-[90vh] overflow-y-auto p-5 sm:p-7 lg:p-8">
                     <DialogHeader>
-                        <DialogTitle>
+                        <DialogTitle className="text-xl font-semibold leading-tight sm:text-2xl">
                             {editingItem ? "Edit Announcement" : "Create Announcement"}
                         </DialogTitle>
                         <DialogDescription>
@@ -444,9 +444,9 @@ export default function AnnouncementsManager() {
                         </DialogDescription>
                     </DialogHeader>
 
-                    <form onSubmit={handleSave} className="space-y-4 pt-2">
+                    <form onSubmit={handleSave} className="space-y-6 pt-2">
                         <div className="space-y-1.5">
-                            <Label htmlFor="ann-title">Title *</Label>
+                            <Label htmlFor="ann-title" className="form-label-brand text-sm sm:text-base tracking-normal text-foreground">Title *</Label>
                             <Input
                                 id="ann-title"
                                 placeholder="e.g. Call for Papers: Volume 14, Issue 1 (2026)"
@@ -458,7 +458,7 @@ export default function AnnouncementsManager() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-1.5">
-                                <Label htmlFor="ann-type">Category *</Label>
+                                <Label htmlFor="ann-type" className="form-label-brand text-sm sm:text-base tracking-normal text-foreground">Category *</Label>
                                 <select
                                     id="ann-type"
                                     value={type}
@@ -473,7 +473,7 @@ export default function AnnouncementsManager() {
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label htmlFor="ann-priority">Display Priority (higher = top)</Label>
+                                <Label htmlFor="ann-priority" className="form-label-brand text-sm sm:text-base tracking-normal text-foreground">Display Priority (higher = top)</Label>
                                 <Input
                                     id="ann-priority"
                                     type="number"
@@ -486,7 +486,7 @@ export default function AnnouncementsManager() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label htmlFor="ann-short">Short Summary (Lead for Homepage & Cards)</Label>
+                            <Label htmlFor="ann-short" className="form-label-brand text-sm sm:text-base tracking-normal text-foreground">Short Summary (Lead for Homepage & Cards)</Label>
                             <Input
                                 id="ann-short"
                                 placeholder="Brief one-to-two sentence lead..."
@@ -497,7 +497,7 @@ export default function AnnouncementsManager() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label htmlFor="ann-desc">Full Content *</Label>
+                            <Label htmlFor="ann-desc" className="form-label-brand text-sm sm:text-base tracking-normal text-foreground">Full Content *</Label>
                             <p className="text-caption text-muted-foreground">
                                 Use the formatting toolbar to structure the announcement for readers.
                             </p>
@@ -512,7 +512,7 @@ export default function AnnouncementsManager() {
 
                         {/* Banner Image Upload with storage-service preview */}
                         <div className="space-y-2 border rounded-lg p-3 bg-muted/30">
-                            <Label className="flex items-center gap-1.5">
+                            <Label className="form-label-brand flex items-center gap-1.5 text-sm sm:text-base tracking-normal text-foreground">
                                 <UploadCloud className="h-4 w-4 text-primary" />
                                 Banner Image (Stored in storage-service)
                             </Label>
@@ -553,7 +553,7 @@ export default function AnnouncementsManager() {
 
                             {imagePreview && (
                                 <div className="pt-2">
-                                    <Label htmlFor="ann-alt" className="text-badge">Image Alt Text / Caption</Label>
+                                    <Label htmlFor="ann-alt" className="form-label-brand text-sm tracking-normal text-foreground">Image Alt Text / Caption</Label>
                                     <Input
                                         id="ann-alt"
                                         placeholder="Accessible description of banner image"
@@ -567,7 +567,7 @@ export default function AnnouncementsManager() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                             <div className="space-y-1.5">
-                                <Label htmlFor="ann-expire">Expiration Date (Optional)</Label>
+                                <Label htmlFor="ann-expire" className="form-label-brand text-sm sm:text-base tracking-normal text-foreground">Expiration Date (Optional)</Label>
                                 <Input
                                     id="ann-expire"
                                     type="date"
@@ -585,7 +585,7 @@ export default function AnnouncementsManager() {
                                     checked={isActive}
                                     onCheckedChange={setIsActive}
                                 />
-                                <Label htmlFor="ann-active" className="cursor-pointer">
+                                <Label htmlFor="ann-active" className="form-label-brand cursor-pointer text-sm sm:text-base tracking-normal text-foreground">
                                     Published & Visible to Public
                                 </Label>
                             </div>

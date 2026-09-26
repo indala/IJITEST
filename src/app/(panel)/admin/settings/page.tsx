@@ -374,24 +374,6 @@ export default function SystemSettings() {
                                         className="h-12 bg-white/50 border-slate-200 focus-visible:ring-primary/20 font-bold text-meta font-mono shadow-sm rounded-xl px-4"
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="form-label-brand font-bold text-slate-900 tracking-wider px-1 uppercase">DOI Assignment Policy</Label>
-                                        {isSavingField('doiAssignmentMode') && <Loader2 className="w-3 h-3 text-primary animate-spin" />}
-                                    </div>
-                                    <select
-                                        key={settings.doiAssignmentMode}
-                                        defaultValue={settings.doiAssignmentMode || 'manual'}
-                                        onChange={(e) => handleSaveField('doiAssignmentMode', e.target.value, 'DOI Assignment Policy')}
-                                        className="w-full h-12 bg-white/50 border border-slate-200 focus-visible:ring-2 focus-visible:ring-primary/20 font-medium rounded-xl px-4 appearance-none outline-none shadow-sm cursor-pointer"
-                                    >
-                                        <option value="manual">Selective / Manual Mode (Assign per paper to selected articles — Recommended)</option>
-                                        <option value="auto">Automatic Mode (Auto-assign 10.68139/[paperId] to all papers on publish)</option>
-                                    </select>
-                                    <p className="text-slate-500 px-1 leading-relaxed">
-                                        In <strong>Selective Mode</strong>, your team decides which accepted papers receive the official CrossRef DOI, a Zenodo DOI, or remain without a DOI. Existing papers are never modified automatically.
-                                    </p>
-                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -625,7 +607,7 @@ export default function SystemSettings() {
                                 <div className="group/asset bg-slate-50/50 p-6 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-xl">
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="space-y-1">
-                                            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-bold text-badge tracking-wider uppercase rounded-lg px-2 py-0.5">
+                                            <Badge variant="outline" className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-bold text-badge tracking-wider uppercase rounded-lg px-2 py-0.5">
                                                 MS-DOCX / PDF
                                             </Badge>
                                             <h4 className="m-0">Upload Template</h4>
@@ -689,7 +671,7 @@ export default function SystemSettings() {
                                 <div className="group/asset bg-slate-50/50 p-6 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-xl">
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="space-y-1">
-                                            <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 border-none font-bold text-badge tracking-wider uppercase rounded-lg px-2 py-0.5">
+                                            <Badge variant="outline" className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 border-none font-bold text-badge tracking-wider uppercase rounded-lg px-2 py-0.5">
                                                 Legal Covenant
                                             </Badge>
                                             <h4 className="m-0">Upload Copyright Form</h4>

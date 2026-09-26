@@ -372,9 +372,13 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                                                             <span className="text-body-sm bg-rose-500/15 text-rose-700  font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
                                                                                                 CrossRef ✗ Failed
                                                                                             </span>
-                                                                                        ) : (
+                                                                                        ) : regStatus === 'pending' ? (
                                                                                             <span className="text-body-sm bg-amber-500/15 text-amber-700  font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
                                                                                                 CrossRef ⏳ Pending
+                                                                                            </span>
+                                                                                        ) : (
+                                                                                            <span className="text-body-sm bg-amber-500/15 text-amber-700  font-semibold px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                                                                                                CrossRef · Not submitted
                                                                                             </span>
                                                                                         )
                                                                                     ) : provider === 'zenodo' ? (

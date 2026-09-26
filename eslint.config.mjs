@@ -26,6 +26,9 @@ const eslintConfig = [
       "unused-imports": unusedImports,
     },
     rules: {
+      // Keep legacy server-rendering and effect patterns visible while migrating incrementally.
+      "react-hooks/error-boundaries": "warn",
+      "react-hooks/set-state-in-effect": "warn",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",

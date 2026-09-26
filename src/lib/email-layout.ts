@@ -195,7 +195,7 @@ export function formatEmailBodyToHtml(rawText: string): string {
         }
 
         // Format inline elements: **bold** and http(s):// links
-        let formatted = trimmed
+        const formatted = trimmed
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/__(.*?)__/g, '<strong>$1</strong>')
             .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color: #6d0202; text-decoration: underline; font-weight: 600; word-break: break-all;">$1</a>')

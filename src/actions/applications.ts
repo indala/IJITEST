@@ -23,7 +23,7 @@ import crypto from "crypto";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { getAuthorizedSession } from "@/lib/auth/guards";
-import { listApplications } from "@/features/applications/server/application.repository";
+import { findApplicationById, listApplications } from "@/features/applications/server/application.repository";
 import type { ApplicationFilters } from "@/features/applications/types/application.types";
 
 /**
@@ -40,6 +40,21 @@ export async function getApplications(filters?: ApplicationFilters): Promise<Act
     } catch (error) {
         console.error("Get Applications Error:", error);
         return serverError(error, "fetch applications");
+    }
+}
+
+export async function getApplicationById(id: number): Promise<ActionResponse<Application>> {
+    try {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) return { success: false, error: "Unauthorized" };
+
+        const application = await findApplicationById(id);
+        if (!application) return { success: false, error: "Application not found" };
+
+        return { success: true, data: application };
+    } catch (error) {
+        console.error("Get Application Error:", error);
+        return serverError(error, "fetch application");
     }
 }
 
@@ -123,6 +138,9 @@ export async function approveApplication(id: number): Promise<ActionResponse> {
 
         updateTag(CACHE_TAGS.EDITORIAL_BOARD);
         revalidatePath("/admin/applications");
+        revalidatePath(`/admin/applications/${id}`);
+        revalidatePath("/editor/applications");
+        revalidatePath(`/editor/applications/${id}`);
         revalidatePath("/admin/users");
         revalidatePath("/editorial-board");
         return { success: true };
@@ -175,6 +193,9 @@ export async function rejectApplication(id: number, reason: string): Promise<Act
         }, "board rejection");
 
         revalidatePath("/admin/applications");
+        revalidatePath(`/admin/applications/${id}`);
+        revalidatePath("/editor/applications");
+        revalidatePath(`/editor/applications/${id}`);
         return { success: true };
     } catch (error) {
         console.error("Reject Application Error:", error);

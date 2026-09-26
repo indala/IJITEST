@@ -6,16 +6,10 @@ import { Button } from "@/components/ui/button";
 import { type SubmissionIdParam } from "@/db/types";
 import SubmissionDetailContainer from "@/features/submissions/components/SubmissionDetailContainer";
 
-export async function generateMetadata({ params }: { params: Promise<SubmissionIdParam> }): Promise<Metadata> {
-    const { id } = await params;
-    const response = await getSubmissionById(parseInt(id));
-    if (!response.success) return { title: 'Submission Not Found | Admin' };
-    const submission = response.data;
-    if (!submission) return { title: 'Submission Not Found | Admin' };
-
+export async function generateMetadata(): Promise<Metadata> {
     return {
-        title: `Manage: ${submission.paperId} | IJITEST Admin`,
-        description: `Administrative oversight for manuscript ${submission.paperId}: ${submission.title}`,
+        title: 'Submission Management | IJITEST Admin',
+        description: 'Administrative manuscript management for IJITEST.',
     };
 }
 

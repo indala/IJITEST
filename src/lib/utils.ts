@@ -1,5 +1,13 @@
 import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { extendTailwindMerge } from "tailwind-merge"
+
+const twMerge = extendTailwindMerge({
+    extend: {
+        theme: {
+            text: ["lead", "body", "body-sm", "meta", "label", "badge", "caption"],
+        },
+    },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -41,4 +49,3 @@ export function renderTemplateText(templateText: string, data: Record<string, st
         return val !== undefined && val !== null ? String(val) : match;
     });
 }
-

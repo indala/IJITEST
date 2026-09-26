@@ -56,7 +56,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                 <strong>{journalName}</strong> (ISSN: {issn}) is a peer-reviewed, open-access journal publishing original research, review articles, and technical contributions in engineering, science, and technology.
                             </p>
                             <p>
-                                {journalShort} aims to provide a rigorous and accessible platform for researchers, academics, and practitioners to communicate sound theoretical, experimental, computational, and applied work. Interdisciplinary studies are welcome when they make a clear contribution to the journal's subject areas.
+                                {journalShort} aims to provide a rigorous and accessible platform for researchers, academics, and practitioners to communicate sound theoretical, experimental, computational, and applied work. Interdisciplinary studies are welcome when they make a clear contribution to the journal&apos;s subject areas.
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-1">
@@ -83,7 +83,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                         <span>Open Science</span>
                                     </div>
                                     <p className="text-muted-foreground text-caption m-0">
-                                        Making published research available under the journal's open-access terms.
+                                        Making published research available under the journal&apos;s open-access terms.
                                     </p>
                                 </div>
                             </div>

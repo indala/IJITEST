@@ -65,9 +65,9 @@ export function ManageMessagesContent() {
     return (
         <div className="flex-1 flex flex-col lg:flex-row gap-2 overflow-hidden min-h-0">
             {/* Main Content Pane */}
-            <section className="flex-1 flex flex-col min-w-0 bg-card rounded-2xl border border-white/5 overflow-hidden shadow-2xl relative">
+            <section className="flex-1 flex flex-col min-w-0 bg-card rounded-2xl border border-border overflow-hidden shadow-sm relative">
                 {/* Horizontal Filters at Top */}
-                <div className="p-1 border-b border-white/5 bg-muted/5">
+                <div className="p-2 border-b border-border bg-muted/20">
                     <InboxFilters 
                         status={activeStatus}
                         search={search}
@@ -90,7 +90,7 @@ export function ManageMessagesContent() {
             </section>
 
             {/* Right: Message Detail Detail (Desktop/Large) */}
-            <section className="hidden lg:block w-[360px] xl:w-[400px] 2xl:w-[480px] shrink-0 bg-card rounded-2xl border border-white/5 shadow-inner overflow-hidden relative">
+            <section className="hidden lg:block w-[360px] xl:w-[400px] 2xl:w-[480px] shrink-0 bg-card rounded-2xl border border-border shadow-sm overflow-hidden relative">
                 <MessageDetail 
                     message={liveSelectedMessage}
                 />

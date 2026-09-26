@@ -31,8 +31,8 @@ export function InboxFilters({
     ]
 
     return (
-        <div className="flex  md:flex-row  justify-between gap-3 w-full bg-muted/10 p-1 rounded-xl border border-white/5">
-            <div className="flex items-center gap-1  scrollbar-hide">
+        <div className="flex w-full flex-col gap-2 rounded-xl border border-border bg-muted/10 p-1.5 sm:p-2 md:flex-row md:items-center md:justify-between md:gap-3">
+            <div className="grid w-full grid-cols-4 items-center gap-1 md:flex md:w-auto">
                 {tabs.map((tab) => {
                     const Icon = tab.icon
                     const isActive = status === tab.id
@@ -40,22 +40,27 @@ export function InboxFilters({
                     return (
                         <button
                             key={tab.id}
+                            type="button"
                             onClick={() => onStatusChange(tab.id)}
+                            aria-label={`${tab.label} messages, ${tab.count}`}
+                            aria-pressed={isActive}
                             className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200 group text-body-sm whitespace-nowrap shrink-0",
+                                "flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-1.5 py-2 transition-all duration-200 group text-body-sm whitespace-nowrap md:justify-start md:px-3 md:py-1.5",
                                 isActive
-                                    ? "bg-primary text-white  font-bold shadow-sm"
-                                    : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground"
+                                    ? "bg-primary text-white font-bold shadow-sm"
+                                    : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
                             )}
                         >
                             <Icon className={cn(
-                                "w-3.5 h-3.5 transition-transform group-hover:scale-110",
-                                isActive ? "text-current" : "text-muted-foreground/30"
+                                "h-4 w-4 shrink-0 transition-transform group-hover:scale-110",
+                                isActive ? "text-current" : "text-muted-foreground"
                             )} />
-                            <span className="lowercase">{tab.label}</span>
+                            <span className="sr-only md:not-sr-only md:lowercase">{tab.label}</span>
                             <span className={cn(
-                                "ml-1 px-1.5 py-0.5 rounded-md text-body-sm",
-                                isActive ? "bg-white/20" : "bg-muted text-muted-foreground/40"
+                                "ml-0.5 min-w-6 rounded-md px-1.5 py-0.5 text-center text-caption font-semibold tabular-nums md:ml-1",
+                                isActive
+                                    ? "bg-white/20 text-white"
+                                    : "border border-border bg-background text-foreground"
                             )}>
                                 {tab.count}
                             </span>
@@ -64,13 +69,14 @@ export function InboxFilters({
                 })}
             </div>
 
-            <div className="relative w-full md:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/30 group-focus-within:text-primary" />
+            <div className="relative w-full md:max-w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                 <Input 
                     placeholder="search messages" 
                     value={search}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    className="pl-9 h-9 bg-muted/20 border-border rounded-lg text-caption placeholder:opacity-50 focus:border-primary/50 transition-colors"
+                    aria-label="Search messages"
+                    className="h-10 rounded-lg border-border bg-background pl-9 text-body-sm placeholder:text-muted-foreground focus:border-primary/50 transition-colors md:h-9"
                 />
             </div>
         </div>

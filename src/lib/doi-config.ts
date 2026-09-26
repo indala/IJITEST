@@ -1,5 +1,7 @@
 import "server-only";
 
+export { isValidDoi, normalizeDoi } from "@/lib/doi-format";
+
 export interface CrossrefConfig {
     username: string;
     password?: string;

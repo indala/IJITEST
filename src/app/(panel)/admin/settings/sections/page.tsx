@@ -645,7 +645,7 @@ export default function AdminSectionsPage() {
                 Delete Journal Section
             </DialogTitle>
             <DialogDescription className="">
-                Are you sure you want to delete <span className="font-bold text-foreground">"{deleteTarget?.title}"</span>?
+                Are you sure you want to delete <span className="font-bold text-foreground">&quot;{deleteTarget?.title}&quot;</span>?
                 {deleteTarget?.submissionCount && deleteTarget.submissionCount > 0 ? (
                     <span className="block mt-2 font-semibold text-destructive">
                         Warning: {deleteTarget.submissionCount} submissions are currently associated with this section. Deleting it will detach them.

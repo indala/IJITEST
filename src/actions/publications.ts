@@ -31,6 +31,7 @@ import {
     getRelativePath,
 } from "@/lib/fs-utils";
 import { getStorageServiceClient, type IssueBookMetadata } from "@/lib/storage-service-client";
+import { isValidDoi, normalizeDoi } from "@/lib/doi-config";
 import { getSubmissionById } from "./submissions";
 import { createNotification, invalidateAuthorActionsCount } from "./notifications";
 import { logSubmissionEvent } from "./event-log";
@@ -233,19 +234,30 @@ export async function assignPaperToIssue(
         const confirmedEndPage = finalEndPage as number;
 
         // 5. Selective DOI Resolution Logic
-        const doiPrefix = settings['doiPrefix'] ? settings['doiPrefix'].trim() : "10.68139";
-        const doiMode = settings['doiAssignmentMode'] || 'manual';
-
+        const doiPrefix = settings['doiPrefix'] ? settings['doiPrefix'].trim().replace(/\/$/, '') : "10.68139";
         let resolvedDoi: string | null = null;
         if (customDoi !== undefined) {
             // Admin explicitly provided or cleared DOI
-            resolvedDoi = customDoi && customDoi.trim().length > 0 ? customDoi.trim() : null;
-        } else if (doiMode === 'auto' && doiPrefix.startsWith("10.")) {
-            // Auto mode fallback
-            resolvedDoi = `${doiPrefix}/${submission.paperId}`;
+            resolvedDoi = customDoi && customDoi.trim().length > 0 ? normalizeDoi(customDoi) : null;
         } else {
-            // Manual / Selective mode: leave unassigned unless explicitly provided
+            // DOI assignment is always explicit. Never generate a DOI automatically.
             resolvedDoi = null;
+        }
+
+        if (resolvedDoi && doiProviderInput === 'crossref') {
+            if (!isValidDoi(resolvedDoi)) {
+                return actionError("Enter a valid DOI, for example 10.68139/ijitest.2026.001.");
+            }
+            if (!resolvedDoi.toLowerCase().startsWith(`${doiPrefix.toLowerCase()}/`)) {
+                return actionError(`Crossref DOI must use the journal prefix ${doiPrefix}.`);
+            }
+            const existingDoi = await db.select({ id: publications.id, submissionId: publications.submissionId })
+                .from(publications)
+                .where(eq(publications.doi, resolvedDoi))
+                .limit(1);
+            if (existingDoi[0] && existingDoi[0].submissionId !== submissionId) {
+                return actionError("That DOI is already assigned to another publication.");
+            }
         }
 
         let resolvedProvider: 'none' | 'crossref' | 'zenodo' | 'custom' = doiProviderInput || 'none';
@@ -907,7 +919,7 @@ export async function updatePublicationDoi(
             return actionError("Unauthorized");
         }
 
-        const cleanDoi = doi && doi.trim().length > 0 ? doi.trim() : null;
+        const cleanDoi = doi && doi.trim().length > 0 ? normalizeDoi(doi) : null;
 
         // 1. Fetch Publication & Submission Details
         const pubRows = await db.select({
@@ -928,7 +940,7 @@ export async function updatePublicationDoi(
         const { pub, sub, issue } = row;
 
         const settings = await getSettingsData();
-        const doiPrefix = settings['doiPrefix'] || '10.68139';
+        const doiPrefix = (settings['doiPrefix'] || '10.68139').trim().replace(/\/$/, '');
 
         let resolvedProvider: 'none' | 'crossref' | 'zenodo' | 'custom' = 'none';
         if (provider) {
@@ -943,6 +955,25 @@ export async function updatePublicationDoi(
             }
         } else {
             resolvedProvider = 'none';
+        }
+
+        if (resolvedProvider === 'crossref') {
+            if (!cleanDoi || !isValidDoi(cleanDoi)) {
+                return actionError("Enter a valid Crossref DOI, for example 10.68139/ijitest.2026.001.");
+            }
+            if (!cleanDoi.toLowerCase().startsWith(`${doiPrefix.toLowerCase()}/`)) {
+                return actionError(`Crossref DOI must use the journal prefix ${doiPrefix}.`);
+            }
+        }
+
+        if (cleanDoi && cleanDoi !== pub.doi) {
+            const existingDoi = await db.select({ id: publications.id, submissionId: publications.submissionId })
+                .from(publications)
+                .where(eq(publications.doi, cleanDoi))
+                .limit(1);
+            if (existingDoi[0] && existingDoi[0].submissionId !== submissionId) {
+                return actionError("That DOI is already assigned to another publication.");
+            }
         }
 
         // 2. Update DOI & Provider in database

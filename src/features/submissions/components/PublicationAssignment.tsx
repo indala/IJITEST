@@ -24,7 +24,7 @@ import {
     createVolumeIssue,
     assignPaperToIssue
 } from '@/actions/publications'
-import { depositToCrossref, depositToZenodo } from '@/actions/doi-registration'
+import { depositToZenodo } from '@/actions/doi-registration'
 import { useQueryClient } from '@tanstack/react-query'
 import type { ActionResponse } from '@/db/contracts'
 import { useSettingsContext } from '@/components/providers/SettingsContext'
@@ -32,21 +32,19 @@ import { useSettingsContext } from '@/components/providers/SettingsContext'
 interface PublicationAssignmentProps {
     submissionId: number;
     currentIssueId?: number | null;
-    paperId?: string;
 }
 
-export default function PublicationAssignment({ submissionId, currentIssueId, paperId }: PublicationAssignmentProps) {
+export default function PublicationAssignment({ submissionId, currentIssueId }: PublicationAssignmentProps) {
     const queryClient = useQueryClient();
     const settings = useSettingsContext();
     const doiPrefix = settings['doiPrefix'] || '10.68139';
-    const isAutoMode = settings['doiAssignmentMode'] === 'auto';
     const { data: volumes = [], isLoading: loading } = useVolumesIssues();
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedIssueId, setSelectedIssueId] = useState<string>(currentIssueId?.toString() || "");
     const [startPage, setStartPage] = useState<string>("");
     const [endPage, setEndPage] = useState<string>("");
-    const [doiChoice, setDoiChoice] = useState<'none' | 'official' | 'zenodo' | 'custom'>(isAutoMode ? 'official' : 'none');
+    const [doiChoice, setDoiChoice] = useState<'none' | 'official' | 'zenodo' | 'custom'>('none');
     const [customDoiValue, setCustomDoiValue] = useState<string>("");
     const [depositStatus, setDepositStatus] = useState<{
         status: 'idle' | 'depositing' | 'success' | 'error';
@@ -78,8 +76,12 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
         let provider: 'none' | 'crossref' | 'zenodo' | 'custom' = 'none';
 
         if (doiChoice === 'official') {
-            targetDoi = paperId ? `${doiPrefix}/${paperId}` : doiPrefix;
+            targetDoi = customDoiValue.trim() || null;
             provider = 'crossref';
+            if (!targetDoi) {
+                toast.error("Enter the Crossref DOI assigned by the admin.");
+                return;
+            }
         } else if (doiChoice === 'zenodo') {
             targetDoi = null;
             provider = 'zenodo';
@@ -109,34 +111,7 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                     queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
                     queryClient.invalidateQueries({ queryKey: submissionKeys.all });
 
-                    if (doiChoice === 'official') {
-                        setDepositStatus({ status: 'depositing', provider: 'crossref' });
-                        toast.info("Manuscript archived. Submitting to CrossRef...");
-                        const depRes = await depositToCrossref(submissionId);
-                        if (!depRes.success) {
-                            setDepositStatus({
-                                status: 'error',
-                                provider: 'crossref',
-                                message: depRes.error
-                            });
-                            toast.warning(`Archived, but CrossRef deposit needs review: ${depRes.error}`);
-                        } else if (depRes.data) {
-                            setDepositStatus({
-                                status: 'success',
-                                provider: 'crossref',
-                                batchId: depRes.data.batchId,
-                                message: depRes.data.message
-                            });
-                            toast.success(`Registered with CrossRef ✓ (Batch: ${depRes.data.batchId})`);
-                        } else {
-                            setDepositStatus({
-                                status: 'error',
-                                provider: 'crossref',
-                                message: "CrossRef deposit returned no batch information."
-                            });
-                            toast.warning("Archived, but CrossRef deposit returned no batch information.");
-                        }
-                    } else if (doiChoice === 'zenodo') {
+                    if (doiChoice === 'zenodo') {
                         setDepositStatus({ status: 'depositing', provider: 'zenodo' });
                         toast.info("Manuscript archived. Depositing to Zenodo via API...");
                         const zenodoRes = await depositToZenodo(submissionId);
@@ -158,7 +133,9 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                             queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                         }
                     } else {
-                        toast.success("Manuscript committed to archive");
+                        toast.success(doiChoice === 'official'
+                            ? "Manuscript archived with DOI. Review the metadata before submitting to Crossref."
+                            : "Manuscript committed to archive");
                     }
                 } else {
                     toast.error(res.error || "Failed to assign paper to issue");
@@ -334,11 +311,16 @@ export default function PublicationAssignment({ submissionId, currentIssueId, pa
                     {doiChoice === 'official' && (
                         <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-body-sm space-y-1">
                             <div className="flex items-center justify-between">
-                                <p className="text-label font-bold text-emerald-700 uppercase tracking-wider">Official CrossRef DOI</p>
-                                <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Auto-Deposit</span>
+                                <p className="text-label font-bold text-emerald-700 uppercase tracking-wider">Manually Assigned Crossref DOI</p>
+                                <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Admin Entry</span>
                             </div>
-                            <p className="font-mono text-emerald-900 break-all">{doiPrefix}/{paperId || '...'}</p>
-                            <p className="text-caption text-muted-foreground">Generates CrossRef Schema 5.3 XML & queues live deposit to CrossRef API.</p>
+                            <Input
+                                placeholder={`e.g. ${doiPrefix}/ijitest.2026.001`}
+                                value={customDoiValue}
+                                onChange={(e) => setCustomDoiValue(e.target.value)}
+                                className="h-9 bg-background text-meta font-mono"
+                            />
+                            <p className="text-caption text-muted-foreground">Enter the DOI already assigned by the journal. Crossref submission is a separate review step.</p>
                         </div>
                     )}
 

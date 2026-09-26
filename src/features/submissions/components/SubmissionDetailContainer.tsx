@@ -468,7 +468,6 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                     <PublicationAssignment
                                                         submissionId={submission.id}
                                                         currentIssueId={submission.issueId ?? null}
-                                                        paperId={submission.paperId}
                                                     />
 
                                                     <Link
