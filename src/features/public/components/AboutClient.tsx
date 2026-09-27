@@ -1,4 +1,4 @@
-import { BookOpen, Target, Building2, FlaskConical, Cpu, Globe, Sparkles } from 'lucide-react';
+import { BookOpen, Target, Building2, FlaskConical, Cpu, Globe, Sparkles, Briefcase, Layers } from 'lucide-react';
 
 import type { JournalSettings } from '@/db/protocols';
 
@@ -77,23 +77,28 @@ export default function AboutClient({ settings }: AboutClientProps) {
                     {[
                         {
                             icon: <Cpu className="w-4 h-4 text-primary" />,
-                            title: "Engineering & Technology",
-                            items: ["Electronics & Communication", "Computer Science & IT", "AI & Machine Learning", "Data Science & Big Data", "IoT & Embedded Systems", "Quantum Computing", "5G/6G Communication", "Renewable Energy Systems", "Robotics & Automation"]
+                            title: "Engineering Disciplines",
+                            items: ["Electronics & Communication", "Computer Science & IT", "AI, Machine Learning & Data Science", "IoT, Robotics & Automation", "Mechanical & Civil Engineering", "Renewable Energy & Power Systems"]
                         },
                         {
                             icon: <FlaskConical className="w-4 h-4 text-primary" />,
-                            title: "Applied Sciences",
-                            items: ["Physics & Applied Physics", "Mathematics & Modeling", "Chemistry & Materials", "Environmental Science"]
+                            title: "Science & Applied Sciences",
+                            items: ["Applied Physics", "Applied Mathematics & Modeling", "Applied Chemistry & Materials", "Environmental Science & Sustainability"]
                         },
                         {
                             icon: <Globe className="w-4 h-4 text-primary" />,
-                            title: "Information & Communication Technologies",
-                            items: ["Cloud Computing", "Cyber Security", "Blockchain Technology", "Signal & Image Processing", "Wireless Sensor Networks"]
+                            title: "Technology & Innovation",
+                            items: ["Cloud Computing & DevOps", "Cyber Security & Cryptography", "Blockchain & Distributed Systems", "Quantum Computing & 5G/6G Networks"]
                         },
                         {
-                            icon: <Sparkles className="w-4 h-4 text-primary" />,
-                            title: "Healthcare & Management",
-                            items: ["Biomedical Engineering", "Medical Electronics", "Health Informatics", "Operations & Supply Chain", "Business Analytics"]
+                            icon: <Briefcase className="w-4 h-4 text-primary" />,
+                            title: "Management Studies & Sciences",
+                            items: ["Technology Management", "Business Administration", "Operations & Supply Chain", "Information Systems Management", "Innovation Strategy", "Business Analytics"]
+                        },
+                        {
+                            icon: <Layers className="w-4 h-4 text-primary" />,
+                            title: "Interdisciplinary Research",
+                            items: ["Biomedical Engineering & Health Informatics", "Smart Cities & Cyber-Physical Systems", "Cross-Disciplinary Engineering & Management", "Applied Computational Technologies"]
                         }
                     ].map((category, idx) => (
                         <article

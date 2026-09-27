@@ -793,22 +793,6 @@ export const announcements = mysqlTable("announcements", {
     index("idx_announcement_type").on(table.type),
 ]);
 
-// 📄 19. STATIC PAGES (OJS Parity - Custom CMS Pages Plugin)
-export const staticPages = mysqlTable("static_pages", {
-    id: int("id").primaryKey().autoincrement().notNull(),
-    slug: varchar("slug", { length: 100 }).notNull().unique(),
-    title: varchar("title", { length: 255 }).notNull(),
-    content: text("content").notNull(),
-    isPublished: boolean("is_published").default(true).notNull(),
-    showInNav: boolean("show_in_nav").default(false).notNull(),
-    navLabel: varchar("nav_label", { length: 100 }),
-    navOrder: int("nav_order").default(0).notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
-}, (table) => [
-    index("idx_static_page_slug").on(table.slug),
-    index("idx_static_page_published").on(table.isPublished),
-]);
 
 // 📈 20. USAGE STATS (OJS Parity - COUNTER Release 5 & SUSHI Institutional Metrics)
 export const usageStats = mysqlTable("usage_stats", {

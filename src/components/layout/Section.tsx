@@ -20,7 +20,7 @@ export function Section({
     return (
         <section
             className={cn(
-                padding && "section-padding",
+                padding && "py-6 sm:py-8 lg:py-10 xl:py-12 2xl:py-14 section-vertical section-padding",
                 background === 'muted' && "bg-muted/20",
                 background === 'gradient' && "bg-linear-to-br from-primary/5 to-transparent",
                 "relative z-10",

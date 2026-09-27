@@ -16,7 +16,7 @@ export default function AimAndScope({ settings, shortName }: AimAndScopeProps) {
             </h2>
 
             <p className="text-body text-justify m-0">
-                {journalName} ({displayShortName}) welcomes original research, review articles, and technical contributions across engineering, science, and technology, including interdisciplinary studies.
+                {journalName} ({displayShortName}) welcomes original research articles, review papers, and survey papers across Engineering, Science, Technology, and Management Studies, including interdisciplinary research.
             </p>
 
             <a

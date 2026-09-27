@@ -73,9 +73,8 @@ export default async function Home() {
       
       <HomeCarousel />
 
-      <Section className="relative z-10" padding={false}>
+      <Section className="relative z-10">
         <SidebarLayout
-          className="my-6 sm:my-8 lg:my-10"
           sidebarClassName="space-y-4 sm:space-y-5"
           mainClassName="space-y-6 sm:space-y-8"
           sidebar={

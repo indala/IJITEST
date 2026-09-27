@@ -12,7 +12,7 @@ function CallForPapersWidget() {
                 <h3 className="card-title-brand m-0">Call for Papers</h3>
             </div>
             <p className="text-muted-foreground leading-relaxed m-0">
-                IJITEST welcomes original research and review contributions in engineering, science, and technology.
+                IJITEST invites original research articles, review papers, and survey papers across Engineering, Science, Technology, and Management Studies.
             </p>
             <Link
                 href="/submit"

@@ -275,6 +275,11 @@ export async function assignPaperToIssue(
             resolvedProvider = 'none';
         }
 
+        if (resolvedProvider === 'none' || !resolvedDoi) {
+            resolvedProvider = 'none';
+            resolvedDoi = null;
+        }
+
         // 6. Generate Branded PDF OUTSIDE transaction (IO operation)
         const brandedFileName = `${submission.paperId}-published.pdf`;
         const brandedRelativePath = `/api/files/published/${brandedFileName}`;
@@ -942,34 +947,35 @@ export async function updatePublicationDoi(
         const settings = await getSettingsData();
         const doiPrefix = (settings['doiPrefix'] || '10.68139').trim().replace(/\/$/, '');
 
-        let resolvedProvider: 'none' | 'crossref' | 'zenodo' | 'custom' = 'none';
-        if (provider) {
-            resolvedProvider = provider;
-        } else if (cleanDoi) {
-            if (cleanDoi.toLowerCase().includes('zenodo')) {
+        let resolvedProvider: 'none' | 'crossref' | 'zenodo' | 'custom' = provider || 'none';
+        let finalDoi: string | null = cleanDoi;
+
+        if (resolvedProvider === 'none' || !finalDoi) {
+            resolvedProvider = 'none';
+            finalDoi = null;
+        } else if (!provider && finalDoi) {
+            if (finalDoi.toLowerCase().includes('zenodo')) {
                 resolvedProvider = 'zenodo';
-            } else if (cleanDoi.startsWith(doiPrefix)) {
+            } else if (finalDoi.startsWith(doiPrefix)) {
                 resolvedProvider = 'crossref';
             } else {
                 resolvedProvider = 'custom';
             }
-        } else {
-            resolvedProvider = 'none';
         }
 
         if (resolvedProvider === 'crossref') {
-            if (!cleanDoi || !isValidDoi(cleanDoi)) {
+            if (!finalDoi || !isValidDoi(finalDoi)) {
                 return actionError("Enter a valid Crossref DOI, for example 10.68139/ijitest.2026.001.");
             }
-            if (!cleanDoi.toLowerCase().startsWith(`${doiPrefix.toLowerCase()}/`)) {
+            if (!finalDoi.toLowerCase().startsWith(`${doiPrefix.toLowerCase()}/`)) {
                 return actionError(`Crossref DOI must use the journal prefix ${doiPrefix}.`);
             }
         }
 
-        if (cleanDoi && cleanDoi !== pub.doi) {
+        if (finalDoi && finalDoi !== pub.doi) {
             const existingDoi = await db.select({ id: publications.id, submissionId: publications.submissionId })
                 .from(publications)
-                .where(eq(publications.doi, cleanDoi))
+                .where(eq(publications.doi, finalDoi))
                 .limit(1);
             if (existingDoi[0] && existingDoi[0].submissionId !== submissionId) {
                 return actionError("That DOI is already assigned to another publication.");
@@ -979,8 +985,10 @@ export async function updatePublicationDoi(
         // 2. Update DOI & Provider in database
         await db.update(publications)
             .set({ 
-                doi: cleanDoi,
-                doiProvider: resolvedProvider
+                doi: finalDoi,
+                doiProvider: resolvedProvider,
+                doiRegistrationStatus: resolvedProvider === 'none' ? 'none' : pub.doiRegistrationStatus,
+                doiRegistrationBatchId: resolvedProvider === 'none' ? null : pub.doiRegistrationBatchId,
             })
             .where(eq(publications.submissionId, submissionId));
 
@@ -1003,7 +1011,7 @@ export async function updatePublicationDoi(
                         paperId: sub.paperId,
                         startPage: pub.startPage,
                         endPage: pub.endPage,
-                        doi: cleanDoi,
+                        doi: finalDoi,
                         license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
                         receivedDate: formatPublicationDate(subRes.data.submittedAt),
                         acceptedDate: formatPublicationDate(subRes.data.decisionAt || new Date()),
@@ -1020,8 +1028,8 @@ export async function updatePublicationDoi(
             submissionId,
             eventType: 'doi_assigned',
             userId: session.user.id,
-            description: cleanDoi ? `Official DOI assigned / updated: ${cleanDoi}` : 'DOI removed from paper.',
-            metadata: cleanDoi ? { doi: cleanDoi } : {}
+            description: finalDoi ? `Official DOI assigned / updated: ${finalDoi}` : 'DOI removed from paper.',
+            metadata: finalDoi ? { doi: finalDoi } : {}
         });
 
         revalidatePath(`/admin/submissions/${submissionId}`);
@@ -1040,7 +1048,7 @@ export async function updatePublicationDoi(
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
 
-        return actionSuccess({ doi: cleanDoi, provider: resolvedProvider });
+        return actionSuccess({ doi: finalDoi, provider: resolvedProvider });
     } catch (error) {
         console.error("Update Publication DOI Error:", error);
         return serverError(error, "update publication DOI");

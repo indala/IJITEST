@@ -6,6 +6,8 @@ import ArchivesSearch from '@/features/archives/components/ArchivesSearch';
 import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import type { Issue } from '@/db/types';
 import { Rss, Radio } from 'lucide-react';
+import { Section } from '@/components/layout/Section';
+import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
@@ -76,55 +78,54 @@ export default async function Archives() {
                 scrollOnComplete={true}
             />
 
-            <section className="px-4 sm:px-6 mx-auto py-6 sm:py-8 max-w-7xl">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-                    {/* Main Content: Autocomplete search + Volumes Grid */}
-                    <div className="lg:col-span-8">
-                        <ArchivesSearch papers={papers} volumes={volumes} />
-                    </div>
+            <Section>
+                <SidebarLayout
+                    sidebarClassName="space-y-4 lg:sticky lg:top-24 h-fit"
+                    sidebar={
+                        <>
+                            <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
+                                <TrackManuscriptWidget />
+                            </div>
 
-                    {/* Sidebar widgets */}
-                    <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
-                        <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
-                            <TrackManuscriptWidget />
-                        </div>
-
-                        {/* Scholarly Web Feeds */}
-                        <div className="bg-card p-5 rounded-2xl border border-border/70 shadow-2xs space-y-3">
-                            <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-600 shrink-0">
-                                    <Rss className="w-4 h-4" />
+                            {/* Scholarly Web Feeds */}
+                            <div className="bg-card p-5 rounded-2xl border border-border/70 shadow-2xs space-y-3">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-600 shrink-0">
+                                        <Rss className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-foreground m-0">Scholarly Web Feeds</h4>
+                                        <p className="text-caption text-muted-foreground m-0">Syndicate latest research</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-foreground m-0">Scholarly Web Feeds</h4>
-                                    <p className="text-caption text-muted-foreground m-0">Syndicate latest research</p>
+                                <p className="text-caption text-muted-foreground leading-relaxed m-0">
+                                    Real-time RSS &amp; Atom feeds of all published open-access articles for reference managers and feed readers.
+                                </p>
+                                <div className="grid grid-cols-2 gap-2 pt-1">
+                                    <a
+                                        href="/api/feed/rss"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-700  font-bold border border-orange-500/20 transition-all cursor-pointer"
+                                    >
+                                        <Rss className="w-3.5 h-3.5" /> RSS 2.0
+                                    </a>
+                                    <a
+                                        href="/api/feed/atom"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-700  font-bold border border-blue-500/20 transition-all cursor-pointer"
+                                    >
+                                        <Radio className="w-3.5 h-3.5" /> Atom 1.0
+                                    </a>
                                 </div>
                             </div>
-                            <p className="text-caption text-muted-foreground leading-relaxed m-0">
-                                Real-time RSS &amp; Atom feeds of all published open-access articles for reference managers and feed readers.
-                            </p>
-                            <div className="grid grid-cols-2 gap-2 pt-1">
-                                <a
-                                    href="/api/feed/rss"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-700  font-bold border border-orange-500/20 transition-all cursor-pointer"
-                                >
-                                    <Rss className="w-3.5 h-3.5" /> RSS 2.0
-                                </a>
-                                <a
-                                    href="/api/feed/atom"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-700  font-bold border border-blue-500/20 transition-all cursor-pointer"
-                                >
-                                    <Radio className="w-3.5 h-3.5" /> Atom 1.0
-                                </a>
-                            </div>
-                        </div>
-                    </aside>
-                </div>
-            </section>
+                        </>
+                    }
+                >
+                    <ArchivesSearch papers={papers} volumes={volumes} />
+                </SidebarLayout>
+            </Section>
         </div>
     );
 }

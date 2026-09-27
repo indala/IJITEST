@@ -24,7 +24,6 @@ import {
     reviewerSuggestions,
     submissionEventLog,
     announcements,
-    staticPages,
     usageStats,
     SUBMISSION_EVENT_TYPES,
     type SubmissionEventType,
@@ -422,9 +421,6 @@ export type AnnouncementType = InferSelectModel<typeof announcements>['type'];
 export type Announcement = InferSelectModel<typeof announcements>;
 export type NewAnnouncement = InferInsertModel<typeof announcements>;
 
-// 📄 Static Pages (OJS Parity)
-export type StaticPage = InferSelectModel<typeof staticPages>;
-export type NewStaticPage = InferInsertModel<typeof staticPages>;
 
 // 🔗 Related Articles (OJS Parity - recommendByAuthor / recommendBySimilarity)
 export type RelatedArticle = PublishedPaperUI & {

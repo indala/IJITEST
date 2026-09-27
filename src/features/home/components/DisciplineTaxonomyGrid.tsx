@@ -8,6 +8,7 @@ import {
     Zap, 
     Activity, 
     Layers, 
+    Briefcase,
     ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
@@ -67,6 +68,12 @@ const DISCIPLINES: DisciplineItem[] = [
         description: "Nanotechnology, applied physics, materials science, industrial engineering, mathematical modeling.",
         icon: Layers,
         tags: ["Nanotech", "Materials", "Applied Math"]
+    },
+    {
+        title: "Management Studies & Tech Management",
+        description: "Business administration, technology management, operations research, supply chain logistics, innovation strategy, business analytics.",
+        icon: Briefcase,
+        tags: ["Tech Management", "Business Admin", "Analytics", "Operations"]
     }
 ];
 

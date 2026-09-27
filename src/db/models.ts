@@ -66,8 +66,6 @@ export type {
     AnnouncementType,
     Announcement,   
     NewAnnouncement,
-    StaticPage, 
-    NewStaticPage,
     UsageStat,
     NewUsageStat,
 } from './types';

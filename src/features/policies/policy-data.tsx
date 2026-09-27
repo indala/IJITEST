@@ -49,14 +49,14 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
             sections: [
                 {
                     id: 'core-objectives',
-                    title: 'Journal Aim',
+                    title: 'Journal Aim & Call for Papers',
                     content: (
                         <div className="space-y-4">
                             <p>
-                                <strong>{journalName}</strong> (ISSN: {issn}) is a peer-reviewed, open-access journal publishing original research, review articles, and technical contributions in engineering, science, and technology.
+                                <strong>{journalName}</strong> (ISSN: {issn}) is a peer-reviewed, open-access international journal dedicated to publishing high-quality original research articles, review papers, and survey papers from researchers, academicians, and industry professionals.
                             </p>
                             <p>
-                                {journalShort} aims to provide a rigorous and accessible platform for researchers, academics, and practitioners to communicate sound theoretical, experimental, computational, and applied work. Interdisciplinary studies are welcome when they make a clear contribution to the journal&apos;s subject areas.
+                                {journalShort} provides a prestigious and accessible global platform to communicate theoretical breakthroughs, experimental discoveries, computational models, and applied technological advancements across Engineering, Science, Technology, and Management.
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-1">
@@ -65,25 +65,25 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                         <span>Scholarly Exchange</span>
                                     </div>
                                     <p className="text-muted-foreground text-caption m-0">
-                                        Supporting the responsible communication of research findings.
+                                        Fostering international academic collaboration and open dissemination.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15 space-y-1">
                                     <div className="flex items-center gap-2 text-emerald-700  font-bold text-body-sm">
                                         <Cpu className="size-4" />
-                                        <span>Research Quality</span>
+                                        <span>Research Rigor</span>
                                     </div>
                                     <p className="text-muted-foreground text-caption m-0">
-                                        Valuing clear methods, evidence, and meaningful conclusions.
+                                        Ensuring strict double-blind peer review and technical validation.
                                     </p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-blue-500/5 border border-blue-500/15 space-y-1">
                                     <div className="flex items-center gap-2 text-blue-700  font-bold text-body-sm">
                                         <LockOpen className="size-4" />
-                                        <span>Open Science</span>
+                                        <span>Open Access</span>
                                     </div>
                                     <p className="text-muted-foreground text-caption m-0">
-                                        Making published research available under the journal&apos;s open-access terms.
+                                        Providing immediate global access under Creative Commons CC BY 4.0 terms.
                                     </p>
                                 </div>
                             </div>
@@ -92,38 +92,62 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                 },
                 {
                     id: 'subject-coverage',
-                    title: 'Subject Coverage & Disciplines',
+                    title: 'Subject Coverage & Areas of Interest',
                     content: (
                         <div className="space-y-4">
                             <p>
-                                {journalShort} welcomes high-caliber original research, critical review papers, and technical case studies across the following core thematic disciplines:
+                                <strong>{journalName} ({journalShort})</strong> invites original research articles, review papers, and survey papers from researchers, academicians, and industry professionals. Areas of interest include, but are not limited to:
                             </p>
-                            <ul className="space-y-2 list-none p-0 m-0">
+                            <ul className="space-y-2.5 list-none p-0 m-0">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Computer Science & Information Technology:</strong> Artificial Intelligence, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, Cloud Computing, Distributed Ledger Technologies / Blockchain, Big Data Analytics, Cyber Security, and Software Engineering.</span>
+                                    <span><strong>All Engineering Disciplines:</strong> Comprehensive coverage across all core and interdisciplinary engineering branches, systems engineering, and applied sciences.</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Electrical & Electronics Engineering:</strong> VLSI Design, Embedded Systems, Renewable Energy Integration, Microgrids, Power Electronics, Wireless Sensor Networks, Internet of Things (IoT), Signal & Image Processing, and Robotics.</span>
+                                    <span><strong>Science and Applied Sciences:</strong> Applied Physics, Applied Chemistry, Applied Mathematics, Computational Modeling, Materials Science, and Environmental Science.</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Mechanical & Mechatronics Engineering:</strong> Computational Fluid Dynamics (CFD), Finite Element Analysis (FEA), Thermal Engineering, Additive Manufacturing / 3D Printing, Advanced Composite Materials, Precision Machining, and Autonomous Systems.</span>
+                                    <span><strong>Technology and Innovation:</strong> Emerging technologies, disruptive technical frameworks, digital transformation paradigms, and inventive technological methodologies.</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Civil & Environmental Engineering:</strong> Structural Health Monitoring, Green Building Technologies, Sustainable Infrastructure, Earthquake Engineering, Water Resource Management, and Smart Transportation Systems.</span>
+                                    <span><strong>Computer Science and Information Technology:</strong> Software Engineering, Distributed Systems, Cloud & Edge Computing, Cybersecurity, Cryptography, Blockchain, and Big Data Analytics.</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Chemical, Biological & Materials Engineering:</strong> Nanomaterials, Biomaterials, Polymer Science, Process Modeling, Green Synthesis, and Environmental Pollution Abatement.</span>
+                                    <span><strong>Artificial Intelligence, Machine Learning, and Data Science:</strong> Deep Learning, Neural Networks, Natural Language Processing, Computer Vision, Generative AI, and Predictive Analytics.</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Interdisciplinary Technologies:</strong> Biomedical Instrumentation, Human-Computer Interaction, Smart Cities, Quantum Computing Applications, and Cyber-Physical Systems.</span>
+                                    <span><strong>Electronics, Electrical, and Communication Engineering:</strong> VLSI & Microelectronics, Embedded Systems, Signal & Image Processing, Wireless & 5G/6G Networks, and Power Systems.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
+                                    <span><strong>Mechanical and Civil Engineering:</strong> Computational Fluid Dynamics (CFD), FEA, Thermal Engineering, Additive Manufacturing, Smart Infrastructure, Structural Engineering, and Sustainable Transportation.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
+                                    <span><strong>Internet of Things (IoT), Robotics, and Automation:</strong> Smart Sensor Networks, Cyber-Physical Systems, Autonomous Robotics, Industrial Automation, and Mechatronics.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
+                                    <span><strong>Renewable Energy and Sustainable Technologies:</strong> Solar, Wind, and Clean Energy Systems, Microgrids, Energy Storage, Decarbonization, and Sustainable Engineering Solutions.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
+                                    <span><strong>Management Studies, Business Administration, and Technology Management:</strong> Management Science, Business Administration, Technology & Operations Management, Supply Chain Logistics, Innovation Strategy, Information Systems Management, and Business Analytics.</span>
                                 </li>
                             </ul>
+                            <div className="p-3.5 rounded-xl bg-secondary/10 border-l-4 border-l-secondary text-foreground space-y-1">
+                                <p className="font-semibold text-body-sm text-secondary m-0">
+                                    Interdisciplinary Scope
+                                </p>
+                                <p className="text-body-sm text-foreground/90 m-0">
+                                    Interdisciplinary and innovative research across Engineering, Science, Technology, and Management is highly encouraged.
+                                </p>
+                            </div>
                         </div>
                     )
                 },

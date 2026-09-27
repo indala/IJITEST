@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Calendar, ChevronRight, FileText } from "lucide-react";
 import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
+import { Section } from '@/components/layout/Section';
+import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
 export async function generateStaticParams() {
     try {
@@ -114,10 +116,16 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                 scrollOnComplete={true}
             />
 
-            <section className="px-4 sm:px-6 mx-auto py-6 sm:py-8 max-w-7xl">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-                    {/* Main Content: Issues Grid */}
-                    <div className="lg:col-span-8 space-y-4">
+            <Section>
+                <SidebarLayout
+                    sidebarClassName="space-y-4 lg:sticky lg:top-24 h-fit"
+                    sidebar={
+                        <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
+                            <TrackManuscriptWidget />
+                        </div>
+                    }
+                >
+                    <div className="space-y-4">
                         <div className="flex items-center gap-2 border-l-4 border-secondary pl-3">
                             <h2 className="m-0">Published Issues</h2>
                         </div>
@@ -183,15 +191,8 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                             </Card>
                         )}
                     </div>
-
-                    {/* Sidebar widgets */}
-                    <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
-                        <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
-                            <TrackManuscriptWidget />
-                        </div>
-                    </aside>
-                </div>
-            </section>
+                </SidebarLayout>
+            </Section>
 
             <JsonLd
                 id="volume-schema"
