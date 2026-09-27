@@ -58,145 +58,115 @@ async function getHealthMetrics() {
 
 /* Streaming Component: Admin KPI Stats */
 async function AdminStatsSection() {
-    try {
-        const [subCountRes, userCountRes, paidRevenueRes, pendingRevenueRes] = await Promise.all([
-            db.select({ value: count() }).from(submissions),
-            db.select({ value: count() }).from(users),
-            db.select({ total: sum(payments.amount) }).from(payments).where(or(eq(payments.status, 'paid'), eq(payments.status, 'verified'))),
-            db.select({ total: sum(payments.amount) }).from(payments).where(eq(payments.status, 'pending')),
-        ]);
+    const [subCountRes, userCountRes, paidRevenueRes, pendingRevenueRes] = await Promise.all([
+        db.select({ value: count() }).from(submissions),
+        db.select({ value: count() }).from(users),
+        db.select({ total: sum(payments.amount) }).from(payments).where(or(eq(payments.status, 'paid'), eq(payments.status, 'verified'))),
+        db.select({ total: sum(payments.amount) }).from(payments).where(eq(payments.status, 'pending')),
+    ]);
 
-        const stats: Stat[] = [
-            { label: 'Revenue', value: Number(paidRevenueRes[0]?.total) || 0, icon: 'TrendingUp', variant: 'emerald', prefix: '₹' },
-            { label: 'Users', value: userCountRes[0]?.value || 0, icon: 'Users', variant: 'blue' },
-            { label: 'Submissions', value: subCountRes[0]?.value || 0, icon: 'FileStack', variant: 'indigo' },
-            { label: 'Pending', value: Number(pendingRevenueRes[0]?.total) || 0, icon: 'CreditCard', variant: 'amber', prefix: '₹' },
-        ];
+    const stats: Stat[] = [
+        { label: 'Revenue', value: Number(paidRevenueRes[0]?.total) || 0, icon: 'TrendingUp', variant: 'emerald', prefix: '₹' },
+        { label: 'Users', value: userCountRes[0]?.value || 0, icon: 'Users', variant: 'blue' },
+        { label: 'Submissions', value: subCountRes[0]?.value || 0, icon: 'FileStack', variant: 'indigo' },
+        { label: 'Pending', value: Number(pendingRevenueRes[0]?.total) || 0, icon: 'CreditCard', variant: 'amber', prefix: '₹' },
+    ];
 
-        return <DashboardStatsGrid stats={stats} />;
-    } catch (err) {
-        console.error("AdminStatsSection error:", err);
-        return <div className="p-4 text-caption text-muted-foreground">Unable to load metrics</div>;
-    }
+    return <DashboardStatsGrid stats={stats} />;
 }
 
 /* Streaming Component: Admin Activity Overview Rates */
 async function AdminActivityOverviewSection() {
-    try {
-        const [subCountRes, publishedCountRes, reviewStatsRes, completedReviewsRes] = await Promise.all([
-            db.select({ value: count() }).from(submissions),
-            db.select({ value: count() }).from(submissions).where(eq(submissions.status, 'published')),
-            db.select({ value: count() }).from(reviews),
-            db.select({ value: count() }).from(reviews).where(sql`${reviews.submittedAt} IS NOT NULL`)
-        ]);
+    const [subCountRes, publishedCountRes, reviewStatsRes, completedReviewsRes] = await Promise.all([
+        db.select({ value: count() }).from(submissions),
+        db.select({ value: count() }).from(submissions).where(eq(submissions.status, 'published')),
+        db.select({ value: count() }).from(reviews),
+        db.select({ value: count() }).from(reviews).where(sql`${reviews.submittedAt} IS NOT NULL`)
+    ]);
 
-        const totalReviews = reviewStatsRes[0]?.value || 0;
-        const revPercent = totalReviews > 0 ? (Number(completedReviewsRes[0]?.value || 0) / totalReviews) * 100 : 0;
-        const subCount = subCountRes[0]?.value ?? 0;
-        const publishedCount = publishedCountRes[0]?.value ?? 0;
-        const pubPercent = subCount > 0 ? (publishedCount / subCount) * 100 : 0;
+    const totalReviews = reviewStatsRes[0]?.value || 0;
+    const revPercent = totalReviews > 0 ? (Number(completedReviewsRes[0]?.value || 0) / totalReviews) * 100 : 0;
+    const subCount = subCountRes[0]?.value ?? 0;
+    const publishedCount = publishedCountRes[0]?.value ?? 0;
+    const pubPercent = subCount > 0 ? (publishedCount / subCount) * 100 : 0;
 
-        return (
-            <DashboardActivityOverviewCard
-                percentages={{ pub: pubPercent, rev: revPercent }}
-            />
-        );
-    } catch (err) {
-        console.error("AdminActivityOverviewSection error:", err);
-        return <DashboardActivityOverviewCard percentages={{ pub: 0, rev: 0 }} />;
-    }
+    return (
+        <DashboardActivityOverviewCard
+            percentages={{ pub: pubPercent, rev: revPercent }}
+        />
+    );
 }
 
 /* Streaming Component: Recent Submissions */
 async function AdminRecentSubmissionsSection() {
-    try {
-        const recentSubmissions = await db.select({
-            id: submissions.id,
-            paperId: submissions.paperId,
-            status: submissions.status,
-            submittedAt: submissions.submittedAt,
-            title: submissionVersions.title,
-            authorName: userProfiles.fullName
-        })
-            .from(submissions)
-            .leftJoin(submissionVersions, and(eq(submissions.id, submissionVersions.submissionId), eq(submissionVersions.versionNumber, 1)))
-            .leftJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
-            .orderBy(desc(submissions.submittedAt))
-            .limit(5);
+    const recentSubmissions = await db.select({
+        id: submissions.id,
+        paperId: submissions.paperId,
+        status: submissions.status,
+        submittedAt: submissions.submittedAt,
+        title: submissionVersions.title,
+        authorName: userProfiles.fullName
+    })
+        .from(submissions)
+        .leftJoin(submissionVersions, and(eq(submissions.id, submissionVersions.submissionId), eq(submissionVersions.versionNumber, 1)))
+        .leftJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
+        .orderBy(desc(submissions.submittedAt))
+        .limit(5);
 
-        return (
-            <DashboardRecentSubmissionsCard
-                recentSubmissions={recentSubmissions as DashboardSubmission[]}
-                role="admin"
-            />
-        );
-    } catch (err) {
-        console.error("AdminRecentSubmissionsSection error:", err);
-        return <div className="p-4 text-caption text-muted-foreground">Unable to load submissions</div>;
-    }
+    return (
+        <DashboardRecentSubmissionsCard
+            recentSubmissions={recentSubmissions as DashboardSubmission[]}
+            role="admin"
+        />
+    );
 }
 
 /* Streaming Component: Pending Reviewer Applications */
 async function AdminPendingApplicationsSection() {
-    try {
-        const pendingApps = await db.select()
-            .from(applications)
-            .where(eq(applications.status, 'pending'))
-            .orderBy(desc(applications.createdAt))
-            .limit(3);
+    const pendingApps = await db.select()
+        .from(applications)
+        .where(eq(applications.status, 'pending'))
+        .orderBy(desc(applications.createdAt))
+        .limit(3);
 
-        return <DashboardApplicationsCard pendingApplications={pendingApps} />;
-    } catch (err) {
-        console.error("AdminPendingApplicationsSection error:", err);
-        return null;
-    }
+    return <DashboardApplicationsCard pendingApplications={pendingApps} />;
 }
 
 /* Streaming Component: My Submissions */
 async function AdminMySubmissionsSection() {
-    try {
-        const mySubmissions = await getMySubmissions();
-        return <DashboardMySubmissionsGrid mySubmissions={mySubmissions as DashboardSubmission[]} />;
-    } catch (err) {
-        console.error("AdminMySubmissionsSection error:", err);
-        return <div className="p-4 text-caption text-muted-foreground">Unable to load personal papers</div>;
-    }
+    const mySubmissions = await getMySubmissions();
+    return <DashboardMySubmissionsGrid mySubmissions={mySubmissions as DashboardSubmission[]} />;
 }
 
 /* Streaming Component: Health & Staff Overview */
 async function AdminHealthSection() {
-    try {
-        const [allStaff, health] = await Promise.all([
-            db.select({
-                id: users.id,
-                email: users.email,
-                role: users.role,
-                fullName: userProfiles.fullName
-            })
-                .from(users)
-                .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
-                .orderBy(desc(users.createdAt))
-                .limit(10),
-            getHealthMetrics()
-        ]);
+    const [allStaff, health] = await Promise.all([
+        db.select({
+            id: users.id,
+            email: users.email,
+            role: users.role,
+            fullName: userProfiles.fullName
+        })
+            .from(users)
+            .leftJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .orderBy(desc(users.createdAt))
+            .limit(10),
+        getHealthMetrics()
+    ]);
 
-        const healthMetrics = [
-            { label: 'Database', value: `${health.dbLatency || 0}ms`, icon: 'Activity', status: Number(health.dbLatency) < 100 ? 'Optimal' : 'Checking' },
-            { label: 'Storage', value: `${health.storageMB || 0} MB`, icon: 'HardDrive', status: 'Healthy' },
-            { label: 'Uptime', value: `${health.uptimeHours || 0}h`, icon: 'Shield', status: 'Excellent' },
-        ];
+    const healthMetrics = [
+        { label: 'Database', value: `${health.dbLatency || 0}ms`, icon: 'Activity', status: Number(health.dbLatency) < 100 ? 'Optimal' : 'Checking' },
+        { label: 'Storage', value: `${health.storageMB || 0} MB`, icon: 'HardDrive', status: 'Healthy' },
+        { label: 'Uptime', value: `${health.uptimeHours || 0}h`, icon: 'Shield', status: 'Excellent' },
+    ];
 
-        return (
-            <DashboardHealthSectionView
-                healthMetrics={healthMetrics}
-                allStaff={allStaff as DashboardStaff[]}
-                role="admin"
-            />
-        );
-    } catch (err) {
-        console.error("AdminHealthSection error:", err);
-        return <div className="p-4 text-caption text-muted-foreground">Unable to load system health</div>;
-    }
+    return (
+        <DashboardHealthSectionView
+            healthMetrics={healthMetrics}
+            allStaff={allStaff as DashboardStaff[]}
+            role="admin"
+        />
+    );
 }
 
 function AdminDashboardSkeleton() {

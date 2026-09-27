@@ -2,7 +2,7 @@
 import "server-only"
  
 import { db } from "@/lib/db";
-import { submissions, reviews, reviewAssignments, submissionVersions, userProfiles, users } from "@/db/schema";
+import { submissions, reviews, reviewAssignments, submissionVersions, userProfiles, users, payments } from "@/db/schema";
 import { eq, and, min, desc } from "drizzle-orm";
 import { type ActionResponse, type TrackedManuscript } from "@/db/types";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -55,10 +55,23 @@ export async function trackManuscript(paperId: string, authorEmail?: string): Pr
         })
         .from(reviewAssignments)
         .where(eq(reviewAssignments.submissionId, manuscriptRow.id));
+
+        // 3. Fetch payment record (for custom/discounted amount and status)
+        const [paymentRecord] = await db.select({
+            amount: payments.amount,
+            currency: payments.currency,
+            status: payments.status,
+        })
+        .from(payments)
+        .where(eq(payments.submissionId, manuscriptRow.id))
+        .limit(1);
  
         const manuscript: TrackedManuscript = {
             ...manuscriptRow,
             reviewStartedAt: assignments[0]?.reviewStartedAt ?? null,
+            paymentAmount: paymentRecord?.amount ?? null,
+            paymentCurrency: paymentRecord?.currency ?? null,
+            paymentStatus: paymentRecord?.status ?? null,
         };
  
         // 3. If rejected, fetch reviewer feedback (commentsToAuthor)

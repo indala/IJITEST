@@ -15,6 +15,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { applicationKeys } from "@/features/applications";
+import {
+    getRejectionReasonError,
+    MIN_REJECTION_REASON_LENGTH,
+} from "../lib/application-decision";
 
 const statusClasses: Record<Application["status"], string> = {
     pending: "border-amber-300 bg-amber-50 text-amber-900",
@@ -51,8 +55,9 @@ export function ApplicationDetailReview({
     };
 
     const handleReject = () => {
-        if (rejectionReason.trim().length < 20) {
-            toast.error("Please provide a rejection reason of at least 20 characters.");
+        const reasonError = getRejectionReasonError(rejectionReason);
+        if (reasonError) {
+            toast.error(reasonError);
             return;
         }
         startTransition(async () => {
@@ -250,7 +255,7 @@ export function ApplicationDetailReview({
                                             disabled={isPending}
                                         />
                                         <div className="flex items-center justify-between gap-3">
-                                            <p className="m-0 text-caption text-muted-foreground">At least 20 characters; included in the rejection email.</p>
+                                            <p className="m-0 text-caption text-muted-foreground">At least {MIN_REJECTION_REASON_LENGTH} characters; included in the rejection email.</p>
                                             <span className="shrink-0 text-caption tabular-nums text-muted-foreground">{rejectionReason.length}/2000</span>
                                         </div>
                                         <Button
@@ -258,7 +263,7 @@ export function ApplicationDetailReview({
                                             variant="outline"
                                             className="w-full gap-2 border-rose-300 text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                                             onClick={handleReject}
-                                            disabled={isPending || rejectionReason.trim().length < 20}
+                                            disabled={isPending || Boolean(getRejectionReasonError(rejectionReason))}
                                         >
                                             <X className="h-4 w-4" aria-hidden="true" />
                                             Reject application

@@ -39,147 +39,122 @@ export const metadata = {
 
 /* Streaming Component: Editor KPI Stats */
 async function EditorStatsSection() {
-    try {
-        const [
-            [totalSubmissions],
-            [underReview],
-            [pendingPayments],
-            latestIssue
-        ] = await Promise.all([
-            db.select({ value: count() }).from(schema.submissions),
-            db.select({ value: count() }).from(schema.submissions).where(eq(schema.submissions.status, 'underReview')),
-            db.select({ value: count() }).from(schema.payments).where(eq(schema.payments.status, 'pending')),
-            db.query.volumesIssues.findFirst({
-                where: eq(schema.volumesIssues.status, 'published'),
-                orderBy: [desc(schema.volumesIssues.year), desc(schema.volumesIssues.volumeNumber)]
-            })
-        ]);
+    const [
+        [totalSubmissions],
+        [underReview],
+        [pendingPayments],
+        latestIssue
+    ] = await Promise.all([
+        db.select({ value: count() }).from(schema.submissions),
+        db.select({ value: count() }).from(schema.submissions).where(eq(schema.submissions.status, 'underReview')),
+        db.select({ value: count() }).from(schema.payments).where(eq(schema.payments.status, 'pending')),
+        db.query.volumesIssues.findFirst({
+            where: eq(schema.volumesIssues.status, 'published'),
+            orderBy: [desc(schema.volumesIssues.year), desc(schema.volumesIssues.volumeNumber)]
+        })
+    ]);
 
-        const currentIssue = latestIssue ? `${latestIssue.year} Edition` : '2026 Edition';
+    const currentIssue = latestIssue ? `${latestIssue.year} Edition` : '2026 Edition';
 
-        const stats: Stat[] = [
-            { label: 'Submissions', value: totalSubmissions?.value ?? 0, icon: 'FileStack', variant: 'indigo' },
-            { label: 'Reviewing', value: underReview?.value ?? 0, icon: 'ShieldCheck', variant: 'blue' },
-            { label: 'Pending', value: pendingPayments?.value ?? 0, icon: 'CreditCard', variant: 'emerald' },
-            { label: 'Published', value: currentIssue, icon: 'BookOpen', variant: 'amber' },
-        ];
+    const stats: Stat[] = [
+        { label: 'Submissions', value: totalSubmissions?.value ?? 0, icon: 'FileStack', variant: 'indigo' },
+        { label: 'Reviewing', value: underReview?.value ?? 0, icon: 'ShieldCheck', variant: 'blue' },
+        { label: 'Pending', value: pendingPayments?.value ?? 0, icon: 'CreditCard', variant: 'emerald' },
+        { label: 'Published', value: currentIssue, icon: 'BookOpen', variant: 'amber' },
+    ];
 
-        return <DashboardStatsGrid stats={stats} />;
-    } catch (err) {
-        console.error("EditorStatsSection error:", err);
-        return <div className="p-4 text-caption text-muted-foreground">Unable to load metrics</div>;
-    }
+    return <DashboardStatsGrid stats={stats} />;
 }
 
 /* Streaming Component: Editor Activity Overview Rates */
 async function EditorActivityOverviewSection() {
-    try {
-        const [
-            [totalSubmissions],
-            [publishedCount],
-            [totalReviews],
-            [completedReviews]
-        ] = await Promise.all([
-            db.select({ value: count() }).from(schema.submissions),
-            db.select({ value: count() }).from(schema.submissions).where(eq(schema.submissions.status, 'published')),
-            db.select({ value: count() }).from(schema.reviewAssignments),
-            db.select({ value: count() }).from(schema.reviewAssignments).where(eq(schema.reviewAssignments.status, 'completed'))
-        ]);
+    const [
+        [totalSubmissions],
+        [publishedCount],
+        [totalReviews],
+        [completedReviews]
+    ] = await Promise.all([
+        db.select({ value: count() }).from(schema.submissions),
+        db.select({ value: count() }).from(schema.submissions).where(eq(schema.submissions.status, 'published')),
+        db.select({ value: count() }).from(schema.reviewAssignments),
+        db.select({ value: count() }).from(schema.reviewAssignments).where(eq(schema.reviewAssignments.status, 'completed'))
+    ]);
 
-        const totalSubCount = Number(totalSubmissions?.value ?? 0);
-        const pubCount = Number(publishedCount?.value ?? 0);
-        const pubPercent = totalSubCount > 0 ? (pubCount / totalSubCount) * 100 : 0;
+    const totalSubCount = Number(totalSubmissions?.value ?? 0);
+    const pubCount = Number(publishedCount?.value ?? 0);
+    const pubPercent = totalSubCount > 0 ? (pubCount / totalSubCount) * 100 : 0;
 
-        const totalRevCount = Number(totalReviews?.value ?? 0);
-        const compRevCount = Number(completedReviews?.value ?? 0);
-        const revPercent = totalRevCount > 0 ? (compRevCount / totalRevCount) * 100 : 0;
+    const totalRevCount = Number(totalReviews?.value ?? 0);
+    const compRevCount = Number(completedReviews?.value ?? 0);
+    const revPercent = totalRevCount > 0 ? (compRevCount / totalRevCount) * 100 : 0;
 
-        return (
-            <DashboardActivityOverviewCard
-                percentages={{ pub: pubPercent, rev: revPercent }}
-            />
-        );
-    } catch (err) {
-        console.error("EditorActivityOverviewSection error:", err);
-        return <DashboardActivityOverviewCard percentages={{ pub: 0, rev: 0 }} />;
-    }
+    return (
+        <DashboardActivityOverviewCard
+            percentages={{ pub: pubPercent, rev: revPercent }}
+        />
+    );
 }
 
 /* Streaming Component: Recent Submissions */
 async function EditorRecentSubmissionsSection() {
-    try {
-        const recentSubmissions = await db.select({
-            id: schema.submissions.id,
-            paperId: schema.submissions.paperId,
-            status: schema.submissions.status,
-            title: schema.submissionVersions.title,
-            authorName: schema.userProfiles.fullName,
-            submittedAt: schema.submissions.submittedAt
-        })
-            .from(schema.submissions)
-            .leftJoin(schema.submissionVersions, and(
-                eq(schema.submissions.id, schema.submissionVersions.submissionId),
-                eq(schema.submissionVersions.versionNumber, 1)
-            ))
-            .leftJoin(schema.userProfiles, eq(schema.submissions.correspondingAuthorId, schema.userProfiles.userId))
-            .orderBy(desc(schema.submissions.submittedAt))
-            .limit(5);
+    const recentSubmissions = await db.select({
+        id: schema.submissions.id,
+        paperId: schema.submissions.paperId,
+        status: schema.submissions.status,
+        title: schema.submissionVersions.title,
+        authorName: schema.userProfiles.fullName,
+        submittedAt: schema.submissions.submittedAt
+    })
+        .from(schema.submissions)
+        .leftJoin(schema.submissionVersions, and(
+            eq(schema.submissions.id, schema.submissionVersions.submissionId),
+            eq(schema.submissionVersions.versionNumber, 1)
+        ))
+        .leftJoin(schema.userProfiles, eq(schema.submissions.correspondingAuthorId, schema.userProfiles.userId))
+        .orderBy(desc(schema.submissions.submittedAt))
+        .limit(5);
 
-        return (
-            <DashboardRecentSubmissionsCard
-                recentSubmissions={recentSubmissions as DashboardSubmission[]}
-                recentSubmissionsTitle="Active Submissions"
-                role="editor"
-            />
-        );
-    } catch (err) {
-        console.error("EditorRecentSubmissionsSection error:", err);
-        return <div className="p-4 text-caption text-muted-foreground">Unable to load active submissions</div>;
-    }
+    return (
+        <DashboardRecentSubmissionsCard
+            recentSubmissions={recentSubmissions as DashboardSubmission[]}
+            recentSubmissionsTitle="Active Submissions"
+            role="editor"
+        />
+    );
 }
 
 /* Streaming Component: My Submissions */
 async function EditorMySubmissionsSection() {
-    try {
-        const mySubmissions = await getMySubmissions();
-        return <DashboardMySubmissionsGrid mySubmissions={mySubmissions as DashboardSubmission[]} />;
-    } catch (err) {
-        console.error("EditorMySubmissionsSection error:", err);
-        return <div className="p-4 text-caption text-muted-foreground">Unable to load personal papers</div>;
-    }
+    const mySubmissions = await getMySubmissions();
+    return <DashboardMySubmissionsGrid mySubmissions={mySubmissions as DashboardSubmission[]} />;
 }
 
 /* Streaming Component: Health Metrics */
 async function EditorHealthSection() {
-    try {
-        const startDb = performance.now();
-        await db.select({ val: sql`1` }).from(schema.users).limit(1);
-        const dbLatency = (performance.now() - startDb).toFixed(2);
+    const startDb = performance.now();
+    await db.select({ val: sql`1` }).from(schema.users).limit(1);
+    const dbLatency = (performance.now() - startDb).toFixed(2);
 
-        const totalStorageBytes = await getStorageSizeFromService();
-        const storageMB = (totalStorageBytes / (1024 * 1024)).toFixed(1);
-        const memUsed = ((os.totalmem() - os.freemem()) / os.totalmem()) * 100;
-        const uptimeHours = (os.uptime() / 3600).toFixed(1);
-        const healthScore = mean([100 - memUsed, 100 - (Number(dbLatency) / 2), 100 - (Number(storageMB) / 5)]).toFixed(1);
+    const totalStorageBytes = await getStorageSizeFromService();
+    const storageMB = (totalStorageBytes / (1024 * 1024)).toFixed(1);
+    const memUsed = ((os.totalmem() - os.freemem()) / os.totalmem()) * 100;
+    const uptimeHours = (os.uptime() / 3600).toFixed(1);
+    const healthScore = mean([100 - memUsed, 100 - (Number(dbLatency) / 2), 100 - (Number(storageMB) / 5)]).toFixed(1);
 
-        const healthMetrics = [
-            { label: 'Database', value: `${dbLatency}ms`, icon: 'Activity', status: Number(dbLatency) < 100 ? 'Optimal' : 'Checking' },
-            { label: 'Storage', value: `${storageMB} MB`, icon: 'HardDrive', status: 'Healthy' },
-            { label: 'Uptime', value: `${uptimeHours}h`, icon: 'Shield', status: 'Excellent' },
-            { label: 'Load', value: `${memUsed.toFixed(1)}%`, status: memUsed < 80 ? 'Optimal' : 'High', icon: 'Users' },
-            { label: 'Health', value: `${healthScore}%`, status: Number(healthScore) > 90 ? 'Excellent' : 'Good', icon: 'Shield' }
-        ];
+    const healthMetrics = [
+        { label: 'Database', value: `${dbLatency}ms`, icon: 'Activity', status: Number(dbLatency) < 100 ? 'Optimal' : 'Checking' },
+        { label: 'Storage', value: `${storageMB} MB`, icon: 'HardDrive', status: 'Healthy' },
+        { label: 'Uptime', value: `${uptimeHours}h`, icon: 'Shield', status: 'Excellent' },
+        { label: 'Load', value: `${memUsed.toFixed(1)}%`, status: memUsed < 80 ? 'Optimal' : 'High', icon: 'Users' },
+        { label: 'Health', value: `${healthScore}%`, status: Number(healthScore) > 90 ? 'Excellent' : 'Good', icon: 'Shield' }
+    ];
 
-        return (
-            <DashboardHealthSectionView
-                healthMetrics={healthMetrics}
-                role="editor"
-            />
-        );
-    } catch (err) {
-        console.error("EditorHealthSection error:", err);
-        return <div className="p-4 text-caption text-muted-foreground">Unable to load system health</div>;
-    }
+    return (
+        <DashboardHealthSectionView
+            healthMetrics={healthMetrics}
+            role="editor"
+        />
+    );
 }
 
 function EditorDashboardSkeleton() {

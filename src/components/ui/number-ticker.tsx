@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useInView, useMotionValue, useSpring } from "framer-motion";
 
 interface NumberTickerProps {
@@ -35,14 +35,14 @@ export function NumberTicker({
     });
     const isInView = useInView(ref, { once: true, margin: "0px" });
 
-    const formatNumber = (val: number) => {
+    const formatNumber = useCallback((val: number) => {
         const options: Intl.NumberFormatOptions = {
             minimumFractionDigits: decimalPlaces,
             maximumFractionDigits: decimalPlaces,
             ...(format || {})
         };
         return Intl.NumberFormat("en-IN", options).format(val);
-    };
+    }, [decimalPlaces, format]);
 
     useEffect(() => {
         if (!isInView) return;
@@ -59,7 +59,7 @@ export function NumberTicker({
             }
         });
         return () => unsubscribe();
-    }, [springValue, decimalPlaces, prefix, suffix, format]);
+    }, [formatNumber, prefix, springValue, suffix]);
 
     return (
         <span className={className} ref={ref}>

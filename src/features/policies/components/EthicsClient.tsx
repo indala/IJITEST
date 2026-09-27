@@ -324,11 +324,11 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
                 >
                     <div className="space-y-6 sm:space-y-8">
                         {sections.map((section, idx) => (
-                            <section key={idx} id={`section-${idx}`} className="scroll-mt-24 space-y-2">
-                                <h2 className="m-0">
+                            <section key={idx} id={`section-${idx}`} className="scroll-mt-24">
+                                <h2 className="text-foreground font-semibold mb-2 flex items-baseline gap-2 m-0">
                                     {section.title}
                                 </h2>
-                                <div className="text-muted-foreground border-l-2 border-border pl-3.5">
+                                <div className="text-justify text-foreground/80 space-y-2 border-l-2 border-primary/20 pl-3.5">
                                     {section.content}
                                 </div>
                             </section>

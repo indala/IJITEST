@@ -93,18 +93,18 @@ import ServiceWorkerRegister from "@/components/common/ServiceWorkerRegister";
 import { JsonLd } from "@/components/shared/JsonLd";
 import { getSettingsData } from "@/actions/settings";
 import { AppProviders } from "@/components/providers/AppProviders";
-import type { JournalSettings } from "@/db/protocols";
 
 async function SettingsLayer({ children }: { children: React.ReactNode }) {
-  const dynamicSettings = await getSettingsData() as JournalSettings;
+  const dynamicSettings = await getSettingsData();
+  const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
 
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": dynamicSettings.journalName,
     "alternateName": dynamicSettings.journalShortName,
-    "url": "https://ijitest.org",
-    "logo": "https://ijitest.org/favicon_io/apple-touch-icon.png",
+    "url": baseUrl,
+    "logo": `${baseUrl}/favicon_io/apple-touch-icon.png`,
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": dynamicSettings.supportPhone,
@@ -118,10 +118,29 @@ async function SettingsLayer({ children }: { children: React.ReactNode }) {
     "@type": "ScholarlyJournal",
     "name": dynamicSettings.journalName,
     "alternateName": dynamicSettings.journalShortName,
-    "url": "https://ijitest.org",
+    "url": baseUrl,
+    "issn": dynamicSettings.issnNumber || "",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
     "publisher": {
       "@type": "Organization",
-      "name": `${dynamicSettings.journalShortName} Publishing`
+      "name": dynamicSettings.publisherName || `${dynamicSettings.journalShortName} Publishing`,
+      "url": baseUrl
+    }
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": dynamicSettings.journalName,
+    "alternateName": dynamicSettings.journalShortName,
+    "url": baseUrl,
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": `${baseUrl}/archives?q={search_term_string}`
+      },
+      "query-input": "required name=search_term_string"
     }
   };
 
@@ -129,6 +148,7 @@ async function SettingsLayer({ children }: { children: React.ReactNode }) {
     <>
       <JsonLd data={organizationSchema} id="global-org" />
       <JsonLd data={journalSchema} id="global-journal" />
+      <JsonLd data={websiteSchema} id="global-website" />
       <AppProviders settings={dynamicSettings}>{children}</AppProviders>
     </>
   );

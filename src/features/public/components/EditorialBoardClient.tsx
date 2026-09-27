@@ -127,13 +127,10 @@ export default function EditorialBoardClient({ initialMembers: _initialMembers, 
                     ) : (
                         filteredReviewers.map((member: BoardMember, mIdx: number) => (
                             <article key={mIdx} className="group hover:bg-primary/5 transition-colors border-b border-primary/20 last:border-0">
-                                <header className="bg-muted/70 py-1.5 px-5 sm:px-6 border-b border-primary/10 flex items-center justify-between">
+                                <header className="bg-muted/70 py-1.5 px-5 sm:px-6 border-b border-primary/10">
                                     <h3 className="m-0 text-primary font-bold">
                                         {member.full_name}
                                     </h3>
-                                    <span className="text-meta font-mono font-semibold text-muted-foreground uppercase">
-                                        Board Member #{mIdx + 1}
-                                    </span>
                                 </header>
 
                                 <div className="py-3 px-5 sm:px-6 space-y-2">

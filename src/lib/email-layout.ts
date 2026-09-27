@@ -184,6 +184,32 @@ export function formatEmailBodyToHtml(rawText: string): string {
         const trimmed = block.trim();
         if (!trimmed) return "";
 
+        // Check if block starts with a heading line (# Heading, ## Heading, ### Heading)
+        const headingMatch = trimmed.match(/^(#{1,6})\s+([^\n]+)(?:\n([\s\S]*))?$/);
+        if (headingMatch && headingMatch[1] && headingMatch[2]) {
+            const level = headingMatch[1].length;
+            const headingText = headingMatch[2].trim();
+            const remainder = headingMatch[3]?.trim();
+            const tag = level <= 2 ? `h${level + 1}` : `h${level}`; // # -> h2, ## -> h3, ### -> h3
+            const headingHtml = `<${tag} style="color: #0f172a; margin: 20px 0 8px 0; font-weight: 700; line-height: 1.35;">${headingText}</${tag}>`;
+            const remainderHtml = remainder ? formatEmailBodyToHtml(remainder) : "";
+            return headingHtml + remainderHtml;
+        }
+
+        // Check if block is a bullet list (- item or * item)
+        const lines = trimmed.split("\n");
+        const isBulletList = lines.every(l => /^[-*]\s+/.test(l.trim()));
+        if (isBulletList && lines.length > 0) {
+            const items = lines.map(l => {
+                const itemContent = l.trim().replace(/^[-*]\s+/, "");
+                const formattedItem = itemContent
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color: #6d0202; text-decoration: underline; font-weight: 600; word-break: break-all;">$1</a>');
+                return `<li>${formattedItem}</li>`;
+            }).join("");
+            return `<ul style="margin: 0 0 16px 20px; padding: 0; font-size: 15px; line-height: 1.75; color: #334155;">${items}</ul>`;
+        }
+
         // Check if block is a blockquote (> text)
         if (trimmed.startsWith(">")) {
             const quoteContent = trimmed

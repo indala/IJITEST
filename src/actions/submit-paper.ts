@@ -9,7 +9,7 @@ import {
     submissionAuthors,
     users,
     userProfiles,
-    settings,
+    sequences,
     userInvitations,
     reviewerSuggestions
 } from "@/db/schema";
@@ -183,22 +183,22 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             const seqKey = `submission_sequence_${currentYear}`;
 
             // Ensure sequence entry exists (no-op on duplicate — preserve existing value)
-            await tx.insert(settings)
-                .values({ settingKey: seqKey, settingValue: '0' })
-                .onDuplicateKeyUpdate({ set: { settingKey: seqKey } });
+            await tx.insert(sequences)
+                .values({ sequenceKey: seqKey, currentValue: 0 })
+                .onDuplicateKeyUpdate({ set: { sequenceKey: seqKey } });
 
             // Lock and Fetch current sequence
-            const seqResult = await tx.select({ value: settings.settingValue })
-                .from(settings)
-                .where(eq(settings.settingKey, seqKey))
+            const seqResult = await tx.select({ value: sequences.currentValue })
+                .from(sequences)
+                .where(eq(sequences.sequenceKey, seqKey))
                 .for('update');
-            const lastSeq = parseInt(seqResult[0]?.value || "0");
+            const lastSeq = seqResult[0]?.value ?? 0;
             const newSeq = lastSeq + 1;
 
             // Update sequence
-            await tx.update(settings)
-                .set({ settingValue: newSeq.toString() })
-                .where(eq(settings.settingKey, seqKey));
+            await tx.update(sequences)
+                .set({ currentValue: newSeq })
+                .where(eq(sequences.sequenceKey, seqKey));
 
             const paperId = `IJITEST-${currentYear}-${String(newSeq).padStart(3, "0")}`;
             const slug = paperId.toLowerCase().replace(/-/g, "");

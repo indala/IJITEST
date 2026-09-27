@@ -49,3 +49,13 @@ export function renderTemplateText(templateText: string, data: Record<string, st
         return val !== undefined && val !== null ? String(val) : match;
     });
 }
+
+/**
+ * Safely extracts human-readable error messages from unknown catch targets.
+ */
+export function getErrorMessage(error: unknown): string {
+    if (error instanceof Error) return error.message;
+    if (typeof error === 'string') return error;
+    return String(error);
+}
+

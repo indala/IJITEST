@@ -10,7 +10,7 @@ import AimAndScope from '@/features/home/components/AimAndScope';
 import AnnouncementsWidget from '@/features/home/components/AnnouncementsWidget';
 import PublisherSection from '@/features/home/components/PublisherSection';
 import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
-import CallForPapersWidget from '@/features/home/components/CallForPapersWidget';
+
 import ResourceDeskWidget from '@/features/home/components/ResourceDeskWidget';
 import EthicsWidget from '@/features/home/components/EthicsWidget';
 import AnnouncementBar from '@/features/home/components/AnnouncementBar';
@@ -81,7 +81,6 @@ export default async function Home() {
           sidebar={
             <div className="space-y-4 sm:space-y-5">
               <TrackManuscriptWidget />
-              <CallForPapersWidget />
               <Suspense fallback={<AnnouncementsWidgetSkeleton />}>
                 <AnnouncementsWidgetSection />
               </Suspense>

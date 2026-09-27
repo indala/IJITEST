@@ -15,7 +15,8 @@ import {
     contactMessages,
     notifications,
     activityLogs,
-    settings,
+    type sequences,
+    type journalSettings,
     chatMessages,
     pushSubscriptions,
     emailTemplates,
@@ -26,14 +27,15 @@ import {
     staticPages,
     usageStats,
     SUBMISSION_EVENT_TYPES,
-    type SubmissionEventType
+    type SubmissionEventType,
+    type SubmissionEventMetadata,
 } from "./schema";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
 
 // 📜 Re-export submission event types
 export { SUBMISSION_EVENT_TYPES };
-export type { SubmissionEventType };
+export type { SubmissionEventType, SubmissionEventMetadata };
 
 // 🏷️ Global Literal Types (Enums derived from Schema)
 export type UserRole = InferSelectModel<typeof users>['role'];
@@ -228,7 +230,12 @@ export type Notification = InferSelectModel<typeof notifications>;
 
 // 📜 System
 export type ActivityLog = InferSelectModel<typeof activityLogs>;
-export type Setting = InferSelectModel<typeof settings>;
+export type Sequence = InferSelectModel<typeof sequences>;
+export type NewSequence = InferInsertModel<typeof sequences>;
+export type JournalSettingRow = InferSelectModel<typeof journalSettings>;
+export type NewJournalSettingRow = InferInsertModel<typeof journalSettings>;
+export type Setting = JournalSettingRow;
+export type NewSetting = NewJournalSettingRow;
 export type EmailTemplate = InferSelectModel<typeof emailTemplates>;
 export type NewEmailTemplate = InferInsertModel<typeof emailTemplates>;
 
@@ -262,6 +269,7 @@ export type PublishedPaperUI = Pick<Submission, 'status' | 'updatedAt'> &
         sectionIdentifyType?: string | null | undefined;
         issueDatePublished?: Date | string | null | undefined;
         issueTitle?: string | null | undefined;
+        fullBookPdfUrl?: string | null | undefined;
     };
 
 // 🗺️ Route Param Types (for Next.js [dynamic] pages — derived from schema)
@@ -284,6 +292,9 @@ export type TrackedManuscript = Pick<Submission, 'id' | 'paperId' | 'status' | '
     authorEmail: Pick<Author, 'email'>['email'];
     reviewStartedAt: Pick<ReviewAssignment, 'assignedAt'>['assignedAt'] | null;
     reviewerFeedback?: (string | null)[] | undefined;
+    paymentAmount?: string | null;
+    paymentCurrency?: string | null;
+    paymentStatus?: string | null;
 };
 
 // 🏷️ CRediT (Contributor Roles Taxonomy) Standards
@@ -337,30 +348,13 @@ export type UnassignedPaper = Pick<Submission, 'id' | 'paperId'> & {
 // 🧪 Common Return Types (Re-exported from @/lib/action-response)
 export type { ActionResponse, SuccessResponse, ErrorResponse } from "@/lib/action-response";
 
-// ⚙️ Journal Settings
-export interface JournalSettings {
-    journalName?: string;
-    journalShortName?: string;
-    publisherName?: string;
-    issnNumber?: string;
-    apcInr?: string;
-    apcUsd?: string;
-    apcDescription?: string;
-    startingYear?: string;
-    publicationFrequency?: string;
-    journalLanguage?: string;
-    udyamRegistration?: string;
-    journalSubject?: string;
-    supportEmail?: string;
-    supportPhone?: string;
-    officeAddress?: string;
-    templateUrl?: string;
-    copyrightUrl?: string;
-    publicationFormat?: string;
-    journalWebsite?: string;
-    isPromotionActive?: string;
-    [key: string]: string | undefined;
-}
+// ⚙️ Journal Settings (Derived canonically from single source of truth)
+export {
+    DEFAULT_JOURNAL_SETTINGS,
+    type JournalSettingKey,
+    type JournalSettings,
+} from "./settings-defaults";
+
 
 // 💬 Live Chat Types
 export type ChatMessage = InferSelectModel<typeof chatMessages>;
@@ -404,6 +398,14 @@ export type ReviewerSuggestion = InferSelectModel<typeof reviewerSuggestions>;
 export type NewReviewerSuggestion = InferInsertModel<typeof reviewerSuggestions>;
 
 // 📜 Submission Event Log
+export interface ZenodoEventMetadata {
+    recordUrl?: string;
+    zenodoDoi?: string;
+    depositId?: string | number;
+    batchId?: string;
+    [key: string]: unknown;
+}
+
 export type SubmissionEventLogEntry = InferSelectModel<typeof submissionEventLog>;
 export type NewSubmissionEventLogEntry = InferInsertModel<typeof submissionEventLog>;
 export type SubmissionEventWithActor = SubmissionEventLogEntry & {

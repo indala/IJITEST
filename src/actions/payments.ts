@@ -133,12 +133,27 @@ export async function initializePayment(submissionId: number, amount: number, cu
             return { success: false, error: "Unauthorized" };
         }
 
-        await db.insert(payments).values({
-            submissionId,
-            amount: amount.toString(),
-            currency,
-            status: 'pending'
-        });
+        const [existing] = await db.select({ id: payments.id })
+            .from(payments)
+            .where(eq(payments.submissionId, submissionId))
+            .limit(1);
+
+        if (existing) {
+            await db.update(payments)
+                .set({
+                    amount: amount.toString(),
+                    currency,
+                    status: 'pending'
+                })
+                .where(eq(payments.id, existing.id));
+        } else {
+            await db.insert(payments).values({
+                submissionId,
+                amount: amount.toString(),
+                currency,
+                status: 'pending'
+            });
+        }
 
         // Trigger payment_pending notification
         const [sub] = await db.select({ correspondingAuthorId: submissions.correspondingAuthorId, paperId: submissions.paperId })

@@ -68,7 +68,7 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="space-y-4"
                     >
-                        <h2 className="m-0">
+                        <h2 className="text-foreground font-semibold mb-2 flex items-baseline gap-2 m-0">
                             Review Pipeline
                         </h2>
 
@@ -131,9 +131,7 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                     transition={{ duration: 0.5, delay: 0.15 }}
                     className="space-y-4 sm:space-y-5"
                 >
-                    <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
-                        <TrackManuscriptWidget />
-                    </div>
+                    <TrackManuscriptWidget />
 
                     <div className="p-4 bg-card border border-border/70 rounded-xl shadow-2xs border-l-4 border-l-primary/20 space-y-2">
                         <h3 className="text-primary m-0">COPE Standards</h3>
@@ -148,11 +146,24 @@ export default function PeerReviewClient({ settings }: PeerReviewClientProps) {
                         </div>
                     </div>
 
-                    <div className="p-4 bg-primary rounded-xl shadow-md text-white space-y-2.5">
-                        <h3 className="m-0 text-white">Join as Reviewer</h3>
-                        <p className="text-white/70 leading-relaxed m-0">Interested in joining our global panel? Share your technical profile with our board.</p>
-                        <Button asChild size="sm" className="w-full h-8 bg-white text-primary border-none hover:bg-white/90 font-bold text-xs rounded-lg transition-all">
-                            <Link href="/join-us" className="w-full h-full flex items-center justify-center">Submit Profile</Link>
+                    <div className="p-4 sm:p-5 bg-primary rounded-xl shadow-sm text-white space-y-3">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0">
+                                <Users className="w-4 h-4 text-white" />
+                            </div>
+                            <h3 className="card-title-brand text-white m-0">Join as Reviewer</h3>
+                        </div>
+                        <p className="text-caption text-white/80 leading-relaxed m-0">
+                            Interested in joining our global panel? Share your technical profile with our board.
+                        </p>
+                        <Button
+                            asChild
+                            variant="white"
+                        >
+                            <Link href="/join-us">
+                                <span>Submit Profile</span>
+                                <ChevronRight className="w-3.5 h-3.5" />
+                            </Link>
                         </Button>
                     </div>
                 </motion.aside>

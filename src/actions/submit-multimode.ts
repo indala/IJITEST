@@ -10,7 +10,7 @@ import {
     users,
     userProfiles,
     payments,
-    settings,
+    journalSettings,
 } from "@/db/schema";
 import { type Submission } from "@/db/types";
 import { eq, desc, and, inArray } from "drizzle-orm";
@@ -496,11 +496,11 @@ export async function submitPublicFinalSubmission(formData: FormData): Promise<A
         }
 
         // Fetch APC amount from journal settings (do NOT hardcode)
-        const apcRows = await db.select({ settingValue: settings.settingValue })
-            .from(settings)
-            .where(eq(settings.settingKey, 'apcInr'))
+        const [journalRow] = await db.select({ apcInr: journalSettings.apcInr })
+            .from(journalSettings)
+            .where(eq(journalSettings.id, 1))
             .limit(1);
-        const apcAmount = apcRows[0]?.settingValue || '2500';
+        const apcAmount = journalRow?.apcInr || '2500';
 
         // 1. Transactional DB commit
         const txResult = await db.transaction(async (tx) => {

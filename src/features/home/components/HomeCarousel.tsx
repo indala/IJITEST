@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const TOP_TITLE = "International Journal of";
 const BOTTOM_TITLE = 'Innovative Trends in Engineering Science and Technology'
@@ -34,11 +35,11 @@ export default function HomeCarousel() {
                     <motion.div
                         key={slide.id}
                         initial={index === 0 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 1 }}
-                        animate={{ 
+                        animate={{
                             opacity: index === currentIndex ? 1 : 0,
                             scale: index === currentIndex ? 1.12 : 1
                         }}
-                        transition={{ 
+                        transition={{
                             opacity: { duration: 1, ease: "easeInOut" },
                             scale: { duration: 8, ease: "linear" }
                         }}
@@ -94,19 +95,23 @@ export default function HomeCarousel() {
                                 transition={{ duration: 3, repeat: Infinity }}
                                 className="rounded-lg overflow-hidden"
                             >
-                                <Link
-                                    href="/submit"
-                                    className="btn-secondary"
+                                <Button
+                                    asChild
+                                    variant="secondary"
                                 >
-                                    Submit Manuscript
-                                </Link>
+                                    <Link href="/submit">
+                                        Submit Manuscript
+                                    </Link>
+                                </Button>
                             </motion.div>
-                            <Link
-                                href="/archives"
-                                className="btn-outline border-white/20 text-white hover:bg-white/10"
+                            <Button
+                                asChild
+                                variant="outline-white"
                             >
-                                Explore Archives
-                            </Link>
+                                <Link href="/archives">
+                                    Explore Archives
+                                </Link>
+                            </Button>
                         </motion.div>
                     </motion.div>
                 </AnimatePresence>

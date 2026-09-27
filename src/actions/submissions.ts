@@ -12,7 +12,7 @@ import {
     payments,
     reviews,
     reviewAssignments,
-    settings,
+    journalSettings,
 } from "@/db/schema";
 import { logSubmissionEvent } from "./event-log";
 import type { SubmissionUI } from "@/db/contracts";
@@ -116,8 +116,11 @@ export async function decideSubmission(id: number, decision: EditorialDecision):
         if (!subRes.data) return { success: false, error: "Submission not found" };
         const submission = subRes.data;
 
-        const apcRows = await db.select().from(settings).where(eq(settings.settingKey, 'apcInr')).limit(1);
-        const apcAmount = apcRows[0]?.settingValue || '0';
+        const [journalRow] = await db.select({ apcInr: journalSettings.apcInr })
+            .from(journalSettings)
+            .where(eq(journalSettings.id, 1))
+            .limit(1);
+        const apcAmount = journalRow?.apcInr || '0';
         const apcCurrency = 'INR';
 
         const isFree = parseFloat(apcAmount) === 0;

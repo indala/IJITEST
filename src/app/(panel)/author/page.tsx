@@ -1,6 +1,6 @@
 import {
     FileStack, Clock, CheckCircle, BookOpen, ArrowRight,
-    AlertCircle, Upload, ExternalLink, CreditCard, Timer,
+    Upload, ExternalLink, CreditCard, Timer,
     FileText, TrendingUp, Sparkles, PlusIcon
 } from 'lucide-react';
 import Link from 'next/link';
@@ -53,47 +53,41 @@ const getCachedAuthorDashboard = cache(async () => {
 
 /* Streaming Component: Performance Snapshot */
 async function AuthorStatsSection() {
-    try {
-        const response = await getCachedAuthorDashboard();
-        const submissions = (response.success && response.data?.submissions ? response.data.submissions : []) as AuthorDashboardSubmission[];
+    const response = await getCachedAuthorDashboard();
+    const submissions = (response.success && response.data?.submissions ? response.data.submissions : []) as AuthorDashboardSubmission[];
 
-        const stats: DashboardStat[] = [
-            { label: 'Submitted', value: submissions.length, icon: <FileStack className="w-5 h-5 text-primary" /> },
-            { label: 'Reviewing', value: submissions.filter((s) => ['submitted', 'editorAssigned', 'underReview'].includes(s.status)).length, icon: <Clock className="w-5 h-5 text-amber-500" /> },
-            { label: 'Accepted', value: submissions.filter((s) => ['accepted', 'paymentPending', 'published'].includes(s.status)).length, icon: <CheckCircle className="w-5 h-5 text-emerald-500" /> },
-            { label: 'Published', value: submissions.filter((s) => s.status === 'published').length, icon: <BookOpen className="w-5 h-5 text-blue-500" /> },
-        ];
+    const stats: DashboardStat[] = [
+        { label: 'Submitted', value: submissions.length, icon: <FileStack className="w-5 h-5 text-primary" /> },
+        { label: 'Reviewing', value: submissions.filter((s) => ['submitted', 'editorAssigned', 'underReview'].includes(s.status)).length, icon: <Clock className="w-5 h-5 text-amber-500" /> },
+        { label: 'Accepted', value: submissions.filter((s) => ['accepted', 'paymentPending', 'published'].includes(s.status)).length, icon: <CheckCircle className="w-5 h-5 text-emerald-500" /> },
+        { label: 'Published', value: submissions.filter((s) => s.status === 'published').length, icon: <BookOpen className="w-5 h-5 text-blue-500" /> },
+    ];
 
-        return (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                {stats.map((stat) => (
-                    <Card key={stat.label} className="border-border/70 shadow-2xs bg-card hover:border-primary/30 transition-all rounded-xl">
-                        <CardContent className="p-3.5 sm:p-4">
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-0.5">
-                                    <p className="text-label text-muted-foreground">{stat.label}</p>
-                                    <p className="font-bold text-foreground tabular-nums">{stat.value}</p>
-                                </div>
-                                <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-xs">
-                                    {stat.icon}
-                                </div>
+    return (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {stats.map((stat) => (
+                <Card key={stat.label} className="border-border/70 shadow-2xs bg-card hover:border-primary/30 transition-all rounded-xl">
+                    <CardContent className="p-3.5 sm:p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-0.5">
+                                <p className="text-label text-muted-foreground">{stat.label}</p>
+                                <p className="font-bold text-foreground tabular-nums">{stat.value}</p>
                             </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        );
-    } catch (err) {
-        console.error("AuthorStatsSection error:", err);
-        return <div className="p-4 text-caption text-muted-foreground">Unable to load metrics</div>;
-    }
+                            <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-xs">
+                                {stat.icon}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    );
 }
 
 /* Streaming Component: Author Submissions List */
 async function AuthorSubmissionsSection() {
-    try {
-        const response = await getCachedAuthorDashboard();
-        const submissions = (response.success && response.data?.submissions ? response.data.submissions : []) as AuthorDashboardSubmission[];
+    const response = await getCachedAuthorDashboard();
+    const submissions = (response.success && response.data?.submissions ? response.data.submissions : []) as AuthorDashboardSubmission[];
 
         if (submissions.length === 0) {
             return (
@@ -211,65 +205,47 @@ async function AuthorSubmissionsSection() {
                 })}
             </div>
         );
-    } catch (err) {
-        console.error("AuthorSubmissionsSection error:", err);
-        return (
-            <div className="p-8 text-center border border-dashed border-border/70 rounded-xl bg-muted/5">
-                <AlertCircle className="w-8 h-8 text-rose-500 mx-auto mb-2 opacity-50" />
-                <p className="text-caption text-muted-foreground">Unable to load submissions. Please refresh.</p>
-            </div>
-        );
-    }
 }
 
 /* Streaming Component: Author Impact Statistics */
 async function AuthorImpactSection() {
-    try {
-        const response = await getCachedAuthorDashboard();
-        const submissions = (response.success && response.data?.submissions ? response.data.submissions : []) as AuthorDashboardSubmission[];
+    const response = await getCachedAuthorDashboard();
+    const submissions = (response.success && response.data?.submissions ? response.data.submissions : []) as AuthorDashboardSubmission[];
 
-        const totalViews = submissions.reduce((acc: number, sub) => acc + (sub.views || 0), 0);
-        const totalDownloads = submissions.reduce((acc: number, sub) => acc + (sub.downloads || 0), 0);
-        const totalCitations = submissions.reduce((acc: number, sub) => acc + (sub.citations || 0), 0);
+    const totalViews = submissions.reduce((acc: number, sub) => acc + (sub.views || 0), 0);
+    const totalDownloads = submissions.reduce((acc: number, sub) => acc + (sub.downloads || 0), 0);
+    const totalCitations = submissions.reduce((acc: number, sub) => acc + (sub.citations || 0), 0);
 
-        return (
-            <Card className="md:col-span-1 bg-card border-border/70 rounded-xl shadow-2xs">
-                <CardContent className="p-4 sm:p-5 flex flex-col justify-between h-full space-y-4">
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2 mb-1">
-                            <TrendingUp className="w-4 h-4 text-primary" />
-                            <h3 className="font-semibold text-foreground">Statistics</h3>
-                        </div>
-                        <p className="text-body-sm text-muted-foreground">
-                            Track the reach of your manuscripts.
-                        </p>
+    return (
+        <Card className="md:col-span-1 bg-card border-border/70 rounded-xl shadow-2xs">
+            <CardContent className="p-4 sm:p-5 flex flex-col justify-between h-full space-y-4">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-2 mb-1">
+                        <TrendingUp className="w-4 h-4 text-primary" />
+                        <h3 className="font-semibold text-foreground">Statistics</h3>
                     </div>
+                    <p className="text-body-sm text-muted-foreground">
+                        Track the reach of your manuscripts.
+                    </p>
+                </div>
 
-                    <div className="space-y-2.5 pt-3 border-t border-border/70">
-                        <div className="flex justify-between items-center text-body-sm">
-                            <span className="text-muted-foreground">Views</span>
-                            <span className="font-bold text-foreground tabular-nums">{totalViews.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-body-sm">
-                            <span className="text-muted-foreground">Downloads</span>
-                            <span className="font-bold text-foreground tabular-nums">{totalDownloads.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-body-sm">
-                            <span className="font-medium text-primary">Citations</span>
-                            <span className="font-bold text-primary tabular-nums">{totalCitations.toLocaleString()}</span>
-                        </div>
+                <div className="space-y-2.5 pt-3 border-t border-border/70">
+                    <div className="flex justify-between items-center text-body-sm">
+                        <span className="text-muted-foreground">Views</span>
+                        <span className="font-bold text-foreground tabular-nums">{totalViews.toLocaleString()}</span>
                     </div>
-                </CardContent>
-            </Card>
-        );
-    } catch (err) {
-        console.error("AuthorImpactSection error:", err);
-        return (
-            <Card className="md:col-span-1 bg-card border-border/70 rounded-xl p-5">
-                <p className="text-caption text-muted-foreground">Stats unavailable</p>
-            </Card>
-        );
-    }
+                    <div className="flex justify-between items-center text-body-sm">
+                        <span className="text-muted-foreground">Downloads</span>
+                        <span className="font-bold text-foreground tabular-nums">{totalDownloads.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-body-sm">
+                        <span className="font-medium text-primary">Citations</span>
+                        <span className="font-bold text-primary tabular-nums">{totalCitations.toLocaleString()}</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
 }
 
 function AuthorDashboardSkeleton() {

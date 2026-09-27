@@ -4,7 +4,7 @@ import "server-only"
 import { razorpay } from "@/lib/razorpay";
 import crypto from "crypto";
 import { db } from "@/lib/db";
-import { payments, submissions, settings, userProfiles, users, submissionVersions } from "@/db/schema";
+import { payments, submissions, journalSettings, userProfiles, users, submissionVersions } from "@/db/schema";
 import { eq, desc, and, sql, inArray } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -37,13 +37,20 @@ export async function createRazorpayOrder(submissionId: number, paperId: string)
 
         if (!isAuthorized) return { success: false, error: "Unauthorized." };
 
-        // 1. Fetch APC amount from settings
-        const settingsRows = await db.select()
-            .from(settings)
-            .where(eq(settings.settingKey, "apcInr"))
+        // 1. Check if admin already initialized a payment record with a custom/discounted amount
+        const [existingPaymentRecord] = await db.select({ amount: payments.amount })
+            .from(payments)
+            .where(eq(payments.submissionId, submissionId))
             .limit(1);
-        
-        const amountInINR = settingsRows[0]?.settingValue || '2500';
+
+        // 2. Fall back to journal-wide APC only if no record exists
+        const [journalRow] = await db.select({ apcInr: journalSettings.apcInr })
+            .from(journalSettings)
+            .where(eq(journalSettings.id, 1))
+            .limit(1);
+
+        // Priority: admin-set amount (discount scenario) → journal setting → hardcoded default
+        const amountInINR = existingPaymentRecord?.amount?.toString() ?? journalRow?.apcInr ?? '2500';
         let parsedAmount = parseInt(amountInINR);
         if (isNaN(parsedAmount)) {
             parsedAmount = 2500;

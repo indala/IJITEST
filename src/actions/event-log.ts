@@ -6,7 +6,8 @@ import { submissionEventLog, users, userProfiles } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 import {
     type SubmissionEventWithActor,
-    type SubmissionEventType
+    type SubmissionEventType,
+    type SubmissionEventMetadata,
 } from "@/db/types";
 import {
     type ActionResponse,
@@ -23,7 +24,7 @@ export async function logSubmissionEvent(data: {
     eventType: SubmissionEventType;
     userId?: string | null;
     description: string;
-    metadata?: Record<string, unknown> | null;
+    metadata?: SubmissionEventMetadata | null;
 }): Promise<boolean> {
     try {
         await db.insert(submissionEventLog).values({

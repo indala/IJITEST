@@ -476,8 +476,8 @@ export default function PoliciesHubClient({ settings }: PoliciesHubClientProps) 
                             return (
                                 <section key={section.id} id={section.id} className="scroll-mt-24">
                                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                                        <h2 className="text-foreground font-semibold flex items-center gap-2 m-0 text-base sm:text-lg">
-                                            <SectionIcon className="size-4 text-primary shrink-0" />
+                                        <h2 className="text-foreground font-semibold flex items-center gap-2.5 m-0 mb-2">
+                                            <SectionIcon className="size-5 text-primary shrink-0 self-center" />
                                             <span>{section.title}</span>
                                         </h2>
                                         <Badge variant="secondary" className="text-meta font-semibold px-2 py-0.5 bg-primary/10 text-primary border-transparent">

@@ -68,10 +68,10 @@ async function handleOaiRequest(request: NextRequest): Promise<NextResponse> {
     } catch {}
 
     const config: OaiRepositoryConfig = {
-        repositoryName: settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology',
+        repositoryName: settings.journalName || 'International Journal of Innovative Trends in Engineering Science and Technology',
         baseURL: requestBaseUrl,
         protocolVersion: '2.0',
-        adminEmail: settings['contactEmail'] || 'editor@ijitest.org',
+        adminEmail: settings.supportEmail || 'editor@ijitest.org',
         earliestDatestamp: '2024-01-01T00:00:00Z',
         deletedRecord: 'no',
         granularity: 'YYYY-MM-DDThh:mm:ssZ',

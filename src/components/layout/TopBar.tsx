@@ -1,17 +1,51 @@
-// Server Component — the structural wrapper ships zero JS
-import { TopBarDynamic } from './TopBarDynamic';
 import { getSettingsData } from '@/actions/settings';
 
 export default async function TopBar() {
     const settings = await getSettingsData();
+    const journalName = settings['journalName'] || 'International Journal of Innovative Trends in Engineering, Science and Technology';
+    const publisherName = settings['publisherName'];
+    const issnNumber = settings['issnNumber'];
+    const cleanIssn = (issnNumber || '3139-6887').replace(/\s*\(online\)/i, '').trim();
+
     return (
         <div className="bg-primary text-white py-2 sm:py-3 px-2 lg:px-4 border-b border-white/10 relative overflow-hidden">
             {/* Subtle background glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-linear-to-b from-primary/10 to-transparent pointer-events-none" />
 
             <div className="relative z-10">
-                {/* Dynamic journal metadata — only this island is hydrated */}
-                <TopBarDynamic settings={settings} />
+                <div className="container-responsive py-1">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-2 sm:gap-4 2xl:gap-6">
+                        {/* Left: Scholarly Status */}
+                        <div className="hidden lg:flex items-center gap-2 text-body-sm font-medium text-white/80 shrink-0">
+                            <span className="inline-block w-2 h-2 2xl:w-2.5 2xl:h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span>Peer-Reviewed Open Access</span>
+                        </div>
+
+                        {/* Center: Journal Full Title & Publisher Attribution */}
+                        <div className="text-center flex-1 px-2">
+                            <div id="top-bar" className="top-bar">
+                                {journalName}
+                            </div>
+                            {publisherName && (
+                                <div className="text-center text-label text-white/70 font-medium tracking-wide m-0 mt-0.5">
+                                    Published by <span className="text-white font-semibold">{publisherName}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Top-Most Right: Official E-ISSN Badge */}
+                        <div className="shrink-0 flex items-center justify-center">
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 2xl:px-4 2xl:py-1.5 rounded-lg bg-white/10 border border-white/20 shadow-xs backdrop-blur-xs">
+                                <span className="text-meta font-black tracking-widest text-secondary uppercase bg-white px-1.5 py-0.5 rounded font-mono">
+                                    E-ISSN
+                                </span>
+                                <span className="text-meta font-mono font-bold text-white tracking-wider">
+                                    {cleanIssn} (Online)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

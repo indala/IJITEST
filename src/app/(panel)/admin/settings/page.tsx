@@ -35,31 +35,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
-
-interface JournalSettings {
-    journalName?: string;
-    publisherName?: string;
-    journalShortName?: string;
-    issnNumber?: string;
-    apcInr?: string;
-    apcUsd?: string;
-    apcDescription?: string;
-    startingYear?: string;
-    publicationFrequency?: string;
-    journalLanguage?: string;
-    udyamRegistration?: string;
-    journalSubject?: string;
-    supportEmail?: string;
-    supportPhone?: string;
-    officeAddress?: string;
-    templateUrl?: string;
-    copyrightUrl?: string;
-    isPromotionActive?: string;
-    doiPrefix?: string;
-    doiAssignmentMode?: string;
-    sushiPlatformId?: string;
-    sushiCustomerId?: string;
-}
+import { DEFAULT_JOURNAL_SETTINGS, type JournalSettings, type JournalSettingKey } from "@/db/types";
 
 const containerVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
@@ -85,7 +61,7 @@ export default function SystemSettings() {
     const queryClient = useQueryClient();
     
     const [savingFields, setSavingFields] = useState<Record<string, boolean>>({});
-    const [isPromotionActive, setIsPromotionActive] = useState<boolean>(true);
+    const isPromotionActive = settings.isPromotionActive !== 'false';
     const [isTogglingPromotion, setIsTogglingPromotion] = useState<boolean>(false);
     const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
     const [telemetry, setTelemetry] = useState<{
@@ -123,15 +99,11 @@ export default function SystemSettings() {
         setTimeout(() => setCopiedUrl(null), 2500);
     };
 
-    useEffect(() => {
-        if (settings.isPromotionActive !== undefined) {
-            setIsPromotionActive(settings.isPromotionActive !== 'false');
-        }
-    }, [settings.isPromotionActive]);
+
 
     const isSavingField = (key: string) => Boolean(savingFields[key]);
 
-    const handleSaveField = async (key: keyof JournalSettings, value: string, label: string) => {
+    const handleSaveField = async (key: JournalSettingKey, value: string, label: string) => {
         const trimmed = value.trim();
         const current = (settings[key] || '').trim();
         if (trimmed === current) return;
@@ -139,8 +111,8 @@ export default function SystemSettings() {
         setSavingFields(prev => ({ ...prev, [key]: true }));
 
         // Optimistically update React Query cache
-        queryClient.setQueryData(settingsKeys.all, (old: Record<string, string> = {}) => ({
-            ...old,
+        queryClient.setQueryData(settingsKeys.all, (old: JournalSettings | undefined) => ({
+            ...(old ?? DEFAULT_JOURNAL_SETTINGS),
             [key]: trimmed
         }));
 
@@ -196,7 +168,6 @@ export default function SystemSettings() {
     };
 
     const handleTogglePromotion = async (checked: boolean) => {
-        setIsPromotionActive(checked);
         setIsTogglingPromotion(true);
 
         queryClient.setQueryData(settingsKeys.all, (old: Record<string, string> = {}) => ({
@@ -213,14 +184,12 @@ export default function SystemSettings() {
                         : "The promotional popup is now suppressed site-wide."
                 });
             } else {
-                setIsPromotionActive(!checked);
                 queryClient.invalidateQueries({ queryKey: settingsKeys.all });
                 toast.error("Update Failed", {
                     description: (!res.success && res.error) ? res.error : "Failed to update promotion status."
                 });
             }
         } catch {
-            setIsPromotionActive(!checked);
             queryClient.invalidateQueries({ queryKey: settingsKeys.all });
             toast.error("Update Failed", {
                 description: "An unexpected error occurred while toggling promotion status."

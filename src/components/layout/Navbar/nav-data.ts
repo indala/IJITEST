@@ -50,16 +50,17 @@ export const navigation: NavItem[] = [
         children: [
             { name: 'About IJITEST', href: '/about', icon: Layout },
             { name: 'Aims & Scope', href: '/aims-scope', icon: Target },
-            { name: 'Policies', href: '/policies', icon: ShieldCheck },
+            { name: 'Peer Review Process', href: '/peer-review', icon: GitBranch },
+            { name: 'Publication Ethics & Policies', href: '/policies', icon: ShieldCheck },
             { name: 'Publisher Information', href: '/publisher-info', icon: Building2 },
             { name: 'Join as Reviewer', href: '/join-us', icon: UserPlus },
-            { name: 'Frequently Asked Questions', href: '/faqs', icon: HelpCircle },
+            { name: 'FAQ', href: '/faqs', icon: HelpCircle },
         ]
     },
     { name: 'Author Guidelines', href: '/guidelines', icon: FileText },
     { name: 'Editorial Board', href: '/editorial-board', icon: Users },
-    { name: 'Archives', href: '/archives', icon: Archive },
     { name: 'Current Issue', href: '/current-issue', icon: Layout },
+    { name: 'Archives', href: '/archives', icon: Archive },
     { name: 'Indexing', href: '/indexing', icon: Hash },
     {
         name: 'Paper Submission',
@@ -71,7 +72,6 @@ export const navigation: NavItem[] = [
             { name: 'Final Submission', href: '/submit?type=final', icon: FileCheck },
             { name: 'Track Manuscript', href: '/track', icon: SearchCheck },
             { name: 'Publication Fees (APC)', href: '/apc-fees', icon: CreditCard },
-            { name: 'Peer Review Flow', href: '/peer-review', icon: GitBranch },
         ]
     },
     { name: 'Contact Us', href: '/contact', icon: Mail },

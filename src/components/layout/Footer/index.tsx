@@ -1,8 +1,5 @@
-// Server Component — zero JS shipped for nav links, structure, and social icons
-import { Suspense } from 'react';
 import Link from 'next/link';
 import { Phone, MapPin, ShieldCheck } from 'lucide-react';
-import { FooterDynamic } from './FooterDynamic';
 import { getSettingsData } from '@/actions/settings';
 
 function FacebookIcon({ className }: { className?: string }) {
@@ -48,8 +45,9 @@ const socialLinks = [
 
 export default async function Footer() {
     const settings = await getSettingsData();
+    const currentYear = settings['startingYear'] || '2026';
     return (
-        <footer className="bg-slate-950 text-white pt-10 pb-5 2xl:pt-16 2xl:pb-10 font-sans relative overflow-hidden">
+        <footer aria-label="Site Footer" className="bg-slate-950 text-white pt-10 pb-5 2xl:pt-16 2xl:pb-10 font-sans relative overflow-hidden">
             {/* Background decorative glow */}
             <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-secondary/50 to-transparent opacity-30" />
             <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
@@ -98,7 +96,7 @@ export default async function Footer() {
                     <div className="space-y-4">
                         <div>
                             <h3 className="text-white mb-3 border-b border-white/10 pb-2 inline-block m-0">Contact & Support</h3>
-                            <div className="space-y-2.5">
+                            <address className="space-y-2.5 not-italic">
                                 {/* Static — COPE compliance badge */}
                                 <div className="flex items-center gap-3 group/support">
                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:bg-white/10 transition-all">
@@ -110,28 +108,32 @@ export default async function Footer() {
                                     </div>
                                 </div>
 
-                                {/* Dynamic — phone from Zustand island */}
+                                {/* Direct Line */}
                                 <div className="flex items-center gap-3 group/support">
                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:bg-white/10 transition-all">
                                         <Phone className="w-4 h-4 text-rose-400" />
                                     </div>
                                     <div>
                                         <p className="text-white/80 m-0 text-label uppercase font-semibold">Direct Line</p>
-                                        <Suspense><FooterDynamic field="supportPhone" settings={settings} /></Suspense>
+                                        <p className="text-white m-0 font-semibold">
+                                            <a href={`tel:${settings['supportPhone']}`} className="hover:text-rose-300 transition-colors">
+                                                {settings['supportPhone']}
+                                            </a>
+                                        </p>
                                     </div>
                                 </div>
 
-                                {/* Dynamic — address from Zustand island */}
+                                {/* Office Location */}
                                 <div className="flex items-center gap-3 group/support">
                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/support:bg-white/10 transition-all">
                                         <MapPin className="w-4 h-4 text-rose-400" />
                                     </div>
                                     <div>
                                         <p className="text-white/80 m-0 text-label uppercase font-semibold">Office Location</p>
-                                        <Suspense><FooterDynamic field="officeAddress" className="text-white/80 m-0 text-caption italic" settings={settings} /></Suspense>
+                                        <p className="text-white/80 m-0 text-caption italic">{settings['officeAddress']}</p>
                                     </div>
                                 </div>
-                            </div>
+                            </address>
                         </div>
                     </div>
                 </div>
@@ -139,8 +141,9 @@ export default async function Footer() {
                 {/* Bottom Bar */}
                 <div className="pt-4 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-4">
                     <div className="flex flex-col items-center lg:items-start gap-0.5">
-                        {/* Dynamic — publisher name + year */}
-                        <Suspense><FooterDynamic field="copyright" settings={settings} /></Suspense>
+                        <p className="text-white/80 m-0">
+                            &copy; {currentYear} <span className="text-white font-bold">{settings['publisherName']}</span>
+                        </p>
                         <p className="text-white/60 m-0">All Rights Reserved • E-ISSN: 3139-6887</p>
                         <div className="flex flex-wrap justify-center lg:justify-start gap-x-3 gap-y-1 text-white/60 text-caption">
                             <Link href="/ethics" className="hover:text-rose-300 transition-colors">Publication Ethics</Link>

@@ -121,12 +121,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
   // Initialize Socket.io Connection
   useEffect(() => {
     if (!currentUserId) {
-      // Clean up socket if user logs out
-      setSocket(prev => {
-        if (prev) prev.disconnect();
-        return null;
-      });
-      setIsConnected(false);
       return;
     }
 
@@ -205,6 +199,8 @@ export default function SocketProvider({ children }: { children: React.ReactNode
       if (activeSocket) {
         activeSocket.disconnect();
       }
+      setSocket(null);
+      setIsConnected(false);
     };
   }, [currentUserId]);
 

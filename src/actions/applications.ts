@@ -25,6 +25,7 @@ import { authOptions } from "@/lib/auth";
 import { getAuthorizedSession } from "@/lib/auth/guards";
 import { findApplicationById, listApplications } from "@/features/applications/server/application.repository";
 import type { ApplicationFilters } from "@/features/applications/types/application.types";
+import { getRejectionReasonError } from "@/features/applications/lib/application-decision";
 
 /**
  * Fetch all applications with optional filters
@@ -160,8 +161,9 @@ export async function rejectApplication(id: number, reason: string): Promise<Act
     }
     const adminId = session.user.id;
 
-    if (!reason || reason.trim().length < 20) {
-        return { success: false, error: "Rejection reason must be at least 20 characters long." };
+    const reasonError = getRejectionReasonError(reason);
+    if (reasonError) {
+        return { success: false, error: reasonError };
     }
 
     try {
@@ -244,8 +246,9 @@ export async function bulkRejectApplications(ids: number[], reason: string): Pro
         return { success: false, error: "Unauthorized" };
     }
 
-    if (!reason || reason.trim().length < 20) {
-        return { success: false, error: "Rejection reason must be at least 20 characters long." };
+    const reasonError = getRejectionReasonError(reason);
+    if (reasonError) {
+        return { success: false, error: reasonError };
     }
 
     const results = { successCount: 0, failCount: 0, errors: [] as string[] };

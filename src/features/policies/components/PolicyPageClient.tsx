@@ -62,11 +62,11 @@ export default function PolicyPageClient({
             >
                 <div className="space-y-6 sm:space-y-8">
                     {sections.map((section) => (
-                        <section key={section.id} id={section.id} className="scroll-mt-24 space-y-2">
-                            <h2 className="m-0">
+                        <section key={section.id} id={section.id} className="scroll-mt-24">
+                            <h2 className="text-foreground font-semibold mb-2 flex items-baseline gap-2 m-0">
                                 {section.title}
                             </h2>
-                            <div className="text-muted-foreground border-l-2 border-border pl-3.5 space-y-3">
+                            <div className="text-justify text-foreground/80 border-l-2 border-primary/20 pl-3.5 space-y-3">
                                 {section.content}
                             </div>
                         </section>

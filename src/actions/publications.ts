@@ -368,8 +368,8 @@ export async function assignPaperToIssue(
                 metadata: {
                     volume: issue.volumeNumber,
                     issue: issue.issueNumber,
-                    doi: resolvedDoi,
                     pages: `${confirmedStartPage}-${confirmedEndPage}`,
+                    ...(resolvedDoi ? { doi: resolvedDoi } : {}),
                 }
             });
         } else {
@@ -1021,7 +1021,7 @@ export async function updatePublicationDoi(
             eventType: 'doi_assigned',
             userId: session.user.id,
             description: cleanDoi ? `Official DOI assigned / updated: ${cleanDoi}` : 'DOI removed from paper.',
-            metadata: { doi: cleanDoi }
+            metadata: cleanDoi ? { doi: cleanDoi } : {}
         });
 
         revalidatePath(`/admin/submissions/${submissionId}`);

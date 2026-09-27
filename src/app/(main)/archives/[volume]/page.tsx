@@ -1,6 +1,8 @@
 import PageHeader from "@/components/layout/PageHeader";
 import type { Metadata } from 'next';
 import { getPublishedPapers } from '@/actions/archives';
+import { getSettingsData } from '@/actions/settings';
+import { JsonLd } from "@/components/shared/JsonLd";
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,13 +32,24 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ volume: string }> }): Promise<Metadata> {
     const { volume } = await params;
     const volNumber = parseInt(volume.replace("volume", ""), 10);
+    const settings = await getSettingsData();
+    const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
     
     if (isNaN(volNumber)) {
         return { title: "Volume Not Found | IJITEST Archives" };
     }
     return {
-        title: `Volume ${volNumber} | IJITEST Archives`,
-        description: `Browse issues and research articles published in Volume ${volNumber} of the International Journal of Innovative Trends in Engineering, Science and Technology.`
+        title: `Volume ${volNumber} | ${settings['journalName'] || 'IJITEST'} Archives`,
+        description: `Browse issues and research articles published in Volume ${volNumber} of the ${settings['journalName'] || 'IJITEST'}.`,
+        alternates: {
+            canonical: `/archives/${volume}`,
+        },
+        openGraph: {
+            title: `Volume ${volNumber} - ${settings['journalShortName'] || 'IJITEST'} Archives`,
+            description: `Browse issues and research articles published in Volume ${volNumber}.`,
+            url: `${baseUrl}/archives/${volume}`,
+            type: 'website',
+        }
     };
 }
 
@@ -46,7 +59,10 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
 
     if (isNaN(volNumber)) notFound();
 
-    const papersRes = await getPublishedPapers();
+    const [papersRes, settings] = await Promise.all([
+        getPublishedPapers(),
+        getSettingsData()
+    ]);
     const papers = papersRes.success && papersRes.data ? papersRes.data : [];
 
     // Filter papers for this volume
@@ -176,6 +192,22 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                     </aside>
                 </div>
             </section>
+
+            <JsonLd
+                id="volume-schema"
+                data={{
+                    "@context": "https://schema.org",
+                    "@type": "PublicationVolume",
+                    "volumeNumber": volNumber.toString(),
+                    "isPartOf": {
+                        "@type": "Periodical",
+                        "name": settings['journalName'] || "IJITEST",
+                        "issn": settings['issnNumber'] || "",
+                        "url": settings['journalWebsite'] || "https://ijitest.org"
+                    },
+                    "url": `${settings['journalWebsite'] || "https://ijitest.org"}/archives/${volume}`
+                }}
+            />
         </div>
     );
 }

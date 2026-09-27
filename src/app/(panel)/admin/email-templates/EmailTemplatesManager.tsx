@@ -269,32 +269,39 @@ export default function EmailTemplatesManager() {
         }
     };
 
-    const loadTemplates = useCallback(async () => {
-        setLoading(true);
-        try {
-            const res = await getEmailTemplates();
-            if (res.success && res.data) {
-                setTemplates(res.data);
-                if (res.data.length > 0) {
-                    const first = res.data[0]!;
-                    setSelectedId(first.id);
-                    setSubject(first.subjectTemplate);
-                    setBody(first.bodyTemplate);
-                    initHistory(first.subjectTemplate, first.bodyTemplate);
-                }
-            } else {
-                toast.error("Failed to load email templates.");
-            }
-        } catch {
-            toast.error("Error connecting to template registry.");
-        } finally {
-            setLoading(false);
-        }
-    }, [initHistory]);
-
     useEffect(() => {
-        void loadTemplates();
-    }, [loadTemplates]);
+        let isMounted = true;
+        getEmailTemplates()
+            .then((res) => {
+                if (!isMounted) return;
+                if (res.success && res.data) {
+                    setTemplates(res.data);
+                    if (res.data.length > 0) {
+                        const first = res.data[0]!;
+                        setSelectedId(first.id);
+                        setSubject(first.subjectTemplate);
+                        setBody(first.bodyTemplate);
+                        initHistory(first.subjectTemplate, first.bodyTemplate);
+                    }
+                } else {
+                    toast.error("Failed to load email templates.");
+                }
+            })
+            .catch(() => {
+                if (isMounted) {
+                    toast.error("Error connecting to template registry.");
+                }
+            })
+            .finally(() => {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [initHistory]);
 
     const selectedTemplate = templates.find((t) => t.id === selectedId);
 
@@ -809,6 +816,7 @@ export default function EmailTemplatesManager() {
                                             <div className="w-full max-w-[560px] bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden text-left">
                                                 {/* Header Banner */}
                                                 <div className="p-6 sm:p-7 text-center border-b-2 border-slate-50">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                                     <img 
                                                         src={JOURNAL_EMAIL_CONFIG.logo} 
                                                         alt={JOURNAL_EMAIL_CONFIG.shortName} 

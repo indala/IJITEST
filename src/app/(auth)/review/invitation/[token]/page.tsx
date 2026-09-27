@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect, use, Suspense } from "react";
+import { useState, useTransition, useEffect, use, Suspense, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, Clock, Shield, Loader2, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -25,7 +25,7 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
     const [showDeclineForm, setShowDeclineForm] = useState(preselectedAction === "decline");
     const [paperInfo, setPaperInfo] = useState<{ paperId: string; title: string; deadline: string | null } | null>(null);
 
-    const handleAction = (action: "accept" | "decline") => {
+    const handleAction = useCallback((action: "accept" | "decline") => {
         startTransition(async () => {
             const res = await respondToReviewInvitation(token, action, action === "decline" ? declineReason : undefined);
             if (!res.success) {
@@ -39,14 +39,14 @@ function ReviewInvitationContent({ params }: InvitationPageProps) {
                 setErrorMessage("Review invitation response returned no data.");
             }
         });
-    };
+    }, [declineReason, startTransition, token]);
 
     // If preselected as accept, auto-trigger
     useEffect(() => {
         if (preselectedAction === "accept" && status === "idle") {
             handleAction("accept");
         }
-    }, [preselectedAction]);
+    }, [handleAction, preselectedAction, status]);
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center p-4 sm:p-6">

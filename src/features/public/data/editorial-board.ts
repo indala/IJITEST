@@ -247,5 +247,24 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         email: "bhagyalakshmi.csd@anits.edu.in",
         profileLink: "https://anits.irins.org/profile/594758",
         officialAddress: "Sangivalasa, Bheemunipatnam Mandal, Visakhapatnam District, Andhra Pradesh, India"
+    },
+    {
+        full_name: "Dr. D A Naidu",
+        designation: "Assistant Professor",
+        institute: "National Institute of Technology Andhra Pradesh",
+        role: "reviewer",
+        nationality: "India",
+        email: "dasirinaidu@gmail.com",
+        officialAddress: "Tadepalligudem, Andhra Pradesh, India"
+    },
+    {
+        full_name: "Mr. Srikanth Durgam",
+        designation: "Associate Professor",
+        department: "Department of Computer Science and Engineering",
+        institute: "Scient Institute of Technology, JNTUH",
+        role: "reviewer",
+        nationality: "India",
+        email: "durgam.srikanth69@gmail.com",
+        officialAddress: "Ibrahimpatnam, Hyderabad, Telangana, India"
     }
 ];

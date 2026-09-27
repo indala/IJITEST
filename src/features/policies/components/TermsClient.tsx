@@ -39,11 +39,11 @@ export default function TermsClient({ settings }: TermsClientProps) {
                     <div className="space-y-5">
                         {framework.map((item, idx) => (
                             <section key={idx} className="space-y-2">
-                                <h3 className="flex items-center gap-2 m-0">
-                                    <span className="text-meta">0{idx + 1}.</span>
-                                    {item.title}
-                                </h3>
-                                <div className="text-muted-foreground border-l-2 border-border pl-3.5">
+                                <h2 className="text-foreground font-semibold mb-2 flex items-baseline gap-2 m-0">
+                                    <span className="text-secondary font-mono text-sm">0{idx + 1}.</span>
+                                    <span>{item.title}</span>
+                                </h2>
+                                <div className="text-justify text-foreground/80 space-y-2 border-l-2 border-primary/20 pl-3.5">
                                     <p className="m-0">{item.content}</p>
                                 </div>
                             </section>

@@ -2,7 +2,7 @@
 import "server-only";
 
 import { db } from "@/lib/db";
-import { staticPages, settings } from "@/db/schema";
+import { staticPages, journalSettings } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 import {
     type StaticPage
@@ -520,19 +520,17 @@ As Artificial Intelligence (AI), Large Language Models (LLMs), and automated gen
  */
 async function injectTemplateVariables(rawContent: string): Promise<string> {
     try {
-        const settingRows = await db.select().from(settings);
-        const settingsMap: Record<string, string> = {};
-        for (const row of settingRows) {
-            if (row.settingKey && row.settingValue !== null) {
-                settingsMap[row.settingKey] = row.settingValue;
-            }
-        }
+        const [row] = await db
+            .select()
+            .from(journalSettings)
+            .where(eq(journalSettings.id, 1))
+            .limit(1);
 
-        const journalName = settingsMap["journal_name"] || "International Journal of Innovative Technology and Exploring Science (IJITEST)";
-        const issnNumber = settingsMap["issn_number"] || "2278-3075";
-        const publisher = settingsMap["publisher"] || "IJITEST Publications";
-        const contactEmail = settingsMap["contact_email"] || "editor@ijitest.org";
-        const currentYear = "2026";
+        const journalName = row?.journalName || "International Journal of Innovative Trends in Engineering, Science and Technology";
+        const issnNumber = row?.issnNumber || "3139-6887";
+        const publisher = row?.publisherName || "Felix Academic Publications";
+        const contactEmail = row?.supportEmail || "support@ijitest.org";
+        const currentYear = row?.startingYear || "2026";
 
         return rawContent
             .replace(/\{\{journalName\}\}/g, journalName)

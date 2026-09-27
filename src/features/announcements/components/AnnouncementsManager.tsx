@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useCallback, useTransition } from "react";
 import { type Announcement, type AnnouncementType } from "@/db/types";
 import {
     getAllAnnouncementsAdmin,
@@ -89,8 +89,7 @@ export default function AnnouncementsManager() {
     const [removeExistingImage, setRemoveExistingImage] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-    const loadData = async () => {
-        setLoading(true);
+    const loadData = useCallback(async () => {
         const res = await getAllAnnouncementsAdmin();
         if (!res.success) {
             toast.error(res.error);
@@ -100,10 +99,29 @@ export default function AnnouncementsManager() {
             toast.error("Announcements response returned no data");
         }
         setLoading(false);
-    };
+    }, []);
 
     useEffect(() => {
-        loadData();
+        let isMounted = true;
+        void getAllAnnouncementsAdmin()
+            .then((res) => {
+                if (!isMounted) return;
+                if (!res.success) {
+                    toast.error(res.error);
+                } else if (res.data) {
+                    setAnnouncements(res.data);
+                } else {
+                    toast.error("Announcements response returned no data");
+                }
+                setLoading(false);
+            })
+            .catch(() => {
+                if (isMounted) setLoading(false);
+            });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const openCreateDialog = () => {

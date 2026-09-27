@@ -2,7 +2,7 @@
 import "server-only"
 import { cache } from "react";
 import {
-    readSettingsRows,
+    readJournalSettings,
     upsertSetting,
     upsertSettings,
 } from "@/features/settings/server/settings.repository";
@@ -15,11 +15,7 @@ import { uploadFileToStorage, getStorageStats } from "@/lib/fs-utils";
 import { getAggregatedCounterMetrics, getSushiStatus } from "@/lib/sushi";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";
-function camelCase(str: string): string {
-    return str
-        .replace(/[-_\s]+(.)?/g, (_, c: string | undefined) => (c ? c.toUpperCase() : ""))
-        .replace(/^[A-Z]/, (c) => c.toLowerCase());
-}
+import { DEFAULT_JOURNAL_SETTINGS, type JournalSettings } from "@/db/settings-defaults";
 
 function kebabCase(str: string): string {
     return str
@@ -28,77 +24,31 @@ function kebabCase(str: string): string {
         .toLowerCase();
 }
 
-const ALLOWED_SETTING_KEYS = new Set([
-    'journalName', 'journalShortName', 'issnNumber', 'apcInr', 'apcUsd',
-    'supportEmail', 'supportPhone', 'officeAddress', 'publisherName',
-    'journalWebsite', 'apcDescription', 'templateUrl', 'copyrightUrl',
-    'isPromotionActive', 'publicationFrequency', 'startingYear',
-    'publicationFormat', 'journalLanguage', 'journalSubject', 'udyamRegistration',
-    'doiPrefix', 'doiAssignmentMode', 'sushiPlatformId', 'sushiCustomerId'
-]);
+const ALLOWED_SETTING_KEYS = new Set<string>(Object.keys(DEFAULT_JOURNAL_SETTINGS));
 
-const DEFAULT_SETTINGS: Record<string, string> = {
-    journalName: 'International Journal of Innovative Trends in Engineering, Science and Technology',
-    journalShortName: 'IJITEST',
-    issnNumber: '3139-6887',
-    apcInr: '2500',
-    apcUsd: '50',
-    supportEmail: 'support@ijitest.org',
-    supportPhone: '+91 8919643590',
-    officeAddress: 'Dr. Ravibabu T.\nAssociate Professor\nDepartment of Electronics and Communication Engineering\nMES Group of Institutions, Vizianagaram,\nAndhra Pradesh, India - 530048',
-    publisherName: 'Felix Academic Publications',
-    journalWebsite: 'ijitest.org',
-    apcDescription: 'APC covers SJIF impact evaluation, long-term hosting, indexing maintenance, and editorial handling. There are no submission or processing charges before acceptance.',
-    templateUrl: '/docs/template.docx',
-    copyrightUrl: '/docs/copyright-form.docx',
-    isPromotionActive: 'true',
-    publicationFrequency: 'Monthly (12 Issues per year)',
-    startingYear: '2026',
-    publicationFormat: 'Online',
-    journalLanguage: 'English',
-    journalSubject: 'Multidisciplinary (Engineering, Science and Technology, Healthcare, Management Sciences)',
-    udyamRegistration: 'UDYAM-AP-10-0125617',
-    doiPrefix: '10.68139',
-    doiAssignmentMode: 'manual',
-    sushiPlatformId: 'ijitest',
-    sushiCustomerId: '0'
-};
-
-export async function getSettings(): Promise<ActionResponse<Record<string, string>>> {
+export async function getSettings(): Promise<ActionResponse<JournalSettings>> {
     'use cache'
     cacheLife('settings')
     cacheTag(CACHE_TAGS.SETTINGS)
 
     try {
         cacheLogger.miss(CACHE_TAGS.SETTINGS, "settings");
-        const rows = await readSettingsRows();
-
-        const result: Record<string, string> = { ...DEFAULT_SETTINGS };
-
-        rows.forEach((row) => {
-            if (row.settingValue) {
-                const key = camelCase(row.settingKey);
-                if (ALLOWED_SETTING_KEYS.has(key)) {
-                    result[key] = row.settingValue;
-                }
-            }
-        });
-
-        return actionSuccess(result);
+        const settings = await readJournalSettings();
+        return actionSuccess(settings);
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.SETTINGS, error);
         // Graceful fallback to default settings so layout/SSR does not fail
-        return actionSuccess({ ...DEFAULT_SETTINGS });
+        return actionSuccess({ ...DEFAULT_JOURNAL_SETTINGS });
     }
 }
 
-const getCachedSettingsData = cache(async (): Promise<Record<string, string>> => {
+const getCachedSettingsData = cache(async (): Promise<JournalSettings> => {
     try {
         const res = await getSettings();
-        if (!res.success || !res.data) return { ...DEFAULT_SETTINGS };
+        if (!res.success || !res.data) return { ...DEFAULT_JOURNAL_SETTINGS };
         return res.data;
     } catch {
-        return { ...DEFAULT_SETTINGS };
+        return { ...DEFAULT_JOURNAL_SETTINGS };
     }
 });
 
@@ -106,7 +56,7 @@ const getCachedSettingsData = cache(async (): Promise<Record<string, string>> =>
  * Utility for Server Components to get raw settings directly.
  * Deduplicated per-request via React.cache.
  */
-export async function getSettingsData(): Promise<Record<string, string>> {
+export async function getSettingsData(): Promise<JournalSettings> {
     return getCachedSettingsData();
 }
 

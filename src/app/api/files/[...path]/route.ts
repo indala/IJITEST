@@ -96,12 +96,6 @@ async function serveFile(relativePath: string) {
     };
 
     let safeFilename = path.basename(relativePath).replace(/["\r\n]/g, '');
-    const lowerName = safeFilename.toLowerCase();
-    if (lowerName.includes('template')) {
-        safeFilename = 'IJITEST-Manuscript-Template.docx';
-    } else if (lowerName.includes('copyright') || lowerName.includes('license') || lowerName.includes('agreement')) {
-        safeFilename = 'IJITEST-Publication-License-Agreement.docx';
-    }
 
     // Attempt zero-buffer direct stream piping from storage-service
     try {

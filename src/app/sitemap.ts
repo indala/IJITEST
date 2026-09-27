@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getPublishedPapers, getLatestIssuePapers } from '@/actions/archives';
+import { getPublishedPapers } from '@/actions/archives';
 import { getAnnouncements } from '@/actions/announcements';
 import type { PublishedPaperUI } from '@/db/types';
 import { cacheLife, cacheTag } from 'next/cache';
@@ -54,15 +54,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 2. Dynamic Manuscript, Volume, Issue & Announcements Directory Routes
   try {
-    const [res, latestRes, announcementsRes] = await Promise.all([
+    const [res, announcementsRes] = await Promise.all([
       getPublishedPapers(),
-      getLatestIssuePapers(),
       getAnnouncements()
     ]);
 
     const papers = res.success ? res.data ?? [] : [];
-    const latestPapers = latestRes.success ? latestRes.data ?? [] : [];
-    const latestPaperIds = new Set(latestPapers.map(p => p.id));
 
     // Sets to discover all unique volume and volume/issue combinations
     const volumesSet = new Set<number>();
@@ -105,20 +102,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
               lastModified: lastMod,
               changeFrequency: 'monthly' as const,
               priority: 0.85,
-            });
-          }
-        }
-
-        // If in latest issue, also include the current-issue link
-        if (latestPaperIds.has(paper.id)) {
-          const currentArticleUrl = `${baseUrl}/current-issue/volume${volNum}/issue${issNum}/${paperId}`;
-          if (!addedUrls.has(currentArticleUrl)) {
-            addedUrls.add(currentArticleUrl);
-            dynamicRoutes.push({
-              url: currentArticleUrl,
-              lastModified: lastMod,
-              changeFrequency: 'weekly' as const,
-              priority: 0.95,
             });
           }
         }

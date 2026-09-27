@@ -29,7 +29,8 @@ import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount } fro
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import {
     type AuthorDashboardSubmission,
-    type AuthorSubmissionDetail
+    type AuthorSubmissionDetail,
+    type ZenodoEventMetadata
 } from "@/db/types";
 import {
     type ActionResponse,
@@ -220,16 +221,16 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
 
         const pub = publicationData[0];
         const zenodoEventMatch = doiEvents?.find((e) => {
-            const meta = e.metadata as Record<string, unknown> | null;
-            return !!meta?.['recordUrl'] || e.description.toLowerCase().includes('zenodo');
+            const meta = e.metadata as ZenodoEventMetadata | null;
+            return Boolean(meta?.recordUrl) || e.description.toLowerCase().includes('zenodo');
         });
 
         let zenodoDeposit: { doi: string; recordUrl: string } | null = null;
         if (zenodoEventMatch) {
-            const meta = zenodoEventMatch.metadata as Record<string, unknown> | null;
+            const meta = zenodoEventMatch.metadata as ZenodoEventMetadata | null;
             zenodoDeposit = {
-                doi: (meta?.['zenodoDoi'] as string) || (pub?.doiProvider === 'zenodo' ? pub.doi || '' : ''),
-                recordUrl: (meta?.['recordUrl'] as string) || (pub?.doiRegistrationBatchId ? `https://zenodo.org/record/${pub.doiRegistrationBatchId}` : ''),
+                doi: meta?.zenodoDoi || (pub?.doiProvider === 'zenodo' ? pub.doi || '' : ''),
+                recordUrl: meta?.recordUrl || (pub?.doiRegistrationBatchId ? `https://zenodo.org/record/${pub.doiRegistrationBatchId}` : ''),
             };
         } else if (pub?.doiProvider === 'zenodo') {
             zenodoDeposit = {

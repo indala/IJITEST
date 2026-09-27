@@ -97,9 +97,9 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                 {/* Main Article Content */}
-                <div className="lg:col-span-2 space-y-5 sm:space-y-6">
-                    {/* Title & Core Meta */}
-                    <div className="bg-card p-6 sm:p-8 rounded-2xl border border-border/70 shadow-2xs relative overflow-hidden space-y-5">
+                <article itemScope itemType="https://schema.org/ScholarlyArticle" className="lg:col-span-2 space-y-5 sm:space-y-6">
+                    {/* Title & Core Meta Header */}
+                    <header className="bg-card p-6 sm:p-8 rounded-2xl border border-border/70 shadow-2xs relative overflow-hidden space-y-5">
                         {/* Top Meta Bar: Badges + Stats */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border/40">
                             <div className="flex flex-wrap items-center gap-2">
@@ -112,7 +112,7 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                                     </span>
                                 )}
                                 <span className="badge-neutral">
-                                    Published: {new Date((paper.publishedAt || paper.updatedAt || new Date()) as string | number | Date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                    Published: <time dateTime={new Date((paper.publishedAt || paper.updatedAt || new Date()) as string | number | Date).toISOString().split('T')[0]}>{new Date((paper.publishedAt || paper.updatedAt || new Date()) as string | number | Date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</time>
                                 </span>
                             </div>
 
@@ -136,7 +136,7 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                         </div>
 
                         {/* Article Title */}
-                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground font-heading tracking-tight leading-snug m-0">
+                        <h1 itemProp="headline" className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground font-heading tracking-tight leading-snug m-0">
                             {paper.title}
                         </h1>
 
@@ -203,15 +203,15 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                                 </a>
                             )}
                         </div>
-                    </div>
+                    </header>
 
                     {/* Abstract Section */}
-                    <div className="bg-card p-5 sm:p-7 rounded-2xl border border-border/70 relative group space-y-4">
+                    <div id="abstract" aria-labelledby="abstract-heading" className="bg-card p-5 sm:p-7 rounded-2xl border border-border/70 relative group space-y-4">
                         <div>
-                            <h2 className="mb-2 flex items-center gap-2 m-0">
+                            <h2 id="abstract-heading" className="mb-2 flex items-center gap-2 m-0">
                                 <FileText className="w-4 h-4 text-secondary" /> Abstract
                             </h2>
-                            <p className="text-foreground/90 text-justify m-0">
+                            <p itemProp="abstract" className="text-foreground/90 text-justify m-0">
                                 {paper.abstract}
                             </p>
                         </div>
@@ -334,10 +334,10 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                             <RelatedArticlesPanel articles={relatedArticles} />
                         )}
                     </div>
-                </div>
+                </article>
 
                 {/* Sidebar Utilities */}
-                <div className="space-y-4 sm:space-y-5">
+                <aside aria-label="Article Utilities and Citations" className="space-y-4 sm:space-y-5">
                     {/* Download Button (Mobile Only) */}
                     <div className="flex flex-col gap-2 md:hidden">
                         <DownloadPaperButton
@@ -405,7 +405,7 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                             <ArrowLeft className="w-4 h-4" /> Back to {mode === 'current' ? 'Current Issue' : 'Full Archives'}
                         </Link>
                     </div>
-                </div>
+                </aside>
             </div>
         </div>
     );

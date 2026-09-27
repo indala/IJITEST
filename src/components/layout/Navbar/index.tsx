@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { NavbarBrand } from './NavbarBrand';
@@ -32,6 +32,7 @@ export default function Navbar() {
     return (
         <nav
             id="journal-navbar"
+            aria-label="Main Navigation"
             className={`sticky top-0 z-50 w-full transition-all duration-700 ${isScrolled
                 ? 'bg-background/95 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.05)] py-0.5'
                 : 'bg-background/95 backdrop-blur-xl border-b border-primary/5 py-0'}`}>
@@ -41,18 +42,13 @@ export default function Navbar() {
                     {/* Brand */}
                     <NavbarBrand shortName={shortName || ""} isScrolled={isScrolled} />
 
-                    {/* Desktop Navigation */}
-                    <NavbarLinks isScrolled={isScrolled} />
+                    {/* Desktop Navigation — Suspense lets usePathname() stream in at runtime */}
+                    <Suspense fallback={<div className="hidden lg:flex items-center gap-1 h-8 w-64" />}>
+                        <NavbarLinks isScrolled={isScrolled} />
+                    </Suspense>
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3">
-                        {/* Portal Login (subtle text link) */}
-                        <Link
-                            href="/login"
-                            className="hidden 2xl:inline-flex items-center text-xs-plus font-semibold text-foreground/75 hover:text-primary transition-colors px-1.5 py-1"
-                        >
-                            Portal Login
-                        </Link>
 
                         {/* Submit Manuscript (direct action button) */}
                         <Link
@@ -79,7 +75,10 @@ export default function Navbar() {
                 </div>
             </div>
 
-            <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
+            {/* Mobile menu — Suspense lets usePathname() stream in at runtime */}
+            <Suspense fallback={null}>
+                <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
+            </Suspense>
         </nav>
     );
 }

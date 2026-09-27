@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useCallback, useTransition } from "react";
 import Link from "next/link";
 import {
     Bookmark,
@@ -88,7 +88,7 @@ export default function AdminSectionsPage() {
     const [deleteTarget, setDeleteTarget] = useState<SectionWithCount | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const loadSections = async () => {
+    const loadSections = useCallback(async () => {
         setIsLoading(true);
         try {
             const res = await getAllSectionsAdmin();
@@ -105,10 +105,32 @@ export default function AdminSectionsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        loadSections();
+        let isMounted = true;
+        void getAllSectionsAdmin()
+            .then((res) => {
+                if (!isMounted) return;
+                if (!res.success) {
+                    toast.error(res.error);
+                } else if (res.data) {
+                    setSectionsList(res.data);
+                } else {
+                    toast.error("Sections response returned no data");
+                }
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                if (!isMounted) return;
+                console.error("Load sections error:", error);
+                toast.error("Network error while loading sections");
+                setIsLoading(false);
+            });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const handleOpenCreate = () => {

@@ -128,8 +128,20 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
         openGraph: {
             title: paper.title,
             description: description,
+            url: canonicalUrl,
+            siteName: journalTitle,
             type: 'article',
             authors: paper.authorsList,
+            publishedTime: paper.publishedAt ? new Date(paper.publishedAt).toISOString() : undefined,
+            modifiedTime: paper.updatedAt ? new Date(paper.updatedAt).toISOString() : undefined,
+            images: [
+                {
+                    url: `${baseUrl}/open_graph_img.png`,
+                    width: 1200,
+                    height: 630,
+                    alt: `${paper.title} - ${journalAbbrev}`,
+                },
+            ],
         },
         other: otherMeta,
         alternates: {
@@ -138,7 +150,8 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
         twitter: {
             card: 'summary_large_image',
             title: paper.title,
-            description: paper.abstract?.substring(0, 160)
+            description: paper.abstract?.substring(0, 160),
+            images: [`${baseUrl}/open_graph_img.png`],
         }
     };
 }
@@ -163,11 +176,14 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
 
     const rawBaseUrl = settings['journalWebsite'] || 'https://ijitest.org';
     const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl.replace(/\/$/, '') : `https://${rawBaseUrl.replace(/\/$/, '')}`;
+    const pdfFullUrl = paper.pdfUrl ? (paper.pdfUrl.startsWith('http') ? paper.pdfUrl : `${baseUrl}${paper.pdfUrl}`) : '';
+    const canonicalUrl = `${baseUrl}/archives/${volume}/${issue}/${canonicalPaperId}`;
 
     return (
         <div className="bg-muted/15 min-h-screen pb-12">
             <PageHeader
                 disableBreadcrumbJsonLd
+                headingLevel="p"
                 title="Article Details"
                 description={`Volume ${paper.volumeNumber || 1}, Issue ${paper.issueNumber || 1} • ${settings['journalShortName'] || 'IJITEST'}`}
                 breadcrumbs={[
@@ -191,13 +207,23 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                     "@context": "https://schema.org",
                     "@type": "ScholarlyArticle",
                     "headline": paper.title,
+                    "name": paper.title,
                     "description": paper.abstract,
+                    "abstract": paper.abstract,
                     "inLanguage": "en",
-                    "author": paper.authorsList.map(author => ({
-                        "@type": "Person",
-                        "name": author
-                    })),
+                    "author": (Array.isArray(paper.coAuthors) && paper.coAuthors.length > 0)
+                        ? paper.coAuthors.map(author => ({
+                            "@type": "Person",
+                            "name": author.name,
+                            ...(author.institution ? { "affiliation": { "@type": "Organization", "name": author.institution } } : {}),
+                            ...(author.orcidId ? { "identifier": `https://orcid.org/${author.orcidId}` } : {})
+                        }))
+                        : paper.authorsList.map(author => ({
+                            "@type": "Person",
+                            "name": author
+                        })),
                     "datePublished": paper.publishedAt ? new Date(paper.publishedAt).toISOString() : (paper.publicationYear?.toString() || ""),
+                    "dateModified": paper.updatedAt ? new Date(paper.updatedAt).toISOString() : undefined,
                     "publisher": {
                         "@type": "Organization",
                         "name": settings['journalName'] || "IJITEST",
@@ -206,22 +232,38 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                             "url": `${baseUrl}/favicon_io/apple-touch-icon.png`
                         }
                     },
+                    "isAccessibleForFree": true,
+                    "license": "https://creativecommons.org/licenses/by/4.0/",
                     "isPartOf": {
-                        "@type": "ScholarlyJournal",
-                        "name": settings['journalName'] || "IJITEST",
-                        "issn": settings['issnNumber'] || ""
+                        "@type": "PublicationIssue",
+                        "issueNumber": paper.issueNumber?.toString(),
+                        "isPartOf": {
+                            "@type": "PublicationVolume",
+                            "volumeNumber": paper.volumeNumber?.toString(),
+                            "isPartOf": {
+                                "@type": "Periodical",
+                                "name": settings['journalName'] || "IJITEST",
+                                "issn": settings['issnNumber'] || ""
+                            }
+                        }
                     },
                     "pageStart": paper.startPage?.toString(),
                     "pageEnd": paper.endPage?.toString(),
-                    "volumeNumber": paper.volumeNumber?.toString(),
-                    "issueNumber": paper.issueNumber?.toString(),
+                    "pagination": (paper.startPage && paper.endPage) ? `${paper.startPage}-${paper.endPage}` : undefined,
                     "keywords": paper.keywords,
-                    "identifier": paper.doi || "",
-                    "url": `${baseUrl}/archives/${volume}/${issue}/${paperId}`,
+                    "identifier": paper.doi ? `doi:${paper.doi}` : canonicalUrl,
+                    "url": canonicalUrl,
                     "mainEntityOfPage": {
                         "@type": "WebPage",
-                        "@id": `${baseUrl}/archives/${volume}/${issue}/${paperId}`
-                    }
+                        "@id": canonicalUrl
+                    },
+                    ...(pdfFullUrl ? {
+                        "encoding": {
+                            "@type": "MediaObject",
+                            "encodingFormat": "application/pdf",
+                            "contentUrl": pdfFullUrl
+                        }
+                    } : {})
                 }}
             />
 

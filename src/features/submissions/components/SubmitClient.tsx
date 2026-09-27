@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ChevronRight, HelpCircle, CheckCircle2, FilePlus, RefreshCw, Award } from 'lucide-react';
 import Link from 'next/link';
@@ -63,16 +63,9 @@ function SubmitClientContent({ initialSections }: SubmitClientProps) {
         ? typeParam
         : 'new';
 
-    const [activeType, setActiveType] = useState<SubmissionType>(initialType);
-
-    useEffect(() => {
-        if (typeParam && ['new', 'revised', 'final'].includes(typeParam)) {
-            setActiveType(typeParam);
-        }
-    }, [typeParam]);
+    const activeType = initialType;
 
     const handleTypeChange = (newType: SubmissionType) => {
-        setActiveType(newType);
         const params = new URLSearchParams(searchParams.toString());
         params.set('type', newType);
         router.replace(`/submit?${params.toString()}`, { scroll: false });

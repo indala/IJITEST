@@ -33,14 +33,16 @@ const poolOptions = {
  */
 const createDb = () => drizzle(mysql.createPool(poolOptions), { schema, mode: "default" });
 
-const globalForDb = globalThis as unknown as {
-    db: ReturnType<typeof createDb> | undefined;
-};
+type DrizzleDbInstance = ReturnType<typeof createDb>;
 
-export const db = globalForDb.db ?? createDb();
+declare global {
+    var dbInstance: DrizzleDbInstance | undefined;
+}
+
+export const db = globalThis.dbInstance ?? createDb();
 
 if (process.env.NODE_ENV !== "production") {
-    globalForDb.db = db;
+    globalThis.dbInstance = db;
 }
 
 export default db;

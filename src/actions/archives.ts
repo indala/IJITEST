@@ -333,7 +333,7 @@ type PublicationInput = Partial<Omit<Publication, 'issueId'>> & {
             section?: { title?: string | null; identifyType?: string | null } | null;
         }
     ) | null;
-    issue?: Partial<Pick<Issue, 'volumeNumber' | 'issueNumber' | 'year' | 'monthRange' | 'title' | 'description' | 'datePublished' | 'coverImageUrl' | 'coverImageAltText'>> | null;
+    issue?: Partial<Pick<Issue, 'volumeNumber' | 'issueNumber' | 'year' | 'monthRange' | 'title' | 'description' | 'datePublished' | 'coverImageUrl' | 'coverImageAltText' | 'fullBookPdfUrl'>> | null;
     section?: { title?: string | null; identifyType?: string | null } | null;
 };
 
@@ -409,6 +409,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         retractionReason: pub.submission?.retractionReason || null,
         retractionNoticeUrl: pub.submission?.retractionNoticeUrl || null,
         retractedAt: pub.submission?.retractedAt || null,
+        fullBookPdfUrl: pub.issue?.fullBookPdfUrl || null,
     };
 }
 

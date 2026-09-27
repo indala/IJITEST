@@ -9,16 +9,17 @@ function TrackButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full h-12 2xl:h-14 bg-primary hover:bg-primary/90 !text-white rounded-xl shadow-sm transition-all active:scale-[0.99] hover:shadow-md hover:-translate-y-0.5 cursor-pointer font-bold text-label duration-300"
+            size="lg"
+            className="w-full"
         >
             {pending ? (
-                <div className="flex items-center gap-3">
+                <>
                     Searching <Loader2 className="w-4 h-4 animate-spin" />
-                </div>
+                </>
             ) : (
-                <div className="flex items-center gap-2">
+                <>
                     Track Manuscript <ArrowRight className="w-4 h-4" />
-                </div>
+                </>
             )}
         </Button>
     );
@@ -98,9 +99,6 @@ export function TrackSearchForm({
                     </div>
                     <div className="sm:col-span-2 pt-2">
                         <TrackButton />
-                        <p className="text-label text-muted-foreground text-center mt-3 m-0">
-                            Real-Time Editorial Workflow Pipeline
-                        </p>
                     </div>
                 </form>
             </div>

@@ -34,10 +34,10 @@ export default function ReviewerGuidelinesClient({ settings }: ReviewerGuideline
                     </section>
 
                     <section className="space-y-3">
-                        <h3 className="flex items-center gap-2 m-0">
-                            <span className="text-meta">01.</span>
-                            Evaluation Directives
-                        </h3>
+                        <h2 className="text-foreground font-semibold mb-2 flex items-baseline gap-2 m-0">
+                            <span className="text-secondary font-mono text-sm">01.</span>
+                            <span>Evaluation Directives</span>
+                        </h2>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {directives.map((item, i) => (

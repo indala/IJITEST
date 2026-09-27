@@ -52,6 +52,7 @@ export const userProfiles = mysqlTable("user_profiles", {
     nationality: varchar("nationality", { length: 100 }).default('India'),
     bio: text("bio"),
     photoUrl: varchar("photo_url", { length: 500 }),
+    institutionProfile: varchar("institution_profile", { length: 500 }),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
@@ -351,13 +352,31 @@ export const SUBMISSION_EVENT_TYPES = [
 
 export type SubmissionEventType = typeof SUBMISSION_EVENT_TYPES[number];
 
+export interface SubmissionEventMetadata {
+    recordUrl?: string;
+    zenodoDoi?: string;
+    doi?: string;
+    depositId?: string | number;
+    batchId?: string;
+    comments?: string;
+    reviewerId?: string;
+    decision?: string;
+    previousStatus?: string;
+    newStatus?: string;
+    fileId?: number;
+    fileName?: string;
+    submissionId?: number;
+    paperId?: string;
+    [key: string]: unknown;
+}
+
 export const submissionEventLog = mysqlTable("submission_event_log", {
     id: int("id").primaryKey().autoincrement().notNull(),
     submissionId: int("submission_id").notNull().references(() => submissions.id, { onDelete: "cascade" }),
     eventType: varchar("event_type", { length: 100 }).$type<SubmissionEventType>().notNull(),
     userId: varchar("user_id", { length: 36 }).references(() => users.id, { onDelete: "set null" }),
     description: text("description").notNull(),
-    metadata: json("metadata"),
+    metadata: json("metadata").$type<SubmissionEventMetadata>(),
     createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
     index("event_sub_idx").on(table.submissionId),
@@ -652,9 +671,37 @@ export const activityLogsRelations = relations(activityLogs, ({ one }) => ({
     }),
 }));
 
-export const settings = mysqlTable("settings", {
-    settingKey: varchar("setting_key", { length: 100 }).primaryKey().notNull(),
-    settingValue: text("setting_value"),
+export const sequences = mysqlTable("sequences", {
+    sequenceKey: varchar("sequence_key", { length: 100 }).primaryKey().notNull(),
+    currentValue: int("current_value").notNull().default(0),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const journalSettings = mysqlTable("journal_settings", {
+    id: int("id").primaryKey().notNull().default(1),
+    journalName: varchar("journal_name", { length: 255 }).notNull(),
+    journalShortName: varchar("journal_short_name", { length: 50 }).notNull(),
+    publisherName: varchar("publisher_name", { length: 255 }).notNull(),
+    issnNumber: varchar("issn_number", { length: 20 }).notNull(),
+    apcInr: varchar("apc_inr", { length: 20 }).notNull().default("2500"),
+    apcUsd: varchar("apc_usd", { length: 20 }).notNull().default("50"),
+    supportEmail: varchar("support_email", { length: 255 }).notNull(),
+    supportPhone: varchar("support_phone", { length: 50 }).notNull(),
+    officeAddress: text("office_address").notNull(),
+    journalWebsite: varchar("journal_website", { length: 255 }).notNull(),
+    apcDescription: text("apc_description").notNull(),
+    templateUrl: varchar("template_url", { length: 500 }).notNull(),
+    copyrightUrl: varchar("copyright_url", { length: 500 }).notNull(),
+    isPromotionActive: boolean("is_promotion_active").notNull().default(false),
+    publicationFrequency: varchar("publication_frequency", { length: 100 }).notNull(),
+    startingYear: varchar("starting_year", { length: 10 }).notNull(),
+    publicationFormat: varchar("publication_format", { length: 50 }).notNull().default("Online"),
+    journalLanguage: varchar("journal_language", { length: 50 }).notNull().default("English"),
+    journalSubject: varchar("journal_subject", { length: 255 }).notNull(),
+    udyamRegistration: varchar("udyam_registration", { length: 100 }).notNull(),
+    doiPrefix: varchar("doi_prefix", { length: 50 }).notNull().default("10.68139"),
+    sushiPlatformId: varchar("sushi_platform_id", { length: 50 }).notNull().default("ijitest"),
+    sushiCustomerId: varchar("sushi_customer_id", { length: 50 }).notNull().default("0"),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 

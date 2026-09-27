@@ -449,8 +449,9 @@ export default function ReviewerApplicationForm() {
                                                 />
                                                 <Button
                                                     type="button"
+                                                    size="xs"
                                                     onClick={() => addCustomInterest()}
-                                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 bg-primary text-white px-4 rounded-md text-badge"
+                                                    className="absolute right-1.5 top-1/2 -translate-y-1/2"
                                                 >
                                                     Add
                                                 </Button>
@@ -523,9 +524,8 @@ export default function ReviewerApplicationForm() {
                         <Button
                             onClick={handleBack}
                             variant="ghost"
-                            className="h-10 px-6 rounded-lg text-muted-foreground/60 hover:text-primary text-label transition-all"
                         >
-                            <ChevronLeft className="w-4 h-4 mr-2" /> Back
+                            <ChevronLeft className="w-4 h-4 mr-1" /> Back
                         </Button>
                     ) : (
                         <div />
@@ -534,7 +534,6 @@ export default function ReviewerApplicationForm() {
                     {step < 3 ? (
                         <Button
                             onClick={handleNext}
-                            className="btn-primary"
                         >
                             Continue <ChevronRight className="w-3.5 h-3.5 ml-1" />
                         </Button>
@@ -542,7 +541,6 @@ export default function ReviewerApplicationForm() {
                         <Button
                             onClick={handleSubmit}
                             disabled={isPending}
-                            className="btn-primary"
                         >
                             {isPending ? (
                                 <>

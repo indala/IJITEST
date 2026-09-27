@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import {
     FilePlus2,
     UserCheck,
@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getSubmissionEvents } from "@/actions/event-log";
 import type { SubmissionEventWithActor } from "@/db/contracts";
-import type { SubmissionEventType } from "@/db/types";
+import type { SubmissionEventType, SubmissionEventMetadata } from "@/db/types";
 
 interface SubmissionTimelineProps {
     submissionId: number;
@@ -196,25 +196,39 @@ export function SubmissionTimeline({
     const [isLoading, setIsLoading] = useState(!initialEvents);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    const fetchEvents = async (showRefreshing = false) => {
-        if (showRefreshing) setIsRefreshing(true);
+    const handleRefresh = useCallback(async () => {
+        setIsRefreshing(true);
         try {
             const res = await getSubmissionEvents(submissionId);
             if (res.success && res.data) {
                 setEvents(res.data);
             }
         } catch (error) {
-            console.error("Fetch submission events error:", error);
+            console.error("Refresh submission events error:", error);
         } finally {
-            setIsLoading(false);
-            if (showRefreshing) setIsRefreshing(false);
+            setIsRefreshing(false);
         }
-    };
+    }, [submissionId]);
 
     useEffect(() => {
-        if (!initialEvents) {
-            fetchEvents();
-        }
+        if (initialEvents) return;
+        let isMounted = true;
+        void getSubmissionEvents(submissionId)
+            .then((res) => {
+                if (!isMounted) return;
+                if (res.success && res.data) {
+                    setEvents(res.data);
+                }
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                console.error("Fetch submission events error:", error);
+                if (isMounted) setIsLoading(false);
+            });
+
+        return () => {
+            isMounted = false;
+        };
     }, [submissionId, initialEvents]);
 
     const formatEventTime = (dateInput: Date | string | null | undefined) => {
@@ -244,7 +258,7 @@ export function SubmissionTimeline({
                 <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => fetchEvents(true)}
+                    onClick={handleRefresh}
                     disabled={isRefreshing || isLoading}
                     className="h-8 px-2 text-caption text-muted-foreground hover:text-foreground"
                     title="Refresh Timeline"
@@ -312,7 +326,7 @@ export function SubmissionTimeline({
                                         {/* Metadata attributes if any */}
                                         {Boolean(evt.metadata) && typeof evt.metadata === 'object' && Object.keys(evt.metadata as object).length > 0 ? (
                                             <div className="flex flex-wrap gap-1.5 pt-1.5 border-t border-border/30 mt-2">
-                                                {Object.entries(evt.metadata as Record<string, unknown>).map(([key, val]) => {
+                                                {Object.entries(evt.metadata as SubmissionEventMetadata).map(([key, val]) => {
                                                     if (val === null || val === undefined || typeof val === 'object') return null;
                                                     return (
                                                         <span

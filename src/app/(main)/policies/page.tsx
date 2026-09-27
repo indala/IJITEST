@@ -5,8 +5,8 @@ import { getSettingsData } from '@/actions/settings';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
-    const journalName = settings['journalName'] || settings['journal_name'] || 'International Journal of Innovative Technology and Exploring Science';
-    const journalShort = settings['journalShortName'] || settings['journal_short_name'] || 'IJITEST';
+    const journalName = settings.journalName || 'International Journal of Innovative Technology and Exploring Science';
+    const journalShort = settings.journalShortName || 'IJITEST';
 
     return {
         title: `Policies | ${journalName}`,
@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function PoliciesPage() {
     const settings = await getSettingsData();
-    const journalShort = settings['journalShortName'] || settings['journal_short_name'] || 'IJITEST';
+    const journalShort = settings.journalShortName || 'IJITEST';
 
     return (
         <div className="bg-background min-h-screen">

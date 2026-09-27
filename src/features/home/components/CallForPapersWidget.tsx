@@ -14,9 +14,9 @@ function CallForPapersWidget() {
             <p className="text-muted-foreground leading-relaxed m-0">
                 IJITEST welcomes original research and review contributions in engineering, science, and technology.
             </p>
-            <Link 
-                href="/submit" 
-                className="btn-secondary btn-sm w-full flex items-center justify-center gap-1 no-underline"
+            <Link
+                href="/submit"
+                className="bg-secondary btn-sm w-full flex items-center justify-center gap-1 no-underline"
             >
                 <span>Submit Manuscript</span>
                 <ChevronRight className="w-3.5 h-3.5" />

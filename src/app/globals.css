@@ -187,40 +187,40 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     text-wrap: pretty;
-    @apply font-sans antialiased bg-background text-foreground tracking-tight text-[13px] sm:text-[14px] lg:text-[15px] 2xl:text-[16px];
+    @apply font-sans antialiased bg-background text-foreground tracking-tight text-[14px] sm:text-[15px] lg:text-[16px] xl:text-[17px] 2xl:text-[18px];
   }
 
   /* --------------------------------------------------------------------------
      Headings (h1 - h6) Single Source of Truth
      -------------------------------------------------------------------------- */
   h1 {
-    @apply font-sans font-semibold leading-tight tracking-tight mb-2.5;
-    @apply text-[22px] sm:text-[24px] md:text-[28px] lg:text-[30px] xl:text-[34px] 2xl:text-[38px];
+    @apply font-serif font-semibold leading-tight tracking-tight mb-2.5;
+    @apply text-[24px] sm:text-[28px] md:text-[30px] lg:text-[32px] xl:text-[36px] 2xl:text-[40px];
   }
 
   h2 {
-    @apply font-sans font-semibold leading-snug tracking-tight mb-2;
+    @apply font-serif font-semibold leading-snug tracking-tight mb-2;
     @apply text-[20px] sm:text-[22px] md:text-[24px] lg:text-[26px] xl:text-[30px] 2xl:text-[34px];
   }
 
   h3 {
     @apply font-sans font-medium leading-snug tracking-normal mb-1.5;
-    @apply text-[17px] sm:text-[18px] md:text-[20px] lg:text-[20px] xl:text-[22px] 2xl:text-[24px];
+    @apply text-[18px] sm:text-[19px] md:text-[20px] lg:text-[21px] xl:text-[22px] 2xl:text-[24px];
   }
 
   h4 {
     @apply font-sans font-medium leading-normal mb-1;
-    @apply text-[15px] sm:text-[16px] md:text-[18px] lg:text-[18px] xl:text-[20px] 2xl:text-[22px];
+    @apply text-[16px] sm:text-[16px] md:text-[17px] lg:text-[18px] xl:text-[19px] 2xl:text-[20px];
   }
 
   h5 {
     @apply font-sans font-medium leading-normal mb-1;
-    @apply text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px];
+    @apply text-[15px] sm:text-[15px] md:text-[15px] lg:text-[16px] xl:text-[17px] 2xl:text-[18px];
   }
 
   h6 {
     @apply font-sans font-semibold tracking-wider mb-0.5;
-    @apply text-[12px] sm:text-[12px] md:text-[14px] xl:text-[15px] 2xl:text-[16px];
+    @apply text-[13px] sm:text-[13px] md:text-[14px] xl:text-[15px] 2xl:text-[16px];
   }
 
 
@@ -231,7 +231,7 @@
     text-align: left;
     text-wrap: pretty;
     @apply font-normal leading-relaxed mb-2.5;
-    @apply text-[13px] sm:text-[14px] lg:text-[15px] xl:text-[16px] 2xl:text-[18px];
+    @apply text-[14px] sm:text-[15px] lg:text-[16px] xl:text-[17px] 2xl:text-[18px];
   }
 
   ul,
@@ -249,6 +249,13 @@
     @apply font-mono text-[11px] sm:text-[12px] xl:text-[13px] 2xl:text-[14px];
   }
 
+  /* --------------------------------------------------------------------------
+     Buttons Base Typography & Behavior
+     -------------------------------------------------------------------------- */
+  button {
+    @apply font-sans font-semibold cursor-pointer;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
@@ -256,26 +263,11 @@
 
 @layer components {
 
-  /* Semantic Font Family Utilities */
-  .font-academic {
-    @apply font-serif;
-  }
-
-  .font-ui {
-    @apply font-sans;
-  }
-
   /* Semantic Typography & Heading Utilities */
-  .heading-hero {
-    @apply font-sans font-bold tracking-tight text-[30px] sm:text-[34px] md:text-[38px] xl:text-[46px] 2xl:text-[54px] text-foreground;
-  }
-
-  .heading-academic {
-    @apply font-serif font-semibold tracking-tight text-[22px] sm:text-[24px] md:text-[28px] xl:text-[32px] 2xl:text-[38px] text-foreground;
-  }
-
-  .heading-card {
-    @apply font-sans font-semibold tracking-tight text-[16px] sm:text-[18px] xl:text-[19px] 2xl:text-[21px] text-foreground;
+  #top-bar,
+  .top-bar {
+    @apply font-sans font-semibold leading-tight tracking-tight mb-2.5 text-center;
+    @apply text-[22px] sm:text-[24px] md:text-[28px] lg:text-[30px] xl:text-[34px] 2xl:text-[38px];
   }
 
   .text-lead {
@@ -283,27 +275,23 @@
   }
 
   .text-body {
-    @apply font-normal leading-relaxed text-foreground/80 text-[13px] sm:text-[14px] lg:text-[15px] xl:text-[16px] 2xl:text-[18px];
+    @apply font-normal leading-relaxed text-foreground/80 text-[14px] sm:text-[15px] lg:text-[16px] xl:text-[17px] 2xl:text-[18px];
   }
 
   .text-body-sm {
-    @apply font-normal leading-normal text-muted-foreground text-[12px] sm:text-[12px] md:text-[14px] xl:text-[14px] 2xl:text-[16px];
+    @apply font-normal leading-normal text-muted-foreground text-[13px] sm:text-[13px] md:text-[14px] xl:text-[15px] 2xl:text-[16px];
   }
 
   .text-meta {
-    @apply font-mono font-medium tracking-normal text-muted-foreground text-[10px] sm:text-[11px] md:text-[12px] xl:text-[12px] 2xl:text-[14px];
+    @apply font-mono font-medium tracking-normal text-muted-foreground text-[11px] sm:text-[12px] md:text-[12px] xl:text-[13px] 2xl:text-[14px];
   }
 
   .text-label {
-    @apply font-sans font-bold tracking-wider text-[10px] sm:text-[11px] md:text-[12px] xl:text-[12px] 2xl:text-[14px];
-  }
-
-  .text-badge {
-    @apply font-sans font-bold tracking-wider text-[10px] 2xl:text-[12px];
+    @apply font-sans font-bold tracking-wider text-[11px] sm:text-[12px] md:text-[13px] xl:text-[13px] 2xl:text-[14px];
   }
 
   .text-caption {
-    @apply font-sans font-normal text-muted-foreground text-[10px] sm:text-[11px] 2xl:text-[12px] leading-normal;
+    @apply font-sans font-normal text-muted-foreground text-[12px] sm:text-[13px] 2xl:text-[14px] leading-normal;
   }
 
   /* Standardized Form & Field Utilities */
@@ -313,7 +301,7 @@
 
   .input-standard {
     @apply bg-muted/20 border-border/50 rounded-lg font-medium text-foreground transition-all focus-visible:ring-1 focus-visible:ring-primary/30;
-    @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
+    @apply text-[14px] sm:text-[14px] xl:text-[15px] 2xl:text-[16px];
     @apply h-[40px] sm:h-[44px] xl:h-[44px] 2xl:h-[48px] px-[12px] sm:px-[16px] 2xl:px-[20px];
   }
 
@@ -326,77 +314,104 @@
     @apply font-medium text-muted-foreground text-[12px] sm:text-[12px] md:text-[14px] xl:text-[14px] 2xl:text-[16px];
   }
 
-  .heading-stat {
-    @apply font-sans font-bold tracking-tight text-[24px] sm:text-[28px] xl:text-[30px] 2xl:text-[36px] text-foreground;
-  }
-
   .card-title-brand {
     @apply font-semibold text-primary tracking-tight text-[16px] sm:text-[16px] md:text-[18px] xl:text-[18px] 2xl:text-[20px];
   }
 
+  /* --------------------------------------------------------------------------
+     Button Component System (Single Source of Truth)
+     -------------------------------------------------------------------------- */
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline,
+  .btn-outline-white,
+  .btn-ghost,
+  .btn-destructive,
+  .btn-white {
+    @apply font-sans font-semibold tracking-normal transition-all duration-200 inline-flex items-center justify-center gap-2 rounded-lg cursor-pointer no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] [&_svg]:pointer-events-none [&_svg]:shrink-0;
+    @apply text-[13px] sm:text-[14px] xl:text-[15px] 2xl:text-[16px];
+    @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[9px] 2xl:px-[24px] 2xl:py-[11px];
+  }
+
   .btn-primary {
-    @apply bg-primary text-white rounded-lg hover:bg-primary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2;
-    @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
-    @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[10px] 2xl:px-[24px] 2xl:py-[12px];
+    @apply bg-primary text-white hover:bg-primary/90 shadow-sm focus-visible:ring-primary/30;
+  }
+  .btn-primary,
+  .btn-primary * {
+    color: #ffffff !important;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all inline-block text-center cursor-pointer font-semibold shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/30 focus-visible:ring-offset-2;
-    @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
-    @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[10px] 2xl:px-[24px] 2xl:py-[12px];
+    @apply bg-secondary text-white hover:bg-secondary/90 shadow-sm focus-visible:ring-secondary/30;
+  }
+  .btn-secondary,
+  .btn-secondary * {
+    color: #ffffff !important;
   }
 
   .btn-outline {
-    @apply border border-primary/20 text-primary rounded-lg hover:bg-primary/5 transition-all inline-block text-center cursor-pointer font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2;
-    @apply text-[12px] sm:text-[14px] xl:text-[14px] 2xl:text-[16px];
-    @apply px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[10px] 2xl:px-[24px] 2xl:py-[12px];
+    @apply border border-border bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground shadow-2xs focus-visible:ring-ring/30;
+  }
+
+  .btn-outline-white {
+    @apply border border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white shadow-2xs focus-visible:ring-white/30;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:ring-ring/30;
+  }
+
+  .btn-destructive {
+    @apply bg-destructive text-white hover:bg-destructive/90 shadow-sm focus-visible:ring-destructive/30;
+  }
+  .btn-destructive,
+  .btn-destructive * {
+    color: #ffffff !important;
+  }
+
+  .btn-white {
+    @apply bg-white text-primary hover:bg-white/95 shadow-sm border-0 focus-visible:ring-white/40;
+  }
+  .btn-white,
+  .btn-white * {
+    color: var(--brand-primary) !important;
+  }
+
+  /* Button Size Modifiers */
+  .btn-xs {
+    @apply text-[11px] px-[8px] py-[3px] rounded-md gap-1 [&_svg:not([class*='size-'])]:size-3;
   }
 
   .btn-sm {
-    @apply font-semibold rounded-lg;
-    @apply text-[11px] sm:text-[12px] md:text-[12px] xl:text-[12px] 2xl:text-[14px];
-    @apply px-[10px] py-[4px] sm:px-[12px] sm:py-[6px] xl:px-[14px] xl:py-[6px] 2xl:px-[16px] 2xl:py-[8px];
+    @apply text-[11px] sm:text-[12px] xl:text-[13px] 2xl:text-[13px];
+    @apply px-[10px] py-[4px] sm:px-[12px] sm:py-[5px] xl:px-[14px] xl:py-[5px] 2xl:px-[16px] 2xl:py-[6px];
   }
 
   .btn-lg {
-    @apply font-semibold rounded-xl;
-    @apply text-[14px] sm:text-[16px] md:text-[16px] xl:text-[18px] 2xl:text-[20px];
-    @apply px-[20px] py-[10px] sm:px-[24px] sm:py-[12px] md:px-[28px] md:py-[14px] xl:px-[32px] xl:py-[16px] 2xl:px-[40px] 2xl:py-[18px];
+    @apply text-[14px] sm:text-[15px] xl:text-[16px] 2xl:text-[17px];
+    @apply px-[18px] py-[8px] sm:px-[20px] sm:py-[10px] xl:px-[24px] xl:py-[11px] 2xl:px-[28px] 2xl:py-[13px];
   }
 
-  .badge-brand {
-    @apply bg-primary/5 text-primary border border-primary/10 font-semibold rounded-md tracking-wider;
-    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
-    @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
+  .btn-icon {
+    @apply p-2 aspect-square rounded-lg;
   }
 
   .badge-secondary {
     @apply bg-secondary/10 text-secondary border border-secondary/20 font-semibold rounded-md tracking-wider;
-    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
+    @apply text-[11px] sm:text-[11px] md:text-[12px] xl:text-[13px] 2xl:text-[13px];
     @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
   .badge-neutral {
     @apply bg-muted text-muted-foreground border border-border/50 font-medium rounded-md tracking-wider;
-    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
+    @apply text-[11px] sm:text-[11px] md:text-[12px] xl:text-[13px] 2xl:text-[13px];
     @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
   .badge-outline {
     @apply bg-transparent text-foreground/80 border border-border font-medium rounded-md tracking-wider;
-    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
-    @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
-  }
-
-  .badge-success {
-    @apply bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 font-semibold rounded-md tracking-wider;
-    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
-    @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
-  }
-
-  .badge-warning {
-    @apply bg-amber-500/10 text-amber-700 border border-amber-500/20 font-semibold rounded-md tracking-wider;
-    @apply text-[9px] sm:text-[10px] md:text-[11px] xl:text-[12px] 2xl:text-[12px];
+    @apply text-[11px] sm:text-[11px] md:text-[12px] xl:text-[13px] 2xl:text-[13px];
     @apply px-[8px] py-[2px] sm:px-[10px] sm:py-[4px] 2xl:px-[12px] 2xl:py-[4px];
   }
 
@@ -404,25 +419,13 @@
      Responsive Container System (Single Source of Truth)
      -------------------------------------------------------------------------- */
   .container-responsive {
-    @apply w-full mx-auto px-[16px] sm:px-[24px] lg:px-[32px] xl:px-[56px] 2xl:px-[64px];
-    max-width: 1520px;
-  }
-
-  .container-narrow {
-    @apply w-full mx-auto px-[16px] sm:px-[24px] lg:px-[32px] 2xl:px-[48px];
-  }
-
-  .container-fluid {
-    @apply w-full px-[16px] sm:px-[24px] lg:px-[32px] xl:px-[40px] 2xl:px-[48px];
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16;
+    max-width: 1700px;
   }
 
   /* --------------------------------------------------------------------------
      Responsive Section Spacing (sm, md, lg, xl, 2xl)
      -------------------------------------------------------------------------- */
-  .section-padding {
-    @apply py-[24px] sm:py-[32px] md:py-[40px] lg:py-[48px] xl:py-[56px] 2xl:py-[64px] px-[16px] sm:px-[24px] lg:px-[32px] xl:px-[40px] 2xl:px-[48px];
-  }
-
   .section-vertical {
     @apply py-[24px] sm:py-[32px] md:py-[40px] lg:py-[48px] xl:py-[56px] 2xl:py-[64px];
   }
@@ -431,24 +434,10 @@
     @apply py-[16px] sm:py-[24px] md:py-[32px] lg:py-[40px] 2xl:py-[48px];
   }
 
+
   /* --------------------------------------------------------------------------
-     Responsive Grid Utilities (sm, md, lg, xl, 2xl)
+     Responsive Grid Utilities removed — use Tailwind grid utilities directly
      -------------------------------------------------------------------------- */
-  .grid-responsive-2 {
-    @apply grid grid-cols-1 sm:grid-cols-2 gap-[16px] md:gap-[24px] 2xl:gap-[32px];
-  }
-
-  .grid-responsive-3 {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[16px] md:gap-[24px] 2xl:gap-[32px];
-  }
-
-  .grid-responsive-4 {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[12px] sm:gap-[16px] md:gap-[24px] 2xl:gap-[32px];
-  }
-
-  .layout-content-sidebar {
-    @apply grid grid-cols-1 lg:grid-cols-12 gap-[24px] lg:gap-[32px] xl:gap-[40px] 2xl:gap-[48px];
-  }
 
   /* --------------------------------------------------------------------------
      Navigation Component System (Single Source of Truth)
@@ -458,7 +447,7 @@
   .nav-link {
     @apply font-sans font-semibold tracking-normal whitespace-nowrap transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2;
     @apply flex items-center gap-1 relative;
-    @apply text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px];
+    @apply text-[13px] lg:text-[14px] xl:text-[15px] 2xl:text-[15px];
     @apply px-[4px] lg:px-[6px] xl:px-[8px] 2xl:px-[12px];
   }
 
@@ -466,7 +455,7 @@
   .nav-dropdown-item {
     @apply font-sans font-semibold tracking-normal transition-all duration-200 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2;
     @apply block py-[8px] 2xl:py-[10px] px-[16px] 2xl:px-[20px];
-    @apply text-[12px] xl:text-[13px] 2xl:text-[14px];
+    @apply text-[13px] xl:text-[14px] 2xl:text-[15px];
   }
 
   /* Navbar Action Button (Submit Manuscript) */
@@ -483,12 +472,12 @@
   /* Mobile Drawer Menu Links */
   .nav-mobile-link {
     @apply flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-all duration-300;
-    @apply text-[12px] sm:text-[14px] font-bold tracking-wide;
+    @apply text-[14px] sm:text-[15px] font-bold tracking-wide;
   }
 
   .nav-mobile-sublink {
     @apply flex items-center gap-2.5 py-1.5 transition-all;
-    @apply text-[11px] sm:text-[12px] font-semibold tracking-wide;
+    @apply text-[13px] sm:text-[14px] font-semibold tracking-wide;
   }
 
 }

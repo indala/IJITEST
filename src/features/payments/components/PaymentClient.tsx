@@ -16,13 +16,18 @@ import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 export default function PaymentClient({ id }: { id: string }) {
     const settings = useSettingsContext();
-    const apcTotal = parseFloat(settings['apcInr'] || '2500');
-    const apcFee = Math.floor(apcTotal * 0.85);
-    const apcIndexing = apcTotal - apcFee;
-
     const { data: queryData, isLoading: loading, error: queryError } = useTrackManuscript(id, "", true);
     const manuscript = queryData?.manuscript ?? null;
     const [paid, setPaid] = useState(false);
+
+    const defaultApc = parseFloat(settings['apcInr'] || '2500');
+    const rawPaymentAmount = manuscript?.paymentAmount ? parseFloat(manuscript.paymentAmount) : NaN;
+    const apcTotal = !isNaN(rawPaymentAmount) ? rawPaymentAmount : (isNaN(defaultApc) ? 2500 : defaultApc);
+    const apcFee = Math.floor(apcTotal * 0.85);
+    const apcIndexing = apcTotal - apcFee;
+    const currency = manuscript?.paymentCurrency || 'INR';
+    const currencySymbol = currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : `${currency} `);
+    const hasDiscount = !isNaN(rawPaymentAmount) && rawPaymentAmount < defaultApc;
 
     const error = queryError
         ? "Failed to fetch manuscript details."
@@ -59,16 +64,25 @@ export default function PaymentClient({ id }: { id: string }) {
         </div>
     );
 
-    if (paid || (manuscript && manuscript.status === 'published')) return (
+    const isAlreadyPaid = paid || (manuscript && (
+        manuscript.status === 'published' ||
+        manuscript.paymentStatus === 'paid' ||
+        manuscript.paymentStatus === 'verified' ||
+        manuscript.paymentStatus === 'waived'
+    ));
+
+    if (isAlreadyPaid) return (
         <div className="min-h-screen flex items-center justify-center bg-background p-6">
             <div className="max-w-md w-full bg-card border border-border/50 rounded-xl text-center p-8 sm:p-12 shadow-sm border-l-4 border-l-secondary">
                 <div className="w-16 h-16 bg-secondary/5 rounded-xl flex items-center justify-center mx-auto mb-8 text-secondary">
                     <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div className="space-y-2">
-                    <h2 className="m-0 text-primary">Grant Secured</h2>
+                    <h2 className="m-0 text-primary">{manuscript?.paymentStatus === 'waived' ? "Fee Waived" : "Grant Secured"}</h2>
                     <p className="text-muted-foreground leading-relaxed m-0">
-                        Payment processed successfully. Your research is now queued for global indexing.
+                        {manuscript?.paymentStatus === 'waived'
+                            ? "Publication fee has been fully waived by the editorial board. Your research is queued for global indexing."
+                            : "Payment processed successfully. Your research is now queued for global indexing."}
                     </p>
                 </div>
                 <div className="pt-8 space-y-4">
@@ -106,7 +120,14 @@ export default function PaymentClient({ id }: { id: string }) {
                         <section className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
                             <div className="p-8 sm:p-10 border-b border-border/50 bg-muted/20">
                                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                                    <Badge className="bg-primary/5 text-primary border-primary/20 px-3 h-6 text-label">Official Invoice</Badge>
+                                    <div className="flex items-center gap-2">
+                                        <Badge className="bg-primary/5 text-primary border-primary/20 px-3 h-6 text-label">Official Invoice</Badge>
+                                        {hasDiscount && (
+                                            <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-2.5 h-6 text-label">
+                                                Fee Concession Applied
+                                            </Badge>
+                                        )}
+                                    </div>
                                     <span className="text-label text-muted-foreground">Date: {new Date().toLocaleDateString()}</span>
                                 </div>
                                 <h3 className="m-0 leading-tight">{manuscript.title}</h3>
@@ -124,22 +145,22 @@ export default function PaymentClient({ id }: { id: string }) {
                                     </div>
                                     <div className="space-y-0.5">
                                         <p className="text-label text-muted-foreground m-0">Currency Profile</p>
-                                        <p className="font-semibold text-primary m-0">INR (₹) - Unified Settlement</p>
+                                        <p className="font-semibold text-primary m-0">{currency} ({currencySymbol.trim()}) - Unified Settlement</p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2 pt-3 border-t border-border/50">
                                     <div className="flex justify-between items-center text-body-sm">
                                         <span className="text-muted-foreground">Article Processing Fee (85%)</span>
-                                        <span className="font-semibold text-primary">₹ {apcFee.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                        <span className="font-semibold text-primary">{currencySymbol} {apcFee.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-body-sm">
                                         <span className="text-muted-foreground">Global Indexing Fee (15%)</span>
-                                        <span className="font-semibold text-primary">₹ {apcIndexing.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                        <span className="font-semibold text-primary">{currencySymbol} {apcIndexing.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
                                     <div className="flex justify-between items-center pt-3 mt-2 border-t border-dashed border-border/50">
                                         <span className="text-label text-primary">Total Due</span>
-                                        <span className="text-body-sm font-bold text-primary">₹ {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                        <span className="text-body-sm font-bold text-primary">{currencySymbol} {apcTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                     </div>
                                 </div>
                             </div>

@@ -13,6 +13,7 @@ export interface PageHeaderProps {
     breadcrumbs: BreadcrumbItem[];
     scrollOnComplete?: boolean | undefined;
     disableBreadcrumbJsonLd?: boolean | undefined;
+    headingLevel?: 'h1' | 'h2' | 'p' | undefined;
 }
 
 function BreadcrumbJsonLd({ items, baseUrl }: { items: BreadcrumbItem[]; baseUrl: string }) {
@@ -42,11 +43,13 @@ export default function PageHeader({
     description,
     breadcrumbs,
     scrollOnComplete = true,
-    disableBreadcrumbJsonLd = false
+    disableBreadcrumbJsonLd = false,
+    headingLevel = 'h1'
 }: PageHeaderProps) {
     const rawBaseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
     const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl.replace(/\/$/, '') : `https://${rawBaseUrl.replace(/\/$/, '')}`;
     const headerId = 'page-header-section';
+    const HeadingTag = headingLevel;
 
     return (
         <>
@@ -63,7 +66,7 @@ export default function PageHeader({
                                 return (
                                     <li
                                         key={crumb.href + idx}
-                                        className="flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2 duration-300 fill-mode-both"
+                                        className="flex items-center gap-1.5 animate-in fade-in slide-from-left-2 duration-300 fill-mode-both"
                                         style={{ animationDelay: `${idx * 50}ms` }}
                                     >
                                         <Link
@@ -84,9 +87,9 @@ export default function PageHeader({
 
                     <div className="grid grid-cols-1 gap-4 items-end">
                         <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both">
-                            <h1 className="text-white m-0">
+                            <HeadingTag className="text-white m-0">
                                 {title}
-                            </h1>
+                            </HeadingTag>
                             {description && (
                                 <p className="max-w-3xl text-white/80 border-l-2 border-white/30 pl-3.5 m-0 mt-1 animate-in fade-in duration-700 delay-200 fill-mode-both">
                                     {description}

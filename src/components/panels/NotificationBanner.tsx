@@ -1,10 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { Bell, X, ShieldCheck, Loader2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { savePushSubscription } from "@/actions/push";
+
+const permissionListeners = new Set<() => void>();
+function notifyPermissionListeners() {
+  permissionListeners.forEach((l) => l());
+}
+
+function subscribeNotificationPermission(callback: () => void) {
+  permissionListeners.add(callback);
+  if (typeof window !== "undefined" && "permissions" in navigator) {
+    let statusRef: PermissionStatus | null = null;
+    navigator.permissions.query({ name: "notifications" as PermissionName }).then((status) => {
+      statusRef = status;
+      status.addEventListener("change", callback);
+    }).catch(() => {});
+    return () => {
+      permissionListeners.delete(callback);
+      statusRef?.removeEventListener("change", callback);
+    };
+  }
+  return () => {
+    permissionListeners.delete(callback);
+  };
+}
+
+function getNotificationSnapshot(): NotificationPermission | "unsupported" {
+  if (typeof window === "undefined" || !("Notification" in window) || !("serviceWorker" in navigator)) {
+    return "unsupported";
+  }
+  return Notification.permission;
+}
+
+function getNotificationServerSnapshot(): NotificationPermission | "unsupported" {
+  return "default";
+}
 
 // Helper to convert base64 VAPID public key to Uint8Array
 function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
@@ -24,44 +58,22 @@ function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
 }
 
 export function NotificationBanner() {
-  const [permissionState, setPermissionState] = useState<NotificationPermission | "unsupported">("default");
+  const permissionState = useSyncExternalStore(
+    subscribeNotificationPermission,
+    getNotificationSnapshot,
+    getNotificationServerSnapshot
+  );
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const vapidPublicKey = process.env['NEXT_PUBLIC_VAPID_PUBLIC_KEY'];
 
-  // Initialize and check permission state
-  useEffect(() => {
-    if (typeof window === "undefined" || !("Notification" in window) || !("serviceWorker" in navigator)) {
-      setPermissionState("unsupported");
-      return;
-    }
-
-    const currentPermission = Notification.permission;
-    setPermissionState(currentPermission);
-
-    let timer: ReturnType<typeof setTimeout> | undefined;
-
-    // If permission is already granted, silently update/refresh subscription in the background
-    if (currentPermission === "granted") {
-      void refreshPushSubscription();
-    } else if (currentPermission === "default") {
-      // Show the opt-in banner after a slight delay to allow dashboard to load
-      timer = setTimeout(() => setIsVisible(true), 2500);
-    }
-
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, []);
-
-  const refreshPushSubscription = async () => {
+  const refreshPushSubscription = useCallback(async () => {
     if (!vapidPublicKey || !("serviceWorker" in navigator)) return;
     try {
       const registration = await navigator.serviceWorker.ready;
-      // Get current subscription or create new one
       let subscription = await registration.pushManager.getSubscription();
-      
+
       if (!subscription) {
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
@@ -80,7 +92,19 @@ export function NotificationBanner() {
     } catch (err) {
       console.warn("Silent push subscription refresh failed:", err);
     }
-  };
+  }, [vapidPublicKey]);
+
+  useEffect(() => {
+    if (permissionState === "granted") {
+      void refreshPushSubscription();
+      return undefined;
+    }
+    if (permissionState === "default") {
+      const timer = setTimeout(() => setIsVisible(true), 2500);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [permissionState, refreshPushSubscription]);
 
   const handleEnableNotifications = async () => {
     if (permissionState === "unsupported" || !vapidPublicKey) return;
@@ -88,7 +112,7 @@ export function NotificationBanner() {
     setIsLoading(true);
     try {
       const permission = await Notification.requestPermission();
-      setPermissionState(permission);
+      notifyPermissionListeners();
 
       if (permission === "granted") {
         const registration = await navigator.serviceWorker.ready;

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { submissions, publications, volumesIssues } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { getLatestIssuePapers } from "@/actions/archives";
 import { type PaperDetailParams } from "@/db/types";
 
 export async function GET(
@@ -46,19 +45,12 @@ export async function GET(
             return new NextResponse("Article Not Found", { status: 404 });
         }
 
-        const { id, volumeNumber, issueNumber } = row;
+        const { volumeNumber, issueNumber } = row;
 
-        // 2. Fetch latest issue papers to check if this paper is in the current/latest issue
-        const latestRes = await getLatestIssuePapers();
-        const latestPapers = latestRes.success ? latestRes.data ?? [] : [];
-        const isCurrent = latestPapers.some((p) => p.id === id);
-
-        const basePath = isCurrent ? "current-issue" : "archives";
-        const redirectUrl = `/${basePath}/volume${volumeNumber}/issue${issueNumber}/${canonicalPaperId}`;
-
-        // 3. Perform redirect
+        // 2. Canonical redirect to permanent archive repository URL
+        const redirectUrl = `/archives/volume${volumeNumber}/issue${issueNumber}/${canonicalPaperId}`;
         const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
-        return NextResponse.redirect(`${baseUrl}${redirectUrl}`, 302);
+        return NextResponse.redirect(`${baseUrl}${redirectUrl}`, 308);
     } catch (error) {
         console.error("Paper redirect error:", error);
         return new NextResponse("Internal Server Error", { status: 500 });

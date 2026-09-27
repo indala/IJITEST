@@ -1,6 +1,8 @@
 import PageHeader from "@/components/layout/PageHeader";
 import type { Metadata } from 'next';
 import { getPublishedPapers } from '@/actions/archives';
+import { getSettingsData } from '@/actions/settings';
+import { JsonLd } from '@/components/shared/JsonLd';
 import { notFound } from 'next/navigation';
 import PaperCard from '@/features/archives/components/PaperCard';
 import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
@@ -31,13 +33,24 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
     const { volume, issue } = await params;
     const volNumber = parseInt(volume.replace("volume", ""), 10);
     const issueNumber = parseInt(issue.replace("issue", ""), 10);
+    const settings = await getSettingsData();
+    const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
     
     if (isNaN(volNumber) || isNaN(issueNumber)) {
         return { title: "Issue Not Found | IJITEST Archives" };
     }
     return {
-        title: `Volume ${volNumber}, Issue ${issueNumber} | IJITEST Archives`,
-        description: `Browse all peer-reviewed research papers published in Volume ${volNumber}, Issue ${issueNumber} of the International Journal of Innovative Trends in Engineering, Science and Technology.`
+        title: `Volume ${volNumber}, Issue ${issueNumber} | ${settings['journalName'] || 'IJITEST'} Archives`,
+        description: `Browse all peer-reviewed research papers published in Volume ${volNumber}, Issue ${issueNumber} of the ${settings['journalName'] || 'IJITEST'}.`,
+        alternates: {
+            canonical: `/archives/${volume}/${issue}`,
+        },
+        openGraph: {
+            title: `Volume ${volNumber}, Issue ${issueNumber} - ${settings['journalShortName'] || 'IJITEST'} Archives`,
+            description: `Browse peer-reviewed research papers published in Volume ${volNumber}, Issue ${issueNumber}.`,
+            url: `${baseUrl}/archives/${volume}/${issue}`,
+            type: 'website',
+        }
     };
 }
 
@@ -48,7 +61,10 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
 
     if (isNaN(volNumber) || isNaN(issueNumber)) notFound();
 
-    const papersRes = await getPublishedPapers();
+    const [papersRes, settings] = await Promise.all([
+        getPublishedPapers(),
+        getSettingsData(),
+    ]);
     const papers = papersRes.success && papersRes.data ? papersRes.data : [];
 
     // Filter papers for this volume and issue
@@ -58,6 +74,7 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
     if (!activeIssue) notFound();
     const monthRange = activeIssue.monthRange || "";
     const year = activeIssue.publicationYear || "";
+    const hasFullBook = Boolean(activeIssue.fullBookPdfUrl);
 
     return (
         <div className="bg-background min-h-screen pb-8">
@@ -90,25 +107,27 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
 
                     {/* Sidebar widgets */}
                     <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
-                        <div className="bg-card p-5 rounded-2xl border border-border/70 shadow-2xs space-y-3">
-                            <div className="flex items-center gap-2.5">
-                                <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-                                    <BookOpen className="w-4 h-4" />
+                        {hasFullBook && activeIssue.fullBookPdfUrl && (
+                            <div className="bg-card p-5 rounded-2xl border border-border/70 shadow-2xs space-y-3">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                                        <BookOpen className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-foreground m-0">Complete Issue</h3>
+                                        <p className="text-caption text-muted-foreground m-0">Full Book with Table of Contents</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-foreground m-0">Complete Issue</h3>
-                                    <p className="text-caption text-muted-foreground m-0">Full Book with Table of Contents</p>
-                                </div>
+                                <a
+                                    href={`/api/files/${activeIssue.fullBookPdfUrl.replace(/^\/+/, '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-2.5 px-4 rounded-xl font-bold text-body-sm shadow-xs transition-all"
+                                >
+                                    <Download className="w-3.5 h-3.5" /> Download Complete Issue (PDF)
+                                </a>
                             </div>
-                            <a
-                                href={`/api/files/issues/volume-${volNumber}-issue-${issueNumber}-fullbook.pdf`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-2.5 px-4 rounded-xl font-bold text-body-sm shadow-xs transition-all"
-                            >
-                                <Download className="w-3.5 h-3.5" /> Download Complete Issue (PDF)
-                            </a>
-                        </div>
+                        )}
 
                         <div className="bg-card p-1 rounded-2xl border border-border/70 shadow-2xs">
                             <TrackManuscriptWidget />
@@ -116,6 +135,27 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
                     </aside>
                 </div>
             </section>
+
+            <JsonLd
+                id="issue-schema"
+                data={{
+                    "@context": "https://schema.org",
+                    "@type": "PublicationIssue",
+                    "issueNumber": issueNumber.toString(),
+                    "datePublished": year ? `${year}` : undefined,
+                    "isPartOf": {
+                        "@type": "PublicationVolume",
+                        "volumeNumber": volNumber.toString(),
+                        "isPartOf": {
+                            "@type": "Periodical",
+                            "name": settings['journalName'] || "IJITEST",
+                            "issn": settings['issnNumber'] || "",
+                            "url": settings['journalWebsite'] || "https://ijitest.org"
+                        }
+                    },
+                    "url": `${settings['journalWebsite'] || "https://ijitest.org"}/archives/${volume}/${issue}`
+                }}
+            />
         </div>
     );
 }

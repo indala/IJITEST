@@ -16,6 +16,8 @@ import { ApplicationItemCard } from './ApplicationItemCard';
 import { ApplicationFilterBar } from './ApplicationFilterBar';
 import { BulkActionsBar } from './BulkActionsBar';
 import { QueryState } from "@/components/shared/QueryState";
+import { filterApplications } from "../lib/filter-applications";
+import { getRejectionReasonError } from "../lib/application-decision";
 
 export type ApplicationsRegistryRole = Extract<UserRole, 'admin' | 'editor'>;
 
@@ -48,13 +50,7 @@ export function ApplicationsRegistry({ role: panelRole }: { role: ApplicationsRe
     const [bulkRejectionReason, setBulkRejectionReason] = useState("");
 
     const filteredApps = useMemo(() => {
-        if (!interest) return applications;
-        const q = interest.toLowerCase();
-        return applications.filter(app => 
-            app.fullName?.toLowerCase().includes(q) || 
-            app.email?.toLowerCase().includes(q) ||
-            app.researchInterests?.some((i: string) => i.toLowerCase().includes(q))
-        );
+        return filterApplications(applications, interest);
     }, [applications, interest]);
 
     const pendingApps = useMemo(() => filteredApps.filter(app => app.status === 'pending'), [filteredApps]);
@@ -97,8 +93,9 @@ export function ApplicationsRegistry({ role: panelRole }: { role: ApplicationsRe
 
     const handleBulkReject = async (reason: string) => {
         if (currentSelectedIds.length === 0) return;
-        if (reason.length < 20) {
-            toast.error("Vetting rationale must be at least 20 characters");
+        const reasonError = getRejectionReasonError(reason);
+        if (reasonError) {
+            toast.error(reasonError);
             return;
         }
         const toastId = toast.loading(`Declining ${currentSelectedIds.length} proposals...`);

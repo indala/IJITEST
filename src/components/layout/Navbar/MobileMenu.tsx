@@ -15,27 +15,19 @@ interface MobileMenuProps {
 function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
     const pathname = usePathname();
     const [mounted, setMounted] = useState(false);
-    const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+    const [userExpandedItems, setUserExpandedItems] = useState<Record<string, boolean>>({});
 
-    // Auto-expand if the active route is a child of an item
-    useEffect(() => {
-        if (isOpen) {
-            const initialExpanded: Record<string, boolean> = {};
-            navigation.forEach(item => {
-                const isChildActive = (item.children?.some(c => pathname === c.href)) ||
-                    (item.columns?.some(col => col.items.some(c => pathname === c.href)));
-                if (isChildActive) {
-                    initialExpanded[item.name] = true;
-                }
-            });
-            setExpandedItems(initialExpanded);
+    const isExpanded = useCallback((name: string, isChildActive: boolean) => {
+        if (userExpandedItems[name] !== undefined) {
+            return userExpandedItems[name];
         }
-    }, [isOpen, pathname]);
+        return isChildActive;
+    }, [userExpandedItems]);
 
-    const toggleExpand = useCallback((name: string) => {
-        setExpandedItems(prev => ({
+    const toggleExpand = useCallback((name: string, isChildActive: boolean) => {
+        setUserExpandedItems(prev => ({
             ...prev,
-            [name]: !prev[name]
+            [name]: prev[name] !== undefined ? !prev[name] : !isChildActive
         }));
     }, []);
 
@@ -131,8 +123,8 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                                 {Boolean(item.children?.length || item.columns?.length) ? (
                                                     <button
                                                         type="button"
-                                                        onClick={() => toggleExpand(item.name)}
-                                                        aria-expanded={Boolean(expandedItems[item.name])}
+                                                        onClick={() => toggleExpand(item.name, Boolean(isChildActive))}
+                                                        aria-expanded={isExpanded(item.name, Boolean(isChildActive))}
                                                         className={cn(
                                                             "nav-mobile-link group w-full cursor-pointer text-left",
                                                             isActive
@@ -151,7 +143,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                                         </div>
                                                         <ChevronDown className={cn(
                                                             "w-4 h-4 transition-transform duration-300",
-                                                            expandedItems[item.name] ? "rotate-180 text-secondary" : "text-primary/30 group-hover:text-primary"
+                                                            isExpanded(item.name, Boolean(isChildActive)) ? "rotate-180 text-secondary" : "text-primary/30 group-hover:text-primary"
                                                         )} />
                                                     </button>
                                                 ) : (
@@ -182,7 +174,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                                                 )}
 
                                                 <AnimatePresence initial={false}>
-                                                    {Boolean(item.children?.length || item.columns?.length) && expandedItems[item.name] && (
+                                                    {Boolean(item.children?.length || item.columns?.length) && isExpanded(item.name, Boolean(isChildActive)) && (
                                                         <motion.div
                                                             initial={{ height: 0, opacity: 0 }}
                                                             animate={{ height: "auto", opacity: 1 }}

@@ -43,6 +43,7 @@ export function ScrollSpyNav({
 
     return (
         <nav
+            data-lenis-prevent
             aria-label="Quick Navigation"
             className={cn(
                 "space-y-0.5 relative border-l border-border/70 pl-3 max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 scroll-smooth",
