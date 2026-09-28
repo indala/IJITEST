@@ -11,6 +11,7 @@ import {
 import type { PaymentStatus } from '@/features/payments';
 import Link from 'next/link';
 import React, { useState, useCallback, useMemo, useActionState, useDeferredValue } from 'react';
+import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { toast } from 'sonner';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -157,9 +158,32 @@ export default function PaymentManagement() {
     const initMutation = useInitializePayment();
     const updateMutation = useUpdatePaymentStatus();
 
+    const settings = useSettingsContext();
+    const defaultApcInr = settings.apcInr || '2500';
+    const defaultApcUsd = settings.apcUsd || '50';
+
     const [showInitModal, setShowInitModal] = useState(false);
+    const [selectedCurrency, setSelectedCurrency] = useState<'INR' | 'USD'>('INR');
+    const [amountValue, setAmountValue] = useState<string>(defaultApcInr);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+
+    const handleCurrencyChange = (curr: 'INR' | 'USD') => {
+        setSelectedCurrency(curr);
+        if (curr === 'USD') {
+            setAmountValue(defaultApcUsd);
+        } else {
+            setAmountValue(defaultApcInr);
+        }
+    };
+
+    const handleModalOpenChange = (open: boolean) => {
+        if (open) {
+            setSelectedCurrency('INR');
+            setAmountValue(defaultApcInr);
+        }
+        setShowInitModal(open);
+    };
 
     // Defer the search query to improve typing responsiveness
     const deferredSearchQuery = useDeferredValue(searchQuery);
@@ -246,7 +270,7 @@ export default function PaymentManagement() {
                     <p className="panel-subtitle text-body-sm text-muted-foreground">Article processing charge (APC) management and financial protocol enforcement.</p>
                 </div>
                 <div className="flex items-center gap-2.5">
-                    <Dialog open={showInitModal} onOpenChange={setShowInitModal}>
+                    <Dialog open={showInitModal} onOpenChange={handleModalOpenChange}>
                         <DialogTrigger asChild>
                             <Button className="btn-primary h-9">
                                 <Plus className="w-4 h-4 mr-2" /> Initialize APC Request
@@ -256,7 +280,7 @@ export default function PaymentManagement() {
                             <DialogHeader className="space-y-2">
                                 <DialogTitle className="font-semibold text-foreground tracking-tight">Manual Request</DialogTitle>
                                 <DialogDescription className="text-caption text-muted-foreground leading-relaxed">
-                                    Initialize a payment node for an accepted manuscript without automated triggers.
+                                    Initialize a payment request for an accepted manuscript without automated triggers.
                                 </DialogDescription>
                             </DialogHeader>
                             <form action={initPaymentAction} className="space-y-4 pt-2">
@@ -278,24 +302,37 @@ export default function PaymentManagement() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label className="text-label text-foreground">Amount</Label>
-                                        <Input name="amount" type="number" step="0.01" required className="h-10 bg-background border-border/70 rounded-lg" placeholder="2500" defaultValue="2500" />
+                                        <Input
+                                            name="amount"
+                                            type="number"
+                                            step="0.01"
+                                            required
+                                            value={amountValue}
+                                            onChange={(e) => setAmountValue(e.target.value)}
+                                            className="h-10 bg-background border-border/70 rounded-lg font-mono font-semibold"
+                                            placeholder={selectedCurrency === 'INR' ? defaultApcInr : defaultApcUsd}
+                                        />
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="text-label text-foreground">Currency</Label>
-                                        <Select name="currency" defaultValue="INR">
+                                        <Select
+                                            name="currency"
+                                            value={selectedCurrency}
+                                            onValueChange={(val: 'INR' | 'USD') => handleCurrencyChange(val)}
+                                        >
                                             <SelectTrigger className="h-10 w-full rounded-lg bg-background border-border/70">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl border-border/70 bg-card">
-                                                <SelectItem value="INR">INR</SelectItem>
-                                                <SelectItem value="USD">USD</SelectItem>
+                                                <SelectItem value="INR">INR (₹{defaultApcInr})</SelectItem>
+                                                <SelectItem value="USD">USD (${defaultApcUsd})</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
                                 </div>
                                 <DialogFooter className="pt-4">
                                     <Button type="submit" disabled={isInitPaymentPending} className="w-full h-10 btn-primary rounded-lg cursor-pointer">
-                                        {isInitPaymentPending ? "Creating Node..." : "Create Payment Node"}
+                                        {isInitPaymentPending ? "Creating Request..." : "Create Payment Request"}
                                     </Button>
                                 </DialogFooter>
                             </form>

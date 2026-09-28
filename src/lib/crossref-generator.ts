@@ -77,7 +77,7 @@ export function generateCrossRefXml({
 
     // Build articles XML
     const articlesXml = validPapers.map((paper) => {
-        const canonicalUrl = `${baseUrl}/archives/volume${paper.volumeNumber}/issue${paper.issueNumber}/${paper.paperId}`;
+        const canonicalUrl = `${baseUrl}/article/${paper.paperId.toLowerCase()}`;
         const pdfUrl = paper.pdfUrl
             ? (paper.pdfUrl.startsWith('http') ? paper.pdfUrl : `${baseUrl}${paper.pdfUrl}`)
             : '';

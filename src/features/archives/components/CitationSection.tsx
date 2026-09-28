@@ -36,8 +36,13 @@ export default function CitationSection({ paper }: CitationSectionProps) {
     const year = paper.publicationYear || new Date().getFullYear();
     const vol = paper.volumeNumber || 1;
     const iss = paper.issueNumber || 1;
-    const canonicalPaperUrl = `${baseUrl}/archives/volume${vol}/issue${iss}/${paper.paperId}`;
-    const doiUrl = paper.doi ? (paper.doi.startsWith('http') ? paper.doi : `https://doi.org/${paper.doi}`) : canonicalPaperUrl;
+    const shortArticleUrl = `${baseUrl}/article/${paper.paperId.toLowerCase()}`;
+    const rawDoi = paper.doi?.trim();
+    const hasDoi = Boolean(rawDoi);
+    const doiClean = rawDoi ? rawDoi.replace(/^https?:\/\/doi\.org\//i, '').trim() : '';
+    const doiUrl = hasDoi ? `https://doi.org/${doiClean}` : '';
+    const citationTargetUrl = hasDoi ? doiUrl : shortArticleUrl;
+
     const pagesStr = paper.pageRange
         ? paper.pageRange
         : paper.startPage && paper.endPage
@@ -47,54 +52,124 @@ export default function CitationSection({ paper }: CitationSectionProps) {
     // Authors list parsing
     const getAuthorsList = () => {
         if (Array.isArray(paper.coAuthors) && paper.coAuthors.length > 0) {
-            return paper.coAuthors.map((a: Author) => a.name);
+            return paper.coAuthors.map((a: Author) => a.name.trim()).filter(Boolean);
         }
-        return [paper.authorName];
+        return [paper.authorName.trim()].filter(Boolean);
     };
 
     const authorsList = getAuthorsList();
+
+    // Author name formatters for academic standards
+    const formatNameApa = (name: string): string => {
+        const trimmed = name.trim();
+        if (!trimmed) return '';
+        if (trimmed.includes(',')) return trimmed;
+        const parts = trimmed.split(/\s+/);
+        if (parts.length === 1) return parts[0]!;
+        const lastName = parts[parts.length - 1]!;
+        const initials = parts
+            .slice(0, -1)
+            .map((p) => {
+                const clean = p.replace(/[^a-zA-Z]/g, '');
+                return clean ? `${clean[0]?.toUpperCase()}.` : '';
+            })
+            .filter(Boolean)
+            .join(' ');
+        return initials ? `${lastName}, ${initials}` : lastName;
+    };
+
+    const formatNameIeee = (name: string): string => {
+        const trimmed = name.trim();
+        if (!trimmed) return '';
+        if (trimmed.includes(',')) {
+            const [last, first] = trimmed.split(',').map((s) => s.trim());
+            const initials = first
+                ? first
+                      .split(/\s+/)
+                      .map((p) => {
+                          const clean = p.replace(/[^a-zA-Z]/g, '');
+                          return clean ? `${clean[0]?.toUpperCase()}.` : '';
+                      })
+                      .filter(Boolean)
+                      .join(' ')
+                : '';
+            return initials ? `${initials} ${last}` : (last || trimmed);
+        }
+        const parts = trimmed.split(/\s+/);
+        if (parts.length === 1) return parts[0]!;
+        const lastName = parts[parts.length - 1]!;
+        const initials = parts
+            .slice(0, -1)
+            .map((p) => {
+                const clean = p.replace(/[^a-zA-Z]/g, '');
+                return clean ? `${clean[0]?.toUpperCase()}.` : '';
+            })
+            .filter(Boolean)
+            .join(' ');
+        return initials ? `${initials} ${lastName}` : trimmed;
+    };
 
     // Formatted Citation Generators
     const generateCitation = (format: CitationStyle): string => {
         switch (format) {
             case 'apa': {
-                const authorsStr = authorsList.length === 1
-                    ? authorsList[0]
-                    : authorsList.length === 2
-                        ? `${authorsList[0]}, & ${authorsList[1]}`
-                        : `${authorsList.slice(0, -1).join(', ')}, & ${authorsList[authorsList.length - 1]}`;
+                const apaAuthors = authorsList.map(formatNameApa);
+                const authorsStr = apaAuthors.length === 1
+                    ? apaAuthors[0]
+                    : apaAuthors.length === 2
+                        ? `${apaAuthors[0]}, & ${apaAuthors[1]}`
+                        : `${apaAuthors.slice(0, -1).join(', ')}, & ${apaAuthors[apaAuthors.length - 1]}`;
                 const pagesPart = pagesStr ? `, ${pagesStr}` : '';
-                return `${authorsStr} (${year}). ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. E-ISSN: ${issn}. ${doiUrl}`;
+                return `${authorsStr} (${year}). ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. ${citationTargetUrl}`;
             }
             case 'ieee': {
-                const authorsStr = authorsList.join(', ');
+                const ieeeAuthors = authorsList.map(formatNameIeee);
+                const authorsStr = ieeeAuthors.length === 1
+                    ? ieeeAuthors[0]
+                    : ieeeAuthors.length === 2
+                        ? `${ieeeAuthors[0]} and ${ieeeAuthors[1]}`
+                        : `${ieeeAuthors.slice(0, -1).join(', ')}, and ${ieeeAuthors[ieeeAuthors.length - 1]}`;
                 const pagesPart = pagesStr ? `, pp. ${pagesStr}` : '';
-                return `${authorsStr}, "${paper.title}," ${journalShortName}, vol. ${vol}, no. ${iss}${pagesPart}, ${year}, E-ISSN: ${issn}. [Online]. Available: ${doiUrl}`;
+                if (hasDoi) {
+                    return `${authorsStr}, "${paper.title}," ${journalShortName}, vol. ${vol}, no. ${iss}${pagesPart}, ${year}, doi: ${doiClean}.`;
+                }
+                return `${authorsStr}, "${paper.title}," ${journalShortName}, vol. ${vol}, no. ${iss}${pagesPart}, ${year}. [Online]. Available: ${shortArticleUrl}`;
             }
             case 'harvard': {
-                const authorsStr = authorsList.join(', ');
+                const harvardAuthors = authorsList.map(formatNameApa);
+                const authorsStr = harvardAuthors.length === 1
+                    ? harvardAuthors[0]
+                    : harvardAuthors.length === 2
+                        ? `${harvardAuthors[0]} and ${harvardAuthors[1]}`
+                        : `${harvardAuthors.slice(0, -1).join(', ')} and ${harvardAuthors[harvardAuthors.length - 1]}`;
                 const pagesPart = pagesStr ? `, pp. ${pagesStr}` : '';
-                return `${authorsStr}, ${year}. ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}, E-ISSN: ${issn}. Available at: <${doiUrl}>.`;
+                return `${authorsStr}, ${year}. ${paper.title}. ${journalName}, ${vol}(${iss})${pagesPart}. Available at: <${citationTargetUrl}>.`;
             }
             case 'mla': {
+                const mlaFirstAuthor = formatNameApa(authorsList[0] || 'Author');
                 const authorsStr = authorsList.length === 1
-                    ? authorsList[0]
+                    ? mlaFirstAuthor
                     : authorsList.length === 2
-                        ? `${authorsList[0]}, and ${authorsList[1]}`
-                        : `${authorsList[0]}, et al.`;
+                        ? `${mlaFirstAuthor}, and ${authorsList[1]}`
+                        : `${mlaFirstAuthor}, et al.`;
                 const pagesPart = pagesStr ? `, pp. ${pagesStr}` : '';
-                return `${authorsStr}. "${paper.title}." ${journalName}, vol. ${vol}, no. ${iss}, ${year}${pagesPart}, E-ISSN: ${issn}, ${doiUrl}.`;
+                return `${authorsStr}. "${paper.title}." ${journalName}, vol. ${vol}, no. ${iss}, ${year}${pagesPart}, ${citationTargetUrl}.`;
             }
             case 'chicago': {
-                const authorsStr = authorsList.join(', ');
+                const chicagoAuthors = authorsList.map((a, i) => (i === 0 ? formatNameApa(a) : a));
+                const authorsStr = chicagoAuthors.length === 1
+                    ? chicagoAuthors[0]
+                    : chicagoAuthors.length === 2
+                        ? `${chicagoAuthors[0]}, and ${chicagoAuthors[1]}`
+                        : `${chicagoAuthors.slice(0, -1).join(', ')}, and ${chicagoAuthors[chicagoAuthors.length - 1]}`;
                 const pagesPart = pagesStr ? `: ${pagesStr}` : '';
-                return `${authorsStr}. ${year}. "${paper.title}." ${journalName} ${vol} (${iss})${pagesPart}. E-ISSN: ${issn}. ${doiUrl}.`;
+                return `${authorsStr}. ${year}. "${paper.title}." ${journalName} ${vol} (${iss})${pagesPart}. ${citationTargetUrl}.`;
             }
             case 'bibtex': {
                 const citeKey = `${(authorsList[0] || 'author').toLowerCase().replace(/[^a-z]/g, '')}${year}${paper.paperId.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
                 const bibAuthors = authorsList.join(' and ');
                 const pagesField = pagesStr ? `\n  pages={${pagesStr.replace('-', '--')}},` : '';
-                const doiField = paper.doi ? `\n  doi={${paper.doi}},` : '';
+                const doiField = hasDoi ? `\n  doi={${doiClean}},` : '';
                 return `@article{${citeKey},
   title={{${paper.title}}},
   author={${bibAuthors}},
@@ -103,7 +178,7 @@ export default function CitationSection({ paper }: CitationSectionProps) {
   volume={${vol}},
   number={${iss}},${pagesField}${doiField}
   year={${year}},
-  url={${doiUrl}}
+  url={${citationTargetUrl}}
 }`;
             }
         }
@@ -144,8 +219,8 @@ JA  - ${journalShortName}
 SN  - ${issn}
 VL  - ${vol}
 IS  - ${iss}${effectiveStartPage ? `\nSP  - ${effectiveStartPage}` : ''}${effectiveEndPage ? `\nEP  - ${effectiveEndPage}` : ''}
-PY  - ${year}${paper.doi ? `\nDO  - ${paper.doi}` : ''}
-UR  - ${doiUrl}
+PY  - ${year}${hasDoi ? `\nDO  - ${doiClean}` : ''}
+UR  - ${citationTargetUrl}
 ER  - \n`;
 
         const blob = new Blob([risContent], { type: 'application/x-research-info-systems' });
@@ -229,16 +304,17 @@ ER  - \n`;
             <div>
                 <button
                     onClick={() => {
+                        const shareLink = shortArticleUrl;
                         if (navigator.share) {
                             navigator.share({
                                 title: paper.title,
                                 text: `Check out this research paper: ${paper.title}`,
-                                url: window.location.href
+                                url: shareLink
                             }).catch((err) => console.error("Share failed:", err));
                         } else {
-                            navigator.clipboard.writeText(window.location.href)
+                            navigator.clipboard.writeText(shareLink)
                                 .then(() => {
-                                    toast.success("Paper link copied to clipboard!");
+                                    toast.success("Permanent article link copied to clipboard!");
                                 })
                                 .catch((err) => {
                                     console.error("Failed to copy link:", err);
@@ -248,16 +324,53 @@ ER  - \n`;
                     }}
                     className="w-full flex items-center justify-center gap-2 bg-muted/40 text-foreground py-2 rounded-lg text-label border border-border/60 hover:bg-muted/70 transition-all cursor-pointer"
                 >
-                    <Share2 className="w-3.5 h-3.5" /> Share Research
+                    <Share2 className="w-3.5 h-3.5" /> Share Research (Permanent Link)
                 </button>
             </div>
 
-            {/* Metadata Footer */}
+            {/* Metadata Footer: Permanent Link, DOI, and ISSN */}
             <div className="pt-3 border-t border-border/50 space-y-2">
-                <h4 className="text-label text-center text-muted-foreground m-0">Journal Indexing ID</h4>
-                <div className="bg-muted/20 p-2.5 rounded-lg border border-border/60 text-center">
-                    <p className="text-label text-muted-foreground mb-0.5 m-0">ISSN (Online)</p>
-                    <p className="text-meta font-bold text-foreground m-0">{settings['issnNumber'] || '3139-6887'}</p>
+                <div className="bg-muted/20 p-3 rounded-xl border border-border/60 space-y-2 text-left">
+                    {hasDoi && (
+                        <div>
+                            <p className="text-label text-muted-foreground mb-0.5 m-0 font-medium">Digital Object Identifier (DOI)</p>
+                            <a
+                                href={doiUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-body-sm font-mono font-semibold text-emerald-600 hover:underline break-all block"
+                            >
+                                {doiUrl}
+                            </a>
+                        </div>
+                    )}
+                    <div>
+                        <div className="flex items-center justify-between mb-0.5">
+                            <p className="text-label text-muted-foreground m-0 font-medium">Permanent Article URL</p>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(shortArticleUrl);
+                                    toast.success("Permanent URL copied!");
+                                }}
+                                className="text-caption text-primary hover:underline font-semibold cursor-pointer"
+                            >
+                                Copy Link
+                            </button>
+                        </div>
+                        <a
+                            href={shortArticleUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-body-sm font-mono text-foreground hover:text-primary hover:underline break-all block"
+                        >
+                            {shortArticleUrl}
+                        </a>
+                    </div>
+                    <div className="pt-2 border-t border-border/40 flex items-center justify-between">
+                        <span className="text-label text-muted-foreground font-medium">ISSN (Online)</span>
+                        <span className="text-meta font-bold text-foreground">{settings['issnNumber'] || '3139-6887'}</span>
+                    </div>
                 </div>
             </div>
         </div>

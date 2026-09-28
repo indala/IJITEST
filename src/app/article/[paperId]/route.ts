@@ -15,10 +15,6 @@ export async function GET(
         }
 
         const canonicalPaperId = paperId.toUpperCase();
-        if (canonicalPaperId !== paperId) {
-            const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org';
-            return NextResponse.redirect(`${baseUrl}/article/${canonicalPaperId}`, 308);
-        }
 
         // 1. Fetch the publication and volume/issue details for this paper ID
         const pubRows = await db.select({

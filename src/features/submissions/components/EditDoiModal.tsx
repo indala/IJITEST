@@ -44,6 +44,11 @@ export default function EditDoiModal({
     const queryClient = useQueryClient();
 
     const doiPrefix = settings['doiPrefix'] || '10.68139';
+    // Standard Crossref DOI format generated from manuscript ID
+    // e.g. "IJITEST-2026-020" -> "10.68139/ijitest.2026.020"
+    const suggestedDoiSuffix = paperId.trim().toLowerCase().replace(/[^a-z0-9]+/g, '.');
+    const suggestedCrossrefDoi = `${doiPrefix}/${suggestedDoiSuffix}`;
+
     const isCurrentlyOfficial = currentProvider === 'crossref';
     const isCurrentlyZenodo = currentProvider === 'zenodo' || (currentDoi ? currentDoi.toLowerCase().includes('zenodo') : false);
     const isCurrentlyCustom = currentProvider === 'custom' || (Boolean(currentDoi) && !isCurrentlyOfficial && !isCurrentlyZenodo);
@@ -231,7 +236,12 @@ export default function EditDoiModal({
                             </button>
                             <button
                                 type="button"
-                                onClick={() => setDoiMode('official')}
+                                onClick={() => {
+                                    setDoiMode('official');
+                                    if (!customDoiValue.trim()) {
+                                        setCustomDoiValue(suggestedCrossrefDoi);
+                                    }
+                                }}
                                 className={`py-2 px-1.5 rounded-lg text-center transition-all cursor-pointer font-medium ${doiMode === 'official'
                                         ? 'bg-emerald-600 text-white shadow-xs font-bold'
                                         : 'text-muted-foreground hover:text-foreground'
@@ -264,21 +274,50 @@ export default function EditDoiModal({
 
                     {/* Detail for CrossRef Mode */}
                     {doiMode === 'official' && (
-                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-body-sm space-y-1">
+                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-body-sm space-y-2">
                             <div className="flex items-center justify-between">
                                 <p className="text-label font-bold text-emerald-700 uppercase tracking-wider">
-                                    Manually Assigned Crossref DOI
+                                    Crossref DOI Allocation
                                 </p>
-                                <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Admin Entry</span>
+                                <span className="text-badge bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">Standard Format</span>
                             </div>
-                            <Input
-                                placeholder={`e.g. ${doiPrefix}/ijitest.2026.001`}
-                                value={customDoiValue}
-                                onChange={(e) => setCustomDoiValue(e.target.value)}
-                                className="h-9 text-meta font-mono bg-background"
-                            />
-                            <p className="text-caption text-muted-foreground pt-1">
-                                Enter the DOI assigned by the journal. Crossref registration is submitted separately after review.
+
+                            <div className="space-y-1.5">
+                                <div className="flex items-center gap-1.5">
+                                    <Input
+                                        placeholder={`e.g. ${suggestedCrossrefDoi}`}
+                                        value={customDoiValue}
+                                        onChange={(e) => setCustomDoiValue(e.target.value)}
+                                        className="h-9 text-meta font-mono bg-background"
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCustomDoiValue(suggestedCrossrefDoi)}
+                                        className="h-9 shrink-0 text-caption font-semibold bg-white hover:bg-emerald-50 text-emerald-700 border-emerald-300 gap-1 cursor-pointer"
+                                        title="Auto-fill standard Crossref DOI pattern"
+                                    >
+                                        <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                                        <span>Auto-Suggest</span>
+                                    </Button>
+                                </div>
+                                <div className="flex items-center justify-between text-caption text-muted-foreground">
+                                    <span>Recommended: <code className="font-mono font-semibold text-emerald-800">{suggestedCrossrefDoi}</code></span>
+                                    {customDoiValue !== suggestedCrossrefDoi && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setCustomDoiValue(suggestedCrossrefDoi)}
+                                            className="text-emerald-700 hover:underline font-semibold cursor-pointer"
+                                        >
+                                            Use standard pattern
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            <p className="text-caption text-muted-foreground pt-0.5">
+                                Enter or auto-fill the Crossref DOI. Crossref metadata and landing permalink are linked to this manuscript.
                             </p>
                         </div>
                     )}
