@@ -11,43 +11,44 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   cacheTag(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, 'announcements');
   const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
 
+  // Stable baseline date for static content to avoid fake daily lastmod updates
+  const staticRevisionDate = new Date('2026-09-01T00:00:00.000Z');
+
   // 1. Core High-Priority & Informational Routes
   const highPriorityRoutes = [
-    { path: '', priority: 1.0, changeFrequency: 'daily' as const },
-    { path: '/current-issue', priority: 0.95, changeFrequency: 'daily' as const },
-    { path: '/archives', priority: 0.95, changeFrequency: 'daily' as const },
-    { path: '/indexing', priority: 0.9, changeFrequency: 'weekly' as const },
-    { path: '/submit', priority: 0.9, changeFrequency: 'weekly' as const },
-    { path: '/guidelines', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/editorial-board', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/announcements', priority: 0.85, changeFrequency: 'weekly' as const },
-    { path: '/about', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/open-access', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/ethics', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/peer-review', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/aims-scope', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/copyright-policy', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/licensing-policy', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/apc-fees', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/plagiarism-policy', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/conflict-of-interest', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/research-misconduct', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/corrections-retractions', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/archiving-policy', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/ai-policy', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/publisher-info', priority: 0.85, changeFrequency: 'monthly' as const },
-    { path: '/faqs', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/reviewer-guidelines', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/join-us', priority: 0.75, changeFrequency: 'monthly' as const },
-    { path: '/track', priority: 0.75, changeFrequency: 'monthly' as const },
-    { path: '/contact', priority: 0.7, changeFrequency: 'monthly' as const },
-    { path: '/privacy', priority: 0.5, changeFrequency: 'yearly' as const },
-    { path: '/terms', priority: 0.5, changeFrequency: 'yearly' as const },
-    { path: '/llms.txt', priority: 0.4, changeFrequency: 'monthly' as const },
-    { path: '/llms-full.txt', priority: 0.4, changeFrequency: 'monthly' as const },
+    { path: '', priority: 1.0, changeFrequency: 'daily' as const, lastModified: new Date() },
+    { path: '/current-issue', priority: 0.95, changeFrequency: 'daily' as const, lastModified: new Date() },
+    { path: '/archives', priority: 0.9, changeFrequency: 'weekly' as const, lastModified: new Date() },
+    { path: '/indexing', priority: 0.85, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/submit', priority: 0.85, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/guidelines', priority: 0.8, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/editorial-board', priority: 0.8, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/announcements', priority: 0.8, changeFrequency: 'weekly' as const, lastModified: new Date() },
+    { path: '/about', priority: 0.75, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/open-access', priority: 0.75, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/apc-fees', priority: 0.75, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/peer-review', priority: 0.75, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/aims-scope', priority: 0.75, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/ethics', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/copyright-policy', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/licensing-policy', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/plagiarism-policy', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/conflict-of-interest', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/research-misconduct', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/corrections-retractions', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/archiving-policy', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/ai-policy', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/publisher-info', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/reviewer-guidelines', priority: 0.7, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/faqs', priority: 0.65, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/join-us', priority: 0.65, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/track', priority: 0.65, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/contact', priority: 0.6, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/privacy', priority: 0.5, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
+    { path: '/terms', priority: 0.5, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
   ].map((r) => ({
     url: `${baseUrl}${r.path}`,
-    lastModified: new Date(),
+    lastModified: r.lastModified,
     changeFrequency: r.changeFrequency,
     priority: r.priority,
   }));
@@ -75,35 +76,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const volNum = paper.volumeNumber!;
         const issNum = paper.issueNumber!;
         const paperId = paper.paperId!;
-        const lastMod = new Date(paper.updatedAt || paper.publishedAt || new Date());
+        const lastMod = new Date(paper.updatedAt || paper.publishedAt || staticRevisionDate);
 
         volumesSet.add(volNum);
         volumeIssuesSet.add(`${volNum}:${issNum}`);
 
-        // Permanent canonical Archive Article URL (Crucial for Google & Google Scholar indexing)
+        // Permanent canonical Archive Article URL (The primary scholarly asset indexed by Google & Google Scholar)
         const archiveArticleUrl = `${baseUrl}/archives/volume${volNum}/issue${issNum}/${paperId}`;
         if (!addedUrls.has(archiveArticleUrl)) {
           addedUrls.add(archiveArticleUrl);
           dynamicRoutes.push({
             url: archiveArticleUrl,
             lastModified: lastMod,
-            changeFrequency: 'weekly' as const,
-            priority: 0.9,
+            changeFrequency: 'monthly' as const,
+            priority: 1.0,
           });
-        }
-
-        // Direct PDF URL for academic crawlers and Google Scholar indexing
-        if (paper.pdfUrl) {
-          const fullPdfUrl = paper.pdfUrl.startsWith('http') ? paper.pdfUrl : `${baseUrl}${paper.pdfUrl}`;
-          if (!addedUrls.has(fullPdfUrl)) {
-            addedUrls.add(fullPdfUrl);
-            dynamicRoutes.push({
-              url: fullPdfUrl,
-              lastModified: lastMod,
-              changeFrequency: 'monthly' as const,
-              priority: 0.85,
-            });
-          }
         }
       });
 
@@ -114,9 +101,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         addedUrls.add(volUrl);
         dynamicRoutes.push({
           url: volUrl,
-          lastModified: new Date(),
-          changeFrequency: 'weekly' as const,
-          priority: 0.85,
+          lastModified: staticRevisionDate,
+          changeFrequency: 'monthly' as const,
+          priority: 0.8,
         });
       }
     });
@@ -129,8 +116,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         addedUrls.add(issueUrl);
         dynamicRoutes.push({
           url: issueUrl,
-          lastModified: new Date(),
-          changeFrequency: 'weekly' as const,
+          lastModified: staticRevisionDate,
+          changeFrequency: 'monthly' as const,
           priority: 0.85,
         });
       }
@@ -144,9 +131,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         addedUrls.add(annUrl);
         dynamicRoutes.push({
           url: annUrl,
-          lastModified: new Date(item.updatedAt || item.createdAt || new Date()),
-          changeFrequency: 'weekly' as const,
-          priority: 0.75,
+          lastModified: new Date(item.updatedAt || item.createdAt || staticRevisionDate),
+          changeFrequency: 'monthly' as const,
+          priority: 0.7,
         });
       }
     });
