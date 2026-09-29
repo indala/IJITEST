@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
 // Limit native Rust (SWC, Tailwind Oxide, LightningCSS) thread pools on multi-core servers/cgroups
-process.env.RAYON_NUM_THREADS = process.env.RAYON_NUM_THREADS || "1";
-process.env.NEXT_CPU_COUNT = process.env.NEXT_CPU_COUNT || "1";
+process.env['RAYON_NUM_THREADS'] = process.env['RAYON_NUM_THREADS'] || "1";
+process.env['NEXT_CPU_COUNT'] = process.env['NEXT_CPU_COUNT'] || "1";
 
 const storageUrl = process.env['STORAGE_SERVICE_URL'] || "https://api.ijitest.org";
 const wsStorageUrl = storageUrl.replace(/^http/, "ws");
