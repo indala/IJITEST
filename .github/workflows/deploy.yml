@@ -1,0 +1,160 @@
+name: 🚀 Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false # Queue, don't cancel — never overlap deploys
+
+env:
+  DEPLOY_BASE: /home/u116573049/domains/ijitest.org/hbuilds
+  NODE_VERSION: '20'
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout
+      # -----------------------------------------------------------------------
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # 2. Setup pnpm (auto-detected from pnpm-lock.yaml on server too)
+      # -----------------------------------------------------------------------
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: 🟢 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      # -----------------------------------------------------------------------
+      # 3. Install & Build
+      # -----------------------------------------------------------------------
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔨 Build Next.js
+        run: pnpm build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+          # Auth
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          # App URLs
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          APP_URL: ${{ secrets.APP_URL }}
+          # Email
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          # Database
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          # Payments
+          RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
+          RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
+          # Social
+          NEXT_PUBLIC_FACEBOOK_URL: ${{ secrets.NEXT_PUBLIC_FACEBOOK_URL }}
+          NEXT_PUBLIC_TWITTER_URL: ${{ secrets.NEXT_PUBLIC_TWITTER_URL }}
+          NEXT_PUBLIC_INSTAGRAM_URL: ${{ secrets.NEXT_PUBLIC_INSTAGRAM_URL }}
+          # Storage
+          STORAGE_SERVICE_URL: ${{ secrets.STORAGE_SERVICE_URL }}
+          STORAGE_SERVICE_SECRET: ${{ secrets.STORAGE_SERVICE_SECRET }}
+          # PDF
+          ILOVEPDF_PUBLIC_KEY: ${{ secrets.ILOVEPDF_PUBLIC_KEY }}
+          ILOVEPDF_SECRET_KEY: ${{ secrets.ILOVEPDF_SECRET_KEY }}
+          # Cron & SEO
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          # CrossRef DOI
+          CROSSREF_USERNAME: ${{ secrets.CROSSREF_USERNAME }}
+          CROSSREF_PASSWORD: ${{ secrets.CROSSREF_PASSWORD }}
+          CROSSREF_PREFIX: ${{ secrets.CROSSREF_PREFIX }}
+          CROSSREF_MEMBER_NAME: ${{ secrets.CROSSREF_MEMBER_NAME }}
+          CROSSREF_DEPOSITOR_EMAIL: ${{ secrets.CROSSREF_DEPOSITOR_EMAIL }}
+          CROSSREF_TEST_MODE: ${{ secrets.CROSSREF_TEST_MODE }}
+          # Zenodo
+          ZENODO_ACCESS_TOKEN: ${{ secrets.ZENODO_ACCESS_TOKEN }}
+          ZENODO_API_URL: ${{ secrets.ZENODO_API_URL }}
+          ZENODO_USE_SANDBOX: ${{ secrets.ZENODO_USE_SANDBOX }}
+
+      # -----------------------------------------------------------------------
+      # 4. Setup SSH
+      # -----------------------------------------------------------------------
+      - name: 🔑 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Trust the server fingerprint
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      # -----------------------------------------------------------------------
+      # 5. Sync build to server
+      #    Uses the 'current' symlink — always targets the active version,
+      #    even after Hostinger panel redeploys create a new UUID folder.
+      # -----------------------------------------------------------------------
+      - name: 🔁 Sync .next build output
+        run: |
+          rsync -az --delete \
+            --info=progress2 \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            .next/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_BASE }}/current/nodejs/.next/
+
+      - name: 🔁 Sync public folder
+        run: |
+          rsync -az \
+            --info=progress2 \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            public/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_BASE }}/current/nodejs/public/
+
+      # -----------------------------------------------------------------------
+      # 6. Restart the Node.js process
+      #    LiteSpeed (Hostinger's server) detects a changed mtime on the entry
+      #    file and gracefully restarts the Node.js process automatically.
+      # -----------------------------------------------------------------------
+      - name: ♻️ Restart Node.js app
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -p ${{ secrets.SSH_PORT }} \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "touch ${{ env.DEPLOY_BASE }}/current/nodejs/server.js && echo '✅ Restart signal sent to LiteSpeed'"
+
+      # -----------------------------------------------------------------------
+      # 7. Health check — wait for app to come back up
+      # -----------------------------------------------------------------------
+      - name: 🏥 Health check
+        run: |
+          echo "Waiting 15s for app to restart..."
+          sleep 15
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "${{ secrets.NEXT_PUBLIC_APP_URL }}" || echo "000")
+          echo "HTTP status: $STATUS"
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "302" ]; then
+            echo "✅ App is up and responding."
+          else
+            echo "⚠️ App returned HTTP $STATUS — check Runtime Logs in hPanel."
+            exit 1
+          fi
