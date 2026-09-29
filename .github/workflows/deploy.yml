@@ -102,9 +102,11 @@ jobs:
       # 4. Setup SSH
       # -----------------------------------------------------------------------
       - name: 🔑 Setup SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           # Trust the server fingerprint
           ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
@@ -114,13 +116,13 @@ jobs:
       #    Uses the 'current' symlink — always targets the active version,
       #    even after Hostinger panel redeploys create a new UUID folder.
       # -----------------------------------------------------------------------
-      - name: 🔁 Sync .next build output
+      - name: 🔁 Sync .next build to staging
         run: |
           rsync -az --delete \
             --info=progress2 \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no" \
             .next/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_BASE }}/current/nodejs/.next/
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_BASE }}/current/nodejs/.next.new/
 
       - name: 🔁 Sync public folder
         run: |
@@ -131,30 +133,68 @@ jobs:
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_BASE }}/current/nodejs/public/
 
       # -----------------------------------------------------------------------
-      # 6. Restart the Node.js process
-      #    LiteSpeed (Hostinger's server) detects a changed mtime on the entry
-      #    file and gracefully restarts the Node.js process automatically.
+      # 6. Swap in the staged build, then restart the Node.js process.
       # -----------------------------------------------------------------------
-      - name: ♻️ Restart Node.js app
+      - name: 🔀 Swap build and restart Node.js app
         run: |
           ssh -i ~/.ssh/deploy_key \
             -p ${{ secrets.SSH_PORT }} \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "touch ${{ env.DEPLOY_BASE }}/current/nodejs/server.js && echo '✅ Restart signal sent to LiteSpeed'"
+            "set -e; cd ${{ env.DEPLOY_BASE }}/current/nodejs; rm -rf .next.old; mv .next .next.old; if ! mv .next.new .next; then mv .next.old .next; exit 1; fi; pkill -u \$(whoami) -f '[n]ext-server' || true; touch server.js; echo '✅ Build swapped and restart signal sent'"
 
       # -----------------------------------------------------------------------
-      # 7. Health check — wait for app to come back up
+      # 7. Health check — verify the expected build and its page assets
       # -----------------------------------------------------------------------
-      - name: 🏥 Health check
+      - name: 🏥 Health check (build ID + assets)
+        env:
+          SITE_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
         run: |
-          echo "Waiting 15s for app to restart..."
-          sleep 15
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "${{ secrets.NEXT_PUBLIC_APP_URL }}" || echo "000")
-          echo "HTTP status: $STATUS"
-          if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "302" ]; then
-            echo "✅ App is up and responding."
-          else
-            echo "⚠️ App returned HTTP $STATUS — check Runtime Logs in hPanel."
-            exit 1
-          fi
+          SITE_URL="${SITE_URL%/}"
+          EXPECTED=$(cat .next/BUILD_ID)
+          for i in $(seq 1 12); do
+            sleep 10
+            HTML=$(curl -fsSL --max-time 20 "$SITE_URL/?ci=$RANDOM" || true)
+            LIVE=$(printf '%s' "$HTML" | python3 -c 'import re,sys; m=re.search(r"\\?\"b\\?\"\s*:\s*\\?\"([^\"\\]+)", sys.stdin.read()); print(m.group(1) if m else "")')
+            echo "try $i: live=$LIVE expected=$EXPECTED"
+            if [ "$LIVE" = "$EXPECTED" ]; then
+              ASSETS=$(printf '%s' "$HTML" | grep -oE '/_next/static/[^"[:space:]<>]*\.(js|css)(\?[^"[:space:]<>]*)?' | sed 's/[?#].*//' | sort -u || true)
+              if [ -z "$ASSETS" ]; then
+                echo "❌ No JS/CSS assets found in live HTML"
+                continue
+              fi
+              BAD=0
+              while IFS= read -r path; do
+                [ -z "$path" ] && continue
+                status=$(curl -sL -o /dev/null -w '%{http_code}' --max-time 15 "$SITE_URL$path" || true)
+                if [ "$status" != "200" ]; then
+                  echo "❌ $status $path"
+                  BAD=1
+                fi
+              done <<< "$ASSETS"
+              if [ "$BAD" = "0" ]; then
+                echo "✅ Live build matches and all referenced JS/CSS assets load"
+                exit 0
+              fi
+            fi
+          done
+          echo "❌ Live site did not switch to build $EXPECTED with working assets"
+          exit 1
+
+      - name: ↩️ Roll back failed deployment
+        if: failure()
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -p ${{ secrets.SSH_PORT }} \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "set -e; cd ${{ env.DEPLOY_BASE }}/current/nodejs; if [ ! -d .next.old ]; then echo '⚠️ No previous build backup is available; leaving the current build in place'; exit 0; fi; rm -rf .next.failed; mv .next .next.failed; if ! mv .next.old .next; then mv .next.failed .next; exit 1; fi; pkill -u \$(whoami) -f '[n]ext-server' || true; touch server.js; rm -rf .next.failed; echo '✅ Previous build restored'"
+
+      - name: 🧹 Remove previous build after successful health check
+        if: success()
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -p ${{ secrets.SSH_PORT }} \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "rm -rf ${{ env.DEPLOY_BASE }}/current/nodejs/.next.old"
