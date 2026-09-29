@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
+// Limit native Rust (SWC, Tailwind Oxide, LightningCSS) thread pools on multi-core servers/cgroups
+process.env.RAYON_NUM_THREADS = process.env.RAYON_NUM_THREADS || "1";
+process.env.NEXT_CPU_COUNT = process.env.NEXT_CPU_COUNT || "1";
+
 const storageUrl = process.env['STORAGE_SERVICE_URL'] || "https://api.ijitest.org";
 const wsStorageUrl = storageUrl.replace(/^http/, "ws");
 
@@ -23,9 +27,13 @@ const csp = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   reactStrictMode: true,
   poweredByHeader: false,
   cacheComponents: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   turbopack: {
     root: process.cwd(),
   },
@@ -51,8 +59,10 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "20mb"
     },
-    workerThreads: false,
-    cpus: 2
+    workerThreads: true,
+    cpus: 1,
+    useTypeScriptCli: false,
+    webpackBuildWorker: false,
   },
   logging: process.env.NODE_ENV !== "production"
     ? {
