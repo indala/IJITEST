@@ -368,7 +368,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed)) return parsed.join(', ');
                 }
-            } catch {}
+            } catch { }
             return raw;
         })(),
         authorName: primaryAuthorName,
@@ -379,6 +379,10 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         doiProvider: pub.doiProvider || 'none',
         doiRegistrationStatus: pub.doiRegistrationStatus || 'none',
         doiRegistrationBatchId: pub.doiRegistrationBatchId || null,
+        zenodoDoi: pub.zenodoDoi || null,
+        zenodoRecordId: pub.zenodoRecordId || null,
+        zenodoStatus: pub.zenodoStatus || 'none',
+        zenodoRecordUrl: pub.zenodoRecordUrl || null,
         finalPdfUrl: pub.finalPdfUrl || "",
         filePath: pub.finalPdfUrl || "",
         pdfUrl: pub.finalPdfUrl || "",
@@ -397,7 +401,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         issueNumber: pub.issue?.issueNumber || 0,
         publicationYear: pub.issue?.year || 0,
         monthRange: pub.issue?.monthRange || "",
-        coAuthors: sortedAuthors, 
+        coAuthors: sortedAuthors,
         authorsList: sortedAuthors.map(a => a.name),
         views: pub.views || 0,
         downloads: pub.downloads || 0,

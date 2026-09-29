@@ -95,7 +95,7 @@ async function serveFile(relativePath: string) {
         '.gif': 'image/gif',
     };
 
-    let safeFilename = path.basename(relativePath).replace(/["\r\n]/g, '');
+    const safeFilename = path.basename(relativePath).replace(/["\r\n]/g, '');
 
     // Attempt zero-buffer direct stream piping from storage-service
     try {
