@@ -63,7 +63,7 @@ export default function LoginClient({ journalName }: { journalName?: string }) {
                         <Lock className="w-8 h-8 2xl:w-10 2xl:h-10 text-primary" />
                     </div>
                     <h1 className="mb-1 2xl:mb-2">Portal Access</h1>
-                    <p className="font-medium leading-relaxed text-center">
+                    <p className="font-medium leading-relaxed text-center ">
                         {journalName || "International Journal of Innovative Trends in Science, Engineering and Technology"}
                     </p>
                 </section>
