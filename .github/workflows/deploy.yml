@@ -78,7 +78,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: 🔨 Build Next.js
-        run: pnpm build
+        run: |
+          pnpm build
+          cp -r .next/static .next/standalone/.next/
+          cp -r public .next/standalone/
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
           # Auth
@@ -153,6 +156,11 @@ jobs:
             .next/ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_BASE }}/current/nodejs/.next/
 
+          rsync -az \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            .next/standalone/server.js \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_BASE }}/current/nodejs/server.js
+
       - name: 🔁 Sync public folder
         run: |
           rsync -az \
@@ -163,8 +171,8 @@ jobs:
 
       # -----------------------------------------------------------------------
       # 6. Restart the Node.js process
-      #    LiteSpeed (Hostinger's server) detects a changed mtime on the entry
-      #    file and gracefully restarts the Node.js process automatically.
+      #    Phusion Passenger/LiteSpeed watches PassengerRestartDir (tmp/restart.txt)
+      #    to gracefully restart the Node.js process automatically.
       # -----------------------------------------------------------------------
       - name: ♻️ Restart Node.js app
         run: |
@@ -172,7 +180,7 @@ jobs:
             -p ${{ secrets.SSH_PORT }} \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "touch ${{ env.DEPLOY_BASE }}/current/nodejs/server.js && echo '✅ Restart signal sent to LiteSpeed'"
+            "set -e; cd ${{ env.DEPLOY_BASE }}/current/nodejs; rm -rf .next/cache; mkdir -p tmp; touch tmp/restart.txt; touch server.js; echo '✅ Cleaned cache and sent restart signal to Passenger/LiteSpeed'"
 
       # -----------------------------------------------------------------------
       # 7. Health check — wait for app to come back up
