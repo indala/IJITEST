@@ -14,8 +14,39 @@ env:
   NODE_VERSION: '24'
 
 jobs:
+  checks:
+    name: 🧪 Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.1
+
+      - name: 🟢 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧪 Run tests
+        run: pnpm test
+
+      - name: 🔍 Run typecheck
+        run: pnpm typecheck
+
+      - name: 🧹 Run lint
+        run: pnpm lint
+
   deploy:
     name: Build & Deploy
+    needs: checks
     runs-on: ubuntu-latest
     timeout-minutes: 20
 

@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, getSession } from 'next-auth/react';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 
-export default function LoginClient() {
+export default function LoginClient({ journalName }: { journalName?: string }) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
@@ -64,7 +64,7 @@ export default function LoginClient() {
                     </div>
                     <h1 className="mb-1 2xl:mb-2">Portal Access</h1>
                     <p className="font-medium leading-relaxed">
-                        International Journal of Innovative Trends in Science, Engineering and Technology
+                        {journalName || "International Journal of Innovative Trends in Science, Engineering and Technology"}
                     </p>
                 </section>
 

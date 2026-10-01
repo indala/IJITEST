@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getSettingsData } from "@/actions/settings";
 import LoginClient from "./LoginClient";
 
 export const metadata = {
@@ -28,7 +29,9 @@ async function LoginContent() {
         redirect(`/${role}`);
     }
 
-    return <LoginClient />;
+    const settings = await getSettingsData();
+
+    return <LoginClient journalName={settings.journalName} />;
 }
 
 // Login Page component wrapper for the auth route group
