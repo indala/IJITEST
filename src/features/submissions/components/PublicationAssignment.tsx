@@ -24,7 +24,7 @@ import {
     createVolumeIssue,
     assignPaperToIssue
 } from '@/actions/publications'
-import { depositToZenodo } from '@/actions/doi-registration'
+import { depositToCrossref, depositToZenodo } from '@/actions/doi-registration'
 import { useQueryClient } from '@tanstack/react-query'
 import type { ActionResponse } from '@/db/contracts'
 import { useSettingsContext } from '@/components/providers/SettingsContext'
@@ -132,10 +132,29 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
                             toast.success(`Deposited to Zenodo ✓ (DOI: ${zenodoRes.data.zenodoDoi})`);
                             queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                         }
+                    } else if (doiChoice === 'official') {
+                        setDepositStatus({ status: 'depositing', provider: 'crossref' });
+                        toast.info("Manuscript archived. Depositing to Crossref...");
+                        const crossrefRes = await depositToCrossref(submissionId);
+                        if (!crossrefRes.success) {
+                            setDepositStatus({
+                                status: 'error',
+                                provider: 'crossref',
+                                message: crossrefRes.error
+                            });
+                            toast.warning(`Archived with DOI, but Crossref deposit needs review: ${crossrefRes.error}`);
+                        } else if (crossrefRes.data) {
+                            setDepositStatus({
+                                status: 'success',
+                                provider: 'crossref',
+                                batchId: crossrefRes.data.batchId,
+                                message: crossrefRes.data.message
+                            });
+                            toast.success(`Assigned & deposited to Crossref ✓ (Batch ID: ${crossrefRes.data.batchId})`);
+                            queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+                        }
                     } else {
-                        toast.success(doiChoice === 'official'
-                            ? "Manuscript archived with DOI. Review the metadata before submitting to Crossref."
-                            : "Manuscript committed to archive");
+                        toast.success("Manuscript committed to archive");
                     }
                 } else {
                     toast.error(res.error || "Failed to assign paper to issue");

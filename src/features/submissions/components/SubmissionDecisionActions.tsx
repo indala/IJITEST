@@ -17,13 +17,15 @@ interface SubmissionDecisionActionsProps {
     paperId: Submission['paperId'];
     paperTitle: Version['title'];
     status: SubmissionStatus;
+    paymentStatus?: string | null | undefined;
 }
 
 export function SubmissionDecisionActions({
     submissionId,
     paperId,
     paperTitle,
-    status
+    status,
+    paymentStatus
 }: SubmissionDecisionActionsProps) {
 
     // 1. Decision Action (Accept/Reject)
@@ -77,7 +79,9 @@ export function SubmissionDecisionActions({
         );
     }
 
-    if (status === 'accepted') {
+    // Allow waiving if payment is pending, paper is accepted, or paper is published but payment is unpaid
+    const isUnpaid = paymentStatus && !['paid', 'verified', 'waived'].includes(paymentStatus);
+    if (status === 'accepted' || status === 'paymentPending' || isUnpaid) {
         return (
             <form action={waiveAction}>
                 <WaiveButton />

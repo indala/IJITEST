@@ -412,16 +412,21 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                                             </div>
 
                                                                             <div className="flex items-center gap-1 shrink-0">
-                                                                                {provider === 'crossref' && regStatus === 'failed' && (
+                                                                                {provider === 'crossref' && regStatus !== 'registered' && (
                                                                                     <Button
                                                                                         size="sm"
                                                                                         variant="outline"
                                                                                         disabled={isRetrying}
                                                                                         onClick={() => handleRetryCrossref(paper.id)}
-                                                                                        className="h-7 px-2 text-rose-600 hover:text-rose-700 border-rose-200 hover:bg-rose-50 cursor-pointer"
+                                                                                        className={`h-7 px-2 cursor-pointer font-medium ${
+                                                                                            regStatus === 'failed'
+                                                                                                ? 'text-rose-600 hover:text-rose-700 border-rose-200 hover:bg-rose-50'
+                                                                                                : 'text-emerald-700 hover:text-emerald-800 border-emerald-300 hover:bg-emerald-50'
+                                                                                        }`}
+                                                                                        title={regStatus === 'none' ? 'Deposit to Crossref' : regStatus === 'pending' ? 'Re-submit deposit to Crossref' : 'Retry failed Crossref deposit'}
                                                                                     >
                                                                                         {isRetrying ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
-                                                                                        Retry
+                                                                                        {regStatus === 'none' ? 'Deposit' : regStatus === 'pending' ? 'Re-deposit' : 'Retry'}
                                                                                     </Button>
                                                                                 )}
                                                                                 <Button asChild variant="ghost" size="icon" className="w-7 h-7 text-muted-foreground hover:text-primary rounded-md">

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getSubmissionById } from "@/actions/submissions";
 import { AlertCircle, FileText } from "lucide-react";
 import Link from "next/link";
@@ -16,7 +17,33 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default async function SubmissionDetails({ params }: { params: Promise<SubmissionIdParam> }) {
+function SubmissionDetailSkeleton() {
+    return (
+        <div className="space-y-6 animate-pulse p-4 sm:p-6 max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border/60">
+                <div className="space-y-2">
+                    <div className="h-4 w-32 bg-muted rounded-md" />
+                    <div className="h-8 w-64 bg-muted rounded-lg" />
+                </div>
+                <div className="flex gap-2">
+                    <div className="h-10 w-28 bg-muted rounded-xl" />
+                    <div className="h-10 w-28 bg-muted rounded-xl" />
+                </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="h-44 bg-muted/40 rounded-2xl border border-border/50" />
+                    <div className="h-64 bg-muted/40 rounded-2xl border border-border/50" />
+                </div>
+                <div className="space-y-6">
+                    <div className="h-72 bg-muted/40 rounded-2xl border border-border/50" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+async function SubmissionDetailsContent({ params }: { params: Promise<SubmissionIdParam> }) {
     const session = await getServerSession(authOptions);
     const user = session?.user;
 
@@ -59,5 +86,13 @@ export default async function SubmissionDetails({ params }: { params: Promise<Su
 
     return (
         <SubmissionDetailContainer role="editor" submission={submission} />
+    );
+}
+
+export default function SubmissionDetails({ params }: { params: Promise<SubmissionIdParam> }) {
+    return (
+        <Suspense fallback={<SubmissionDetailSkeleton />}>
+            <SubmissionDetailsContent params={params} />
+        </Suspense>
     );
 }

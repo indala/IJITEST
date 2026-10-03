@@ -152,21 +152,32 @@ export default function EditDoiModal({
         });
     };
 
-    const handleDepositCrossref = async () => {
+    const handleSaveAndDepositCrossref = async () => {
+        const finalDoi = customDoiValue.trim() || suggestedCrossrefDoi;
+        if (!finalDoi) {
+            toast.error("Please enter or auto-suggest the Crossref DOI first.");
+            return;
+        }
         setIsDepositingCrossref(true);
-        toast.info("Submitting the manually assigned DOI to Crossref...");
+        toast.info("Saving DOI and submitting deposit to Crossref...");
         try {
-            const res = await depositToCrossref(submissionId);
-            if (res.success && res.data) {
-                toast.success(`Crossref deposit submitted. Batch ID: ${res.data.batchId}`);
+            const saveRes = await updatePublicationDoi(submissionId, finalDoi, 'crossref');
+            if (!saveRes.success) {
+                toast.error(saveRes.error || "Failed to save DOI before deposit.");
+                setIsDepositingCrossref(false);
+                return;
+            }
+            const depRes = await depositToCrossref(submissionId);
+            if (depRes.success && depRes.data) {
+                toast.success(`DOI saved & Crossref deposit queued ✓ (Batch ID: ${depRes.data.batchId})`);
                 queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                 queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
                 setOpen(false);
             } else {
-                toast.error(res.success ? "Crossref deposit returned no batch information." : res.error);
+                toast.error(depRes.success ? "Crossref deposit returned no batch information." : depRes.error);
             }
         } catch (err) {
-            console.error("Crossref deposit error:", err);
+            console.error("Crossref save & deposit error:", err);
             toast.error("An unexpected error occurred while communicating with Crossref.");
         } finally {
             setIsDepositingCrossref(false);
@@ -401,7 +412,7 @@ export default function EditDoiModal({
                     )}
                 </div>
 
-                <DialogFooter className="gap-2 sm:gap-0 pt-2">
+                <DialogFooter className="gap-2 sm:gap-2 pt-2 flex-wrap sm:flex-nowrap justify-end">
                     <Button
                         type="button"
                         variant="outline"
@@ -411,25 +422,42 @@ export default function EditDoiModal({
                     >
                         Cancel
                     </Button>
-                    <Button
-                        type="button"
-                        onClick={handleSave}
-                        disabled={isPending || isDepositingZenodo || isDepositingCrossref}
-                        className="h-10 text-body-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20 cursor-pointer"
-                    >
-                        {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}
-                        Save DOI Settings
-                    </Button>
-                    {doiMode === 'official' && currentDoi && (
+
+                    {doiMode === 'official' ? (
+                        <>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleSave}
+                                disabled={isPending || isDepositingZenodo || isDepositingCrossref}
+                                className="h-10 text-body-sm font-semibold rounded-xl cursor-pointer"
+                            >
+                                {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}
+                                Save DOI Only
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={handleSaveAndDepositCrossref}
+                                disabled={isPending || isDepositingZenodo || isDepositingCrossref}
+                                className="h-10 text-body-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20 cursor-pointer gap-1.5"
+                            >
+                                {isDepositingCrossref ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                    <Globe className="w-3.5 h-3.5" />
+                                )}
+                                Save & Deposit to Crossref
+                            </Button>
+                        </>
+                    ) : (
                         <Button
                             type="button"
-                            variant="outline"
-                            onClick={handleDepositCrossref}
+                            onClick={handleSave}
                             disabled={isPending || isDepositingZenodo || isDepositingCrossref}
-                            className="h-10 text-body-sm font-semibold border-emerald-300 text-emerald-700 hover:bg-emerald-50 rounded-xl cursor-pointer"
+                            className="h-10 text-body-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20 cursor-pointer"
                         >
-                            {isDepositingCrossref && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}
-                            Submit to Crossref
+                            {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}
+                            Save DOI Settings
                         </Button>
                     )}
                 </DialogFooter>

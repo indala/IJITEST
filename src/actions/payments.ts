@@ -212,7 +212,10 @@ export async function waivePayment(submissionId: number): Promise<ActionResponse
 
         let authorId: string | null = null;
         await db.transaction(async (tx) => {
-            const [sub] = await tx.select({ correspondingAuthorId: submissions.correspondingAuthorId })
+            const [sub] = await tx.select({ 
+                correspondingAuthorId: submissions.correspondingAuthorId,
+                currentStatus: submissions.status
+            })
                 .from(submissions)
                 .where(eq(submissions.id, submissionId))
                 .limit(1);
@@ -220,14 +223,32 @@ export async function waivePayment(submissionId: number): Promise<ActionResponse
                 authorId = sub.correspondingAuthorId;
             }
 
-            await tx.update(payments)
-                .set({ status: 'waived', paidAt: new Date() })
-                .where(eq(payments.submissionId, submissionId));
+            // Create or update payment record as waived
+            const [existingPayment] = await tx.select({ id: payments.id })
+                .from(payments)
+                .where(eq(payments.submissionId, submissionId))
+                .limit(1);
+
+            if (existingPayment) {
+                await tx.update(payments)
+                    .set({ status: 'waived', paidAt: new Date() })
+                    .where(eq(payments.submissionId, submissionId));
+            } else {
+                await tx.insert(payments).values({
+                    submissionId,
+                    amount: '0.00',
+                    currency: 'INR',
+                    status: 'waived',
+                    paidAt: new Date()
+                });
+            }
             
-            // Waived payment — submission is cleared to proceed
-            await tx.update(submissions)
-                .set({ status: 'accepted' })
-                .where(eq(submissions.id, submissionId));
+            // Only update status to 'accepted' if not already published, retracted, or rejected
+            if (sub && sub.currentStatus !== 'published' && sub.currentStatus !== 'retracted' && sub.currentStatus !== 'rejected') {
+                await tx.update(submissions)
+                    .set({ status: 'accepted' })
+                    .where(eq(submissions.id, submissionId));
+            }
         });
 
         if (authorId) {

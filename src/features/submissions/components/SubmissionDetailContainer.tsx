@@ -330,7 +330,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                         </div>
                                     )}
 
-                                    {(submission.status === 'underReview' || (submission.status === 'accepted' && submission.payment && !['paid', 'verified', 'waived'].includes(submission.payment.status))) && (
+                                    {(submission.status === 'underReview' || submission.status === 'paymentPending' || (submission.status === 'accepted' && submission.payment && !['paid', 'verified', 'waived'].includes(submission.payment.status))) && (
                                         <div className="space-y-4">
                                             {submission.status === 'underReview' && (
                                                 <div className="p-4 2xl:p-6 bg-primary/5 border border-primary/20 rounded-xl 2xl:rounded-2xl space-y-1 2xl:space-y-3">
@@ -338,14 +338,16 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                     <p className="font-medium text-primary/70">Final authorization required</p>
                                                 </div>
                                             )}
-                                            {submission.status === 'accepted' && (
+                                            {(submission.status === 'accepted' || submission.status === 'paymentPending') && (
                                                 <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-xl text-center space-y-3">
                                                     <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center mx-auto">
                                                         <CheckCircle className="w-5 h-5 text-emerald-600" />
                                                     </div>
                                                     <div className="space-y-1">
                                                         <p className="text-label font-semibold text-emerald-600 tracking-widest">Authorized</p>
-                                                        <p className="text-label font-medium text-muted-foreground tracking-widest">Awaiting author remittance...</p>
+                                                        <p className="text-label font-medium text-muted-foreground tracking-widest">
+                                                            {submission.status === 'paymentPending' ? 'Article Processing Charge (APC) Pending' : 'Awaiting author remittance...'}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             )}
@@ -355,6 +357,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                     paperId={submission.paperId}
                                                     paperTitle={submission.title}
                                                     status={submission.status}
+                                                    paymentStatus={submission.payment?.status ?? null}
                                                 />
                                             </div>
                                         </div>
@@ -362,6 +365,28 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                                     {submission.status === 'published' && (
                                         <div className="space-y-4">
+                                            {role === 'admin' && submission.payment && !['paid', 'verified', 'waived'].includes(submission.payment.status) && (
+                                                <Card className="bg-amber-500/10 border-amber-500/20 rounded-xl">
+                                                    <CardContent className="p-4 space-y-3">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-caption font-semibold text-amber-800 uppercase tracking-wider">APC Fee: Pending</span>
+                                                            <span className="text-badge font-mono bg-amber-500/20 text-amber-900 px-2 py-0.5 rounded font-bold">
+                                                                {submission.payment.currency} {submission.payment.amount}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-caption text-muted-foreground">
+                                                            This manuscript was published with fee pending. You can waive the fee:
+                                                        </p>
+                                                        <SubmissionDecisionActions
+                                                            submissionId={submission.id}
+                                                            paperId={submission.paperId}
+                                                            paperTitle={submission.title}
+                                                            status={submission.status}
+                                                            paymentStatus={submission.payment.status}
+                                                        />
+                                                    </CardContent>
+                                                </Card>
+                                            )}
                                             <Card className="bg-emerald-950 text-white border-none overflow-hidden rounded-xl shadow-2xl">
                                                 <CardContent className="p-8 space-y-6 relative">
                                                     <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-400 opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
