@@ -1,7 +1,7 @@
 import EmailTemplatesManager from './EmailTemplatesManager';
 
 export const metadata = {
-    title: "Email Templates | Admin Panel | IJITEST",
+    title: "Email Templates",
     description: "Manage automated scholarly notification email templates, layout styling, and placeholder tokens.",
 };
 

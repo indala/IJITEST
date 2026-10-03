@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 
 export const metadata = {
-    title: "Review Board Profile | IJITEST",
+    title: "Review Board Profile",
 };
 
 export default async function ReviewerProfilePage() {

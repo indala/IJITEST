@@ -10,7 +10,7 @@ import Link from "next/link";
 import { FileText, Upload, ExternalLink, Clock, Timer } from "lucide-react";
 
 export const metadata = {
-    title: "My Submissions | IJITEST",
+    title: "My Submissions",
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {

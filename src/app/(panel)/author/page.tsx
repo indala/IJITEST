@@ -21,7 +21,7 @@ import {
 } from '@/features/dashboard/components/DashboardSkeletons';
 
 export const metadata = {
-    title: "Author Dashboard | IJITEST",
+    title: "Author Dashboard",
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {

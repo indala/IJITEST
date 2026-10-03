@@ -34,7 +34,7 @@ function mean(values: number[]): number {
 }
 
 export const metadata = {
-    title: "Editor Dashboard | IJITEST",
+    title: "Editor Dashboard",
 };
 
 /* Streaming Component: Editor KPI Stats */

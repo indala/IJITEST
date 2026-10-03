@@ -38,7 +38,7 @@ export default function ContactClient({ settings }: ContactClientProps) {
                 {/* Main Contact Section */}
                 <div className="lg:col-span-2 space-y-6 2xl:space-y-8">
                     {/* Contact Cards */}
-                    <div className="grid-responsive-2 gap-3.5 sm:gap-4 2xl:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 2xl:gap-6">
                         {contactMethods.map((method, idx) => (
                             <Card key={idx} className="p-4 border-border/70 bg-card rounded-xl hover:border-primary/20 transition-all shadow-2xs">
                                 <div className="flex items-center gap-3.5">

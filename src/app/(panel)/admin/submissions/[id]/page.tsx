@@ -8,7 +8,7 @@ import SubmissionDetailContainer from "@/features/submissions/components/Submiss
 
 export async function generateMetadata(): Promise<Metadata> {
     return {
-        title: 'Submission Management | IJITEST Admin',
+        title: 'Submission Management',
         description: 'Administrative manuscript management for IJITEST.',
     };
 }

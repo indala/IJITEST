@@ -285,9 +285,9 @@ export default function PaymentManagement() {
                             </DialogHeader>
                             <form action={initPaymentAction} className="space-y-4 pt-2">
                                 <div className="space-y-2">
-                                    <Label className="text-label text-foreground">Accepted Paper</Label>
+                                    <Label htmlFor="init-payment-paper" className="text-label text-foreground">Accepted Paper</Label>
                                     <Select name="submissionId" required>
-                                        <SelectTrigger className="h-10 w-full rounded-lg bg-background border-border/70">
+                                        <SelectTrigger id="init-payment-paper" className="h-10 w-full rounded-lg bg-background border-border/70">
                                             <SelectValue placeholder="Select target paper..." />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-xl border-border/70 bg-card">
@@ -301,8 +301,9 @@ export default function PaymentManagement() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="text-label text-foreground">Amount</Label>
+                                        <Label htmlFor="init-payment-amount" className="text-label text-foreground">Amount</Label>
                                         <Input
+                                            id="init-payment-amount"
                                             name="amount"
                                             type="number"
                                             step="0.01"

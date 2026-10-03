@@ -1,7 +1,7 @@
 import ApplicationsRegistry from '@/features/applications/components/ApplicationsRegistry';
 
 export const metadata = {
-    title: "Applications | IJITEST",
+    title: "Reviewer Applications",
 };
 
 export default function ManageApplicationsPage() {

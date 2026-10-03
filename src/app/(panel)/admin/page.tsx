@@ -40,7 +40,7 @@ import os from 'os';
 import { getStorageSizeFromService } from '@/lib/fs-utils';
 
 export const metadata = {
-    title: "Admin Dashboard | IJITEST",
+    title: "Admin Dashboard",
 };
 
 async function getHealthMetrics() {

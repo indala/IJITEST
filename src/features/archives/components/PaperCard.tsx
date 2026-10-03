@@ -10,13 +10,10 @@ interface PaperCardProps {
 }
 
 const PaperCard = memo(function PaperCard({ paper, basePath: _basePath = '/archives' }: PaperCardProps) {
-    const hasVolumeAndIssue = !!(paper.volumeNumber && paper.issueNumber);
-    const volumeSegment = `volume${paper.volumeNumber || 0}`;
-    const issueSegment = `issue${paper.issueNumber || 0}`;
-    // Always point to permanent canonical archive URL for articles
-    const paperUrl = hasVolumeAndIssue 
-        ? `/archives/${volumeSegment}/${issueSegment}/${paper.paperId}`
-        : '#';
+    const volumeSegment = `volume${paper.volumeNumber || 1}`;
+    const issueSegment = `issue${paper.issueNumber || 1}`;
+    // Permanent canonical archive URL for articles (with fallbacks if issue/volume metadata is unassigned)
+    const paperUrl = `/archives/${volumeSegment}/${issueSegment}/${paper.paperId}`;
 
     return (
         <article className="font-sans bg-card text-card-foreground border border-border/70 shadow-2xs hover:border-primary/30 transition-all rounded-xl relative p-4 sm:p-5">

@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 
 export const metadata = {
-    title: "Researcher Profile | IJITEST",
+    title: "Researcher Profile",
 };
 
 export default async function AuthorProfilePage() {

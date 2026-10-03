@@ -3,7 +3,7 @@ import { getAllSubmissions } from '@/actions/submissions';
 import { connection } from 'next/server';
 
 export const metadata = {
-    title: "Submissions | IJITEST",
+    title: "Submissions Registry",
 };
 
 export default async function AdminSubmissions({

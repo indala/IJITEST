@@ -6,7 +6,7 @@ import type { SubmissionIdParam } from "@/db/types";
 import { ApplicationDetailReview } from "@/features/applications/components/ApplicationDetailReview";
 
 export const metadata: Metadata = {
-    title: "Application Review | IJITEST Editor",
+    title: "Application Review",
 };
 
 export default function EditorApplicationDetailPage({

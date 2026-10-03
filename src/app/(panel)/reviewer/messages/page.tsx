@@ -3,13 +3,13 @@ import { LiveChatContent } from "@/features/chat/components/LiveChatContent";
 import { Loader2 } from "lucide-react";
 
 export const metadata = {
-    title: "Reviewer Messages | IJITEST Portal",
+    title: "Reviewer Messages",
     description: "Direct peer-review synchronization chat channels with editors and administrators."
 };
 
 export default function ReviewerMessagesPage() {
     return (
-        <section className="h-[calc(100vh-100px)] flex flex-col p-0 overflow-hidden">
+        <section className="h-[calc(100vh-11rem)] 2xl:h-[calc(100vh-13rem)] flex flex-col p-0 overflow-hidden">
             <Suspense fallback={
                 <div className="flex-1 flex flex-col items-center justify-center gap-6 opacity-40">
                     <Loader2 className="w-10 h-10 animate-spin text-primary" />

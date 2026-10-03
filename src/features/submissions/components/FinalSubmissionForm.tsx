@@ -275,24 +275,24 @@ export default function FinalSubmissionForm() {
                     {/* File Upload 1: Camera-Ready Manuscript */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="camera-ready-file" className="form-label-brand">
+                            <Label htmlFor="camera-ready-file-input" className="form-label-brand">
                                 Final Camera-Ready Manuscript (.docx) <span className="text-destructive">*</span>
                             </Label>
                             <span className="text-meta text-muted-foreground">Strict Policy: .docx only</span>
                         </div>
-                        <div
-                            className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
+                        <label
+                            htmlFor="camera-ready-file-input"
+                            className={`block border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${
                                 cameraReadyFile
                                     ? 'border-emerald-500 bg-emerald-50/20'
                                     : 'border-border/70 hover:border-primary/40 bg-muted/10'
                             }`}
-                            onClick={() => document.getElementById('camera-ready-file-input')?.click()}
                         >
                             <input
                                 id="camera-ready-file-input"
                                 type="file"
                                 accept=".docx"
-                                className="hidden"
+                                className="sr-only"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0] || null;
                                     if (file && !file.name.toLowerCase().endsWith('.docx')) {
@@ -320,30 +320,30 @@ export default function FinalSubmissionForm() {
                                     </p>
                                 </div>
                             )}
-                        </div>
+                        </label>
                     </div>
 
                     {/* File Upload 2: Signed Copyright Form */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="copyright-file" className="form-label-brand">
+                            <Label htmlFor="copyright-file-input" className="form-label-brand">
                                 Signed Copyright Transfer Form <span className="text-destructive">*</span>
                             </Label>
                             <span className="text-meta text-muted-foreground">.docx or .pdf</span>
                         </div>
-                        <div
-                            className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors ${
+                        <label
+                            htmlFor="copyright-file-input"
+                            className={`block border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${
                                 copyrightFile
                                     ? 'border-emerald-500 bg-emerald-50/20'
                                     : 'border-border/70 hover:border-primary/40 bg-muted/10'
                             }`}
-                            onClick={() => document.getElementById('copyright-file-input')?.click()}
                         >
                             <input
                                 id="copyright-file-input"
                                 type="file"
                                 accept=".docx,.pdf"
-                                className="hidden"
+                                className="sr-only"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0] || null;
                                     if (file && !file.name.toLowerCase().endsWith('.docx') && !file.name.toLowerCase().endsWith('.pdf')) {
@@ -371,7 +371,7 @@ export default function FinalSubmissionForm() {
                                     </p>
                                 </div>
                             )}
-                        </div>
+                        </label>
                     </div>
 
                     {/* Section 3: APC Payment Details */}

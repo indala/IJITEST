@@ -142,12 +142,13 @@ function SetupContent() {
                         <input type="hidden" name="token" value={token!} />
                         
                         <div className="space-y-2">
-                            <label className="form-label-brand font-bold text-muted-foreground uppercase tracking-widest ml-1">Create Password</label>
+                            <label htmlFor="setup-password" className="form-label-brand font-bold text-muted-foreground uppercase tracking-widest ml-1">Create Password</label>
                             <InputGroup className="h-11 rounded-lg border-border/50 bg-muted/20">
                                 <InputGroupAddon align="inline-start" className="pl-3">
                                     <Lock className="w-4 h-4 text-muted-foreground/60" />
                                 </InputGroupAddon>
                                 <InputGroupInput
+                                    id="setup-password"
                                     name="password"
                                     type={showPassword ? "text" : "password"}
                                     required
@@ -170,12 +171,13 @@ function SetupContent() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="form-label-brand font-bold text-muted-foreground uppercase tracking-widest ml-1">Confirm Password</label>
+                            <label htmlFor="setup-confirm-password" className="form-label-brand font-bold text-muted-foreground uppercase tracking-widest ml-1">Confirm Password</label>
                             <InputGroup className="h-11 rounded-lg border-border/50 bg-muted/20">
                                 <InputGroupAddon align="inline-start" className="pl-3">
                                     <CheckCircle2 className="w-4 h-4 text-muted-foreground/60" />
                                 </InputGroupAddon>
                                 <InputGroupInput
+                                    id="setup-confirm-password"
                                     name="confirmPassword"
                                     type={showPassword ? "text" : "password"}
                                     required

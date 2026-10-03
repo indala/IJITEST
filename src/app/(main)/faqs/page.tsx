@@ -5,7 +5,7 @@ import { getSettingsData } from "@/actions/settings";
 import { JsonLd } from "@/components/shared/JsonLd";
 
 export const metadata: Metadata = {
-    title: "Frequently Asked Questions (FAQ) | IJITEST",
+    title: "Frequently Asked Questions (FAQ)",
     description: "Get answers to common queries about manuscript submission, templates, peer-review timelines, publication fees, and indexing status.",
     alternates: {
         canonical: '/faqs',

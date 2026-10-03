@@ -39,10 +39,10 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
     const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
     
     if (isNaN(volNumber) || isNaN(issueNumber)) {
-        return { title: "Issue Not Found | IJITEST Archives" };
+        return { title: "Issue Not Found" };
     }
     return {
-        title: `Volume ${volNumber}, Issue ${issueNumber} | ${settings['journalName'] || 'IJITEST'} Archives`,
+        title: `Volume ${volNumber}, Issue ${issueNumber} Archives`,
         description: `Browse all peer-reviewed research papers published in Volume ${volNumber}, Issue ${issueNumber} of the ${settings['journalName'] || 'IJITEST'}.`,
         alternates: {
             canonical: `/archives/${volume}/${issue}`,

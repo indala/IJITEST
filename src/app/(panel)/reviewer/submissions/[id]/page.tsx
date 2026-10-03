@@ -26,7 +26,7 @@ import { type SubmissionIdParam } from "@/db/types";
 
 export async function generateMetadata(): Promise<Metadata> {
     return {
-        title: 'Manuscript Review | IJITEST',
+        title: 'Manuscript Review',
         description: 'Reviewer evaluation workspace for IJITEST manuscripts.',
     };
 }

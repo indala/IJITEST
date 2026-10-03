@@ -31,7 +31,7 @@ import {
 } from "@/features/dashboard/components/DashboardSkeletons";
 
 export const metadata = {
-    title: "Reviewer Dashboard | IJITEST",
+    title: "Reviewer Dashboard",
 };
 
 const getReviewerAssignments = cache(async (userId: string) => {

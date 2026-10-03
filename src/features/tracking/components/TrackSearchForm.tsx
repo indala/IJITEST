@@ -64,9 +64,10 @@ export function TrackSearchForm({
             <div className="p-4 sm:p-6">
                 <form action={formAction} className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-1.5">
-                        <label className="text-label text-muted-foreground ml-0.5">Manuscript ID</label>
+                        <label htmlFor="track-paper-id" className="text-label text-muted-foreground ml-0.5">Manuscript ID</label>
                         <div className="relative">
                             <Input
+                                id="track-paper-id"
                                 name="paperId"
                                 value={paperIdInput}
                                 onChange={(e) => onPaperIdChange(e.target.value)}
@@ -80,9 +81,10 @@ export function TrackSearchForm({
                         </div>
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-label text-muted-foreground ml-0.5">Corresponding Author Email</label>
+                        <label htmlFor="track-author-email" className="text-label text-muted-foreground ml-0.5">Corresponding Author Email</label>
                         <div className="relative">
                             <Input
+                                id="track-author-email"
                                 type="email"
                                 name="email"
                                 value={emailInput}

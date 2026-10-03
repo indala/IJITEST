@@ -47,7 +47,7 @@ export function TrackedManuscriptCard({ manuscript }: TrackedManuscriptCardProps
 
                 {/* Action Cards */}
                 <div className="mt-4 pt-4 border-t border-border/50">
-                    {manuscript.status === 'accepted' && (
+                    {manuscript.status === 'accepted' && manuscript.paymentStatus !== 'waived' && manuscript.paymentStatus !== 'paid' && manuscript.paymentStatus !== 'verified' && (
                         <div className="bg-primary p-4 sm:p-5 rounded-xl text-white relative overflow-hidden shadow-md">
                             <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                                 <div className="space-y-1.5">
@@ -66,6 +66,26 @@ export function TrackedManuscriptCard({ manuscript }: TrackedManuscriptCardProps
                                         Process Payment <CreditCard className="w-3.5 h-3.5" />
                                     </Link>
                                 </Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {manuscript.status === 'accepted' && (manuscript.paymentStatus === 'waived' || manuscript.paymentStatus === 'paid' || manuscript.paymentStatus === 'verified') && (
+                        <div className="bg-emerald-50 p-4 sm:p-5 rounded-xl border border-emerald-200 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="space-y-1 text-center md:text-left">
+                                <div className="flex items-center justify-center md:justify-start gap-2.5">
+                                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 shrink-0">
+                                        <CheckCircle2 className="w-4 h-4" />
+                                    </div>
+                                    <h3 className="font-bold text-emerald-800 m-0">
+                                        {manuscript.paymentStatus === 'waived' ? "APC Fee Waived" : "APC Payment Settled"}
+                                    </h3>
+                                </div>
+                                <p className="text-emerald-700 text-body-sm m-0">
+                                    {manuscript.paymentStatus === 'waived'
+                                        ? "Publication fees have been 100% waived by editorial decision. Your paper is being formatted for final publication."
+                                        : "Payment received. Your manuscript is queued for volume release."}
+                                </p>
                             </div>
                         </div>
                     )}

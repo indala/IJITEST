@@ -38,11 +38,21 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
 
     const handleClose = useCallback(() => setIsOpen(false), [setIsOpen]);
 
-    // Body Scroll Lock
+    // Body Scroll Lock & Keyboard Handling
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
-            document.body.style.paddingRight = 'var(--removed-body-scrollbar-width)'; // Prevent layout shift if any
+            document.body.style.paddingRight = 'var(--removed-body-scrollbar-width)';
+            
+            const handleKeyDown = (e: KeyboardEvent) => {
+                if (e.key === 'Escape') {
+                    handleClose();
+                }
+            };
+            window.addEventListener('keydown', handleKeyDown);
+            return () => {
+                window.removeEventListener('keydown', handleKeyDown);
+            };
         } else {
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
@@ -51,7 +61,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
         };
-    }, [isOpen]);
+    }, [isOpen, handleClose]);
 
     if (!mounted) return null;
 
@@ -65,7 +75,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={handleClose}
-                        className="fixed inset-0 bg-primary/20 backdrop-blur-md z-9998 lg:hidden"
+                        className="fixed inset-0 bg-primary/20 backdrop-blur-md z-9998 xl:hidden"
                     />
 
                     {/* Fixed Floating Modal Content */}
@@ -77,7 +87,7 @@ function MobileMenuComponent({ isOpen, setIsOpen }: MobileMenuProps) {
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="mobile-menu-title"
-                        className="fixed top-12 left-4 right-4 mx-auto w-[calc(100%-2rem)] max-w-[480px] bg-white/95 backdrop-blur-3xl rounded-4xl shadow-[0_40px_80px_-16px_rgba(0,0,0,0.3)] border border-white/40 flex flex-col overflow-hidden max-h-[85vh] z-9999 lg:hidden"
+                        className="fixed top-12 left-4 right-4 mx-auto w-[calc(100%-2rem)] max-w-[480px] bg-white/95 backdrop-blur-3xl rounded-4xl shadow-[0_40px_80px_-16px_rgba(0,0,0,0.3)] border border-white/40 flex flex-col overflow-hidden max-h-[85vh] z-9999 xl:hidden"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 h-16 border-b border-primary/5 shrink-0">

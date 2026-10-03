@@ -197,6 +197,7 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <RazorpayPayment
                                         submissionId={manuscript.id}
                                         paperId={manuscript.paperId}
+                                        currency={currency}
                                         onSuccess={() => setPaid(true)}
                                     />
                                 ) : (

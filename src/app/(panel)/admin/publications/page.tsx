@@ -1,7 +1,7 @@
 import { PublicationsRegistry } from '@/features/publications/components/PublicationsRegistry';
 
 export const metadata = {
-    title: "Publications | IJITEST",
+    title: "Publications Registry",
 };
 
 export default function AdminPublicationsPage() {

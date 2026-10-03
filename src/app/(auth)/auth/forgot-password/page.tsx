@@ -85,10 +85,11 @@ export default function ForgotPassword() {
                                 )}
                                 <form action={formAction} className="space-y-6">
                                     <div>
-                                        <label className="block form-label-brand font-black text-slate-700 tracking-widest mb-3 pl-1">Registered Email</label>
+                                        <label htmlFor="forgot-password-email" className="block form-label-brand font-black text-slate-700 tracking-widest mb-3 pl-1">Registered Email</label>
                                         <div className="relative">
                                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                                             <input
+                                                id="forgot-password-email"
                                                 name="email"
                                                 type="email"
                                                 required

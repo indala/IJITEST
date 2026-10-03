@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
 
     const paper = paperRes.success ? paperRes.data : null;
 
-    if (!paper) return { title: 'Article Not Found | IJITEST' };
+    if (!paper) return { title: 'Article Not Found' };
 
     const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
     const pubYearStr = paper.publicationYear ? String(paper.publicationYear) : '';

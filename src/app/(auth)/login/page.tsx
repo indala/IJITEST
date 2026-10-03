@@ -7,7 +7,7 @@ import { getSettingsData } from "@/actions/settings";
 import LoginClient from "./LoginClient";
 
 export const metadata = {
-    title: "Login | IJITEST",
+    title: "Login",
     description: "Sign in to your IJITEST account.",
     robots: 'noindex',
 };

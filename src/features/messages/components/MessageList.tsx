@@ -25,9 +25,10 @@ const MessageItem = memo(({
     const isPending = message.status === 'pending'
     
     return (
-        <div
+        <button
+            type="button"
             className={cn(
-                "group relative flex items-start gap-2.5 p-2 transition-all duration-200 cursor-pointer border-l-2",
+                "w-full text-left group relative flex items-start gap-2.5 p-2 transition-all duration-200 cursor-pointer border-l-2 focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring",
                 isSelected 
                     ? "bg-primary/5 border-primary" 
                     : isPending 
@@ -71,7 +72,7 @@ const MessageItem = memo(({
             {isPending && !isSelected && (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-primary" />
             )}
-        </div>
+        </button>
     )
 })
 

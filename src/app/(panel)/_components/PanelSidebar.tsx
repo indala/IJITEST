@@ -96,7 +96,9 @@ export function PanelSidebar({
             <SidebarContent className="px-3 py-6">
                 <SidebarMenu className="space-y-2">
                     {filteredItems.map((item) => {
-                        const isActive = pathname === item.fullHref;
+                        const isExact = pathname === item.fullHref;
+                        const isNested = item.fullHref !== '/author' && item.fullHref !== '/editor' && item.fullHref !== '/reviewer' && item.fullHref !== '/admin' && pathname.startsWith(item.fullHref + '/');
+                        const isActive = isExact || isNested;
                         return (
                             <SidebarMenuItem key={item.name}>
                                 <SidebarMenuButton

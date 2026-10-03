@@ -18,16 +18,19 @@ export function PanelHeader({
     user,
     handleLogout,
 }: PanelHeaderProps) {
-    const activeItem = filteredItems.find(i => pathname === i.fullHref);
+    const activeItem = filteredItems.find(i => 
+        pathname === i.fullHref || 
+        (i.fullHref !== '/author' && i.fullHref !== '/editor' && i.fullHref !== '/reviewer' && i.fullHref !== '/admin' && pathname.startsWith(i.fullHref + '/'))
+    );
 
     return (
         <header className="bg-background/95 backdrop-blur-sm border-b border-border/70 flex items-center justify-between px-4 sm:px-6 2xl:px-8 h-16 2xl:h-20 sticky top-0 z-30 transition-colors">
             <div className="flex items-center gap-4">
                 <SidebarTrigger className="lg:hidden h-10 w-10 cursor-pointer text-primary" />
                 <div className="flex flex-col">
-                    <h1 className="panel-title m-0">
+                    <p className="panel-title m-0 font-bold">
                         {activeItem?.name || 'Overview'}
-                    </h1>
+                    </p>
                 </div>
             </div>
 

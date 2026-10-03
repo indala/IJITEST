@@ -49,12 +49,14 @@ export const ReviewItemCard = React.memo(({
     const [isRatingPending, startRatingTransition] = useTransition();
 
     const handleRate = (stars: number) => {
+        const previousRating = currentRating;
         setCurrentRating(stars);
         startRatingTransition(async () => {
             const res = await rateReview(item.id, stars);
             if (res.success) {
                 toast.success(`Reviewer rated ${stars} stars!`);
             } else {
+                setCurrentRating(previousRating);
                 toast.error(res.error || "Failed to save rating");
             }
         });
@@ -258,8 +260,9 @@ export const ReviewItemCard = React.memo(({
 
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div className="space-y-1.5">
-                                                        <label className="form-label-brand font-medium text-muted-foreground">overall score (1-10)</label>
+                                                        <label htmlFor={`review-${item.id}-score`} className="form-label-brand font-medium text-muted-foreground">overall score (1-10)</label>
                                                         <Input
+                                                            id={`review-${item.id}-score`}
                                                             name="score"
                                                             type="number"
                                                             min="1"
@@ -271,8 +274,9 @@ export const ReviewItemCard = React.memo(({
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <label className="form-label-brand font-medium text-muted-foreground">confidence (1-5)</label>
+                                                        <label htmlFor={`review-${item.id}-confidence`} className="form-label-brand font-medium text-muted-foreground">confidence (1-5)</label>
                                                         <Input
+                                                            id={`review-${item.id}-confidence`}
                                                             name="confidence"
                                                             type="number"
                                                             min="1"
@@ -286,8 +290,9 @@ export const ReviewItemCard = React.memo(({
                                                 </div>
 
                                                 <div className="space-y-1.5">
-                                                    <label className="form-label-brand font-medium text-muted-foreground">confidential notes (for editor)</label>
+                                                    <label htmlFor={`review-${item.id}-editor-notes`} className="form-label-brand font-medium text-muted-foreground">confidential notes (for editor)</label>
                                                     <Textarea
+                                                        id={`review-${item.id}-editor-notes`}
                                                         name="commentsToEditor"
                                                         rows={3}
                                                         className="w-full bg-primary/5 border-none rounded-lg p-3 text-body-sm text-foreground resize-none"
@@ -299,8 +304,9 @@ export const ReviewItemCard = React.memo(({
                                             {/* Files and Authors */}
                                             <div className="space-y-4">
                                                 <div className="space-y-1.5">
-                                                    <label className="form-label-brand font-medium text-muted-foreground">comments to authors</label>
+                                                    <label htmlFor={`review-${item.id}-author-notes`} className="form-label-brand font-medium text-muted-foreground">comments to authors</label>
                                                     <Textarea
+                                                        id={`review-${item.id}-author-notes`}
                                                         name="commentsToAuthor"
                                                         required
                                                         rows={5}
@@ -310,9 +316,10 @@ export const ReviewItemCard = React.memo(({
                                                 </div>
 
                                                 <div className="space-y-1.5">
-                                                    <label className="form-label-brand font-medium text-muted-foreground">technical report (pdf)</label>
-                                                    <div className={`relative group border-2 border-dashed ${feedbackFile ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-border bg-muted/20'} rounded-lg p-4 transition-all hover:bg-muted/30 hover:border-primary/50`}>
+                                                    <label htmlFor={`review-${item.id}-feedback-file`} className="form-label-brand font-medium text-muted-foreground">technical report (pdf)</label>
+                                                    <div className={`relative group border-2 border-dashed ${feedbackFile ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-border bg-muted/20'} rounded-lg p-4 transition-all hover:bg-muted/30 hover:border-primary/50 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2`}>
                                                         <input
+                                                            id={`review-${item.id}-feedback-file`}
                                                             title="feedbackFile"
                                                             name="feedbackFile"
                                                             type="file"

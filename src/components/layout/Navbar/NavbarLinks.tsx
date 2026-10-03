@@ -163,7 +163,7 @@ export function NavbarLinks({ isScrolled }: NavbarLinksProps) {
     }, [pathname, activeIndex, isScrolled, handleActivate, handleKeyDown]);
 
     return (
-        <ul className="hidden items-center list-none p-0 lg:flex lg:space-x-1 xl:space-x-2 2xl:space-x-4">
+        <ul className="hidden items-center list-none p-0 xl:flex xl:space-x-2 2xl:space-x-4">
             {memoizedNavigation}
         </ul>
     );

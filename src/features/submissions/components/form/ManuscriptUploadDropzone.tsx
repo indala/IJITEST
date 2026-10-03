@@ -50,13 +50,13 @@ export function ManuscriptUploadDropzone({
                         <input
                             type="file"
                             onChange={onManuscriptChange}
-                            className="hidden"
+                            className="sr-only"
                             id="manuscript-upload"
                             accept=".docx"
                         />
                         <label
                             htmlFor="manuscript-upload"
-                            className={`flex flex-col items-center justify-center w-full min-h-[160px] border-2 border-dashed rounded-xl transition-all cursor-pointer shadow-sm relative overflow-hidden ${
+                            className={`flex flex-col items-center justify-center w-full min-h-[160px] border-2 border-dashed rounded-xl transition-all cursor-pointer shadow-sm relative overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${
                                 manuscriptFile
                                     ? "border-primary/50 bg-primary/5"
                                     : "border-border/50 bg-card hover:border-primary/30 hover:bg-primary/5"

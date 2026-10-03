@@ -5,6 +5,7 @@ import { Mail, Search, Globe, Users, Sparkles, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { staticEditorialBoardMembers, type BoardMember } from '../data/editorial-board';
 import type { SafeUserWithProfile } from '@/db/contracts';
+import type { UserRole } from '@/db/types';
 import type { JournalSettings } from '@/db/protocols';
 
 interface EditorialBoardClientProps {
@@ -12,33 +13,57 @@ interface EditorialBoardClientProps {
     settings: JournalSettings;
 }
 
-export default function EditorialBoardClient({ initialMembers: _initialMembers, settings }: EditorialBoardClientProps) {
+export default function EditorialBoardClient({ initialMembers, settings }: EditorialBoardClientProps) {
     const supportEmail = settings.supportEmail || 'support@ijitest.org';
     const [searchQuery, setSearchQuery] = useState('');
 
-    const editorInChief: BoardMember = {
-        full_name: "Dr. Ravibabu T.",
-        designation: "Associate Professor",
-        department: "Department of Electronics and Communication Engineering",
-        institute: "MES Group of Institutions",
-        email: "editor@ijitest.org",
-        secondaryEmail: "rthorlapati@miracleeducationalsociety.com",
-        profileLink: "",
-        officialAddress: "Vizianagaram, Andhra Pradesh, India - 530048",
-        role: "admin"
-    };
+    const membersToUse: BoardMember[] = useMemo(() => {
+        if (initialMembers && initialMembers.length > 0) {
+            return initialMembers.map((m) => ({
+                full_name: m.profile?.fullName || 'Editorial Member',
+                designation: m.profile?.designation || 'Member',
+                department: undefined,
+                institute: m.profile?.institute || 'IJITEST Board',
+                email: m.email,
+                role: m.role as UserRole,
+                nationality: m.profile?.nationality || undefined,
+                profileLink: m.profile?.institutionProfile || undefined,
+            }));
+        }
+        return staticEditorialBoardMembers;
+    }, [initialMembers]);
+
+    const editorInChief: BoardMember = useMemo(() => {
+        const found = membersToUse.find((m) => m.role === 'admin');
+        if (found) return found;
+        return {
+            full_name: "Dr. Ravibabu T.",
+            designation: "Associate Professor",
+            department: "Department of Electronics and Communication Engineering",
+            institute: "MES Group of Institutions",
+            email: "editor@ijitest.org",
+            secondaryEmail: "rthorlapati@miracleeducationalsociety.com",
+            profileLink: "",
+            officialAddress: "Vizianagaram, Andhra Pradesh, India - 530048",
+            role: "admin"
+        };
+    }, [membersToUse]);
+
+    const boardReviewers = useMemo(() => {
+        return membersToUse.filter((m) => m.email !== editorInChief.email && m.full_name !== editorInChief.full_name);
+    }, [membersToUse, editorInChief]);
 
     const filteredReviewers = useMemo(() => {
-        if (!searchQuery.trim()) return staticEditorialBoardMembers;
+        if (!searchQuery.trim()) return boardReviewers;
         const q = searchQuery.toLowerCase().trim();
-        return staticEditorialBoardMembers.filter((m) => 
+        return boardReviewers.filter((m) => 
             Boolean(m.full_name?.toLowerCase().includes(q)) ||
             Boolean(m.department?.toLowerCase().includes(q)) ||
             Boolean(m.institute?.toLowerCase().includes(q)) ||
             Boolean(m.designation?.toLowerCase().includes(q)) ||
             Boolean(m.officialAddress?.toLowerCase().includes(q))
         );
-    }, [searchQuery]);
+    }, [boardReviewers, searchQuery]);
 
     return (
         <section className="space-y-6 max-w-full lg:max-w-6xl 2xl:max-w-7xl mx-auto pb-6">

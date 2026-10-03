@@ -1,7 +1,7 @@
 import AnnouncementsManager from "@/features/announcements/components/AnnouncementsManager";
 
 export const metadata = {
-    title: "Announcements & Notices | Editorial Hub | IJITEST",
+    title: "Editorial Announcements",
     description: "Manage journal announcements, calls for papers, news, and storage-service banner assets.",
 };
 

@@ -3,13 +3,13 @@ import { MessagesTabContainer } from "@/features/messages/components/MessagesTab
 import { Loader2 } from "lucide-react";
 
 export const metadata = {
-    title: "Editorial Inbox | IJITEST Portal",
+    title: "Editorial Inbox",
     description: "Central command for editorial inquiries and peer review synchronization."
 };
 
 export default function MessagesPage() {
     return (
-        <section className="h-[calc(100vh-100px)] flex flex-col p-0 overflow-hidden">
+        <section className="h-[calc(100vh-11rem)] 2xl:h-[calc(100vh-13rem)] flex flex-col p-0 overflow-hidden">
             <Suspense fallback={
                 <div className="flex-1 flex flex-col items-center justify-center gap-6 opacity-40">
                     <Loader2 className="w-10 h-10 animate-spin text-primary" />

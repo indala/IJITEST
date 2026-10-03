@@ -50,6 +50,8 @@ export default function HomeCarousel() {
                             alt={`Journal Hero Slide ${index + 1}`}
                             fill
                             priority={index === 0}
+                            loading={index === 0 ? "eager" : "lazy"}
+                            fetchPriority={index === 0 ? "high" : "low"}
                             className="object-cover object-center opacity-40"
                             quality={75}
                         />

@@ -42,27 +42,27 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                     control={form.control}
                     name="sectionId"
                     render={({ field }) => (
-                        <FormItem className="space-y-2">
+                        <FormItem className="space-y-2 min-w-0 w-full">
                             <div className="flex items-center gap-2 mb-1">
-                                <Bookmark className="w-4 h-4 text-primary" />
+                                <Bookmark className="w-4 h-4 text-primary shrink-0" />
                                 <FormLabel className="form-label-brand">Journal Section / Article Type</FormLabel>
                             </div>
                             <Select
                                 onValueChange={(val) => field.onChange(val)}
                                 value={field.value ? String(field.value) : ""}
-                            >
+                        >
                                 <FormControl>
-                                    <SelectTrigger className="w-full input-standard h-11 bg-card">
+                                    <SelectTrigger className="w-full min-w-0 max-w-full input-standard h-auto min-h-11 py-2 bg-card text-left">
                                         <SelectValue placeholder="Select article classification (e.g. Original Research, Review)" />
                                     </SelectTrigger>
                                 </FormControl>
-                                <SelectContent>
+                                <SelectContent className="max-w-[calc(100vw-2rem)] sm:max-w-xl">
                                     {sections.map((sec) => (
-                                        <SelectItem key={sec.id} value={String(sec.id)}>
-                                            <div className="flex flex-col text-left py-0.5">
-                                                <span className="font-semibold text-foreground text-body-sm">{sec.title}</span>
+                                        <SelectItem key={sec.id} value={String(sec.id)} className="cursor-pointer py-2">
+                                            <div className="flex flex-col text-left py-0.5 min-w-0 max-w-full">
+                                                <span className="font-semibold text-foreground text-body-sm text-wrap break-words">{sec.title}</span>
                                                 {sec.policy && (
-                                                    <span className="text-caption text-muted-foreground line-clamp-1 max-w-md">
+                                                    <span className="text-caption text-muted-foreground line-clamp-2 text-wrap break-words mt-0.5">
                                                         {sec.policy}
                                                     </span>
                                                 )}

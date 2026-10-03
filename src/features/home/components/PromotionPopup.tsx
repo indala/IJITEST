@@ -46,14 +46,35 @@ export default function PromotionPopup() {
         localStorage.setItem(PROMOTION_SNOOZED_KEY, snoozeUntil.toString());
     };
 
+    // Body Scroll Lock & Escape Key Handler for Overlay Accessibility
+    useEffect(() => {
+        if (!isVisible) return;
+        document.body.style.overflow = 'hidden';
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                handleSnooze();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.body.style.overflow = '';
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isVisible]);
+
     return (
         <AnimatePresence>
             {isVisible && (
-                <div className="fixed  inset-0 z-100 flex items-center justify-center p-4  bg-black/70 backdrop-blur-md">
+                <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="promo-title"
                         className="border border-border/80 relative max-w-md w-full bg-card rounded-2xl overflow-hidden shadow-2xl max-h-[92vh] flex flex-col"
                     >
                         {/* Decorative Background */}
@@ -79,7 +100,7 @@ export default function PromotionPopup() {
                             </div>
 
                             <div className="space-y-1.5 mb-3 shrink-0">
-                                <h2 className="text-primary m-0">
+                                <h2 id="promo-title" className="text-primary m-0">
                                     Publish Your Research
                                 </h2>
                                 <p className="text-muted-foreground border-l-2 border-secondary pl-3 text-left m-0 leading-relaxed">

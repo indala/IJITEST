@@ -10,6 +10,7 @@ import { toast } from "sonner";
 interface RazorpayPaymentProps {
     submissionId: number;
     paperId: string;
+    currency?: string;
     onSuccess?: () => void;
 }
 
@@ -63,7 +64,7 @@ declare global {
     }
 }
 
-export default function RazorpayPayment({ submissionId, paperId, onSuccess }: RazorpayPaymentProps) {
+export default function RazorpayPayment({ submissionId, paperId, currency = "INR", onSuccess }: RazorpayPaymentProps) {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -157,7 +158,7 @@ export default function RazorpayPayment({ submissionId, paperId, onSuccess }: Ra
             ) : (
                 <>
                     <CreditCard className="w-5 h-5" />
-                    Complete APC Payment (INR)
+                    Complete APC Payment ({currency})
                 </>
             )}
         </Button>

@@ -161,21 +161,18 @@ export default function SocketProvider({ children }: { children: React.ReactNode
 
       // Handle real-time incoming messages globally
       activeSocket.on("receiveMessage", (msg: ChatMessageRow) => {
-        // Only trigger alerts if the message is from someone other than the current user,
-        // and they are not actively looking at their chat thread.
-        if (msg.senderId !== currentUserId && msg.senderId !== activePartnerRef.current) {
-          
-          // Increment local unread indicators
+        if (msg.senderId === currentUserId) return;
+
+        const isActiveThread = msg.senderId === activePartnerRef.current;
+        if (!isActiveThread) {
           setUnreadCountsByPartner(prev => {
             const count = (prev[msg.senderId] || 0) + 1;
             return { ...prev, [msg.senderId]: count };
           });
           setUnreadCount(prev => prev + 1);
 
-          // Play dynamic Web Audio chime
           playNotificationSound();
 
-          // Native Browser Push Notification
           if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
             try {
               new Notification(`New message from ${msg.senderName || "Team Member"}`, {

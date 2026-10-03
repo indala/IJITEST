@@ -11,7 +11,7 @@ import SubmissionDetailContainer from "@/features/submissions/components/Submiss
 
 export async function generateMetadata(): Promise<Metadata> {
     return {
-        title: 'Submission Management | IJITEST Editor',
+        title: 'Submission Management',
         description: 'Editorial manuscript management for IJITEST.',
     };
 }

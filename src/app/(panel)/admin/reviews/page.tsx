@@ -1,7 +1,7 @@
 import { ReviewsRegistry } from '@/features/reviews/components/ReviewsRegistry';
 
 export const metadata = {
-    title: "Reviews | IJITEST",
+    title: "Peer Reviews",
 };
 
 export default function AdminReviews() {

@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 
 export const metadata = {
-    title: "Editorial Board Profile | IJITEST",
+    title: "Editorial Board Profile",
 };
 
 export default async function EditorProfilePage() {

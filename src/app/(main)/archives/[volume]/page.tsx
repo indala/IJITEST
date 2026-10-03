@@ -38,10 +38,10 @@ export async function generateMetadata({ params }: { params: Promise<{ volume: s
     const baseUrl = settings['journalWebsite'] || 'https://ijitest.org';
     
     if (isNaN(volNumber)) {
-        return { title: "Volume Not Found | IJITEST Archives" };
+        return { title: "Volume Not Found" };
     }
     return {
-        title: `Volume ${volNumber} | ${settings['journalName'] || 'IJITEST'} Archives`,
+        title: `Volume ${volNumber} Archives`,
         description: `Browse issues and research articles published in Volume ${volNumber} of the ${settings['journalName'] || 'IJITEST'}.`,
         alternates: {
             canonical: `/archives/${volume}`,

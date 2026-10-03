@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export function LiveChatContent() {
   const { data: session } = useSession();
@@ -170,6 +171,8 @@ export function LiveChatContent() {
             [targetUserId]: new Date(createdAt),
           }));
         }
+      } else if (!response.success) {
+        toast.error(response.error || "Failed to load chat history");
       }
     }
 
@@ -188,7 +191,6 @@ export function LiveChatContent() {
     const textToSend = newMessage.trim();
     setNewMessage("");
 
-    // Create temporary optimistic message
     const tempMsg: ChatMessageRow = {
       id: -Date.now(),
       senderId: currentUserId,
@@ -201,40 +203,40 @@ export function LiveChatContent() {
     };
 
     startTransition(async () => {
-      // 1. Instantly display in UI via optimistic state
       addOptimisticMessage(tempMsg);
       setTimeout(() => scrollToBottom("smooth"), 50);
 
-      // 2. Save to database via Next.js Server Action
       const response = await sendChatMessage(selectedUser.id, textToSend);
       if (response.success && response.data) {
         const savedMsg = response.data;
-        
-        // Inject sender details for local UI consistency
         const fullMsg: ChatMessageRow = {
           ...savedMsg,
           senderName: session?.user?.name || "Me",
         };
 
-        // 3. Add permanently to state (this replaces the optimistic message once the transition ends)
         setMessages((prev) => {
-          if (prev.some((m) => m.id === fullMsg.id)) return prev;
-          return [...prev, fullMsg];
+          const withoutOptimistic = prev.filter((m) => m.id !== tempMsg.id);
+          if (withoutOptimistic.some((m) => m.id === fullMsg.id)) return withoutOptimistic;
+          return [...withoutOptimistic, fullMsg];
         });
         setTimeout(() => scrollToBottom("smooth"), 50);
 
-        // 4. Update last message time for sorting
         setLastMessageTime((prev) => ({
           ...prev,
           [selectedUser.id]: fullMsg.createdAt ? new Date(fullMsg.createdAt) : new Date(),
         }));
 
-        // 5. Emit via socket to relay instantly
         if (socket && isConnected) {
           socket.emit("sendMessage", fullMsg);
         } else {
           console.warn("Socket emission skipped. socket:", !!socket, "isConnected:", isConnected);
         }
+      } else {
+        // Restore draft and inform user of send failure
+        setNewMessage(textToSend);
+        setMessages((prev) => prev.filter((m) => m.id !== tempMsg.id));
+        const errorMsg = !response.success ? response.error : "Failed to send message.";
+        toast.error(errorMsg || "Failed to send message. Draft restored.");
       }
     });
   };

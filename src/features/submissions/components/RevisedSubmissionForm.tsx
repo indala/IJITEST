@@ -232,24 +232,24 @@ export default function RevisedSubmissionForm() {
                     {/* Revised Manuscript File Upload */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="revised-file" className="form-label-brand">
+                            <Label htmlFor="revised-file-input" className="form-label-brand">
                                 Revised Manuscript Document (.docx) <span className="text-destructive">*</span>
                             </Label>
                             <span className="text-meta text-muted-foreground">Max 20MB (.docx only)</span>
                         </div>
-                        <div
-                            className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
+                        <label
+                            htmlFor="revised-file-input"
+                            className={`block border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${
                                 manuscriptFile
                                     ? 'border-emerald-500 bg-emerald-50/20'
                                     : 'border-border/70 hover:border-primary/40 bg-muted/10'
                             }`}
-                            onClick={() => document.getElementById('revised-file-input')?.click()}
                         >
                             <input
                                 id="revised-file-input"
                                 type="file"
                                 accept=".docx"
-                                className="hidden"
+                                className="sr-only"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0] || null;
                                     if (file && !file.name.toLowerCase().endsWith('.docx')) {
@@ -277,30 +277,30 @@ export default function RevisedSubmissionForm() {
                                     </p>
                                 </div>
                             )}
-                        </div>
+                        </label>
                     </div>
 
                     {/* Rebuttal File Upload (Optional Document) */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="rebuttal-file" className="form-label-brand">
+                            <Label htmlFor="rebuttal-file-input" className="form-label-brand">
                                 Response to Reviewers / Rebuttal Letter <span className="text-meta text-muted-foreground">(Optional File)</span>
                             </Label>
                             <span className="text-meta text-muted-foreground">.docx or .pdf</span>
                         </div>
-                        <div
-                            className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors ${
+                        <label
+                            htmlFor="rebuttal-file-input"
+                            className={`block border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${
                                 rebuttalFile
                                     ? 'border-emerald-500 bg-emerald-50/20'
                                     : 'border-border/70 hover:border-primary/40 bg-muted/10'
                             }`}
-                            onClick={() => document.getElementById('rebuttal-file-input')?.click()}
                         >
                             <input
                                 id="rebuttal-file-input"
                                 type="file"
                                 accept=".docx,.pdf"
-                                className="hidden"
+                                className="sr-only"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0] || null;
                                     if (file && !file.name.toLowerCase().endsWith('.docx') && !file.name.toLowerCase().endsWith('.pdf')) {
@@ -325,7 +325,7 @@ export default function RevisedSubmissionForm() {
                                     </p>
                                 </div>
                             )}
-                        </div>
+                        </label>
                     </div>
 
                     {/* Text Changelog / Response Summary */}

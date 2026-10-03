@@ -215,8 +215,9 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                         <form action={createAction} className="space-y-4 pt-2">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-label text-foreground">Volume Number</Label>
+                                    <Label htmlFor="pub-volume-num" className="text-label text-foreground">Volume Number</Label>
                                     <Input
+                                        id="pub-volume-num"
                                         name="volume"
                                         type="number"
                                         required
@@ -225,8 +226,9 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-label text-foreground">Issue Number</Label>
+                                    <Label htmlFor="pub-issue-num" className="text-label text-foreground">Issue Number</Label>
                                     <Input
+                                        id="pub-issue-num"
                                         name="issue"
                                         type="number"
                                         required
@@ -236,8 +238,9 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-label text-foreground">Publication Year</Label>
+                                <Label htmlFor="pub-year" className="text-label text-foreground">Publication Year</Label>
                                 <Input
+                                    id="pub-year"
                                     name="year"
                                     type="number"
                                     required
@@ -246,8 +249,9 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-label text-foreground">Month Range</Label>
+                                <Label htmlFor="pub-month-range" className="text-label text-foreground">Month Range</Label>
                                 <Input
+                                    id="pub-month-range"
                                     name="monthRange"
                                     placeholder="e.g. Jan - Mar"
                                     className="h-10 bg-background border-border/70 focus-visible:ring-1 text-body-sm rounded-lg px-3"

@@ -33,28 +33,28 @@ export function ReviewerSuggestionsSection({ control }: ReviewerSuggestionsSecti
     return (
         <div className="space-y-8 pt-12 border-t border-border/50">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/5 text-primary flex items-center justify-center border border-primary/10">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <div className="w-10 h-10 rounded-xl bg-primary/5 text-primary flex items-center justify-center border border-primary/10 shrink-0 mt-0.5">
                         <UserCheck className="w-5 h-5" />
                     </div>
-                    <div>
-                        <h3 className="m-0">Reviewer Suggestions & Oppositions</h3>
-                        <p className="text-muted-foreground m-0 mt-0.5">
+                    <div className="min-w-0 flex-1">
+                        <h3 className="m-0 text-body-lg sm:text-heading-3">Reviewer Suggestions & Oppositions</h3>
+                        <p className="text-muted-foreground m-0 mt-0.5 text-caption sm:text-body-sm">
                             Optional: Suggest qualified peers or specify individuals with competing interests.
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
                     <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         onClick={() => addSuggestion('suggested')}
                         disabled={fields.length >= 6}
-                        className="h-9 px-3 rounded-lg border-emerald-500/30 text-emerald-700  font-bold text-body-sm hover:bg-emerald-50  transition-all shadow-xs"
+                        className="h-9 px-2 sm:px-3 rounded-lg border-emerald-500/30 text-emerald-700 font-bold text-caption sm:text-body-sm hover:bg-emerald-50 transition-all shadow-xs w-full sm:w-auto justify-center truncate"
                     >
-                        <ThumbsUp className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
-                        Suggest Reviewer
+                        <ThumbsUp className="w-3.5 h-3.5 mr-1 sm:mr-1.5 text-emerald-600 shrink-0" />
+                        <span className="truncate">Suggest Reviewer</span>
                     </Button>
                     <Button
                         type="button"
@@ -62,10 +62,10 @@ export function ReviewerSuggestionsSection({ control }: ReviewerSuggestionsSecti
                         size="sm"
                         onClick={() => addSuggestion('opposed')}
                         disabled={fields.length >= 6}
-                        className="h-9 px-3 rounded-lg border-rose-500/30 text-rose-700  font-bold text-body-sm hover:bg-rose-50  transition-all shadow-xs"
+                        className="h-9 px-2 sm:px-3 rounded-lg border-rose-500/30 text-rose-700 font-bold text-caption sm:text-body-sm hover:bg-rose-50 transition-all shadow-xs w-full sm:w-auto justify-center truncate"
                     >
-                        <ThumbsDown className="w-3.5 h-3.5 mr-1.5 text-rose-600" />
-                        Oppose Reviewer
+                        <ThumbsDown className="w-3.5 h-3.5 mr-1 sm:mr-1.5 text-rose-600 shrink-0" />
+                        <span className="truncate">Oppose Reviewer</span>
                     </Button>
                 </div>
             </div>
@@ -94,17 +94,17 @@ export function ReviewerSuggestionsSection({ control }: ReviewerSuggestionsSecti
                                     <Trash2 className="w-4 h-4" />
                                 </Button>
 
-                                <CardContent className="p-5 sm:p-6 space-y-4">
-                                    <div className="flex items-center gap-2.5 pb-2 border-b border-border/40">
+                                <CardContent className="p-4 sm:p-6 space-y-4">
+                                    <div className="flex items-center gap-2.5 pb-2 border-b border-border/40 pr-8">
                                         {isOpposed ? (
-                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-700  text-body-sm font-bold">
-                                                <ShieldAlert className="w-3.5 h-3.5" />
-                                                Opposed Reviewer
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-700 text-body-sm font-bold">
+                                                <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                                                <span>Opposed Reviewer</span>
                                             </div>
                                         ) : (
-                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-700  text-body-sm font-bold">
-                                                <ThumbsUp className="w-3.5 h-3.5" />
-                                                Preferred Reviewer
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-700 text-body-sm font-bold">
+                                                <ThumbsUp className="w-3.5 h-3.5 shrink-0" />
+                                                <span>Preferred Reviewer</span>
                                             </div>
                                         )}
                                     </div>
