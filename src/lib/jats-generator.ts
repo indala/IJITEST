@@ -135,6 +135,10 @@ ${rawKeywords.map(k => `        <kwd>${escapeXml(k)}</kwd>`).join('\n')}
 
     // Author string for copyright
     const authorString = rawAuthors.map(a => a.name).join(', ') || 'IJITEST Authors';
+    const copyrightYear = paper.copyrightYear || pubDateParts.year;
+    const copyrightHolder = paper.copyrightHolder || authorString;
+    const licenseUrl = paper.licenseUrl || settings['licenseUrl'] || 'https://creativecommons.org/licenses/by/4.0/';
+    const licenseName = settings['licenseName'] || 'Creative Commons Attribution 4.0 International License (CC BY 4.0)';
 
     // Disclosures in <back>
     const hasDisclosures = Boolean(paper.fundingStatement || paper.competingInterests || paper.ethicalApproval);
@@ -212,11 +216,11 @@ ${affsXml}
         </date>
       </history>
       <permissions>
-        <copyright-statement>Copyright &#169; ${pubDateParts.year} ${escapeXml(authorString)}. Published by ${escapeXml(publisher)}.</copyright-statement>
-        <copyright-year>${pubDateParts.year}</copyright-year>
-        <copyright-holder>${escapeXml(authorString)}</copyright-holder>
-        <license xlink:href="https://creativecommons.org/licenses/by/4.0/">
-          <license-p>This is an open-access article distributed under the terms of the Creative Commons Attribution 4.0 International License (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are properly credited.</license-p>
+        <copyright-statement>Copyright &#169; ${copyrightYear} ${escapeXml(copyrightHolder)}. Published by ${escapeXml(publisher)}.</copyright-statement>
+        <copyright-year>${copyrightYear}</copyright-year>
+        <copyright-holder>${escapeXml(copyrightHolder)}</copyright-holder>
+        <license xlink:href="${escapeXml(licenseUrl)}">
+          <license-p>This is an open-access article distributed under the terms of the ${escapeXml(licenseName)}, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are properly credited.</license-p>
         </license>
       </permissions>
       <self-uri content-type="html" xlink:href="${escapeXml(canonicalUrl)}"/>${pdfUrl ? `\n      <self-uri content-type="pdf" xlink:href="${escapeXml(pdfUrl)}"/>` : ''}

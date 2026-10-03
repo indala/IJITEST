@@ -83,18 +83,20 @@ export function generateCrossRefXml({
             : '';
 
         // Authors
-        const authors: Array<{ name: string; institution?: string | null }> = [];
+        const authors: Array<{ name: string; institution?: string | null; orcid?: string | null }> = [];
         if (Array.isArray(paper.coAuthors) && paper.coAuthors.length > 0) {
             paper.coAuthors.forEach((ca: Author) => {
                 authors.push({
                     name: ca.name,
                     institution: ca.institution,
+                    orcid: ca.orcidId || null,
                 });
             });
         } else {
             authors.push({
                 name: paper.authorName,
                 institution: paper.affiliation,
+                orcid: null,
             });
         }
 
@@ -108,9 +110,12 @@ export function generateCrossRefXml({
                 <institution_name>${escapeXml(author.institution)}</institution_name>
               </institution>
             </affiliations>` : '';
+            const orcidTag = author.orcid
+                ? `\n            <ORCID authenticated="true">https://orcid.org/${escapeXml(author.orcid.replace(/^https?:\/\/orcid\.org\//, ''))}</ORCID>`
+                : '';
 
             return `          <person_name sequence="${sequence}" contributor_role="author">${givenNameTag}
-            <surname>${escapeXml(surname)}</surname>${institutionTag}
+            <surname>${escapeXml(surname)}</surname>${institutionTag}${orcidTag}
           </person_name>`;
         }).join('\n');
 
@@ -146,6 +151,8 @@ export function generateCrossRefXml({
           </collection>`
             : '';
 
+        const licenseUrl = paper.licenseUrl || settings['licenseUrl'] || 'https://creativecommons.org/licenses/by/4.0/';
+
         return `      <journal_article publication_type="full_text">
         <titles>
           <title>${escapeXml(paper.title)}</title>
@@ -159,7 +166,7 @@ ${contributorsXml}
           <year>${pubYear}</year>
         </publication_date>${pagesXml}
         <ai:program name="AccessIndicators">
-          <ai:license_ref>https://creativecommons.org/licenses/by/4.0/</ai:license_ref>
+          <ai:license_ref>${escapeXml(licenseUrl)}</ai:license_ref>
         </ai:program>
         <doi_data>
           <doi>${escapeXml(paper.doi)}</doi>

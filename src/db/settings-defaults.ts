@@ -24,6 +24,8 @@ export const DEFAULT_JOURNAL_SETTINGS = {
     journalSubject: 'Multidisciplinary (Engineering, Science and Technology, Healthcare, Management Sciences)',
     udyamRegistration: 'UDYAM-AP-10-0125617',
     doiPrefix: '10.68139',
+    licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
+    licenseName: 'Creative Commons Attribution 4.0 International (CC BY 4.0)',
     sushiPlatformId: 'ijitest',
     sushiCustomerId: '0'
 } as const;

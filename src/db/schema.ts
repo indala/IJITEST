@@ -537,6 +537,10 @@ export const publications = mysqlTable("publications", {
     zenodoRecordId: varchar("zenodo_record_id", { length: 50 }),
     zenodoStatus: mysqlEnum("zenodo_status", ['none', 'pending', 'published', 'failed']).default('none').notNull(),
     zenodoRecordUrl: varchar("zenodo_record_url", { length: 500 }),
+    // Rights & Licensing
+    licenseUrl: varchar("license_url", { length: 500 }),
+    copyrightHolder: varchar("copyright_holder", { length: 255 }),
+    copyrightYear: int("copyright_year"),
     publishedAt: timestamp("published_at").defaultNow(),
     views: int("views").default(0).notNull(),
     downloads: int("downloads").default(0).notNull(),

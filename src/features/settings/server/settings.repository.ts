@@ -45,6 +45,8 @@ export async function readJournalSettings(): Promise<JournalSettings> {
         doiPrefix: row.doiPrefix || DEFAULT_JOURNAL_SETTINGS.doiPrefix,
         sushiPlatformId: row.sushiPlatformId || DEFAULT_JOURNAL_SETTINGS.sushiPlatformId,
         sushiCustomerId: row.sushiCustomerId || DEFAULT_JOURNAL_SETTINGS.sushiCustomerId,
+        licenseUrl: DEFAULT_JOURNAL_SETTINGS.licenseUrl,
+        licenseName: DEFAULT_JOURNAL_SETTINGS.licenseName,
     };
 }
 

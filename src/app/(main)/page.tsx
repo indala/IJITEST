@@ -6,6 +6,7 @@ import { getAnnouncements } from '@/actions/announcements';
 import type { Metadata } from 'next';
 import HomeCarousel from '@/features/home/components/HomeCarousel';
 import WelcomeSection from '@/features/home/components/WelcomeSection';
+import PublicationWorkflow from '@/features/home/components/PublicationWorkflow';
 import AimAndScope from '@/features/home/components/AimAndScope';
 import AnnouncementsWidget from '@/features/home/components/AnnouncementsWidget';
 import PublisherSection from '@/features/home/components/PublisherSection';
@@ -89,6 +90,7 @@ export default async function Home() {
           }
         >
           <WelcomeSection settings={settings} />
+          <PublicationWorkflow />
           <AimAndScope settings={settings} shortName={settings['journalShortName']} />
           <PublisherSection settings={settings} embedded />
         </SidebarLayout>

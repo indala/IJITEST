@@ -322,8 +322,8 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                                     <p className="font-bold text-primary m-0">Open Access Attribution License</p>
                                 </div>
                                 <p className="text-muted-foreground leading-relaxed m-0">
-                                    Distributed under the terms of the{' '}
-                                    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-primary font-bold underline hover:text-secondary">
+                                    Copyright &copy; {paper.copyrightYear || paper.publicationYear || (paper.publishedAt ? new Date(paper.publishedAt).getFullYear() : new Date().getFullYear())} {paper.copyrightHolder || paper.authorName}. Distributed under the terms of the{' '}
+                                    <a href={paper.licenseUrl || "https://creativecommons.org/licenses/by/4.0/"} target="_blank" rel="noopener noreferrer" className="text-primary font-bold underline hover:text-secondary">
                                         Creative Commons Attribution 4.0 International (CC BY 4.0)
                                     </a>.
                                 </p>

@@ -208,7 +208,7 @@ ${subjectsXml}
         ${paper.doi ? `<dc:identifier>doi:${escapeXml(paper.doi)}</dc:identifier>` : ''}
         <dc:source>${escapeXml(journalTitle)}; Vol. ${paper.volumeNumber} No. ${paper.issueNumber} (${paper.publicationYear})</dc:source>
         <dc:language>eng</dc:language>
-        <dc:rights>https://creativecommons.org/licenses/by/4.0/</dc:rights>
+        <dc:rights>${escapeXml(paper.licenseUrl || settings['licenseUrl'] || 'https://creativecommons.org/licenses/by/4.0/')}</dc:rights>
       </oai_dc:dc>`;
 }
 
