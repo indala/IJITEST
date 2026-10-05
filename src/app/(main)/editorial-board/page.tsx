@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import EditorialBoardClient from '@/features/public/components/EditorialBoardClient';
 import type { Metadata } from 'next';
 import { getSettingsData } from '@/actions/settings';
-import { getEditorialBoard } from '@/actions/users';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
@@ -25,8 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EditorialBoard() {
-    const [settings, res] = await Promise.all([getSettingsData(), getEditorialBoard()]);
-    const initialMembers = res.success ? res.data || [] : [];
+    const settings = await getSettingsData();
 
     return (
         <div className="bg-background min-h-screen">
@@ -43,7 +41,7 @@ export default async function EditorialBoard() {
             <section className="container-responsive section-vertical flex justify-center">
                 <div className="space-y-6 2xl:space-y-8 w-full max-w-6xl 2xl:max-w-7xl">
                     {/* Main Content */}
-                    <EditorialBoardClient settings={settings} initialMembers={initialMembers} />
+                    <EditorialBoardClient settings={settings} />
 
                     {/* Ethics Policy Banner */}
                     <Card className="bg-primary border-none text-white shadow-md rounded-xl overflow-hidden relative group">

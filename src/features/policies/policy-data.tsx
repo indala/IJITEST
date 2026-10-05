@@ -17,6 +17,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { PolicyDefinition } from './types';
+import SubjectCoverageDropdown from './components/SubjectCoverageDropdown';
 
 export function getPolicyDefinitions(settings: Record<string, string>): Record<string, PolicyDefinition> {
     const journalName = settings['journalName'] || settings['journal_name'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
@@ -94,60 +95,11 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                     id: 'subject-coverage',
                     title: 'Subject Coverage & Areas of Interest',
                     content: (
-                        <div className="space-y-4">
-                            <p>
-                                <strong>{journalName} ({journalShort})</strong> invites original research articles, review papers, and survey papers from researchers, academicians, and industry professionals. Areas of interest include, but are not limited to:
+                        <div className="space-y-3">
+                            <p className="m-0 text-foreground/90">
+                                <strong>{journalName} ({journalShort})</strong> welcomes original research and review articles across the following disciplines and focus tracks:
                             </p>
-                            <ul className="space-y-2.5 list-none p-0 m-0">
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>All Engineering Disciplines:</strong> Comprehensive coverage across all core and interdisciplinary engineering branches, systems engineering, and applied sciences.</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Science and Applied Sciences:</strong> Applied Physics, Applied Chemistry, Applied Mathematics, Computational Modeling, Materials Science, and Environmental Science.</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Technology and Innovation:</strong> Emerging technologies, disruptive technical frameworks, digital transformation paradigms, and inventive technological methodologies.</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Computer Science and Information Technology:</strong> Software Engineering, Distributed Systems, Cloud & Edge Computing, Cybersecurity, Cryptography, Blockchain, and Big Data Analytics.</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Artificial Intelligence, Machine Learning, and Data Science:</strong> Deep Learning, Neural Networks, Natural Language Processing, Computer Vision, Generative AI, and Predictive Analytics.</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Electronics, Electrical, and Communication Engineering:</strong> VLSI & Microelectronics, Embedded Systems, Signal & Image Processing, Wireless & 5G/6G Networks, and Power Systems.</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Mechanical and Civil Engineering:</strong> Computational Fluid Dynamics (CFD), FEA, Thermal Engineering, Additive Manufacturing, Smart Infrastructure, Structural Engineering, and Sustainable Transportation.</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Internet of Things (IoT), Robotics, and Automation:</strong> Smart Sensor Networks, Cyber-Physical Systems, Autonomous Robotics, Industrial Automation, and Mechatronics.</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Renewable Energy and Sustainable Technologies:</strong> Solar, Wind, and Clean Energy Systems, Microgrids, Energy Storage, Decarbonization, and Sustainable Engineering Solutions.</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Management Studies, Business Administration, and Technology Management:</strong> Management Science, Business Administration, Technology & Operations Management, Supply Chain Logistics, Innovation Strategy, Information Systems Management, and Business Analytics.</span>
-                                </li>
-                            </ul>
-                            <div className="p-3.5 rounded-xl bg-secondary/10 border-l-4 border-l-secondary text-foreground space-y-1">
-                                <p className="font-semibold text-body-sm text-secondary m-0">
-                                    Interdisciplinary Scope
-                                </p>
-                                <p className="text-body-sm text-foreground/90 m-0">
-                                    Interdisciplinary and innovative research across Engineering, Science, Technology, and Management is highly encouraged.
-                                </p>
-                            </div>
+                            <SubjectCoverageDropdown />
                         </div>
                     )
                 },

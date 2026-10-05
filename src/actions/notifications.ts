@@ -32,7 +32,11 @@ export async function safeInvalidateTag(tag: string): Promise<void> {
     try {
         updateTag(tag);
     } catch {
-        revalidateTag(tag, 'max');
+        try {
+            revalidateTag(tag, 'max');
+        } catch {
+            // Silently ignore if invoked during a render phase or an unsupported context
+        }
     }
 }
 

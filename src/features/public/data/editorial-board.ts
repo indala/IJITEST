@@ -266,5 +266,14 @@ export const staticEditorialBoardMembers: BoardMember[] = [
         nationality: "India",
         email: "durgam.srikanth69@gmail.com",
         officialAddress: "Ibrahimpatnam, Hyderabad, Telangana, India"
+    },
+    {
+        full_name: "Dr. Sunil Chandolu",
+        designation: "Assistant Professor",
+        institute: "Dhanekula Institute of Engineering and Technology",
+        role: "reviewer",
+        nationality: "India",
+        email: "csunil.diet@gmail.com",
+        officialAddress: "Ganguru, Vijayawada, Krishna District, Andhra Pradesh, India"
     }
 ];

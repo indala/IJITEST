@@ -350,15 +350,19 @@ export async function assignPaperToIssue(
             sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })
                 .catch(e => console.error("Publication email failed:", e));
 
-            createNotification({
-                userId: submission.correspondingAuthorId,
-                createdByUserId: session.user.id,
-                type: "paper_published",
-                priority: "high",
-                message: `Congratulations! Your manuscript ${submission.paperId} has been successfully published in Vol ${issue.volumeNumber}, Issue ${issue.issueNumber}.`,
-                actionLink: `/article/${submission.paperId}`,
-                metadata: { submissionId, paperId: submission.paperId }
-            }).catch(e => console.error("In-app publication notification failed:", e));
+            try {
+                await createNotification({
+                    userId: submission.correspondingAuthorId,
+                    createdByUserId: session.user.id,
+                    type: "paper_published",
+                    priority: "high",
+                    message: `Congratulations! Your manuscript ${submission.paperId} has been successfully published in Vol ${issue.volumeNumber}, Issue ${issue.issueNumber}.`,
+                    actionLink: `/article/${submission.paperId}`,
+                    metadata: { submissionId, paperId: submission.paperId }
+                });
+            } catch (e) {
+                console.error("In-app publication notification failed:", e);
+            }
 
             const baseUrl = (process.env['NEXT_PUBLIC_APP_URL'] || 'https://ijitest.org').replace(/\/$/, '');
             const paperUrl = `${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${submission.paperId}`;
@@ -378,15 +382,19 @@ export async function assignPaperToIssue(
                 }
             });
         } else {
-            createNotification({
-                userId: submission.correspondingAuthorId,
-                createdByUserId: session.user.id,
-                type: "paper_accepted",
-                priority: "medium",
-                message: `Your manuscript ${submission.paperId} has been assigned to Volume ${issue.volumeNumber}, Issue ${issue.issueNumber} and scheduled for publication.`,
-                actionLink: `/admin/submissions/${submissionId}`,
-                metadata: { submissionId, paperId: submission.paperId }
-            }).catch(e => console.error("In-app publication notification failed:", e));
+            try {
+                await createNotification({
+                    userId: submission.correspondingAuthorId,
+                    createdByUserId: session.user.id,
+                    type: "paper_accepted",
+                    priority: "medium",
+                    message: `Your manuscript ${submission.paperId} has been assigned to Volume ${issue.volumeNumber}, Issue ${issue.issueNumber} and scheduled for publication.`,
+                    actionLink: `/admin/submissions/${submissionId}`,
+                    metadata: { submissionId, paperId: submission.paperId }
+                });
+            } catch (e) {
+                console.error("In-app publication notification failed:", e);
+            }
 
             await logSubmissionEvent({
                 submissionId,
@@ -406,6 +414,12 @@ export async function assignPaperToIssue(
         }
         revalidatePath('/admin/submissions');
         revalidatePath('/admin/publications');
+        if (issue.status === 'published') {
+            revalidatePath('/', 'page');
+            revalidatePath('/archives', 'layout');
+            revalidatePath('/current-issue', 'layout');
+            revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}`, 'page');
+        }
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `assignPaperToIssue ${submissionId}`);
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
         if (submission?.paperId) {
@@ -415,6 +429,7 @@ export async function assignPaperToIssue(
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {
         console.error("Assign Paper Error:", error);
@@ -475,11 +490,11 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
 
         // 4. Send email & in-app notifications and collect URLs for newly published papers
         if (issuePapers.length > 0) {
-            for (const paper of issuePapers) {
+            const notificationTasks = issuePapers.map(async (paper) => {
                 urlsToSubmit.push(`${baseUrl}/current-issue/volume${issue.volumeNumber}/issue${issue.issueNumber}/${paper.paperId}`);
 
-                // Fetch full submission details asynchronously for email & notification delivery
-                getSubmissionById(paper.id).then(async subRes => {
+                try {
+                    const subRes = await getSubmissionById(paper.id);
                     if (subRes.success && subRes.data) {
                         const sub = subRes.data;
                         const template = await emailTemplates.manuscriptPublished(
@@ -493,7 +508,7 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
                         sendEmail({ to: sub.authorEmail, subject: template.subject, html: template.html })
                             .catch(e => console.error(`Publication email failed for ${paper.paperId}:`, e));
 
-                        createNotification({
+                        await createNotification({
                             userId: sub.correspondingAuthorId,
                             createdByUserId: session.user.id,
                             type: "paper_published",
@@ -501,10 +516,14 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
                             message: `Congratulations! Your manuscript ${sub.paperId} has been successfully published in Vol ${issue.volumeNumber}, Issue ${issue.issueNumber}.`,
                             actionLink: `/article/${sub.paperId}`,
                             metadata: { submissionId: sub.id, paperId: sub.paperId }
-                        }).catch(e => console.error(`In-app notification failed for ${paper.paperId}:`, e));
+                        });
                     }
-                }).catch(e => console.error(`Failed to fetch submission ${paper.id} for notifications:`, e));
-            }
+                } catch (e) {
+                    console.error(`Failed to notify for paper ${paper.id}:`, e);
+                }
+            });
+
+            await Promise.allSettled(notificationTasks);
         }
 
         // 5. Fetch papers for the previous latest issue (which are now archived)
@@ -530,6 +549,14 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
 
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
+        revalidatePath('/', 'page');
+        revalidatePath('/archives', 'layout');
+        revalidatePath('/current-issue', 'layout');
+        revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}`, 'page');
+        if (prevLatestIssue) {
+            revalidatePath(`/archives/volume${prevLatestIssue.volumeNumber}/issue${prevLatestIssue.issueNumber}`, 'page');
+        }
+
         issuePapers.forEach(paper => {
             if (paper?.id) updateTag(CACHE_TAGS.SUBMISSION(paper.id));
             if (paper?.paperId) updateTag(CACHE_TAGS.PAPER(paper.paperId));
@@ -538,6 +565,7 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {
         console.error("Publish Issue Error:", error);
@@ -590,6 +618,9 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
 
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
+        revalidatePath('/', 'page');
+        revalidatePath('/archives', 'layout');
+        revalidatePath('/current-issue', 'layout');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `unassignPaperFromIssue ${submissionId}`);
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
         if (sub?.paperId) {
@@ -599,6 +630,7 @@ export async function unassignPaperFromIssue(submissionId: number): Promise<Acti
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {
         return serverError(error, "unassign paper from issue");
@@ -634,10 +666,15 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
             .where(eq(volumesIssues.id, id));
 
         revalidatePath('/admin/publications');
+        revalidatePath('/', 'page');
+        revalidatePath('/archives', 'layout');
+        revalidatePath('/current-issue', 'layout');
+        revalidatePath(`/archives/volume${volume}/issue${issue}`, 'page');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `updateVolumeIssue ${id}`);
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
         return actionSuccess();
     } catch (error) {
         console.error("Update Publication Error:", error);
@@ -682,11 +719,15 @@ export async function deleteVolumeIssue(id: number): Promise<ActionResponse> {
     } finally {
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
+        revalidatePath('/', 'page');
+        revalidatePath('/archives', 'layout');
+        revalidatePath('/current-issue', 'layout');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `deleteVolumeIssue ${id}`);
         updateTag(CACHE_TAGS.SUBMISSIONS);
         updateTag(CACHE_TAGS.PUBLICATIONS);
         updateTag(CACHE_TAGS.ARCHIVES);
         updateTag(CACHE_TAGS.LATEST_ISSUE);
+        updateTag(CACHE_TAGS.PUBLIC_DATA);
     }
 }
 
