@@ -44,7 +44,7 @@ export function generatePubMedXml({ settings, papers, issue }: GeneratePubMedXml
         const resolvedPubDate = paper.publishedAt || paper.issueDatePublished || issue?.datePublished;
         const pubDate = parseDateParts(resolvedPubDate, issue?.year ?? paper.publicationYear ?? undefined);
         const subDate = parseDateParts(paper.submittedAt, issue?.year ?? paper.publicationYear ?? undefined);
-        const accDate = parseDateParts(paper.acceptedAt || resolvedPubDate, issue?.year ?? paper.publicationYear ?? undefined);
+        const accDate = paper.acceptedAt ? parseDateParts(paper.acceptedAt) : null;
 
         // Authors
         const rawAuthors: Author[] = (Array.isArray(paper.coAuthors) && paper.coAuthors.length > 0)
@@ -135,11 +135,11 @@ ${authorsXml}
         <Month>${subDate.month}</Month>
         <Day>${subDate.day}</Day>
       </PubDate>
-      <PubDate PubStatus="accepted">
+      ${accDate ? `<PubDate PubStatus="accepted">
         <Year>${accDate.year}</Year>
         <Month>${accDate.month}</Month>
         <Day>${accDate.day}</Day>
-      </PubDate>
+      </PubDate>` : ''}
     </History>${abstractXml}${keywordsXml}
   </Article>`;
     }).join('\n');

@@ -112,7 +112,7 @@ export function generateJatsXml({ settings, paper }: GenerateJatsXmlOptions): st
     // Dates
     const pubDateParts = parseDateParts(paper.publishedAt || paper.issueDatePublished, paper.publicationYear || undefined);
     const subDateParts = parseDateParts(paper.submittedAt, paper.publicationYear || undefined);
-    const accDateParts = parseDateParts(paper.acceptedAt || paper.publishedAt || paper.issueDatePublished, paper.publicationYear || undefined);
+    const accDateParts = paper.acceptedAt ? parseDateParts(paper.acceptedAt) : null;
 
     // Dynamic JATS Article Type from section identifyType
     const rawGenre = (paper.sectionIdentifyType || '').toLowerCase();
@@ -209,11 +209,11 @@ ${affsXml}
           <month>${subDateParts.month}</month>
           <year>${subDateParts.year}</year>
         </date>
-        <date date-type="accepted" iso-8601-date="${accDateParts.iso}">
+        ${accDateParts ? `<date date-type="accepted" iso-8601-date="${accDateParts.iso}">
           <day>${accDateParts.day}</day>
           <month>${accDateParts.month}</month>
           <year>${accDateParts.year}</year>
-        </date>
+        </date>` : ''}
       </history>
       <permissions>
         <copyright-statement>Copyright &#169; ${copyrightYear} ${escapeXml(copyrightHolder)}. Published by ${escapeXml(publisher)}.</copyright-statement>

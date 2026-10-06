@@ -323,7 +323,7 @@ export async function getPaperById(id: string): Promise<ActionResponse<Published
 type PublicationInput = Partial<Omit<Publication, 'issueId'>> & {
     submissionId?: Publication['submissionId'] | null;
     submission?: (
-        Partial<Pick<Submission, 'paperId' | 'status' | 'updatedAt' | 'submittedAt' | 'retractionReason' | 'retractionNoticeUrl' | 'retractedAt'>> & {
+        Partial<Pick<Submission, 'paperId' | 'status' | 'updatedAt' | 'submittedAt' | 'decisionAt' | 'retractionReason' | 'retractionNoticeUrl' | 'retractedAt'>> & {
             authors?: Author[];
             versions?: Array<Partial<Pick<Version, 'title' | 'abstract' | 'keywords' | 'competingInterests' | 'fundingStatement' | 'ethicalApproval'>> | null>;
             files?: SubmissionFile[];
@@ -395,7 +395,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         publishedAt: pub.publishedAt || null,
         updatedAt: pub.submission?.updatedAt || pub.publishedAt || null,
         submittedAt: pub.submission?.submittedAt || null,
-        acceptedAt: pub.publishedAt || pub.submission?.updatedAt || null,
+        acceptedAt: pub.submission?.decisionAt || null,
         sectionTitle,
         sectionIdentifyType,
         issueDatePublished,
@@ -630,4 +630,3 @@ export async function getRelatedArticles(
         return serverError<RelatedArticle[]>(error, "fetch related articles");
     }
 }
-

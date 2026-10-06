@@ -127,7 +127,9 @@ export async function decideSubmission(id: number, decision: EditorialDecision):
 
         await db.transaction(async (tx) => {
             const status = decision === 'accepted' ? (isFree ? 'accepted' : 'paymentPending') : 'rejected';
-            await tx.update(submissions).set({ status }).where(eq(submissions.id, id));
+            await tx.update(submissions)
+                .set({ status, decisionAt: new Date() })
+                .where(eq(submissions.id, id));
 
             if (decision === 'accepted' && !isFree) {
                 await tx.insert(payments).values({

@@ -300,7 +300,7 @@ export async function assignPaperToIssue(
             doi: resolvedDoi,
             license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
             receivedDate: formatPublicationDate(submission.submittedAt),
-            acceptedDate: formatPublicationDate(submission.decisionAt || new Date()),
+            acceptedDate: formatPublicationDate(submission.decisionAt),
             firstAuthor: extractFirstAuthor(submission),
             runningTitle: extractRunningTitle(submission.title),
         });
@@ -920,15 +920,10 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
             doi: pub.doi,
             license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
             receivedDate: formatPublicationDate(submission.submittedAt),
-            acceptedDate: formatPublicationDate(submission.decisionAt || new Date()),
+            acceptedDate: formatPublicationDate(submission.decisionAt),
             firstAuthor: extractFirstAuthor(submission),
             runningTitle: extractRunningTitle(submission.title),
         });
-
-        // 4. Update the published date/time in the db or just revalidate
-        await db.update(publications)
-            .set({ publishedAt: new Date() })
-            .where(eq(publications.submissionId, submissionId));
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');
@@ -1055,7 +1050,7 @@ export async function updatePublicationDoi(
                         doi: finalDoi,
                         license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
                         receivedDate: formatPublicationDate(subRes.data.submittedAt),
-                        acceptedDate: formatPublicationDate(subRes.data.decisionAt || new Date()),
+                        acceptedDate: formatPublicationDate(subRes.data.decisionAt),
                         firstAuthor: extractFirstAuthor(subRes.data),
                         runningTitle: extractRunningTitle(subRes.data.title),
                     });
