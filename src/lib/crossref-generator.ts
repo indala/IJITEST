@@ -38,6 +38,7 @@ interface GenerateCrossRefXmlOptions {
         issueNumber: number;
         year: number;
         monthRange?: string | null;
+        datePublished?: Date | string | null;
     };
 }
 
@@ -72,8 +73,13 @@ export function generateCrossRefXml({
     // Determine issue details from either the issue parameter or the first paper
     const volNum = issue?.volumeNumber ?? validPapers[0]?.volumeNumber ?? 1;
     const issNum = issue?.issueNumber ?? validPapers[0]?.issueNumber ?? 1;
-    const issueYear = issue?.year ?? validPapers[0]?.publicationYear ?? now.getFullYear();
-    const issueMonth = String(now.getMonth() + 1).padStart(2, '0');
+    const issueDateValue = issue?.datePublished || validPapers[0]?.issueDatePublished || validPapers[0]?.publishedAt;
+    const issueDate = issueDateValue ? new Date(issueDateValue) : null;
+    if (!issueDate || Number.isNaN(issueDate.getTime())) {
+        throw new Error("Cannot generate CrossRef XML: A valid issue publication date is required.");
+    }
+    const issueYear = issue?.year ?? issueDate.getFullYear();
+    const issueMonth = String(issueDate.getMonth() + 1).padStart(2, '0');
 
     // Build articles XML
     const articlesXml = validPapers.map((paper) => {
@@ -128,8 +134,11 @@ export function generateCrossRefXml({
             : '';
 
         // Publication date - prioritize paper.publishedAt, then paper.issueDatePublished
-        const resolvedPubDate = paper.publishedAt || paper.issueDatePublished;
-        const pubDate = resolvedPubDate ? new Date(resolvedPubDate) : now;
+        const resolvedPubDate = paper.issueDatePublished || paper.publishedAt;
+        const pubDate = resolvedPubDate ? new Date(resolvedPubDate) : null;
+        if (!pubDate || Number.isNaN(pubDate.getTime())) {
+            throw new Error(`Cannot generate CrossRef XML for ${paper.paperId}: A valid publication date is required.`);
+        }
         const pubYear = pubDate.getFullYear();
         const pubMonth = String(pubDate.getMonth() + 1).padStart(2, '0');
         const pubDay = String(pubDate.getDate()).padStart(2, '0');

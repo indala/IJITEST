@@ -41,6 +41,9 @@ const submissionSchema = z.object({
     title: z.string().min(10, "Title must be at least 10 characters").max(1000, "Title cannot exceed 1000 characters"),
     abstract: z.string().min(50, "Abstract must be at least 50 characters"),
     keywords: z.string().min(5, "Keywords are required").max(500, "Keywords cannot exceed 500 characters"),
+    competingInterests: z.string().trim().min(2, "Please provide a competing interests statement").max(5000),
+    fundingStatement: z.string().trim().min(2, "Please provide a funding statement").max(5000),
+    ethicalApproval: z.string().trim().min(2, "Please provide an ethics statement").max(5000),
     coAuthors: z.string().optional(), // Still receiving as string from FormData, will parse to Author[]
     termsAccepted: z.string().refine(val => val === "on", {
         message: "You must accept the terms and guidelines"
@@ -76,6 +79,9 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             title: formData.get("title") as string,
             abstract: formData.get("abstract") as string,
             keywords: formData.get("keywords") as string,
+            competingInterests: formData.get("competingInterests") as string,
+            fundingStatement: formData.get("fundingStatement") as string,
+            ethicalApproval: formData.get("ethicalApproval") as string,
             coAuthors: formData.get("coAuthors") as string,
             termsAccepted: formData.get("termsAccepted") as string,
         };
@@ -94,9 +100,9 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
         const manuscriptFile = formData.get("manuscript") as File;
         const blindedFile = formData.get("blindedManuscript") as File | null;
         const authorOrcid = (formData.get("authorOrcid") as string || "").trim() || null;
-        const competingInterests = (formData.get("competingInterests") as string || "").trim() || null;
-        const fundingStatement = (formData.get("fundingStatement") as string || "").trim() || null;
-        const ethicalApproval = (formData.get("ethicalApproval") as string || "").trim() || null;
+        const competingInterests = validated.data.competingInterests;
+        const fundingStatement = validated.data.fundingStatement;
+        const ethicalApproval = validated.data.ethicalApproval;
         const sectionIdRaw = formData.get("sectionId") as string | null;
         const sectionId = sectionIdRaw ? parseInt(sectionIdRaw) : null;
         const validSectionId = sectionId && !isNaN(sectionId) ? sectionId : null;

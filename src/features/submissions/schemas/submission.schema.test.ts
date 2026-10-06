@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
     coAuthorSchema,
+    formSchema,
     reviewerSuggestionSchema,
     retractionSchema,
     corrigendumSchema,
@@ -9,6 +10,20 @@ import {
 } from "./submission.schema";
 
 test("submission schema validation tests", async (t) => {
+    await t.test("requires explicit research declarations", () => {
+        const result = formSchema.safeParse({
+            title: "A sufficiently long research title",
+            authorName: "Ada Lovelace",
+            authorEmail: "ada@example.org",
+            authorDesignation: "Researcher",
+            affiliation: "Example Institute",
+            abstract: "A sufficiently long abstract about a research study that meets the minimum character requirement.",
+            keywords: "engineering, systems",
+            termsAccepted: true,
+        });
+        assert.equal(result.success, false);
+    });
+
     await t.test("coAuthorSchema validates valid and invalid authors", () => {
         const valid = coAuthorSchema.safeParse({
             name: "Dr. Alice Smith",

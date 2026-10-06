@@ -30,6 +30,9 @@ export const formSchema = z.object({
     affiliation: z.string().min(2, "Affiliation must be at least 2 characters"),
     abstract: z.string().min(50, "Abstract must be at least 50 characters"),
     keywords: z.string().min(5, "Please provide keywords for your research"),
+    competingInterests: z.string().trim().min(2, "Please provide a competing interests statement (or state that there are none)").max(5000),
+    fundingStatement: z.string().trim().min(2, "Please provide a funding statement (or state that there was no external funding)").max(5000),
+    ethicalApproval: z.string().trim().min(2, "Please provide an ethics statement (or state that approval was not applicable)").max(5000),
     coAuthors: z.array(coAuthorSchema).max(5, "Maximum 5 authors allowed").optional(),
     reviewerSuggestions: z.array(reviewerSuggestionSchema).max(6, "Maximum 6 reviewer suggestions/oppositions").optional(),
     termsAccepted: z.boolean().refine(val => val === true, {

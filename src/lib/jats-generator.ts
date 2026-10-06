@@ -150,13 +150,7 @@ ${rawKeywords.map(k => `        <kwd>${escapeXml(k)}</kwd>`).join('\n')}
       ${paper.competingInterests ? `<sec sec-type="conflict-of-interest"><title>Conflict of Interest</title><p>${escapeXml(paper.competingInterests)}</p></sec>` : ''}
       ${paper.ethicalApproval ? `<sec sec-type="ethical-approval"><title>Ethical Approval</title><p>${escapeXml(paper.ethicalApproval)}</p></sec>` : ''}
     </sec>
-  </back>` : `
-  <back>
-    <sec sec-type="declarations">
-      <title>Declarations</title>
-      <p>The authors declare that no competing interests exist in relation to this published work.</p>
-    </sec>
-  </back>`;
+  </back>` : '';
 
     return `<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.3 20210610//EN" "https://jats.nlm.nih.gov/publishing/1.3/JATS-journalpublishing1-3.dtd">

@@ -264,19 +264,23 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
 
         const paper = paperRes.data;
 
-        // Build creators list: always include the primary author, then co-authors
-        const primaryCreator = {
-            name: paper.authorName,
-            affiliation: paper.affiliation || undefined,
-        };
-        const coCreators = paper.coAuthors && paper.coAuthors.length > 0
-            ? paper.coAuthors.map((a) => ({
-                name: a.name,
-                affiliation: a.institution || undefined,
-                orcid: a.orcidId || undefined,
+        // The author list includes the corresponding author; do not append them twice.
+        const creators = paper.coAuthors && paper.coAuthors.length > 0
+            ? paper.coAuthors.map((author) => ({
+                name: author.name,
+                affiliation: author.institution || undefined,
+                orcid: author.orcidId || undefined,
             }))
-            : [];
-        const creators = [primaryCreator, ...coCreators];
+            : [{
+                name: paper.authorName,
+                affiliation: paper.affiliation || undefined,
+            }];
+
+        const publicationDate = paper.issueDatePublished || paper.publishedAt;
+        const publicationDateValue = publicationDate ? new Date(publicationDate) : null;
+        if (!publicationDateValue || Number.isNaN(publicationDateValue.getTime())) {
+            return actionError("A valid publication date is required before depositing this paper to Zenodo.");
+        }
 
         // -----------------------------------------------------------------------
         // Step 1: Create deposition
@@ -287,6 +291,7 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
                 upload_type: "publication",
                 publication_type: "article",
                 description: paper.abstract,
+                publication_date: publicationDateValue.toISOString().slice(0, 10),
                 access_right: "open",
                 license: "cc-by-4.0",
                 keywords: paper.keywords
@@ -297,7 +302,7 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
                 journal_volume: paper.volumeNumber ? String(paper.volumeNumber) : undefined,
                 journal_issue: paper.issueNumber ? String(paper.issueNumber) : undefined,
                 // Link to the canonical Crossref DOI without overwriting it
-                related_identifiers: pub.doi
+                related_identifiers: pub.doi && pub.doiProvider === 'crossref'
                     ? [
                         {
                             identifier: `https://doi.org/${pub.doi}`,

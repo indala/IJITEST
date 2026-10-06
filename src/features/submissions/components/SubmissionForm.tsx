@@ -15,6 +15,7 @@ import { SubmissionSuccessCard } from "./form/SubmissionSuccessCard";
 import { AuthorDetailsFields } from "./form/AuthorDetailsFields";
 import { CoAuthorsSection } from "./form/CoAuthorsSection";
 import { ReviewerSuggestionsSection } from "./form/ReviewerSuggestionsSection";
+import { DeclarationsSection } from "./form/DeclarationsSection";
 import { ManuscriptUploadDropzone } from "./form/ManuscriptUploadDropzone";
 
 interface SubmissionFormProps {
@@ -48,6 +49,9 @@ export default function SubmissionForm({ initialSections }: SubmissionFormProps)
             affiliation: "",
             abstract: "",
             keywords: "",
+            competingInterests: "",
+            fundingStatement: "",
+            ethicalApproval: "",
             coAuthors: [],
             reviewerSuggestions: [],
             termsAccepted: false,
@@ -138,6 +142,7 @@ export default function SubmissionForm({ initialSections }: SubmissionFormProps)
                 <AuthorDetailsFields form={form} sections={sections} />
                 <CoAuthorsSection control={form.control} />
                 <ReviewerSuggestionsSection control={form.control} />
+                <DeclarationsSection control={form.control} />
                 <ManuscriptUploadDropzone
                     control={form.control}
                     manuscriptFile={manuscriptFile}

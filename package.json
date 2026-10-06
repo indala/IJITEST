@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "test": "tsx --test src/lib/doi-format.test.ts src/lib/utils.test.ts src/lib/email-layout.test.ts src/features/applications/lib/filter-applications.test.ts src/features/applications/lib/application-decision.test.ts src/features/submissions/schemas/submission.schema.test.ts src/features/submissions/lib/submission-transitions.test.ts",
+    "test": "tsx --test src/lib/doi-format.test.ts src/lib/utils.test.ts src/lib/email-layout.test.ts src/lib/crossref-generator.test.ts src/lib/jats-generator.test.ts src/features/applications/lib/filter-applications.test.ts src/features/applications/lib/application-decision.test.ts src/features/submissions/schemas/submission.schema.test.ts src/features/submissions/lib/submission-transitions.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:migrate": "tsx scripts/safe-migrate.ts",

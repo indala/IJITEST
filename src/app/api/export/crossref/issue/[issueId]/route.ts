@@ -45,6 +45,7 @@ export async function GET(
                 issueNumber: issue.issueNumber,
                 year: issue.year,
                 monthRange: issue.monthRange,
+                datePublished: issue.datePublished,
             },
         });
 

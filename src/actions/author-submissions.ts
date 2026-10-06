@@ -180,6 +180,10 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
                 doiProvider: publications.doiProvider,
                 doiRegistrationStatus: publications.doiRegistrationStatus,
                 doiRegistrationBatchId: publications.doiRegistrationBatchId,
+                zenodoDoi: publications.zenodoDoi,
+                zenodoRecordId: publications.zenodoRecordId,
+                zenodoStatus: publications.zenodoStatus,
+                zenodoRecordUrl: publications.zenodoRecordUrl,
                 finalPdfUrl: publications.finalPdfUrl,
                 publishedAt: publications.publishedAt,
                 views: publications.views,
@@ -229,13 +233,21 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
         if (zenodoEventMatch) {
             const meta = zenodoEventMatch.metadata as ZenodoEventMetadata | null;
             zenodoDeposit = {
-                doi: meta?.zenodoDoi || (pub?.doiProvider === 'zenodo' ? pub.doi || '' : ''),
-                recordUrl: meta?.recordUrl || (pub?.doiRegistrationBatchId ? `https://zenodo.org/record/${pub.doiRegistrationBatchId}` : ''),
+                doi: pub?.zenodoDoi || meta?.zenodoDoi || (pub?.doiProvider === 'zenodo' ? pub.doi || '' : ''),
+                recordUrl: pub?.zenodoRecordUrl || meta?.recordUrl || (pub?.zenodoRecordId
+                    ? `https://zenodo.org/records/${pub.zenodoRecordId}`
+                    : pub?.doiRegistrationBatchId
+                        ? `https://zenodo.org/records/${pub.doiRegistrationBatchId}`
+                        : ''),
             };
-        } else if (pub?.doiProvider === 'zenodo') {
+        } else if (pub?.zenodoDoi || pub?.doiProvider === 'zenodo') {
             zenodoDeposit = {
-                doi: pub.doi || '',
-                recordUrl: pub.doiRegistrationBatchId ? `https://zenodo.org/record/${pub.doiRegistrationBatchId}` : '',
+                doi: pub.zenodoDoi || pub.doi || '',
+                recordUrl: pub.zenodoRecordUrl || (pub.zenodoRecordId
+                    ? `https://zenodo.org/records/${pub.zenodoRecordId}`
+                    : pub.doiRegistrationBatchId
+                        ? `https://zenodo.org/records/${pub.doiRegistrationBatchId}`
+                        : ''),
             };
         }
 
