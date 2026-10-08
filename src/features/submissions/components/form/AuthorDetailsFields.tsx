@@ -1,11 +1,13 @@
 import type { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, User, Mail, Phone, Briefcase, School, BookOpen, Tag, Bookmark } from "lucide-react";
 import type { FormValues } from "../../schemas/submission.schema";
 import type { Section } from "@/db/models";
+import { CREDIT_ROLES } from "@/lib/credit-roles";
 
 interface AuthorDetailsFieldsProps {
     form: UseFormReturn<FormValues>;
@@ -193,6 +195,49 @@ export function AuthorDetailsFields({ form, sections }: AuthorDetailsFieldsProps
                     )}
                 />
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                    control={form.control}
+                    name="authorOrcid"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>ORCID iD (Optional)</FormLabel>
+                            <FormControl>
+                                <Input {...field} value={field.value ?? ""} placeholder="0000-0002-1825-0097" />
+                            </FormControl>
+                            <FormDescription>Enter your 16-digit ORCID iD, with or without the orcid.org URL.</FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            <FormField
+                control={form.control}
+                name="authorCreditRoles"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Contributor Roles (Optional)</FormLabel>
+                        <FormDescription>Select the CRediT roles that describe your contribution.</FormDescription>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {CREDIT_ROLES.map((role) => (
+                                <label key={role} className="flex items-center gap-2 text-caption">
+                                    <Checkbox
+                                        checked={field.value?.includes(role) ?? false}
+                                        onCheckedChange={(checked) => field.onChange(
+                                            checked
+                                                ? [...(field.value ?? []), role]
+                                                : (field.value ?? []).filter((value) => value !== role)
+                                        )}
+                                    />
+                                    {role}
+                                </label>
+                            ))}
+                        </div>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
 
             <FormField
                 control={form.control}

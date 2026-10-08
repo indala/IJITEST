@@ -264,7 +264,7 @@ export default function PoliciesHubClient({ settings }: PoliciesHubClientProps) 
                     </p>
                     <ul className="space-y-2 list-none pl-0">
                         {[
-                            "No copyright transfer or copyright assignment is required.",
+                            "Authors retain copyright; a signed non-exclusive publication license agreement is required for the journal to publish and archive the Version of Record.",
                             "Green Open Access: Authors may deposit preprint (AOM), accepted postprint (AAM), and final publisher PDF (VoR) in institutional repositories immediately without embargo.",
                             "Subsequent citations must cite the original publication venue and persistent CrossRef DOI."
                         ].map((item, i) => (

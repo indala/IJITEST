@@ -83,7 +83,7 @@ export default function FinalSubmissionForm() {
         }
 
         if (!copyrightFile) {
-            toast.error("Please upload the signed copyright transfer agreement (.docx or .pdf).");
+            toast.error("Please upload the signed publication license agreement (.docx or .pdf).");
             return;
         }
 
@@ -323,11 +323,11 @@ export default function FinalSubmissionForm() {
                         </label>
                     </div>
 
-                    {/* File Upload 2: Signed Copyright Form */}
+                    {/* File Upload 2: Signed Publication License */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <Label htmlFor="copyright-file-input" className="form-label-brand">
-                                Signed Copyright Transfer Form <span className="text-destructive">*</span>
+                                Signed Publication License Agreement <span className="text-destructive">*</span>
                             </Label>
                             <span className="text-meta text-muted-foreground">.docx or .pdf</span>
                         </div>
@@ -347,7 +347,7 @@ export default function FinalSubmissionForm() {
                                 onChange={(e) => {
                                     const file = e.target.files?.[0] || null;
                                     if (file && !file.name.toLowerCase().endsWith('.docx') && !file.name.toLowerCase().endsWith('.pdf')) {
-                                        toast.error("Copyright form must be a .docx or .pdf file.");
+                                        toast.error("Publication license agreement must be a .docx or .pdf file.");
                                         e.target.value = '';
                                         return;
                                     }
@@ -364,10 +364,10 @@ export default function FinalSubmissionForm() {
                                 <div className="space-y-1.5">
                                     <Upload className="w-7 h-7 text-muted-foreground/60 mx-auto" />
                                     <p className="font-semibold text-foreground m-0 text-caption">
-                                        Upload signed copyright transfer agreement (.docx / .pdf)
+                                        Upload the signed publication license agreement (.docx / .pdf)
                                     </p>
                                     <p className="text-meta text-muted-foreground m-0">
-                                        Must be signed by the corresponding author on behalf of all authors.
+                                        Must be signed by the corresponding author on behalf of all authors. The agreement documents a non-exclusive publication license; it does not transfer copyright.
                                     </p>
                                 </div>
                             )}

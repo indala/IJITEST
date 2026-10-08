@@ -29,6 +29,7 @@ import {
     type SubmissionEventType,
     type SubmissionEventMetadata,
 } from "./schema";
+export { CREDIT_ROLES, type CreditRole } from "@/lib/credit-roles";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
 
@@ -258,6 +259,7 @@ export type PublishedPaperUI = Pick<Submission, 'status' | 'updatedAt'> &
         competingInterests?: string | null | undefined;
         fundingStatement?: string | null | undefined;
         ethicalApproval?: string | null | undefined;
+        dataAvailability?: string | null | undefined;
         supplementaryFiles?: SubmissionFile[] | undefined;
         retractionReason?: string | null | undefined;
         retractionNoticeUrl?: string | null | undefined;
@@ -295,26 +297,6 @@ export type TrackedManuscript = Pick<Submission, 'id' | 'paperId' | 'status' | '
     paymentCurrency?: string | null;
     paymentStatus?: string | null;
 };
-
-// 🏷️ CRediT (Contributor Roles Taxonomy) Standards
-export const CREDIT_ROLES = [
-    'Conceptualization',
-    'Data Curation',
-    'Formal Analysis',
-    'Funding Acquisition',
-    'Investigation',
-    'Methodology',
-    'Project Administration',
-    'Resources',
-    'Software',
-    'Supervision',
-    'Validation',
-    'Visualization',
-    'Writing – Original Draft',
-    'Writing – Review & Editing',
-] as const;
-
-export type CreditRole = (typeof CREDIT_ROLES)[number];
 
 export type ReviewerPerformanceMetrics = {
     userId: string;
@@ -496,6 +478,3 @@ export interface CounterR5Response {
     Report_Header: CounterReportHeader;
     Report_Items: CounterReportItem[];
 }
-
-
-

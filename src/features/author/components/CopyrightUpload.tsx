@@ -29,7 +29,7 @@ export function CopyrightUpload({ submissionId, copyrightUrl }: CopyrightUploadP
         try {
             const res = await uploadCopyrightFormAfterAcceptance(submissionId, formData);
             if (res.success) {
-                toast.success("Copyright transfer form uploaded successfully!");
+                toast.success("Publication license agreement uploaded successfully!");
                 setFile(null);
                 router.refresh();
             } else {

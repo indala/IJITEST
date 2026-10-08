@@ -377,6 +377,10 @@ export async function resubmitPaper(submissionId: number, formData: FormData): P
                 title: latest.title,
                 abstract: latest.abstract,
                 keywords: latest.keywords,
+                competingInterests: latest.competingInterests,
+                fundingStatement: latest.fundingStatement,
+                ethicalApproval: latest.ethicalApproval,
+                dataAvailability: latest.dataAvailability,
                 changelog: changelog || "Revised version submission",
                 rebuttalLetter: rebuttalLetter || null,
             });
@@ -684,7 +688,7 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
             submissionId,
             eventType: 'copyright_uploaded',
             userId: author.id,
-            description: `Author uploaded signed copyright transfer agreement`,
+            description: `Author uploaded signed publication license agreement`,
             metadata: { fileName: copyrightFile.name, fileSize: copyrightFile.size }
         });
 
@@ -698,7 +702,7 @@ export async function uploadCopyrightFormAfterAcceptance(submissionId: number, f
         return actionSuccess(undefined);
     } catch (error) {
         console.error("Copyright upload failure:", error);
-        return serverError(error, "upload copyright transfer form");
+        return serverError(error, "upload publication license agreement");
     }
 }
 

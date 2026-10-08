@@ -325,7 +325,7 @@ type PublicationInput = Partial<Omit<Publication, 'issueId'>> & {
     submission?: (
         Partial<Pick<Submission, 'paperId' | 'status' | 'updatedAt' | 'submittedAt' | 'decisionAt' | 'retractionReason' | 'retractionNoticeUrl' | 'retractedAt'>> & {
             authors?: Author[];
-            versions?: Array<Partial<Pick<Version, 'title' | 'abstract' | 'keywords' | 'competingInterests' | 'fundingStatement' | 'ethicalApproval'>> | null>;
+            versions?: Array<Partial<Pick<Version, 'title' | 'abstract' | 'keywords' | 'competingInterests' | 'fundingStatement' | 'ethicalApproval' | 'dataAvailability'>> | null>;
             files?: SubmissionFile[];
             correspondingAuthor?: {
                 profile?: Partial<Pick<UserProfile, 'fullName' | 'institute'>> | null;
@@ -412,6 +412,7 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         competingInterests: latestVersion?.competingInterests || null,
         fundingStatement: latestVersion?.fundingStatement || null,
         ethicalApproval: latestVersion?.ethicalApproval || null,
+        dataAvailability: latestVersion?.dataAvailability || null,
         supplementaryFiles: supplementaryFiles,
         retractionReason: pub.submission?.retractionReason || null,
         retractionNoticeUrl: pub.submission?.retractionNoticeUrl || null,

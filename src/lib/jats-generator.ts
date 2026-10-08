@@ -141,7 +141,7 @@ ${rawKeywords.map(k => `        <kwd>${escapeXml(k)}</kwd>`).join('\n')}
     const licenseName = settings['licenseName'] || 'Creative Commons Attribution 4.0 International License (CC BY 4.0)';
 
     // Disclosures in <back>
-    const hasDisclosures = Boolean(paper.fundingStatement || paper.competingInterests || paper.ethicalApproval);
+    const hasDisclosures = Boolean(paper.fundingStatement || paper.competingInterests || paper.ethicalApproval || paper.dataAvailability);
     const disclosuresXml = hasDisclosures ? `
   <back>
     <sec sec-type="declarations">
@@ -149,6 +149,7 @@ ${rawKeywords.map(k => `        <kwd>${escapeXml(k)}</kwd>`).join('\n')}
       ${paper.fundingStatement ? `<sec sec-type="funding"><title>Funding</title><p>${escapeXml(paper.fundingStatement)}</p></sec>` : ''}
       ${paper.competingInterests ? `<sec sec-type="conflict-of-interest"><title>Conflict of Interest</title><p>${escapeXml(paper.competingInterests)}</p></sec>` : ''}
       ${paper.ethicalApproval ? `<sec sec-type="ethical-approval"><title>Ethical Approval</title><p>${escapeXml(paper.ethicalApproval)}</p></sec>` : ''}
+      ${paper.dataAvailability ? `<sec sec-type="data-availability"><title>Data Availability</title><p>${escapeXml(paper.dataAvailability)}</p></sec>` : ''}
     </sec>
   </back>` : '';
 

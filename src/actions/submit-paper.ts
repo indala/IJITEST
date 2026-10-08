@@ -25,8 +25,12 @@ import { type ActionResponse, serverError } from "@/lib/action-response";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
 import { MAX_MANUSCRIPT_SIZE, MAX_DOCUMENT_SIZE } from "@/lib/upload-limits";
+import { CREDIT_ROLES } from "@/lib/credit-roles";
+import { isValidOrcid, normalizeOrcid } from "@/lib/orcid";
 
 const phoneRegex = /^[+]?[\d\s\-().]{7,25}$/;
+const creditRoleSchema = z.enum(CREDIT_ROLES);
+const orcidSchema = z.string().trim().refine(value => !value || isValidOrcid(value), "Enter a valid ORCID iD");
 
 const submissionSchema = z.object({
     authorName: z.string().min(2, "Author name is required").max(255, "Author name cannot exceed 255 characters"),
@@ -38,12 +42,15 @@ const submissionSchema = z.object({
         .or(z.literal('')),
     authorDesignation: z.string().min(2, "Author designation is required").max(255, "Designation cannot exceed 255 characters"),
     affiliation: z.string().min(2, "Affiliation is required").max(500, "Institution name cannot exceed 500 characters"),
+    authorOrcid: orcidSchema.optional(),
+    authorCreditRoles: z.array(creditRoleSchema).max(CREDIT_ROLES.length).optional(),
     title: z.string().min(10, "Title must be at least 10 characters").max(1000, "Title cannot exceed 1000 characters"),
     abstract: z.string().min(50, "Abstract must be at least 50 characters"),
     keywords: z.string().min(5, "Keywords are required").max(500, "Keywords cannot exceed 500 characters"),
     competingInterests: z.string().trim().min(2, "Please provide a competing interests statement").max(5000),
     fundingStatement: z.string().trim().min(2, "Please provide a funding statement").max(5000),
     ethicalApproval: z.string().trim().min(2, "Please provide an ethics statement").max(5000),
+    dataAvailability: z.string().trim().min(2, "Please provide a data availability statement").max(5000),
     coAuthors: z.string().optional(), // Still receiving as string from FormData, will parse to Author[]
     termsAccepted: z.string().refine(val => val === "on", {
         message: "You must accept the terms and guidelines"
@@ -56,8 +63,8 @@ const coAuthorSchema = z.object({
     phone: z.string().max(25).optional().nullable().or(z.literal('')),
     designation: z.string().max(255).optional().nullable(),
     institution: z.string().max(500).optional().nullable(),
-    orcidId: z.string().max(50).optional().nullable(),
-    creditRoles: z.array(z.string()).optional().nullable(),
+    creditRoles: z.array(creditRoleSchema).max(CREDIT_ROLES.length).optional().nullable(),
+    orcidId: orcidSchema.optional().nullable(),
 });
 
 /**
@@ -76,12 +83,23 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
             authorPhone: formData.get("authorPhone") as string,
             authorDesignation: formData.get("authorDesignation") as string,
             affiliation: formData.get("affiliation") as string,
+            authorOrcid: (formData.get("authorOrcid") as string | null) || "",
+            authorCreditRoles: (() => {
+                const value = formData.get("authorCreditRoles");
+                if (typeof value !== "string" || !value) return [];
+                try {
+                    return JSON.parse(value);
+                } catch {
+                    return null;
+                }
+            })(),
             title: formData.get("title") as string,
             abstract: formData.get("abstract") as string,
             keywords: formData.get("keywords") as string,
             competingInterests: formData.get("competingInterests") as string,
             fundingStatement: formData.get("fundingStatement") as string,
             ethicalApproval: formData.get("ethicalApproval") as string,
+            dataAvailability: formData.get("dataAvailability") as string,
             coAuthors: formData.get("coAuthors") as string,
             termsAccepted: formData.get("termsAccepted") as string,
         };
@@ -99,22 +117,16 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
 
         const manuscriptFile = formData.get("manuscript") as File;
         const blindedFile = formData.get("blindedManuscript") as File | null;
-        const authorOrcid = (formData.get("authorOrcid") as string || "").trim() || null;
+        const authorOrcid = validated.data.authorOrcid ? normalizeOrcid(validated.data.authorOrcid) : null;
         const competingInterests = validated.data.competingInterests;
         const fundingStatement = validated.data.fundingStatement;
         const ethicalApproval = validated.data.ethicalApproval;
+        const dataAvailability = validated.data.dataAvailability;
         const sectionIdRaw = formData.get("sectionId") as string | null;
         const sectionId = sectionIdRaw ? parseInt(sectionIdRaw) : null;
         const validSectionId = sectionId && !isNaN(sectionId) ? sectionId : null;
         const reviewerSuggestionsRaw = formData.get("reviewerSuggestions") as string | null;
-        let authorCreditRoles: string[] | null = null;
-        try {
-            const rawRoles = formData.get("authorCreditRoles") as string;
-            if (rawRoles) {
-                const parsed = JSON.parse(rawRoles);
-                if (Array.isArray(parsed)) authorCreditRoles = parsed;
-            }
-        } catch {}
+        const authorCreditRoles = validated.data.authorCreditRoles?.length ? validated.data.authorCreditRoles : null;
 
         if (!manuscriptFile || manuscriptFile.size === 0) return { success: false, error: "Manuscript file is mandatory" };
 
@@ -229,6 +241,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                 competingInterests,
                 fundingStatement,
                 ethicalApproval,
+                dataAvailability,
             });
             const verId = versionInsert.insertId;
 
@@ -261,7 +274,7 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
                             phone: d.phone || null,
                             designation: d.designation || null,
                             institution: d.institution || null,
-                            orcidId: d.orcidId ? String(d.orcidId).trim() : null,
+                            orcidId: d.orcidId ? normalizeOrcid(d.orcidId) : null,
                             creditRoles: Array.isArray(d.creditRoles) ? d.creditRoles : null,
                             isCorresponding: false,
                             orderIndex: idx + 1,

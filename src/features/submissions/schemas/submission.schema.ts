@@ -1,6 +1,10 @@
 import * as z from "zod";
+import { CREDIT_ROLES } from "@/lib/credit-roles";
+import { isValidOrcid } from "@/lib/orcid";
 
 const phoneRegex = /^[+]?[\d\s\-().]{7,25}$/;
+const creditRoleSchema = z.enum(CREDIT_ROLES);
+const orcidSchema = z.string().trim().refine(value => !value || isValidOrcid(value), "Enter a valid ORCID iD");
 
 export const coAuthorSchema = z.object({
     name: z.string().min(2, "Name required"),
@@ -8,6 +12,8 @@ export const coAuthorSchema = z.object({
     phone: z.string().regex(phoneRegex, "Invalid phone number").optional().or(z.literal('')),
     designation: z.string().min(2, "Designation required"),
     institution: z.string().min(2, "Institution required"),
+    orcidId: orcidSchema.optional(),
+    creditRoles: z.array(creditRoleSchema).max(CREDIT_ROLES.length).optional(),
 });
 
 export const reviewerSuggestionSchema = z.object({
@@ -28,11 +34,14 @@ export const formSchema = z.object({
     authorPhone: z.string().regex(phoneRegex, "Invalid phone number (e.g., +91 9876543210)").optional().or(z.literal('')),
     authorDesignation: z.string().min(2, "Designation required"),
     affiliation: z.string().min(2, "Affiliation must be at least 2 characters"),
+    authorOrcid: orcidSchema.optional(),
+    authorCreditRoles: z.array(creditRoleSchema).max(CREDIT_ROLES.length).optional(),
     abstract: z.string().min(50, "Abstract must be at least 50 characters"),
     keywords: z.string().min(5, "Please provide keywords for your research"),
     competingInterests: z.string().trim().min(2, "Please provide a competing interests statement (or state that there are none)").max(5000),
     fundingStatement: z.string().trim().min(2, "Please provide a funding statement (or state that there was no external funding)").max(5000),
     ethicalApproval: z.string().trim().min(2, "Please provide an ethics statement (or state that approval was not applicable)").max(5000),
+    dataAvailability: z.string().trim().min(2, "Please provide a data availability statement").max(5000),
     coAuthors: z.array(coAuthorSchema).max(5, "Maximum 5 authors allowed").optional(),
     reviewerSuggestions: z.array(reviewerSuggestionSchema).max(6, "Maximum 6 reviewer suggestions/oppositions").optional(),
     termsAccepted: z.boolean().refine(val => val === true, {

@@ -198,6 +198,7 @@ export const submissionVersions = mysqlTable("submission_versions", {
     competingInterests: text("competing_interests"),
     fundingStatement: text("funding_statement"),
     ethicalApproval: text("ethical_approval"),
+    dataAvailability: text("data_availability"),
 
     changelog: text("changelog"), // Author's notes on changes
     rebuttalLetter: text("rebuttal_letter"), // Point-by-point response to reviewers for revisions
@@ -834,5 +835,4 @@ export const usageStatsRelations = relations(usageStats, ({ one }) => ({
         references: [publications.id],
     }),
 }));
-
 

@@ -47,11 +47,14 @@ export default function SubmissionForm({ initialSections }: SubmissionFormProps)
             authorPhone: "",
             authorDesignation: "",
             affiliation: "",
+            authorOrcid: "",
+            authorCreditRoles: [],
             abstract: "",
             keywords: "",
             competingInterests: "",
             fundingStatement: "",
             ethicalApproval: "",
+            dataAvailability: "",
             coAuthors: [],
             reviewerSuggestions: [],
             termsAccepted: false,
@@ -91,6 +94,8 @@ export default function SubmissionForm({ initialSections }: SubmissionFormProps)
         Object.entries(values).forEach(([key, value]) => {
             if (value === undefined || value === null || value === "") return;
             if (key === "coAuthors") {
+                formData.append(key, JSON.stringify(value));
+            } else if (key === "authorCreditRoles") {
                 formData.append(key, JSON.stringify(value));
             } else if (key === "reviewerSuggestions") {
                 if (Array.isArray(value) && value.length > 0) {

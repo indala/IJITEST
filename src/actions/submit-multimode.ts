@@ -295,6 +295,10 @@ export async function submitPublicRevision(formData: FormData): Promise<ActionRe
                 title: latest.title,
                 abstract: latest.abstract,
                 keywords: latest.keywords,
+                competingInterests: latest.competingInterests,
+                fundingStatement: latest.fundingStatement,
+                ethicalApproval: latest.ethicalApproval,
+                dataAvailability: latest.dataAvailability,
                 changelog: changelog || "Revised version submitted via author portal",
                 rebuttalLetter: null,
             });
@@ -477,7 +481,7 @@ export async function submitPublicFinalSubmission(formData: FormData): Promise<A
         }
 
         if (!copyrightFile || copyrightFile.size === 0) {
-            return actionError("Signed copyright transfer form is mandatory for final publication.");
+            return actionError("A signed publication license agreement is mandatory for final publication.");
         }
 
         const isDocxOrPdf = (f: File) => f.name.toLowerCase().endsWith(".docx") || f.name.toLowerCase().endsWith(".pdf");
@@ -520,6 +524,10 @@ export async function submitPublicFinalSubmission(formData: FormData): Promise<A
                 title: latest.title,
                 abstract: latest.abstract,
                 keywords: latest.keywords,
+                competingInterests: latest.competingInterests,
+                fundingStatement: latest.fundingStatement,
+                ethicalApproval: latest.ethicalApproval,
+                dataAvailability: latest.dataAvailability,
                 changelog: "Camera-ready final manuscript package submitted.",
             });
             const verId = versionInsert.insertId;

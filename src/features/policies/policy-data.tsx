@@ -204,7 +204,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <span><strong>Non-Exclusive Publishing License:</strong> Upon manuscript acceptance, authors grant {journalShort} and {publisher} a non-exclusive license to publish, display, distribute, index, and archive the Version of Record in all digital formats.</span>
+                                    <span><strong>Non-Exclusive Publishing License:</strong> Upon manuscript acceptance, authors grant {journalShort} and {publisher} a non-exclusive license to publish, display, distribute, index, and archive the Version of Record in all digital formats. A signed publication license agreement documents this permission; it does not transfer copyright.</span>
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <CheckCircle2 className="size-4 text-primary shrink-0 mt-0.5" />

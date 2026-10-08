@@ -36,3 +36,12 @@ test("exports only declarations supplied for the article", () => {
     assert.doesNotMatch(xml, /<sec sec-type="conflict-of-interest">/);
     assert.doesNotMatch(xml, /<sec sec-type="ethical-approval">/);
 });
+
+test("exports an author-supplied data availability statement", () => {
+    const xml = generateJatsXml({
+        settings: {},
+        paper: paper({ dataAvailability: "Data are available at https://example.org/dataset/1." }),
+    });
+
+    assert.match(xml, /<sec sec-type="data-availability"><title>Data Availability<\/title><p>Data are available at https:\/\/example\.org\/dataset\/1\.<\/p><\/sec>/);
+});

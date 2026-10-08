@@ -50,11 +50,11 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultTemplateDefinition[] = [
     },
     {
         templateKey: "COPYRIGHT_SUBMITTED",
-        name: "Copyright Agreement Form Submitted",
-        description: "Sent to editorial office when author signs and uploads the formal copyright agreement form.",
+        name: "Publication License Agreement Submitted",
+        description: "Sent to editorial office when author signs and uploads the publication license agreement.",
         category: "submissions",
-        subjectTemplate: "[{{journalShortName}}] Copyright Transfer Agreement Uploaded: {{paperId}}",
-        bodyTemplate: "Hello Editorial Office,\n\nThe corresponding author {{authorName}} has signed and submitted the formal Copyright Transfer Agreement for manuscript \"{{paperTitle}}\" (ID: {{paperId}}).\n\nThe document has been attached and logged in the submission management panel:\n{{submissionUrl}}\n\nSincerely,\nPublication Workflow System\n{{journalName}}",
+        subjectTemplate: "[{{journalShortName}}] Publication License Agreement Uploaded: {{paperId}}",
+        bodyTemplate: "Hello Editorial Office,\n\nThe corresponding author {{authorName}} has signed and submitted the Publication License Agreement for manuscript \"{{paperTitle}}\" (ID: {{paperId}}). The agreement documents the journal's publication license; authors retain copyright under the journal's copyright policy.\n\nThe document has been attached and logged in the submission management panel:\n{{submissionUrl}}\n\nSincerely,\nPublication Workflow System\n{{journalName}}",
         variables: ["authorName", "paperTitle", "paperId", "submissionUrl", "journalName", "journalShortName"],
     },
 

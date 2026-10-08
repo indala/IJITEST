@@ -17,7 +17,8 @@ const REQUIREMENTS = [
     { title: "Formatting", desc: "Manuscripts must follow the IEEE standard format." },
     { title: "Originality", desc: "Submissions must be original and not published elsewhere." },
     { title: "Ethics", desc: "Full adherence to COPE ethical standards is mandatory." },
-    { title: "Copyright", desc: "A signed copyright transfer form is required upon acceptance." }
+    { title: "Copyright", desc: "A signed publication license agreement is required upon acceptance; authors retain copyright." },
+    { title: "Research Declarations", desc: "Provide competing-interest, funding, ethics, and data-availability statements with the initial submission." }
 ];
 
 const SUBMISSION_MODES: {

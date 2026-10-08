@@ -251,7 +251,7 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                         )}
 
                         {/* Ethics & Disclosures */}
-                        {(paper.competingInterests || paper.fundingStatement || paper.ethicalApproval) && (
+                        {(paper.competingInterests || paper.fundingStatement || paper.ethicalApproval || paper.dataAvailability) && (
                             <div className="p-4 sm:p-5 rounded-xl bg-muted/30 border border-border/60 space-y-2.5">
                                 <div className="flex items-center gap-1.5 text-label font-bold text-primary uppercase tracking-wider">
                                     <ShieldCheck className="w-3.5 h-3.5 text-secondary" /> Declarations & Ethics
@@ -273,6 +273,12 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                                         <div>
                                             <span className="font-bold text-foreground mr-1.5">Ethical Approval:</span>
                                             <span className="text-muted-foreground">{paper.ethicalApproval}</span>
+                                        </div>
+                                    )}
+                                    {paper.dataAvailability && (
+                                        <div>
+                                            <span className="font-bold text-foreground mr-1.5">Data Availability:</span>
+                                            <span className="text-muted-foreground">{paper.dataAvailability}</span>
                                         </div>
                                     )}
                                 </div>

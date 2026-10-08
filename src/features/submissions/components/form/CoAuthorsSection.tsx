@@ -4,8 +4,10 @@ import { Users, Plus, Trash2 } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import type { FormValues } from "../../schemas/submission.schema";
+import { CREDIT_ROLES } from "@/lib/credit-roles";
 
 interface CoAuthorsSectionProps {
     control: Control<FormValues>;
@@ -29,7 +31,7 @@ export function CoAuthorsSection({ control }: CoAuthorsSectionProps) {
                 <Button
                     type="button"
                     variant="outline"
-                    onClick={() => append({ name: "", email: "", phone: "", designation: "", institution: "" })}
+                    onClick={() => append({ name: "", email: "", phone: "", designation: "", institution: "", orcidId: "", creditRoles: [] })}
                     disabled={fields.length >= 5}
                     className="h-10 px-4 rounded-lg border-border/50 text-primary font-bold text-label hover:bg-primary hover:text-primary-foreground transition-all shadow-sm"
                 >
@@ -130,6 +132,43 @@ export function CoAuthorsSection({ control }: CoAuthorsSectionProps) {
                                                     <FormControl>
                                                         <Input placeholder="Institution / Organization" {...field} value={field.value ?? ""} className="input-standard h-10 shadow-none" />
                                                     </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={control}
+                                            name={`coAuthors.${index}.orcidId`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Input placeholder="ORCID iD (Optional)" {...field} value={field.value ?? ""} aria-label={`Co-author ${index + 1} ORCID iD`} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={control}
+                                            name={`coAuthors.${index}.creditRoles`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <p className="text-caption font-medium">Contributor Roles (Optional)</p>
+                                                    <div className="grid grid-cols-1 gap-2">
+                                                        {CREDIT_ROLES.map((role) => (
+                                                            <label key={role} className="flex items-center gap-2 text-caption">
+                                                                <Checkbox
+                                                                    checked={field.value?.includes(role) ?? false}
+                                                                    onCheckedChange={(checked) => field.onChange(
+                                                                        checked
+                                                                            ? [...(field.value ?? []), role]
+                                                                            : (field.value ?? []).filter((value) => value !== role)
+                                                                    )}
+                                                                />
+                                                                {role}
+                                                            </label>
+                                                        ))}
+                                                    </div>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}

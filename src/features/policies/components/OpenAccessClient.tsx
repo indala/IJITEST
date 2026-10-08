@@ -126,7 +126,7 @@ export default function OpenAccessClient({ settings }: OpenAccessClientProps) {
             content: (
                 <div className="space-y-4">
                     <p className="leading-relaxed">
-                        Authors publishing with {journalShortName} <strong>retain copyright</strong> of their scholarly work without restriction. Authors grant {journalShortName} an exclusive first-publication license while allowing the public to freely access and share the work under the CC BY 4.0 license.
+                        Authors publishing with {journalShortName} <strong>retain copyright</strong> of their scholarly work without restriction. Authors grant {journalShortName} a non-exclusive license to publish and archive the Version of Record while allowing the public to freely access and share the work under the CC BY 4.0 license.
                     </p>
                     <div className="space-y-2 text-caption text-muted-foreground">
                         <div className="flex items-start gap-2">
