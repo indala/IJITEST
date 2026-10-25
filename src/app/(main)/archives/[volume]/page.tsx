@@ -150,15 +150,6 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                                                                 <Calendar className="size-3" />
                                                                 {iss.monthRange}
                                                             </Badge>
-                                                            {iss.papersCount < 5 ? (
-                                                                <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-200 text-badge font-semibold px-2 py-0.5 rounded-full">
-                                                                    ● Rolling Submissions Open
-                                                                </Badge>
-                                                            ) : (
-                                                                <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200 text-badge font-semibold px-2 py-0.5 rounded-full">
-                                                                    ● Complete Issue
-                                                                </Badge>
-                                                            )}
                                                         </div>
                                                     </div>
 
@@ -167,9 +158,7 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                                                             Issue {iss.issueNumber}
                                                         </h3>
                                                         <p className="text-muted-foreground m-0">
-                                                            {iss.papersCount < 5
-                                                                ? `Continuous publishing issue (${iss.papersCount} of 5+ papers published). Submissions active.`
-                                                                : `Published in ${iss.monthRange} ${iss.year}.`}
+                                                            Published in {iss.monthRange} {iss.year}.
                                                         </p>
                                                     </div>
                                                 </div>

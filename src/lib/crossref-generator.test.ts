@@ -38,3 +38,15 @@ test("requires a real issue publication date instead of inventing one", () => {
         /valid issue publication date is required/
     );
 });
+
+test("includes Crossref best-practice Version of Record (VOR) and similarity-check crawler resources", () => {
+    const xml = generateCrossRefXml({
+        settings: {},
+        papers: [paper({ pdfUrl: "/api/files/publications/paper_001.pdf" })],
+    });
+
+    assert.match(xml, /<resource content_version="vor">https:\/\/ijitest\.org\/article\/ijitest-2026-001<\/resource>/);
+    assert.match(xml, /<ai:license_ref applies_to="vor">https:\/\/creativecommons\.org\/licenses\/by\/4\.0\/<\/ai:license_ref>/);
+    assert.match(xml, /<item crawler="iParadigms">\s*<resource>https:\/\/ijitest\.org\/api\/files\/publications\/paper_001\.pdf<\/resource>\s*<\/item>/);
+    assert.match(xml, /<item crawler="similarity-check">\s*<resource>https:\/\/ijitest\.org\/api\/files\/publications\/paper_001\.pdf<\/resource>\s*<\/item>/);
+});

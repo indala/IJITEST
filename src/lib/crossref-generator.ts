@@ -157,6 +157,9 @@ export function generateCrossRefXml({
             <item crawler="iParadigms">
               <resource>${escapeXml(pdfUrl)}</resource>
             </item>
+            <item crawler="similarity-check">
+              <resource>${escapeXml(pdfUrl)}</resource>
+            </item>
           </collection>`
             : '';
 
@@ -175,11 +178,11 @@ ${contributorsXml}
           <year>${pubYear}</year>
         </publication_date>${pagesXml}
         <ai:program name="AccessIndicators">
-          <ai:license_ref>${escapeXml(licenseUrl)}</ai:license_ref>
+          <ai:license_ref applies_to="vor">${escapeXml(licenseUrl)}</ai:license_ref>
         </ai:program>
         <doi_data>
           <doi>${escapeXml(paper.doi)}</doi>
-          <resource>${escapeXml(canonicalUrl)}</resource>${crawlerCollectionXml}
+          <resource content_version="vor">${escapeXml(canonicalUrl)}</resource>${crawlerCollectionXml}
         </doi_data>
       </journal_article>`;
     }).join('\n');

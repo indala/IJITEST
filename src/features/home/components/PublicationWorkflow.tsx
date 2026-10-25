@@ -17,7 +17,6 @@ interface WorkflowStep {
     timeframe: string;
     description: string;
     icon: typeof SendHorizontal;
-    highlight?: boolean;
 }
 
 const WORKFLOW_STEPS: WorkflowStep[] = [
@@ -40,8 +39,7 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
         title: "Double-Blind Peer Review",
         timeframe: "2–3 Weeks",
         description: "Two independent experts assess originality, methodology, clarity, and contribution using our transparent review process.",
-        icon: SearchCheck,
-        highlight: true
+        icon: SearchCheck
     },
     {
         number: "04",
@@ -117,19 +115,11 @@ function PublicationWorkflow() {
                     return (
                         <div
                             key={step.number}
-                            className={`p-4 rounded-xl border transition-all duration-200 flex flex-col justify-between group relative ${
-                                step.highlight
-                                    ? 'bg-primary/5 border-primary/20 shadow-xs'
-                                    : 'bg-muted/30 hover:bg-muted/50 border-border/60 hover:border-primary/20'
-                            } `}
+                            className="p-4 rounded-xl border transition-all duration-200 flex flex-col justify-between group relative bg-muted/30 hover:bg-muted/50 border-border/60 hover:border-primary/20"
                         >
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <span className={`font-mono font-bold text-meta px-2 py-0.5 rounded ${
-                                        step.highlight
-                                            ? 'bg-primary text-white'
-                                            : 'bg-muted/80 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors'
-                                    } `}>
+                                    <span className="font-mono font-bold text-meta px-2 py-0.5 rounded bg-muted/80 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                                         {step.number}
                                     </span>
                                     <span className="text-body-sm font-semibold text-secondary flex items-center gap-1">
@@ -139,11 +129,7 @@ function PublicationWorkflow() {
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                                        step.highlight
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'bg-card text-primary/70 group-hover:text-primary border border-border/50'
-                                    } `}>
+                                    <div className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors bg-card text-primary/70 group-hover:text-primary border border-border/50">
                                         <Icon className="w-4 h-4" />
                                     </div>
                                     <h4 className="m-0 leading-snug group-hover:text-secondary transition-colors">
