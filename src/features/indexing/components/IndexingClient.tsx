@@ -18,6 +18,16 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
 
     const activeAgencies = [
         {
+            name: "Crossref (Official Member)",
+            category: "Digital Object Identifier (DOI)",
+            status: "Active Registration",
+            isCompleted: true,
+            desc: "Official Crossref member prefix allocating persistent DOIs and depositing bibliographic metadata for all published articles.",
+            link: "https://www.crossref.org",
+            identifier: "DOI Prefix: 10.68139",
+            badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
+        },
+        {
             name: "ISSN International Centre (ROAD)",
             category: "Scholarly Serial Directory",
             status: "Registered",

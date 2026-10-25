@@ -51,10 +51,10 @@ export default function SubmissionForm({ initialSections }: SubmissionFormProps)
             authorCreditRoles: [],
             abstract: "",
             keywords: "",
-            competingInterests: "",
-            fundingStatement: "",
-            ethicalApproval: "",
-            dataAvailability: "",
+            competingInterests: "The authors declare that there are no competing financial or personal interests related to this work.",
+            fundingStatement: "This research received no external funding or commercial grants.",
+            ethicalApproval: "Not applicable. This study did not involve human participants, animal subjects, or sensitive clinical data.",
+            dataAvailability: "All data supporting the findings of this study are included within the article and its supplementary materials.",
             coAuthors: [],
             reviewerSuggestions: [],
             termsAccepted: false,
@@ -147,7 +147,7 @@ export default function SubmissionForm({ initialSections }: SubmissionFormProps)
                 <AuthorDetailsFields form={form} sections={sections} />
                 <CoAuthorsSection control={form.control} />
                 <ReviewerSuggestionsSection control={form.control} />
-                <DeclarationsSection control={form.control} />
+                <DeclarationsSection control={form.control} setValue={form.setValue} />
                 <ManuscriptUploadDropzone
                     control={form.control}
                     manuscriptFile={manuscriptFile}

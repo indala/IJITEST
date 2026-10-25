@@ -11,6 +11,7 @@ import Script from 'next/script';
 import dynamic from 'next/dynamic';
 
 const RazorpayPayment = dynamic(() => import('@/features/submissions/components/RazorpayPayment'), { ssr: false });
+const PayPalPayment = dynamic(() => import('@/features/payments/components/PayPalPayment'), { ssr: false });
 
 import { useSettingsContext } from '@/components/providers/SettingsContext';
 
@@ -19,6 +20,9 @@ export default function PaymentClient({ id }: { id: string }) {
     const { data: queryData, isLoading: loading, error: queryError } = useTrackManuscript(id, "", true);
     const manuscript = queryData?.manuscript ?? null;
     const [paid, setPaid] = useState(false);
+    const [gateway, setGateway] = useState<'razorpay' | 'paypal'>(
+        manuscript?.paymentCurrency === 'USD' ? 'paypal' : 'razorpay'
+    );
 
     const defaultApc = parseFloat(settings['apcInr'] || '2500');
     const rawPaymentAmount = manuscript?.paymentAmount ? parseFloat(manuscript.paymentAmount) : NaN;
@@ -193,22 +197,63 @@ export default function PaymentClient({ id }: { id: string }) {
                                     <p className="text-label text-muted-foreground opacity-50 m-0">256-Bit SSL Active</p>
                                 </div>
 
+                                {/* Payment Gateway Switcher */}
+                                <div className="grid grid-cols-2 gap-1.5 p-1 bg-muted/40 rounded-lg border border-border/60">
+                                    <button
+                                        type="button"
+                                        onClick={() => setGateway('razorpay')}
+                                        className={`py-1.5 px-2 rounded-md text-meta font-bold transition-all ${
+                                            gateway === 'razorpay'
+                                                ? 'bg-card text-primary shadow-xs border border-border/50'
+                                                : 'text-muted-foreground hover:text-foreground'
+                                        }`}
+                                    >
+                                        🇮🇳 India (INR)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setGateway('paypal')}
+                                        className={`py-1.5 px-2 rounded-md text-meta font-bold transition-all ${
+                                            gateway === 'paypal'
+                                                ? 'bg-blue-600 text-white shadow-xs'
+                                                : 'text-muted-foreground hover:text-foreground'
+                                        }`}
+                                    >
+                                        🌐 PayPal (USD)
+                                    </button>
+                                </div>
+
                                 {apcTotal > 0 ? (
-                                    <RazorpayPayment
-                                        submissionId={manuscript.id}
-                                        paperId={manuscript.paperId}
-                                        currency={currency}
-                                        onSuccess={() => setPaid(true)}
-                                    />
+                                    gateway === 'razorpay' ? (
+                                        <div className="space-y-4">
+                                            <RazorpayPayment
+                                                submissionId={manuscript.id}
+                                                paperId={manuscript.paperId}
+                                                currency={currency}
+                                                onSuccess={() => setPaid(true)}
+                                            />
+                                            <div className="flex items-center justify-center gap-4 pt-1 opacity-40">
+                                                <span className="text-label">UPI</span>
+                                                <span className="text-label">GPay</span>
+                                                <span className="text-label">Cards</span>
+                                                <span className="text-label">NetBanking</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <PayPalPayment
+                                            submissionId={manuscript.id}
+                                            paperId={manuscript.paperId}
+                                            usdAmount={
+                                                (currency === 'USD' && !isNaN(rawPaymentAmount))
+                                                    ? rawPaymentAmount.toFixed(2)
+                                                    : (settings['apcUsd'] || "50.00")
+                                            }
+                                            onSuccess={() => setPaid(true)}
+                                        />
+                                    )
                                 ) : (
                                     <p className="font-semibold text-muted-foreground m-0">No payment required.</p>
                                 )}
-
-                                <div className="flex items-center justify-center gap-4 pt-2 opacity-30">
-                                    <span className="text-label">VISA</span>
-                                    <span className="text-label">MC</span>
-                                    <span className="text-label">UPI</span>
-                                </div>
                             </section>
 
                             <section className="p-6 bg-muted/20 border border-border/50 rounded-xl flex items-start gap-5 relative overflow-hidden">

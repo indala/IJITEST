@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import PaperCard from '@/features/archives/components/PaperCard';
 import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
 import { BookOpen, Download } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
@@ -126,8 +127,24 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
                     }
                 >
                     <div className="space-y-4">
-                        <div className="flex items-center gap-2 border-l-4 border-secondary pl-3">
-                            <h2 className="m-0">Table of Contents</h2>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-l-4 border-secondary pl-3">
+                            <div>
+                                <h2 className="m-0">Table of Contents</h2>
+                                <p className="text-muted-foreground mt-0.5 mb-0 text-caption">
+                                    {issuePapers.length < 5
+                                        ? `Continuous publishing issue — ${issuePapers.length} articles published to date. Call for papers active.`
+                                        : `${issuePapers.length} peer-reviewed research articles.`}
+                                </p>
+                            </div>
+                            {issuePapers.length < 5 ? (
+                                <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-200 text-badge font-semibold px-2.5 py-0.5 rounded-full w-fit">
+                                    ● Rolling Submissions Open
+                                </Badge>
+                            ) : (
+                                <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200 text-badge font-semibold px-2.5 py-0.5 rounded-full w-fit">
+                                    ● Complete Issue
+                                </Badge>
+                            )}
                         </div>
 
                         <div className="grid grid-cols-1 gap-3.5 animate-in fade-in slide-in-from-bottom-2 duration-300">

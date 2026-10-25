@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, DollarSign, CheckCircle, Clock, Search, Plus, User, ShieldCheck, Mail, ArrowRight, AlertTriangle, History, Eye, Globe, Download } from 'lucide-react';
+import { CreditCard, DollarSign, CheckCircle, Clock, Search, Plus, User, ShieldCheck, Mail, ArrowRight, AlertTriangle, History, Eye, Globe, Download, Copy } from 'lucide-react';
 import SendReceiptButton from "@/features/submissions/components/SendReceiptButton";
 import {
     usePayments,
@@ -92,8 +92,30 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                                 <span className="sr-only">View manuscript detail</span>
                             </Link>
                         </Button>
-                        <Button asChild variant="ghost" size="icon" aria-label={`Contact ${item.authorName}`} className="w-8 h-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
-                            <a href={`mailto:${item.authorEmail}`} title={`Contact ${item.authorName}`}>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Copy Payment Link"
+                            title="Copy requested payment link to clipboard"
+                            className="w-8 h-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                            onClick={() => {
+                                const origin = typeof window !== 'undefined' ? window.location.origin : 'https://ijitest.org';
+                                const payUrl = `${origin}/payment/${item.paperId}`;
+                                navigator.clipboard.writeText(payUrl);
+                                toast.success("Payment Link Copied", {
+                                    description: payUrl
+                                });
+                            }}
+                        >
+                            <Copy className="w-4 h-4" />
+                            <span className="sr-only">Copy Payment Link</span>
+                        </Button>
+                        <Button asChild variant="ghost" size="icon" aria-label={`Send payment request to ${item.authorName}`} className="w-8 h-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                            <a 
+                                href={`mailto:${item.authorEmail}?subject=${encodeURIComponent(`[IJITEST] Payment Request: Article Processing Charge for ${item.paperId}`)}&body=${encodeURIComponent(`Dear ${item.authorName},\n\nYour manuscript (${item.paperId}) has been accepted for publication in IJITEST.\n\nPlease complete your Article Processing Charge payment of ${item.amount} ${item.currency} using this secure link:\n\n${typeof window !== 'undefined' ? window.location.origin : 'https://ijitest.org'}/payment/${item.paperId}\n\nBest regards,\nDr. Ravi Babu T.\nEditor-in-Chief, IJITEST`)}`} 
+                                title={`Send payment request email to ${item.authorName}`}
+                            >
                                 <Mail className="w-4 h-4" />
                                 <span className="sr-only">Contact {item.authorName}</span>
                             </a>

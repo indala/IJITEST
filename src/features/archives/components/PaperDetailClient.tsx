@@ -10,7 +10,8 @@ import {
     ShieldCheck,
     Paperclip,
     FileSpreadsheet,
-    Code2
+    Code2,
+    ExternalLink
 } from "lucide-react";
 import Link from "next/link";
 import type { PublishedPaperUI, RelatedArticle } from "@/db/contracts";
@@ -317,6 +318,84 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                                 </div>
                             </div>
                         )}
+
+                        {/* References & Scholarly Discovery Hub */}
+                        <div id="references" className="bg-card p-5 sm:p-7 rounded-2xl border border-border/70 shadow-2xs space-y-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/50">
+                                <div>
+                                    <h2 className="flex items-center gap-2 m-0 text-lg font-bold text-foreground">
+                                        <BookOpen className="w-4 h-4 text-primary" /> References &amp; Scholarly Discovery
+                                    </h2>
+                                    <p className="text-caption text-muted-foreground m-0 mt-0.5">
+                                        Explore indexed citations, references, and external academic indexes for this article.
+                                    </p>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <a
+                                        href={`https://scholar.google.com/scholar?q=${encodeURIComponent(paper.title)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold border border-blue-200 transition-colors"
+                                        title="Find citations and related papers on Google Scholar"
+                                    >
+                                        <span>Google Scholar</span>
+                                        <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                    <a
+                                        href={`https://search.crossref.org/?q=${encodeURIComponent(paper.doi || paper.title)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold border border-amber-200 transition-colors"
+                                        title="Find on Crossref Cited-by"
+                                    >
+                                        <span>Crossref</span>
+                                        <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                    <a
+                                        href={`https://www.semanticscholar.org/search?q=${encodeURIComponent(paper.title)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 transition-colors"
+                                        title="Find on Semantic Scholar"
+                                    >
+                                        <span>Semantic Scholar</span>
+                                        <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div className="rounded-xl bg-muted/30 p-4 border border-border/50 space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                                        <FileText className="w-4 h-4" />
+                                    </div>
+                                    <div className="space-y-1 text-body-sm">
+                                        <p className="font-semibold text-foreground m-0">
+                                            Full Bibliography &amp; In-Text References
+                                        </p>
+                                        <p className="text-muted-foreground text-caption m-0">
+                                            The complete bibliographic citations, reference numbering, and figure annotations are archived directly in the authoritative published galley PDF.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="pt-2 flex flex-wrap items-center gap-3">
+                                    <DownloadPaperButton
+                                        filePath={paper.filePath}
+                                        paperId={paper.id}
+                                        className="btn-primary text-xs px-3.5 py-1.5 rounded-lg font-bold inline-flex items-center gap-1.5 cursor-pointer"
+                                    >
+                                        <Download className="w-3.5 h-3.5" /> View References in Full PDF
+                                    </DownloadPaperButton>
+                                    <a
+                                        href={`/api/export/jats/${paper.paperId}`}
+                                        download={`jats-${paper.paperId}.xml`}
+                                        className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1"
+                                    >
+                                        <Code2 className="w-3.5 h-3.5" /> Download JATS XML Metadata
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
 
                         {/* Open Access & Creative Commons License */}
                         <div className="p-3.5 sm:p-4 rounded-xl bg-primary/5 border border-primary/15 shadow-2xs">

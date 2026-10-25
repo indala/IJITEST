@@ -13,7 +13,11 @@ export interface CrossrefConfig {
 }
 
 export function getCrossrefConfig(): CrossrefConfig {
-    const username = process.env['CROSSREF_USERNAME'] || "";
+    const rawUsername = process.env['CROSSREF_USERNAME'] || "";
+    const role = process.env['CROSSREF_ROLE'] || "bbpj";
+    const username = (rawUsername && !rawUsername.includes("/") && role)
+        ? `${rawUsername}/${role}`
+        : rawUsername;
     const password = process.env['CROSSREF_PASSWORD'] || "";
     const prefix = process.env['CROSSREF_PREFIX'] || "10.68139";
     const depositorName = process.env['CROSSREF_DEPOSITOR_NAME'] || process.env['CROSSREF_MEMBER_NAME'] || "IJITEST Editorial Office";

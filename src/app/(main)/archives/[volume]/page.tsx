@@ -141,14 +141,25 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                                         <Card className="h-full border-border/70 bg-card shadow-2xs hover:border-primary/30 transition-all duration-200 rounded-xl relative overflow-hidden">
                                             <CardContent className="p-4 sm:p-5 flex flex-col justify-between h-full relative z-10">
                                                 <div className="space-y-3">
-                                                    <div className="flex items-center justify-between">
+                                                    <div className="flex items-center justify-between gap-1 flex-wrap">
                                                         <div className="w-9 h-9 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
                                                             <FileText className="size-4" />
                                                         </div>
-                                                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/15 text-badge font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
-                                                            <Calendar className="size-3" />
-                                                            {iss.monthRange}
-                                                        </Badge>
+                                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                                            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/15 text-badge font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                                <Calendar className="size-3" />
+                                                                {iss.monthRange}
+                                                            </Badge>
+                                                            {iss.papersCount < 5 ? (
+                                                                <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-200 text-badge font-semibold px-2 py-0.5 rounded-full">
+                                                                    ● Rolling Submissions Open
+                                                                </Badge>
+                                                            ) : (
+                                                                <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200 text-badge font-semibold px-2 py-0.5 rounded-full">
+                                                                    ● Complete Issue
+                                                                </Badge>
+                                                            )}
+                                                        </div>
                                                     </div>
 
                                                     <div className="space-y-0.5">
@@ -156,7 +167,9 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
                                                             Issue {iss.issueNumber}
                                                         </h3>
                                                         <p className="text-muted-foreground m-0">
-                                                            Published in {iss.monthRange} {iss.year}.
+                                                            {iss.papersCount < 5
+                                                                ? `Continuous publishing issue (${iss.papersCount} of 5+ papers published). Submissions active.`
+                                                                : `Published in ${iss.monthRange} ${iss.year}.`}
                                                         </p>
                                                     </div>
                                                 </div>
