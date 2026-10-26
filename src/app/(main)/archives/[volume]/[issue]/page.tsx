@@ -1,6 +1,6 @@
 import PageHeader from "@/components/layout/PageHeader";
 import type { Metadata } from 'next';
-import { getPublishedPapers } from '@/actions/archives';
+import { getPublishedPapers, getIssueByVolumeAndIssue } from '@/actions/archives';
 import { getSettingsData } from '@/actions/settings';
 import { JsonLd } from '@/components/shared/JsonLd';
 import { notFound } from 'next/navigation';
@@ -70,10 +70,28 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
     const papers = papersRes.success && papersRes.data ? papersRes.data : [];
 
     // Filter papers for this volume and issue
-    const issuePapers = papers.filter(p => p.volumeNumber === volNumber && p.issueNumber === issueNumber);
+    let issuePapers = papers.filter(p => p.volumeNumber === volNumber && p.issueNumber === issueNumber);
 
-    const activeIssue = issuePapers[0];
+    let activeIssue = issuePapers[0];
+    if (!activeIssue) {
+        // Query the issue directly to avoid false 404s due to stale getPublishedPapers() cache
+        const directRes = await getIssueByVolumeAndIssue(volNumber, issueNumber);
+        if (directRes.success && directRes.data?.issue) {
+            issuePapers = directRes.data.papers;
+            activeIssue = directRes.data.papers[0] || ({
+                volumeNumber: volNumber,
+                issueNumber: issueNumber,
+                publicationYear: directRes.data.issue.year,
+                monthRange: directRes.data.issue.monthRange || "",
+                fullBookPdfUrl: directRes.data.issue.fullBookPdfUrl || null,
+            } as any);
+        } else {
+            notFound();
+        }
+    }
+
     if (!activeIssue) notFound();
+
     const monthRange = activeIssue.monthRange || "";
     const year = activeIssue.publicationYear || "";
     const hasFullBook = Boolean(activeIssue.fullBookPdfUrl);

@@ -418,6 +418,7 @@ export async function assignPaperToIssue(
             revalidatePath('/', 'page');
             revalidatePath('/archives', 'layout');
             revalidatePath('/current-issue', 'layout');
+            revalidatePath(`/archives/volume${issue.volumeNumber}`, 'page');
             revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}`, 'page');
         }
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `assignPaperToIssue ${submissionId}`);
@@ -552,8 +553,10 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
         revalidatePath('/', 'page');
         revalidatePath('/archives', 'layout');
         revalidatePath('/current-issue', 'layout');
+        revalidatePath(`/archives/volume${issue.volumeNumber}`, 'page');
         revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}`, 'page');
         if (prevLatestIssue) {
+            revalidatePath(`/archives/volume${prevLatestIssue.volumeNumber}`, 'page');
             revalidatePath(`/archives/volume${prevLatestIssue.volumeNumber}/issue${prevLatestIssue.issueNumber}`, 'page');
         }
 
@@ -669,6 +672,7 @@ export async function updateVolumeIssue(id: number, formData: FormData): Promise
         revalidatePath('/', 'page');
         revalidatePath('/archives', 'layout');
         revalidatePath('/current-issue', 'layout');
+        revalidatePath(`/archives/volume${volume}`, 'page');
         revalidatePath(`/archives/volume${volume}/issue${issue}`, 'page');
         cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `updateVolumeIssue ${id}`);
         updateTag(CACHE_TAGS.PUBLICATIONS);
@@ -1023,6 +1027,10 @@ export async function updatePublicationDoi(
             .set({ 
                 doi: finalDoi,
                 doiProvider: resolvedProvider,
+                ...(resolvedProvider === 'zenodo' && finalDoi ? {
+                    zenodoDoi: finalDoi,
+                    zenodoStatus: 'published' as const,
+                } : {}),
                 doiRegistrationStatus: resolvedProvider === 'none' ? 'none' : pub.doiRegistrationStatus,
                 doiRegistrationBatchId: resolvedProvider === 'none' ? null : pub.doiRegistrationBatchId,
             })
@@ -1073,6 +1081,11 @@ export async function updatePublicationDoi(
         revalidatePath('/admin/publications');
         revalidatePath(`/editor/submissions/${submissionId}`);
         revalidatePath('/editor/submissions');
+        if (issue.volumeNumber && issue.issueNumber && sub.paperId) {
+            revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}/${sub.paperId}`, 'page');
+            revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}`, 'page');
+            revalidatePath(`/archives/volume${issue.volumeNumber}`, 'page');
+        }
         cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), `updatePublicationDoi ${submissionId}`);
 
         if (sub.paperId) {
