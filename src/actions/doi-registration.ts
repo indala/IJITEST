@@ -2,7 +2,7 @@
 import "server-only";
 
 import { db } from "@/lib/db";
-import { submissions, publications } from "@/db/schema";
+import { submissions, publications, volumesIssues } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -13,12 +13,13 @@ import {
     serverError
 } from "@/lib/action-response";
 import { getPaperById } from "@/actions/archives";
+import { getSubmissionById } from "@/actions/submissions";
 import { getSettingsData } from "@/actions/settings";
 import { generateCrossRefXml } from "@/lib/crossref-generator";
 import { getCrossrefConfig, getZenodoConfig } from "@/lib/doi-config";
 import { isValidDoi, normalizeDoi } from "@/lib/doi-config";
 import { logSubmissionEvent } from "@/actions/event-log";
-import { downloadFileFromStorage } from "@/lib/fs-utils";
+import { downloadFileFromStorage, triggerPdfBranding } from "@/lib/fs-utils";
 import { revalidatePath } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { updateTag } from "next/cache";
@@ -244,6 +245,36 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
             return actionError("Published PDF not found. The paper must have a galley PDF before depositing to Zenodo.");
         }
 
+        // Idempotency: if already deposited and published to Zenodo, avoid creating duplicate depositions
+        if (pub.zenodoStatus === 'published' && pub.zenodoDoi) {
+            const shouldSetAsPrimaryDoi = pub.doiProvider !== 'crossref';
+            if (shouldSetAsPrimaryDoi && pub.doi !== pub.zenodoDoi) {
+                await db.update(publications)
+                    .set({
+                        doi: pub.zenodoDoi,
+                        doiProvider: 'zenodo',
+                    })
+                    .where(eq(publications.id, pub.id));
+            }
+            if (submission.paperId) {
+                updateTag(CACHE_TAGS.PAPER(submission.paperId));
+            }
+            updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+            updateTag(CACHE_TAGS.PUBLICATIONS);
+            updateTag(CACHE_TAGS.ARCHIVES);
+            updateTag(CACHE_TAGS.LATEST_ISSUE);
+
+            revalidatePath(`/author/submissions/${submissionId}`);
+            revalidatePath(`/admin/submissions/${submissionId}`);
+            revalidatePath('/admin/submissions');
+            revalidatePath('/admin/publications');
+
+            return actionSuccess({
+                zenodoDoi: pub.zenodoDoi,
+                recordUrl: pub.zenodoRecordUrl || `https://zenodo.org/records/${pub.zenodoRecordId || pub.zenodoDoi.replace('10.5281/zenodo.', '')}`,
+            });
+        }
+
         const config = getZenodoConfig();
         if (!config.accessToken) {
             return actionError("Zenodo access token not configured. Set ZENODO_ACCESS_TOKEN in .env.");
@@ -314,10 +345,16 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
             },
         };
 
+        const zenodoHeaders = {
+            Authorization: `Bearer ${config.accessToken}`,
+            "User-Agent": "IJITEST-Publisher/1.0 (https://ijitest.org; mailto:support@ijitest.org)",
+            Accept: "application/json",
+        };
+
         const createRes = await fetch(`${config.apiUrl}/deposit/depositions`, {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${config.accessToken}`,
+                ...zenodoHeaders,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(depositionPayload),
@@ -325,6 +362,12 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
 
         if (!createRes.ok) {
             const errText = await createRes.text();
+            if (createRes.status === 403 || errText.includes("<html")) {
+                return actionError(
+                    "Zenodo blocked this request due to network rate-limiting or anti-bot protection (HTTP 403). " +
+                    "Please contact Zenodo support to whitelist this server IP, or manually link the Zenodo DOI using the field below."
+                );
+            }
             return actionError(`Failed to create Zenodo deposition (${createRes.status}): ${errText}`);
         }
 
@@ -379,8 +422,8 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
         const uploadRes = await fetch(`${bucketUrl}/${fileName}`, {
             method: "PUT",
             headers: {
-                Authorization: `Bearer ${config.accessToken}`,
-                "Content-Type": "application/pdf",
+                ...zenodoHeaders,
+                "Content-Type": "application/octet-stream",
                 "Content-Length": String(pdfBuffer.byteLength),
             },
             // Buffer extends Uint8Array but fetch's BodyInit requires Uint8Array explicitly
@@ -399,6 +442,12 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
                 description: `Zenodo PDF upload failed (${uploadRes.status}): ${errText.slice(0, 200)}`,
                 metadata: { depositionId }
             });
+            if (uploadRes.status === 403 || errText.includes("<html")) {
+                return actionError(
+                    "Zenodo blocked the PDF upload due to network rate-limiting or anti-bot protection (HTTP 403). " +
+                    "Please manually link the Zenodo DOI using the field below."
+                );
+            }
             return actionError(`Failed to upload PDF to Zenodo (${uploadRes.status}): ${errText.slice(0, 200)}`);
         }
 
@@ -409,9 +458,7 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
             `${config.apiUrl}/deposit/depositions/${depositionId}/actions/publish`,
             {
                 method: "POST",
-                headers: {
-                    Authorization: `Bearer ${config.accessToken}`,
-                },
+                headers: zenodoHeaders,
             }
         );
 
@@ -427,6 +474,12 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
                 description: `Zenodo publish action failed (${publishRes.status}): ${errText.slice(0, 200)}`,
                 metadata: { depositionId }
             });
+            if (publishRes.status === 403 || errText.includes("<html")) {
+                return actionError(
+                    "Zenodo blocked publication of the deposition (HTTP 403). " +
+                    "Please log into Zenodo to publish the record, then link the DOI below."
+                );
+            }
             return actionError(`Failed to publish Zenodo deposition (${publishRes.status}): ${errText.slice(0, 200)}`);
         }
 
@@ -446,15 +499,53 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
                 ? `https://sandbox.zenodo.org/record/${depositionId}`
                 : `https://zenodo.org/record/${depositionId}`);
 
-        // Store Zenodo identifiers separately — publications.doi (Crossref) is never touched
+        const shouldSetAsPrimaryDoi = pub.doiProvider !== 'crossref';
+
         await db.update(publications)
             .set({
                 zenodoDoi,
                 zenodoRecordId: String(depositionId),
                 zenodoStatus: 'published',
                 zenodoRecordUrl: recordUrl,
+                ...(shouldSetAsPrimaryDoi ? {
+                    doi: zenodoDoi,
+                    doiProvider: 'zenodo',
+                } : {}),
             })
             .where(eq(publications.id, pub.id));
+
+        // Re-brand published PDF with the newly minted Zenodo DOI if primary
+        if (shouldSetAsPrimaryDoi && pub.finalPdfUrl) {
+            try {
+                const subRes = await getSubmissionById(submissionId);
+                if (subRes.success && subRes.data) {
+                    const latestPdf = subRes.data.allFiles.find(f => f.fileType === 'pdfVersion');
+                    if (latestPdf) {
+                        const issueRows = await db.select().from(volumesIssues).where(eq(volumesIssues.id, pub.issueId)).limit(1);
+                        const issue = issueRows[0];
+                        if (issue) {
+                            await triggerPdfBranding(latestPdf.fileUrl, pub.finalPdfUrl, {
+                                journalName: settings['journalName'] || "International Journal of Innovative Trends in Engineering Science and Technology",
+                                journalShortName: settings['journalShortName'] || "IJITEST",
+                                volume: issue.volumeNumber,
+                                issue: issue.issueNumber,
+                                year: issue.year,
+                                monthRange: issue.monthRange || "",
+                                issn: settings['issnNumber'] || "3139-6887",
+                                website: settings['journalWebsite'] || "https://ijitest.org",
+                                paperId: submission.paperId,
+                                startPage: pub.startPage,
+                                endPage: pub.endPage,
+                                doi: zenodoDoi,
+                                license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+                            });
+                        }
+                    }
+                }
+            } catch (brandErr) {
+                console.error("Failed to re-brand PDF with Zenodo DOI:", brandErr);
+            }
+        }
 
         await logSubmissionEvent({
             submissionId,

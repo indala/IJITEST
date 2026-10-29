@@ -26,6 +26,8 @@ interface EditDoiModalProps {
     paperId: string;
     currentDoi?: string | null | undefined;
     currentProvider?: 'none' | 'crossref' | 'zenodo' | 'custom' | null | undefined;
+    zenodoDoi?: string | null | undefined;
+    zenodoStatus?: 'none' | 'pending' | 'published' | 'failed' | null | undefined;
     zenodoRecordUrl?: string | null | undefined;
 }
 
@@ -34,6 +36,8 @@ export default function EditDoiModal({
     paperId,
     currentDoi,
     currentProvider,
+    zenodoDoi,
+    zenodoStatus,
     zenodoRecordUrl,
 }: EditDoiModalProps) {
     const [open, setOpen] = useState(false);
@@ -50,7 +54,7 @@ export default function EditDoiModal({
     const suggestedCrossrefDoi = `${doiPrefix}/${suggestedDoiSuffix}`;
 
     const isCurrentlyOfficial = currentProvider === 'crossref';
-    const isCurrentlyZenodo = currentProvider === 'zenodo' || (currentDoi ? currentDoi.toLowerCase().includes('zenodo') : false);
+    const isCurrentlyZenodo = currentProvider === 'zenodo' || Boolean(zenodoDoi) || (currentDoi ? currentDoi.toLowerCase().includes('zenodo') : false);
     const isCurrentlyCustom = currentProvider === 'custom' || (Boolean(currentDoi) && !isCurrentlyOfficial && !isCurrentlyZenodo);
 
     const initialMode: 'none' | 'official' | 'zenodo' | 'custom' = isCurrentlyOfficial
@@ -61,15 +65,17 @@ export default function EditDoiModal({
                 ? 'custom'
                 : 'none';
 
+    const activeZenodoDoi = zenodoDoi || (isCurrentlyZenodo ? (currentDoi || '') : '');
+
     const [doiMode, setDoiMode] = useState<'none' | 'official' | 'zenodo' | 'custom'>(initialMode);
     const [customDoiValue, setCustomDoiValue] = useState(isCurrentlyCustom || isCurrentlyOfficial ? (currentDoi || '') : '');
-    const [zenodoDoiValue, setZenodoDoiValue] = useState(isCurrentlyZenodo ? (currentDoi || '') : '');
+    const [zenodoDoiValue, setZenodoDoiValue] = useState(activeZenodoDoi);
 
     const handleOpen = (newOpen: boolean) => {
         if (newOpen) {
             setDoiMode(initialMode);
             setCustomDoiValue(isCurrentlyCustom || isCurrentlyOfficial ? (currentDoi || '') : '');
-            setZenodoDoiValue(isCurrentlyZenodo ? (currentDoi || '') : '');
+            setZenodoDoiValue(activeZenodoDoi);
         }
         setOpen(newOpen);
     };
@@ -342,6 +348,27 @@ export default function EditDoiModal({
                                 </p>
                                 <span className="text-badge bg-sky-600 text-white px-1.5 py-0.2 rounded-full font-bold">1-Click API</span>
                             </div>
+
+                            {zenodoStatus === 'published' && (zenodoDoi || zenodoDoiValue) && (
+                                <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl space-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-caption font-bold text-emerald-700 flex items-center gap-1.5">
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Live on Zenodo
+                                        </span>
+                                        {zenodoRecordUrl && (
+                                            <a
+                                                href={zenodoRecordUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 text-caption text-sky-600 hover:underline font-semibold"
+                                            >
+                                                <ExternalLink className="w-3 h-3" /> View Record
+                                            </a>
+                                        )}
+                                    </div>
+                                    <p className="font-mono text-meta font-semibold text-emerald-950 break-all">{zenodoDoi || zenodoDoiValue}</p>
+                                </div>
+                            )}
                             
                             <p className="text-caption text-muted-foreground leading-relaxed">
                                 Uploads manuscript metadata and CC-BY 4.0 license directly to Zenodo via REST API to generate a <span className="font-mono font-semibold text-foreground">10.5281/zenodo</span> DOI.
@@ -358,7 +385,11 @@ export default function EditDoiModal({
                                 ) : (
                                     <Sparkles className="w-4 h-4" />
                                 )}
-                                {isDepositingZenodo ? "Depositing to Zenodo API..." : "Deposit to Zenodo via API (1-Click)"}
+                                {isDepositingZenodo
+                                    ? "Communicating with Zenodo..."
+                                    : zenodoStatus === 'published'
+                                        ? "Sync / Re-verify Zenodo Record"
+                                        : "Deposit to Zenodo via API (1-Click)"}
                             </Button>
 
                             <div className="pt-2 border-t border-sky-500/20 space-y-1">
@@ -369,7 +400,7 @@ export default function EditDoiModal({
                                     onChange={(e) => setZenodoDoiValue(e.target.value)}
                                     className="h-9 text-meta font-mono bg-background"
                                 />
-                                {zenodoRecordUrl && (
+                                {zenodoRecordUrl && !zenodoStatus && (
                                     <a
                                         href={zenodoRecordUrl}
                                         target="_blank"

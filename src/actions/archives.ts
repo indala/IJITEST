@@ -483,6 +483,33 @@ export async function getIssuePapersByIssueId(issueId: number): Promise<ActionRe
     }
 }
 
+export async function getIssueByVolumeAndIssue(
+    volumeNumber: number,
+    issueNumber: number
+): Promise<ActionResponse<{ issue: Issue; papers: PublishedPaperUI[] }>> {
+    'use cache'
+    cacheLife('archive')
+    cacheTag(CACHE_TAGS.ARCHIVES, CACHE_TAGS.PUBLICATIONS)
+
+    try {
+        const issueRows = await db.select()
+            .from(volumesIssues)
+            .where(and(
+                eq(volumesIssues.volumeNumber, volumeNumber),
+                eq(volumesIssues.issueNumber, issueNumber),
+                eq(volumesIssues.status, 'published')
+            ))
+            .limit(1);
+
+        const issue = issueRows[0];
+        if (!issue) return actionError("Published issue not found");
+
+        return getIssuePapersByIssueId(issue.id);
+    } catch (error) {
+        return serverError(error, "fetch issue by volume and issue numbers");
+    }
+}
+
 export async function getPublishedIssues(): Promise<ActionResponse<Issue[]>> {
     'use cache'
     cacheLife('archive')

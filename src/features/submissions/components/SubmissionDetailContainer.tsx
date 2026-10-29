@@ -423,19 +423,22 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                                     )}
                                                                 </div>
                                                                 <p className="text-meta font-mono font-medium text-emerald-300 break-all">
-                                                                    {submission.doi || <span className="text-white/40 italic font-sans text-caption">Unassigned (No DOI)</span>}
+                                                                    {(submission.publication?.doiProvider === 'zenodo' ? (submission.publication?.zenodoDoi || submission.doi) : submission.doi) || <span className="text-white/40 italic font-sans text-caption">Unassigned (No DOI)</span>}
                                                                 </p>
                                                             </div>
                                                             {role === 'admin' && (
                                                                 <EditDoiModal
                                                                     submissionId={submission.id}
                                                                     paperId={submission.paperId}
-                                                                    currentDoi={submission.doi}
+                                                                    currentDoi={submission.publication?.doi || submission.doi}
                                                                     currentProvider={submission.publication?.doiProvider}
+                                                                    zenodoDoi={submission.publication?.zenodoDoi}
+                                                                    zenodoStatus={submission.publication?.zenodoStatus}
                                                                     zenodoRecordUrl={
-                                                                        submission.publication?.doiRegistrationBatchId
-                                                                            ? `https://zenodo.org/record/${submission.publication.doiRegistrationBatchId}`
-                                                                            : undefined
+                                                                        submission.publication?.zenodoRecordUrl ||
+                                                                        (submission.publication?.zenodoRecordId
+                                                                            ? `https://zenodo.org/records/${submission.publication.zenodoRecordId}`
+                                                                            : undefined)
                                                                     }
                                                                 />
                                                             )}

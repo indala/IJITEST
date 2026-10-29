@@ -1,6 +1,6 @@
 import PageHeader from "@/components/layout/PageHeader";
 import type { Metadata } from 'next';
-import { getPublishedPapers } from '@/actions/archives';
+import { getPublishedPapers, getPublishedIssues } from '@/actions/archives';
 import { getSettingsData } from '@/actions/settings';
 import { JsonLd } from "@/components/shared/JsonLd";
 import Link from 'next/link';
@@ -61,16 +61,19 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
 
     if (isNaN(volNumber)) notFound();
 
-    const [papersRes, settings] = await Promise.all([
+    const [papersRes, settings, publishedIssuesRes] = await Promise.all([
         getPublishedPapers(),
-        getSettingsData()
+        getSettingsData(),
+        getPublishedIssues(),
     ]);
     const papers = papersRes.success && papersRes.data ? papersRes.data : [];
+    const publishedIssues = publishedIssuesRes.success && publishedIssuesRes.data ? publishedIssuesRes.data : [];
 
-    // Filter papers for this volume
+    // Filter papers and published issues for this volume
     const volumePapers = papers.filter(p => p.volumeNumber === volNumber);
+    const volumeIssuesFromDb = publishedIssues.filter(i => i.volumeNumber === volNumber);
 
-    if (volumePapers.length === 0) notFound();
+    if (volumePapers.length === 0 && volumeIssuesFromDb.length === 0) notFound();
 
     // Group papers by issue number
     const issueMap = new Map<number, {
@@ -79,6 +82,16 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
         monthRange: string;
         papersCount: number;
     }>();
+
+    // Pre-populate with all published issues for this volume so newly created issues always appear
+    volumeIssuesFromDb.forEach(iss => {
+        issueMap.set(iss.issueNumber, {
+            issueNumber: iss.issueNumber,
+            year: iss.year,
+            monthRange: iss.monthRange || "",
+            papersCount: 0,
+        });
+    });
 
     volumePapers.forEach(paper => {
         const issueNum = paper.issueNumber || 0;
@@ -101,7 +114,7 @@ export default async function VolumePage({ params }: { params: Promise<{ volume:
     const issues = Array.from(issueMap.values())
         .sort((a, b) => b.issueNumber - a.issueNumber);
 
-    const volumeYear = volumePapers[0]?.publicationYear || "";
+    const volumeYear = volumePapers[0]?.publicationYear || volumeIssuesFromDb[0]?.year || "";
 
     return (
         <div className="bg-background min-h-screen pb-8">
