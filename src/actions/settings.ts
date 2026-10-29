@@ -26,28 +26,29 @@ function kebabCase(str: string): string {
 
 const ALLOWED_SETTING_KEYS = new Set<string>(Object.keys(DEFAULT_JOURNAL_SETTINGS));
 
-export async function getSettings(): Promise<ActionResponse<JournalSettings>> {
+async function getCachedSettings(): Promise<JournalSettings> {
     'use cache'
     cacheLife('settings')
     cacheTag(CACHE_TAGS.SETTINGS)
 
+    cacheLogger.miss(CACHE_TAGS.SETTINGS, "settings");
+    return readJournalSettings();
+}
+
+export async function getSettings(): Promise<ActionResponse<JournalSettings>> {
     try {
-        cacheLogger.miss(CACHE_TAGS.SETTINGS, "settings");
-        const settings = await readJournalSettings();
-        return actionSuccess(settings);
+        return actionSuccess(await getCachedSettings());
     } catch (error) {
         cacheLogger.error(CACHE_TAGS.SETTINGS, error);
-        // Graceful fallback to default settings so layout/SSR does not fail
-        return actionSuccess({ ...DEFAULT_JOURNAL_SETTINGS });
+        return serverError(error, "fetch settings");
     }
 }
 
 const getCachedSettingsData = cache(async (): Promise<JournalSettings> => {
     try {
-        const res = await getSettings();
-        if (!res.success || !res.data) return { ...DEFAULT_JOURNAL_SETTINGS };
-        return res.data;
-    } catch {
+        return await getCachedSettings();
+    } catch (error) {
+        cacheLogger.error(CACHE_TAGS.SETTINGS, error);
         return { ...DEFAULT_JOURNAL_SETTINGS };
     }
 });

@@ -16,9 +16,10 @@ import {
 } from "@/lib/action-response";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { revalidatePath, cacheLife, cacheTag } from "next/cache";
+import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
 import { uploadFileToStorage, safeDeleteFile } from "@/lib/fs-utils";
 import { sanitizeAnnouncementHtml } from "@/lib/announcement-content";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 
 
 
@@ -32,7 +33,7 @@ export async function getAnnouncements(options?: {
 }): Promise<ActionResponse<Announcement[]>> {
     'use cache';
     cacheLife('hours');
-    cacheTag('announcements');
+    cacheTag(CACHE_TAGS.ANNOUNCEMENTS);
 
     try {
 
@@ -70,7 +71,7 @@ export async function getAnnouncements(options?: {
 export async function getAnnouncementById(id: number): Promise<ActionResponse<Announcement>> {
     'use cache';
     cacheLife('hours');
-    cacheTag('announcements');
+    cacheTag(CACHE_TAGS.ANNOUNCEMENTS);
 
     try {
         const rows = await db.select()
@@ -175,6 +176,7 @@ export async function createAnnouncement(formData: FormData): Promise<ActionResp
         const newId = Number(insertResult[0]?.insertId);
         const createdRow = await db.select().from(announcements).where(eq(announcements.id, newId)).limit(1);
 
+        updateTag(CACHE_TAGS.ANNOUNCEMENTS);
         revalidatePath("/announcements");
         revalidatePath("/admin/announcements");
         revalidatePath("/editor/announcements");
@@ -273,6 +275,7 @@ export async function updateAnnouncement(id: number, formData: FormData): Promis
 
         const updatedRows = await db.select().from(announcements).where(eq(announcements.id, id)).limit(1);
 
+        updateTag(CACHE_TAGS.ANNOUNCEMENTS);
         revalidatePath("/announcements");
         revalidatePath(`/announcements/${id}`);
         revalidatePath("/admin/announcements");
@@ -307,6 +310,7 @@ export async function deleteAnnouncement(id: number): Promise<ActionResponse<{ i
 
         await db.delete(announcements).where(eq(announcements.id, id));
 
+        updateTag(CACHE_TAGS.ANNOUNCEMENTS);
         revalidatePath("/announcements");
         revalidatePath(`/announcements/${id}`);
         revalidatePath("/admin/announcements");
@@ -340,6 +344,7 @@ export async function toggleAnnouncementStatus(id: number): Promise<ActionRespon
             .set({ isActive: newStatus, updatedAt: new Date() })
             .where(eq(announcements.id, id));
 
+        updateTag(CACHE_TAGS.ANNOUNCEMENTS);
         revalidatePath("/announcements");
         revalidatePath(`/announcements/${id}`);
         revalidatePath("/admin/announcements");

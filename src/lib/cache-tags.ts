@@ -10,6 +10,7 @@ export const CACHE_TAGS = {
     PUBLICATIONS: "publications",
     LATEST_ISSUE: "latest-issue",
     ARCHIVES: "archives",
+    ANNOUNCEMENTS: "announcements",
     SUBMISSIONS: "submissions",
     EDITORIAL_BOARD: "editorial-board",
     
