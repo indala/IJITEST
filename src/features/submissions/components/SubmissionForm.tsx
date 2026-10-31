@@ -92,7 +92,7 @@ export default function SubmissionForm({ initialSections }: SubmissionFormProps)
 
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
-            if (value === undefined || value === null || value === "") return;
+            if (value === undefined || value === null) return;
             if (key === "coAuthors") {
                 formData.append(key, JSON.stringify(value));
             } else if (key === "authorCreditRoles") {
@@ -113,8 +113,10 @@ export default function SubmissionForm({ initialSections }: SubmissionFormProps)
         formAction(formData);
     }, [manuscriptFile, formAction]);
 
-    const onInvalid = useCallback(() => {
-        toast.error("Please fill missing forms", {
+    const onInvalid = useCallback((errors: Record<string, { message?: string }>) => {
+        const firstErrorKey = Object.keys(errors || {})[0];
+        const firstError = firstErrorKey ? errors[firstErrorKey]?.message : null;
+        toast.error(firstError || "Please fill missing forms", {
             className: "bg-linear-to-r from-rose-500 to-rose-600 border-none text-white px-6 py-4 rounded-2xl shadow-xl shadow-rose-500/20",
         });
     }, []);

@@ -44,6 +44,27 @@ test("submission schema validation tests", async (t) => {
         assert.equal(result.success, true);
     });
 
+    await t.test("accepts null, empty string, or omitted optional authorPhone and authorOrcid", () => {
+        const result = formSchema.safeParse({
+            title: "A sufficiently long research title",
+            authorName: "Ada Lovelace",
+            authorEmail: "ada@example.org",
+            authorPhone: null,
+            authorDesignation: "Researcher",
+            affiliation: "Example Institute",
+            authorOrcid: null,
+            authorCreditRoles: null,
+            abstract: "A sufficiently long abstract about a research study that meets the minimum character requirement.",
+            keywords: "engineering, systems",
+            competingInterests: "The authors declare no competing interests.",
+            fundingStatement: "This research received no external funding.",
+            ethicalApproval: "Ethical approval was not applicable to this study.",
+            dataAvailability: "Data are available at https://example.org/dataset/1.",
+            termsAccepted: true,
+        });
+        assert.equal(result.success, true);
+    });
+
     await t.test("coAuthorSchema validates valid and invalid authors", () => {
         const valid = coAuthorSchema.safeParse({
             name: "Dr. Alice Smith",

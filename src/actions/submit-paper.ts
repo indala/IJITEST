@@ -39,11 +39,12 @@ const submissionSchema = z.object({
         .regex(phoneRegex, "Please enter a valid phone number (e.g., +91 9876543210)")
         .max(25, "Phone number cannot exceed 25 characters")
         .optional()
+        .nullable()
         .or(z.literal('')),
     authorDesignation: z.string().min(2, "Author designation is required").max(255, "Designation cannot exceed 255 characters"),
     affiliation: z.string().min(2, "Affiliation is required").max(500, "Institution name cannot exceed 500 characters"),
-    authorOrcid: orcidSchema.optional(),
-    authorCreditRoles: z.array(creditRoleSchema).max(CREDIT_ROLES.length).optional(),
+    authorOrcid: orcidSchema.optional().nullable(),
+    authorCreditRoles: z.array(creditRoleSchema).max(CREDIT_ROLES.length).optional().nullable(),
     title: z.string().min(10, "Title must be at least 10 characters").max(1000, "Title cannot exceed 1000 characters"),
     abstract: z.string().min(50, "Abstract must be at least 50 characters"),
     keywords: z.string().min(5, "Keywords are required").max(500, "Keywords cannot exceed 500 characters"),
@@ -51,7 +52,7 @@ const submissionSchema = z.object({
     fundingStatement: z.string().trim().min(2, "Please provide a funding statement").max(5000),
     ethicalApproval: z.string().trim().min(2, "Please provide an ethics statement").max(5000),
     dataAvailability: z.string().trim().min(2, "Please provide a data availability statement").max(5000),
-    coAuthors: z.string().optional(), // Still receiving as string from FormData, will parse to Author[]
+    coAuthors: z.string().optional().nullable(), // Still receiving as string from FormData, will parse to Author[]
     termsAccepted: z.string().refine(val => val === "on", {
         message: "You must accept the terms and guidelines"
     }),
@@ -78,34 +79,43 @@ export async function submitPaper(formData: FormData): Promise<ActionResponse<{ 
     try {
         // 1. Validation (Mapping snake_case FormData to camelCase Schema)
         const rawData = {
-            authorName: formData.get("authorName") as string,
-            authorEmail: formData.get("authorEmail") as string,
-            authorPhone: formData.get("authorPhone") as string,
-            authorDesignation: formData.get("authorDesignation") as string,
-            affiliation: formData.get("affiliation") as string,
-            authorOrcid: (formData.get("authorOrcid") as string | null) || "",
+            authorName: (formData.get("authorName") as string | null)?.trim() ?? "",
+            authorEmail: (formData.get("authorEmail") as string | null)?.trim() ?? "",
+            authorPhone: (formData.get("authorPhone") as string | null)?.trim() ?? "",
+            authorDesignation: (formData.get("authorDesignation") as string | null)?.trim() ?? "",
+            affiliation: (formData.get("affiliation") as string | null)?.trim() ?? "",
+            authorOrcid: (formData.get("authorOrcid") as string | null)?.trim() ?? "",
             authorCreditRoles: (() => {
                 const value = formData.get("authorCreditRoles");
                 if (typeof value !== "string" || !value) return [];
                 try {
-                    return JSON.parse(value);
+                    const parsed = JSON.parse(value);
+                    return Array.isArray(parsed) ? parsed : [];
                 } catch {
-                    return null;
+                    return [];
                 }
             })(),
-            title: formData.get("title") as string,
-            abstract: formData.get("abstract") as string,
-            keywords: formData.get("keywords") as string,
-            competingInterests: formData.get("competingInterests") as string,
-            fundingStatement: formData.get("fundingStatement") as string,
-            ethicalApproval: formData.get("ethicalApproval") as string,
-            dataAvailability: formData.get("dataAvailability") as string,
-            coAuthors: formData.get("coAuthors") as string,
-            termsAccepted: formData.get("termsAccepted") as string,
+            title: (formData.get("title") as string | null)?.trim() ?? "",
+            abstract: (formData.get("abstract") as string | null)?.trim() ?? "",
+            keywords: (formData.get("keywords") as string | null)?.trim() ?? "",
+            competingInterests: (formData.get("competingInterests") as string | null)?.trim() ?? "",
+            fundingStatement: (formData.get("fundingStatement") as string | null)?.trim() ?? "",
+            ethicalApproval: (formData.get("ethicalApproval") as string | null)?.trim() ?? "",
+            dataAvailability: (formData.get("dataAvailability") as string | null)?.trim() ?? "",
+            coAuthors: (formData.get("coAuthors") as string | null) ?? "[]",
+            termsAccepted: (formData.get("termsAccepted") as string | null) ?? "off",
         };
 
         const validated = submissionSchema.safeParse(rawData);
-        if (!validated.success) return { success: false, error: validated.error?.issues[0]?.message || "Validation failed" };
+        if (!validated.success) {
+            const firstIssue = validated.error.issues[0];
+            const issueMessage = firstIssue?.message || "Validation failed";
+            const fieldName = firstIssue?.path?.[0] ? String(firstIssue.path[0]) : "";
+            const errorMsg = (issueMessage === "Invalid input" && fieldName)
+                ? `Please check your input for ${fieldName}.`
+                : issueMessage;
+            return { success: false, error: errorMsg };
+        }
         const submissionRate = await checkRateLimit({
             key: `submit:${validated.data.authorEmail.toLowerCase().trim()}`,
             max: 2,
