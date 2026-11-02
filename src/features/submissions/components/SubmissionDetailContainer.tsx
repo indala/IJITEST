@@ -430,6 +430,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                                 <EditDoiModal
                                                                     submissionId={submission.id}
                                                                     paperId={submission.paperId}
+                                                                    volumeNumber={submission.volumeNumber || submission.issue?.volumeNumber}
+                                                                    year={submission.issue?.year}
                                                                     currentDoi={submission.publication?.doi || submission.doi}
                                                                     currentProvider={submission.publication?.doiProvider}
                                                                     zenodoDoi={submission.publication?.zenodoDoi}
@@ -496,6 +498,9 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                     <PublicationAssignment
                                                         submissionId={submission.id}
                                                         currentIssueId={submission.issueId ?? null}
+                                                        paperId={submission.paperId}
+                                                        volumeNumber={submission.volumeNumber || submission.issue?.volumeNumber}
+                                                        year={submission.issue?.year}
                                                     />
 
                                                     <Link

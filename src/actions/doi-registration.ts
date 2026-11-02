@@ -22,7 +22,7 @@ import { logSubmissionEvent } from "@/actions/event-log";
 import { downloadFileFromStorage, triggerPdfBranding } from "@/lib/fs-utils";
 import { revalidatePath } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { updateTag } from "next/cache";
+import { purgeCacheTags } from "@/lib/cache-invalidation";
 import type { DoiRegistrationStatus } from "@/db/types";
 
 
@@ -180,8 +180,7 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
         revalidatePath('/admin/publications');
         revalidatePath('/admin/submissions');
         revalidatePath(`/admin/submissions/${submissionId}`);
-        updateTag(CACHE_TAGS.PUBLICATIONS);
-        updateTag(CACHE_TAGS.PAPER(paper.paperId));
+        purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.PAPER(paper.paperId));
 
         return actionSuccess({
             batchId,
@@ -256,13 +255,16 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
                     })
                     .where(eq(publications.id, pub.id));
             }
+            const tags = [
+                CACHE_TAGS.SUBMISSION(submissionId),
+                CACHE_TAGS.PUBLICATIONS,
+                CACHE_TAGS.ARCHIVES,
+                CACHE_TAGS.LATEST_ISSUE,
+            ];
             if (submission.paperId) {
-                updateTag(CACHE_TAGS.PAPER(submission.paperId));
+                tags.push(CACHE_TAGS.PAPER(submission.paperId));
             }
-            updateTag(CACHE_TAGS.SUBMISSION(submissionId));
-            updateTag(CACHE_TAGS.PUBLICATIONS);
-            updateTag(CACHE_TAGS.ARCHIVES);
-            updateTag(CACHE_TAGS.LATEST_ISSUE);
+            purgeCacheTags(...tags);
 
             revalidatePath(`/author/submissions/${submissionId}`);
             revalidatePath(`/admin/submissions/${submissionId}`);
@@ -555,13 +557,16 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
             metadata: { depositionId, zenodoDoi, recordUrl }
         });
 
+        const tags = [
+            CACHE_TAGS.SUBMISSION(submissionId),
+            CACHE_TAGS.PUBLICATIONS,
+            CACHE_TAGS.ARCHIVES,
+            CACHE_TAGS.LATEST_ISSUE,
+        ];
         if (submission.paperId) {
-            updateTag(CACHE_TAGS.PAPER(submission.paperId));
+            tags.push(CACHE_TAGS.PAPER(submission.paperId));
         }
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
-        updateTag(CACHE_TAGS.PUBLICATIONS);
-        updateTag(CACHE_TAGS.ARCHIVES);
-        updateTag(CACHE_TAGS.LATEST_ISSUE);
+        purgeCacheTags(...tags);
 
         revalidatePath(`/author/submissions/${submissionId}`);
         revalidatePath(`/admin/submissions/${submissionId}`);

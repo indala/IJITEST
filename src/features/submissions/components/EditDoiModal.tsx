@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { updatePublicationDoi } from "@/actions/publications";
 import { depositToCrossref, depositToZenodo } from "@/actions/doi-registration";
+import { normalizeDoi, generateJackDoi } from "@/lib/doi-format";
 import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { publicationKeys } from "@/features/publications";
@@ -24,6 +25,8 @@ import { submissionKeys } from "@/features/submissions";
 interface EditDoiModalProps {
     submissionId: number;
     paperId: string;
+    volumeNumber?: number | null | undefined;
+    year?: number | null | undefined;
     currentDoi?: string | null | undefined;
     currentProvider?: 'none' | 'crossref' | 'zenodo' | 'custom' | null | undefined;
     zenodoDoi?: string | null | undefined;
@@ -34,6 +37,8 @@ interface EditDoiModalProps {
 export default function EditDoiModal({
     submissionId,
     paperId,
+    volumeNumber,
+    year,
     currentDoi,
     currentProvider,
     zenodoDoi,
@@ -48,10 +53,14 @@ export default function EditDoiModal({
     const queryClient = useQueryClient();
 
     const doiPrefix = settings['doiPrefix'] || '10.68139';
-    // Standard Crossref DOI format generated from manuscript ID
-    // e.g. "IJITEST-2026-020" -> "10.68139/ijitest.2026.020"
+
+    // JACK pattern suggested DOI: e.g. "ijitest.j2a6c1k11" (jack + 26 + 1 + 11)
+    const jackDoiInfo = generateJackDoi(doiPrefix, paperId, volumeNumber, year);
+
+    // Standard slug DOI format generated from manuscript ID: e.g. "10.68139/ijitest.2026.011"
     const suggestedDoiSuffix = paperId.trim().toLowerCase().replace(/[^a-z0-9]+/g, '.');
-    const suggestedCrossrefDoi = `${doiPrefix}/${suggestedDoiSuffix}`;
+    const legacyCrossrefDoi = `${doiPrefix}/${suggestedDoiSuffix}`;
+    const suggestedCrossrefDoi = jackDoiInfo.fullDoi;
 
     const isCurrentlyOfficial = currentProvider === 'crossref';
     const isCurrentlyZenodo = currentProvider === 'zenodo' || Boolean(zenodoDoi) || (currentDoi ? currentDoi.toLowerCase().includes('zenodo') : false);
@@ -110,21 +119,21 @@ export default function EditDoiModal({
         let provider: 'none' | 'crossref' | 'zenodo' | 'custom' = 'none';
 
         if (doiMode === 'official') {
-            finalDoi = customDoiValue.trim() || null;
+            finalDoi = customDoiValue.trim() ? normalizeDoi(customDoiValue, 'crossref') : null;
             provider = 'crossref';
             if (!finalDoi) {
                 toast.error("Please enter the Crossref DOI assigned by the admin.");
                 return;
             }
         } else if (doiMode === 'zenodo') {
-            finalDoi = zenodoDoiValue.trim() || null;
+            finalDoi = zenodoDoiValue.trim() ? normalizeDoi(zenodoDoiValue, 'zenodo') : null;
             provider = 'zenodo';
             if (!finalDoi) {
                 toast.error("Please click 'Deposit via Zenodo API' or enter a valid Zenodo DOI.");
                 return;
             }
         } else if (doiMode === 'custom') {
-            finalDoi = customDoiValue.trim() || null;
+            finalDoi = customDoiValue.trim() ? normalizeDoi(customDoiValue, 'custom') : null;
             provider = 'custom';
             if (!finalDoi) {
                 toast.error("Please enter a valid DOI string or select 'No DOI'.");
@@ -291,45 +300,96 @@ export default function EditDoiModal({
 
                     {/* Detail for CrossRef Mode */}
                     {doiMode === 'official' && (
-                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-body-sm space-y-2">
+                        <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-body-sm space-y-3">
                             <div className="flex items-center justify-between">
-                                <p className="text-label font-bold text-emerald-700 uppercase tracking-wider">
+                                <p className="text-label font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Tag className="w-3.5 h-3.5" />
                                     Crossref DOI Allocation
                                 </p>
-                                <span className="text-badge bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">Standard Format</span>
+                                <span className="text-badge bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">
+                                    JACK Pattern
+                                </span>
+                            </div>
+
+                            {/* Suggestion Card with Visual Breakdown of JACK pattern */}
+                            <div className="bg-background/90 border border-emerald-500/30 rounded-lg p-3 space-y-2.5 shadow-xs">
+                                <div className="flex items-center justify-between text-caption">
+                                    <span className="font-semibold text-emerald-900 flex items-center gap-1">
+                                        <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                                        Suggested Suffix Formula:
+                                    </span>
+                                    <code className="font-mono text-meta font-bold text-emerald-800">
+                                        /{jackDoiInfo.suffix}
+                                    </code>
+                                </div>
+
+                                {/* Visual Breakdown: j + 2 + a + 6 + c + 1 + k + 11 */}
+                                <div className="space-y-1.5 bg-emerald-500/5 p-2 rounded-md border border-emerald-500/15">
+                                    <div className="flex flex-wrap items-center gap-1 text-meta font-mono">
+                                        <span className="font-bold text-foreground">j</span>
+                                        <span className="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[11px] font-bold" title="Year 1st digit">
+                                            {jackDoiInfo.year2[0]}
+                                        </span>
+                                        <span className="font-bold text-foreground">a</span>
+                                        <span className="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[11px] font-bold" title="Year 2nd digit">
+                                            {jackDoiInfo.year2[1]}
+                                        </span>
+                                        <span className="font-bold text-foreground">c</span>
+                                        <span className="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[11px] font-bold" title="Volume number">
+                                            {jackDoiInfo.vol}
+                                        </span>
+                                        <span className="font-bold text-foreground">k</span>
+                                        <span className="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[11px] font-bold" title="Paper sequence number">
+                                            {jackDoiInfo.paperNum}
+                                        </span>
+                                        <span className="text-muted-foreground ml-auto text-[11px] font-sans">
+                                            Formula: <b>jack</b> + <b>{jackDoiInfo.year2}</b> (yr) + <b>{jackDoiInfo.vol}</b> (vol) + <b>{jackDoiInfo.paperNum}</b> (id)
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-muted-foreground">
+                                        Splits into <code className="font-mono text-foreground font-semibold">jack</code> + Year &apos;{jackDoiInfo.year2} + Volume {jackDoiInfo.vol} + Paper #{jackDoiInfo.paperNum}.
+                                    </p>
+                                </div>
+
+                                {/* 1-Click Action Buttons */}
+                                <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        variant={customDoiValue === jackDoiInfo.fullDoi ? "default" : "outline"}
+                                        onClick={() => setCustomDoiValue(jackDoiInfo.fullDoi)}
+                                        className={`h-7 text-[11px] font-semibold gap-1 cursor-pointer ${
+                                            customDoiValue === jackDoiInfo.fullDoi
+                                                ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                                                : "bg-white hover:bg-emerald-50 text-emerald-700 border-emerald-300"
+                                        }`}
+                                    >
+                                        <Sparkles className="w-3 h-3 text-emerald-500" />
+                                        <span>Use JACK: <code className="font-mono">{jackDoiInfo.suffix}</code></span>
+                                    </Button>
+
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => setCustomDoiValue(legacyCrossrefDoi)}
+                                        className="h-7 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer"
+                                        title="Use standard slug pattern"
+                                    >
+                                        Standard: <code className="font-mono text-[10px] ml-1">{legacyCrossrefDoi}</code>
+                                    </Button>
+                                </div>
                             </div>
 
                             <div className="space-y-1.5">
-                                <div className="flex items-center gap-1.5">
-                                    <Input
-                                        placeholder={`e.g. ${suggestedCrossrefDoi}`}
-                                        value={customDoiValue}
-                                        onChange={(e) => setCustomDoiValue(e.target.value)}
-                                        className="h-9 text-meta font-mono bg-background"
-                                    />
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setCustomDoiValue(suggestedCrossrefDoi)}
-                                        className="h-9 shrink-0 text-caption font-semibold bg-white hover:bg-emerald-50 text-emerald-700 border-emerald-300 gap-1 cursor-pointer"
-                                        title="Auto-fill standard Crossref DOI pattern"
-                                    >
-                                        <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                                        <span>Auto-Suggest</span>
-                                    </Button>
-                                </div>
+                                <Input
+                                    placeholder={`e.g. ${jackDoiInfo.fullDoi}`}
+                                    value={customDoiValue}
+                                    onChange={(e) => setCustomDoiValue(e.target.value)}
+                                    className="h-9 text-meta font-mono bg-background"
+                                />
                                 <div className="flex items-center justify-between text-caption text-muted-foreground">
-                                    <span>Recommended: <code className="font-mono font-semibold text-emerald-800">{suggestedCrossrefDoi}</code></span>
-                                    {customDoiValue !== suggestedCrossrefDoi && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setCustomDoiValue(suggestedCrossrefDoi)}
-                                            className="text-emerald-700 hover:underline font-semibold cursor-pointer"
-                                        >
-                                            Use standard pattern
-                                        </button>
-                                    )}
+                                    <span>Active DOI: <code className="font-mono font-semibold text-emerald-800 break-all">{customDoiValue || "(empty)"}</code></span>
                                 </div>
                             </div>
 

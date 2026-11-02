@@ -23,10 +23,10 @@ import {
     actionError,
     serverError,
 } from "@/lib/action-response";
-import { revalidatePath, updateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
+import { purgeCacheTags } from "@/lib/cache-invalidation";
 import { invalidateSubmittedSubmissionsCount, invalidateAuthorActionsCount, invalidateReviewerAssignmentsCount, createNotification } from "./notifications";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { cacheLogger } from "@/lib/cache-logger";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { eq, desc, and, inArray } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
@@ -186,12 +186,11 @@ export async function decideSubmission(id: number, decision: EditorialDecision):
         await invalidateAuthorActionsCount(submission.correspondingAuthorId);
         revalidatePath('/admin/submissions');
         revalidatePath(`/admin/submissions/${id}`);
-        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(id), "decideSubmission");
-        updateTag(CACHE_TAGS.SUBMISSION(id));
+        const tagsToPurge: string[] = [CACHE_TAGS.SUBMISSION(id), CACHE_TAGS.SUBMISSIONS];
         if (submission.paperId) {
-            updateTag(CACHE_TAGS.PAPER(submission.paperId));
+            tagsToPurge.push(CACHE_TAGS.PAPER(submission.paperId));
         }
-        updateTag(CACHE_TAGS.SUBMISSIONS);
+        purgeCacheTags(...tagsToPurge);
         return { success: true };
     } catch (error) {
         return serverError(error, "finalize decision");
@@ -256,9 +255,7 @@ export async function requestResubmissionWithComments(
         await invalidateSubmittedSubmissionsCount();
         await invalidateAuthorActionsCount(submission.correspondingAuthorId);
         revalidatePath(`/admin/submissions/${submissionId}`);
-        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), "requestResubmissionWithComments");
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
-        updateTag(CACHE_TAGS.SUBMISSIONS);
+        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId), CACHE_TAGS.SUBMISSIONS);
         return { success: true };
     } catch (error) {
         return serverError(error, "fetch submission");
@@ -333,13 +330,11 @@ export async function deleteSubmission(id: number): Promise<ActionResponse> {
             await Promise.all(reviewerIdsToInvalidate.map(rId => invalidateReviewerAssignmentsCount(rId)));
         }
         revalidatePath('/admin/submissions');
-        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(id), "deleteSubmission");
-        updateTag(CACHE_TAGS.SUBMISSION(id));
+        const deleteTags: string[] = [CACHE_TAGS.SUBMISSION(id), CACHE_TAGS.SUBMISSIONS, CACHE_TAGS.ARCHIVES];
         if (subRes.data.paperId) {
-            updateTag(CACHE_TAGS.PAPER(subRes.data.paperId));
+            deleteTags.push(CACHE_TAGS.PAPER(subRes.data.paperId));
         }
-        updateTag(CACHE_TAGS.SUBMISSIONS);
-        updateTag(CACHE_TAGS.ARCHIVES);
+        purgeCacheTags(...deleteTags);
         return { success: true };
     } catch (error) {
         return serverError(error, "delete submission");
@@ -418,9 +413,7 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');
-        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), "uploadManuscriptPdf");
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
-        updateTag(CACHE_TAGS.SUBMISSIONS);
+        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId), CACHE_TAGS.SUBMISSIONS);
 
         return { success: true };
     } catch (error) {
@@ -497,9 +490,7 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/reviewer/submissions/${submissionId}`);
-        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), "autoSyncManuscriptToPdf");
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
-        updateTag(CACHE_TAGS.SUBMISSIONS);
+        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId), CACHE_TAGS.SUBMISSIONS);
 
         return { success: true };
     } catch (error) {
@@ -555,7 +546,7 @@ export async function recordSimilarityScore(
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/editor/submissions/${submissionId}`);
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId));
         return { success: true };
     } catch (error) {
         console.error("Record Similarity Error:", error);
@@ -634,7 +625,7 @@ export async function requestGalleyApproval(submissionId: number): Promise<Actio
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/author/submissions/${submissionId}`);
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId));
         return { success: true };
     } catch (error) {
         console.error("Request Galley Error:", error);
@@ -732,7 +723,7 @@ export async function respondToGalleyProof(
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/author/submissions/${submissionId}`);
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId));
         return { success: true };
     } catch (error) {
         console.error("Respond Galley Error:", error);
@@ -788,11 +779,11 @@ export async function retractPaper(
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/archives`);
+        const retractTags: string[] = [CACHE_TAGS.SUBMISSION(submissionId), CACHE_TAGS.ARCHIVES];
         if (sub.paperId) {
-            updateTag(CACHE_TAGS.PAPER(sub.paperId));
+            retractTags.push(CACHE_TAGS.PAPER(sub.paperId));
         }
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
-        updateTag(CACHE_TAGS.ARCHIVES);
+        purgeCacheTags(...retractTags);
 
         return actionSuccess();
     } catch (error) {
@@ -848,11 +839,11 @@ export async function issueCorrigendum(
 
         revalidatePath(`/admin/submissions/${submissionId}`);
         revalidatePath(`/archives`);
+        const retractTags: string[] = [CACHE_TAGS.SUBMISSION(submissionId), CACHE_TAGS.ARCHIVES];
         if (sub.paperId) {
-            updateTag(CACHE_TAGS.PAPER(sub.paperId));
+            retractTags.push(CACHE_TAGS.PAPER(sub.paperId));
         }
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
-        updateTag(CACHE_TAGS.ARCHIVES);
+        purgeCacheTags(...retractTags);
 
         return actionSuccess();
     } catch (error) {

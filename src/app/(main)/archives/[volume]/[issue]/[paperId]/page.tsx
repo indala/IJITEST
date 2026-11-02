@@ -8,6 +8,9 @@ import { JsonLd } from "@/components/shared/JsonLd";
 
 import { type PublishedPaperUI, type PaperDetailParams } from "@/db/types";
 
+export const dynamicParams = true;
+export const revalidate = 60;
+
 export async function generateStaticParams() {
     try {
         const res = await getPublishedPapers();

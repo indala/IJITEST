@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition, useActionState } from 'react'
-import { Plus, Globe, Loader2, Layers } from 'lucide-react'
+import { Plus, Globe, Loader2, Layers, Sparkles, Tag } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -25,16 +25,26 @@ import {
     assignPaperToIssue
 } from '@/actions/publications'
 import { depositToCrossref, depositToZenodo } from '@/actions/doi-registration'
+import { normalizeDoi, generateJackDoi } from '@/lib/doi-format'
 import { useQueryClient } from '@tanstack/react-query'
 import type { ActionResponse } from '@/db/contracts'
 import { useSettingsContext } from '@/components/providers/SettingsContext'
 
 interface PublicationAssignmentProps {
     submissionId: number;
-    currentIssueId?: number | null;
+    currentIssueId?: number | null | undefined;
+    paperId?: string | undefined;
+    volumeNumber?: number | null | undefined;
+    year?: number | null | undefined;
 }
 
-export default function PublicationAssignment({ submissionId, currentIssueId }: PublicationAssignmentProps) {
+export default function PublicationAssignment({
+    submissionId,
+    currentIssueId,
+    paperId,
+    volumeNumber,
+    year,
+}: PublicationAssignmentProps) {
     const queryClient = useQueryClient();
     const settings = useSettingsContext();
     const doiPrefix = settings['doiPrefix'] || '10.68139';
@@ -53,6 +63,17 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
         provider?: 'crossref' | 'zenodo';
     }>({ status: 'idle' });
     const [isAssigning, startAssign] = useTransition();
+
+    // Dynamically compute JACK pattern DOI when issue / volume / year is selected
+    const selectedIssue = volumes.find((v) => String(v.id) === String(selectedIssueId));
+    const effectiveVolume = selectedIssue?.volumeNumber ?? volumeNumber;
+    const effectiveYear = selectedIssue?.year ?? year;
+    const jackDoiInfo = paperId
+        ? generateJackDoi(doiPrefix, paperId, effectiveVolume, effectiveYear)
+        : null;
+    const legacyCrossrefDoi = paperId
+        ? `${doiPrefix}/${paperId.trim().toLowerCase().replace(/[^a-z0-9]+/g, '.')}`
+        : null;
 
     const [, createAction, isCreating] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
         const res = await createVolumeIssue(formData);
@@ -76,17 +97,17 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
         let provider: 'none' | 'crossref' | 'zenodo' | 'custom' = 'none';
 
         if (doiChoice === 'official') {
-            targetDoi = customDoiValue.trim() || null;
+            targetDoi = customDoiValue.trim() ? normalizeDoi(customDoiValue, 'crossref') : null;
             provider = 'crossref';
             if (!targetDoi) {
                 toast.error("Enter the Crossref DOI assigned by the admin.");
                 return;
             }
         } else if (doiChoice === 'zenodo') {
-            targetDoi = null;
+            targetDoi = customDoiValue.trim() ? normalizeDoi(customDoiValue, 'zenodo') : null;
             provider = 'zenodo';
         } else if (doiChoice === 'custom') {
-            targetDoi = customDoiValue.trim() || null;
+            targetDoi = customDoiValue.trim() ? normalizeDoi(customDoiValue, 'custom') : null;
             provider = 'custom';
             if (!targetDoi) {
                 toast.error("Please enter a custom DOI or select 'No DOI'.");
@@ -328,18 +349,89 @@ export default function PublicationAssignment({ submissionId, currentIssueId }: 
                     </div>
 
                     {doiChoice === 'official' && (
-                        <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-body-sm space-y-1">
+                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-body-sm space-y-2.5">
                             <div className="flex items-center justify-between">
-                                <p className="text-label font-bold text-emerald-700 uppercase tracking-wider">Manually Assigned Crossref DOI</p>
-                                <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">Admin Entry</span>
+                                <p className="text-label font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Tag className="w-3.5 h-3.5" />
+                                    Crossref DOI Allocation
+                                </p>
+                                <span className="text-badge bg-emerald-600 text-white px-1.5 py-0.2 rounded-full font-bold">JACK Pattern</span>
                             </div>
+
+                            {jackDoiInfo && (
+                                <div className="bg-background/90 border border-emerald-500/30 rounded-lg p-2.5 space-y-2 shadow-xs">
+                                    <div className="flex items-center justify-between text-caption">
+                                        <span className="font-semibold text-emerald-900 flex items-center gap-1">
+                                            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                                            Suggested Suffix Formula:
+                                        </span>
+                                        <code className="font-mono text-meta font-bold text-emerald-800">
+                                            /{jackDoiInfo.suffix}
+                                        </code>
+                                    </div>
+
+                                    {/* Visual breakdown of jack + 26 + 1 + 11 */}
+                                    <div className="flex flex-wrap items-center gap-1 text-meta font-mono bg-emerald-500/5 p-1.5 rounded border border-emerald-500/15">
+                                        <span className="font-bold text-foreground">j</span>
+                                        <span className="bg-emerald-600 text-white px-1.5 py-0.2 rounded text-[11px] font-bold" title="Year 1st digit">
+                                            {jackDoiInfo.year2[0]}
+                                        </span>
+                                        <span className="font-bold text-foreground">a</span>
+                                        <span className="bg-emerald-600 text-white px-1.5 py-0.2 rounded text-[11px] font-bold" title="Year 2nd digit">
+                                            {jackDoiInfo.year2[1]}
+                                        </span>
+                                        <span className="font-bold text-foreground">c</span>
+                                        <span className="bg-emerald-600 text-white px-1.5 py-0.2 rounded text-[11px] font-bold" title="Volume number">
+                                            {jackDoiInfo.vol}
+                                        </span>
+                                        <span className="font-bold text-foreground">k</span>
+                                        <span className="bg-emerald-600 text-white px-1.5 py-0.2 rounded text-[11px] font-bold" title="Paper sequence number">
+                                            {jackDoiInfo.paperNum}
+                                        </span>
+                                        <span className="text-muted-foreground ml-auto text-[11px] font-sans">
+                                            (Yr: &apos;{jackDoiInfo.year2}, Vol: {jackDoiInfo.vol}, Paper: {jackDoiInfo.paperNum})
+                                        </span>
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={customDoiValue === jackDoiInfo.fullDoi ? "default" : "outline"}
+                                            onClick={() => setCustomDoiValue(jackDoiInfo.fullDoi)}
+                                            className={`h-7 text-[11px] font-semibold gap-1 cursor-pointer ${
+                                                customDoiValue === jackDoiInfo.fullDoi
+                                                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                                                    : "bg-white hover:bg-emerald-50 text-emerald-700 border-emerald-300"
+                                            }`}
+                                        >
+                                            <Sparkles className="w-3 h-3 text-emerald-500" />
+                                            <span>Use JACK: <code className="font-mono">{jackDoiInfo.suffix}</code></span>
+                                        </Button>
+
+                                        {legacyCrossrefDoi && (
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                variant="ghost"
+                                                onClick={() => setCustomDoiValue(legacyCrossrefDoi)}
+                                                className="h-7 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer"
+                                                title="Use standard slug pattern"
+                                            >
+                                                Standard: <code className="font-mono text-[10px] ml-1">{legacyCrossrefDoi}</code>
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             <Input
-                                placeholder={`e.g. ${doiPrefix}/ijitest.2026.001`}
+                                placeholder={`e.g. ${jackDoiInfo ? jackDoiInfo.fullDoi : `${doiPrefix}/ijitest.2026.001`}`}
                                 value={customDoiValue}
                                 onChange={(e) => setCustomDoiValue(e.target.value)}
                                 className="h-9 bg-background text-meta font-mono"
                             />
-                            <p className="text-caption text-muted-foreground">Enter the DOI already assigned by the journal. Crossref submission is a separate review step.</p>
+                            <p className="text-caption text-muted-foreground">Enter or auto-fill the DOI assigned by the journal. Crossref submission will occur during issue indexing.</p>
                         </div>
                     )}
 

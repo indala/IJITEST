@@ -9,6 +9,10 @@ import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscrip
 import { BookOpen, Download } from 'lucide-react';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
+import type { PublishedPaperUI } from '@/db/types';
+
+export const dynamicParams = true;
+export const revalidate = 60;
 
 export async function generateStaticParams() {
     try {
@@ -84,7 +88,7 @@ export default async function IssuePage({ params }: { params: Promise<{ volume: 
                 publicationYear: directRes.data.issue.year,
                 monthRange: directRes.data.issue.monthRange || "",
                 fullBookPdfUrl: directRes.data.issue.fullBookPdfUrl || null,
-            } as any);
+            } as unknown as PublishedPaperUI);
         } else {
             notFound();
         }

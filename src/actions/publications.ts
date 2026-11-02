@@ -21,6 +21,7 @@ import {
 } from "@/lib/action-response";
 import { eq, and, sql, desc, inArray, asc } from "drizzle-orm";
 import { revalidatePath, updateTag, cacheLife, cacheTag } from "next/cache";
+import { purgeCacheTags, purgePublicationRoutes } from "@/lib/cache-invalidation";
 import { getSettingsData } from "./settings";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { cacheLogger } from "@/lib/cache-logger";
@@ -238,7 +239,7 @@ export async function assignPaperToIssue(
         let resolvedDoi: string | null = null;
         if (customDoi !== undefined) {
             // Admin explicitly provided or cleared DOI
-            resolvedDoi = customDoi && customDoi.trim().length > 0 ? normalizeDoi(customDoi) : null;
+            resolvedDoi = customDoi && customDoi.trim().length > 0 ? normalizeDoi(customDoi, doiProviderInput) : null;
         } else {
             // DOI assignment is always explicit. Never generate a DOI automatically.
             resolvedDoi = null;
@@ -415,22 +416,21 @@ export async function assignPaperToIssue(
         revalidatePath('/admin/submissions');
         revalidatePath('/admin/publications');
         if (issue.status === 'published') {
-            revalidatePath('/', 'page');
-            revalidatePath('/archives', 'layout');
-            revalidatePath('/current-issue', 'layout');
-            revalidatePath(`/archives/volume${issue.volumeNumber}`, 'page');
-            revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}`, 'page');
+            purgePublicationRoutes(issue.volumeNumber, issue.issueNumber, submission?.paperId);
         }
-        cacheLogger.invalidation(CACHE_TAGS.PUBLICATIONS, `assignPaperToIssue ${submissionId}`);
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
+
+        const tagsToPurge: string[] = [
+            CACHE_TAGS.SUBMISSION(submissionId),
+            CACHE_TAGS.SUBMISSIONS,
+            CACHE_TAGS.PUBLICATIONS,
+            CACHE_TAGS.ARCHIVES,
+            CACHE_TAGS.LATEST_ISSUE,
+            CACHE_TAGS.PUBLIC_DATA,
+        ];
         if (submission?.paperId) {
-            updateTag(CACHE_TAGS.PAPER(submission.paperId));
+            tagsToPurge.push(CACHE_TAGS.PAPER(submission.paperId));
         }
-        updateTag(CACHE_TAGS.SUBMISSIONS);
-        updateTag(CACHE_TAGS.PUBLICATIONS);
-        updateTag(CACHE_TAGS.ARCHIVES);
-        updateTag(CACHE_TAGS.LATEST_ISSUE);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        purgeCacheTags(...tagsToPurge);
         return actionSuccess();
     } catch (error) {
         console.error("Assign Paper Error:", error);
@@ -548,27 +548,23 @@ export async function publishIssue(id: number): Promise<ActionResponse> {
                 .catch((e: unknown) => console.error("IndexNow batch submission failed:", e));
         }
 
-        revalidatePath('/admin/publications');
-        revalidatePath('/admin/submissions');
-        revalidatePath('/', 'page');
-        revalidatePath('/archives', 'layout');
-        revalidatePath('/current-issue', 'layout');
-        revalidatePath(`/archives/volume${issue.volumeNumber}`, 'page');
-        revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}`, 'page');
+        purgePublicationRoutes(issue.volumeNumber, issue.issueNumber);
         if (prevLatestIssue) {
-            revalidatePath(`/archives/volume${prevLatestIssue.volumeNumber}`, 'page');
-            revalidatePath(`/archives/volume${prevLatestIssue.volumeNumber}/issue${prevLatestIssue.issueNumber}`, 'page');
+            purgePublicationRoutes(prevLatestIssue.volumeNumber, prevLatestIssue.issueNumber);
         }
 
+        const tagsToPurge: string[] = [
+            CACHE_TAGS.SUBMISSIONS,
+            CACHE_TAGS.PUBLICATIONS,
+            CACHE_TAGS.ARCHIVES,
+            CACHE_TAGS.LATEST_ISSUE,
+            CACHE_TAGS.PUBLIC_DATA,
+        ];
         issuePapers.forEach(paper => {
-            if (paper?.id) updateTag(CACHE_TAGS.SUBMISSION(paper.id));
-            if (paper?.paperId) updateTag(CACHE_TAGS.PAPER(paper.paperId));
+            if (paper?.id) tagsToPurge.push(CACHE_TAGS.SUBMISSION(paper.id));
+            if (paper?.paperId) tagsToPurge.push(CACHE_TAGS.PAPER(paper.paperId));
         });
-        updateTag(CACHE_TAGS.SUBMISSIONS);
-        updateTag(CACHE_TAGS.PUBLICATIONS);
-        updateTag(CACHE_TAGS.ARCHIVES);
-        updateTag(CACHE_TAGS.LATEST_ISSUE);
-        updateTag(CACHE_TAGS.PUBLIC_DATA);
+        purgeCacheTags(...tagsToPurge);
         return actionSuccess();
     } catch (error) {
         console.error("Publish Issue Error:", error);
@@ -964,7 +960,7 @@ export async function updatePublicationDoi(
             return actionError("Unauthorized");
         }
 
-        const cleanDoi = doi && doi.trim().length > 0 ? normalizeDoi(doi) : null;
+        const cleanDoi = doi && doi.trim().length > 0 ? normalizeDoi(doi, provider) : null;
 
         // 1. Fetch Publication & Submission Details
         const pubRows = await db.select({
@@ -1076,26 +1072,20 @@ export async function updatePublicationDoi(
             metadata: finalDoi ? { doi: finalDoi } : {}
         });
 
+        purgePublicationRoutes(issue.volumeNumber, issue.issueNumber, sub.paperId);
         revalidatePath(`/admin/submissions/${submissionId}`);
-        revalidatePath('/admin/submissions');
-        revalidatePath('/admin/publications');
         revalidatePath(`/editor/submissions/${submissionId}`);
-        revalidatePath('/editor/submissions');
-        if (issue.volumeNumber && issue.issueNumber && sub.paperId) {
-            revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}/${sub.paperId}`, 'page');
-            revalidatePath(`/archives/volume${issue.volumeNumber}/issue${issue.issueNumber}`, 'page');
-            revalidatePath(`/archives/volume${issue.volumeNumber}`, 'page');
-        }
-        cacheLogger.invalidation(CACHE_TAGS.SUBMISSION(submissionId), `updatePublicationDoi ${submissionId}`);
 
+        const tagsToPurge = [
+            CACHE_TAGS.SUBMISSION(submissionId),
+            CACHE_TAGS.PUBLICATIONS,
+            CACHE_TAGS.ARCHIVES,
+            CACHE_TAGS.LATEST_ISSUE,
+        ];
         if (sub.paperId) {
-            updateTag(CACHE_TAGS.PAPER(sub.paperId));
+            tagsToPurge.push(CACHE_TAGS.PAPER(sub.paperId));
         }
-
-        updateTag(CACHE_TAGS.SUBMISSION(submissionId));
-        updateTag(CACHE_TAGS.PUBLICATIONS);
-        updateTag(CACHE_TAGS.ARCHIVES);
-        updateTag(CACHE_TAGS.LATEST_ISSUE);
+        purgeCacheTags(...tagsToPurge);
 
         return actionSuccess({ doi: finalDoi, provider: resolvedProvider });
     } catch (error) {
