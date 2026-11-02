@@ -111,7 +111,7 @@ export function InlineEditField({
                                     placeholder={placeholder}
                                     disabled={isPending}
                                     className={cn(
-                                        "h-12 bg-background/50 border-primary/20 rounded-xl font-bold transition-all focus:border-primary focus:ring-1 focus:ring-primary/20",
+                                        "h-9 bg-background/50 border-primary/20 rounded-lg text-sm font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/20",
                                         icon && "pl-10"
                                     )}
                                 />
@@ -123,20 +123,20 @@ export function InlineEditField({
                                 variant="ghost"
                                 onClick={handleSave}
                                 disabled={isPending}
-                                className="h-10 w-10 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10 rounded-xl"
+                                className="size-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10 rounded-lg"
                                 aria-label="Save"
                             >
-                                {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
+                                {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                             </Button>
                             <Button
                                 size="icon"
                                 variant="ghost"
                                 onClick={handleCancel}
                                 disabled={isPending}
-                                className="h-10 w-10 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl"
+                                className="size-8 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg"
                                 aria-label="Cancel"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-4 h-4" />
                             </Button>
                         </div>
                     </div>
@@ -158,7 +158,7 @@ export function InlineEditField({
                                 size="icon"
                                 variant="ghost"
                                 onClick={() => setIsEditing(true)}
-                                className="h-10 w-10 opacity-0 group-hover/field:opacity-100 focus:opacity-100 transition-opacity rounded-xl text-primary hover:bg-primary/5"
+                                className="size-8 opacity-0 group-hover/field:opacity-100 focus:opacity-100 transition-opacity rounded-lg text-primary hover:bg-primary/5"
                                 aria-label={`Edit ${label}`}
                             >
                                 <Pencil className="w-4 h-4" />
