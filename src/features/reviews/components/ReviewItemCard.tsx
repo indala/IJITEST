@@ -76,7 +76,7 @@ export const ReviewItemCard = React.memo(({
                 <div className="p-8 flex flex-col xl:flex-row xl:items-center justify-between gap-8">
                     <div className="flex-1 space-y-4 min-w-0">
                         <div className="flex flex-wrap items-center gap-3">
-                            <Badge className={`h-7 px-4 text-badge font-bold border-none rounded-lg ${item.status === 'completed' ? 'bg-emerald-600 text-white' : 'bg-primary text-white'} `}>
+                            <Badge className={`h-6 px-2.5 text-xs font-semibold border-none rounded-md ${item.status === 'completed' ? 'bg-emerald-600 text-white' : 'bg-primary text-white'} `}>
                                 {item.status.replace('_', ' ')}
                             </Badge>
                             <span className="font-mono font-bold text-meta bg-muted px-2 py-1 rounded border border-border/50 text-muted-foreground mr-1">
@@ -144,21 +144,21 @@ export const ReviewItemCard = React.memo(({
                     <div className="shrink-0 flex flex-col gap-4 xl:w-72 border-t xl:border-t-0 pt-8 xl:pt-0 border-border/50">
                         <div className="flex flex-col gap-2 w-full">
                             {item.manuscriptPath && (
-                                <Button asChild className="w-full h-10 gap-3 font-bold rounded-xl bg-primary text-white hover:scale-[1.02] transition-all cursor-pointer">
+                                <Button asChild className="w-full h-9 gap-2 font-semibold rounded-lg bg-primary text-white hover:opacity-90 transition-all cursor-pointer">
                                     <a href={item.manuscriptPath} className="flex items-center justify-center w-full" download>
                                         <Download className="w-4 h-4" /> Download
                                     </a>
                                 </Button>
                             )}
                             {item.feedbackFilePath && (
-                                <Button asChild variant="outline" className="w-full h-12 gap-3 font-bold uppercase tracking-widest rounded-xl border-emerald-600 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition-all cursor-pointer">
+                                <Button asChild variant="outline" className="w-full h-9 gap-2 font-semibold rounded-lg border-emerald-600 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition-all cursor-pointer">
                                     <a href={item.feedbackFilePath} className="flex items-center justify-center w-full" download>
                                         <FileText className="w-4 h-4" /> View Feedback
                                     </a>
                                 </Button>
                             )}
                             {isReviewer && (
-                                <Button asChild variant="outline" className="flex-1 h-12 gap-2 font-semibold uppercase tracking-widest rounded-xl border-primary/10 text-primary transition-all shadow-sm cursor-pointer">
+                                <Button asChild variant="outline" className="flex-1 h-9 gap-2 font-semibold rounded-lg border-primary/10 text-primary transition-all shadow-sm cursor-pointer">
                                     <Link href={`/reviewer/submissions/${item.submissionId}`}>
                                         <Eye className="w-3.5 h-3.5 mr-1" /> View
                                     </Link>
@@ -169,7 +169,7 @@ export const ReviewItemCard = React.memo(({
                         {item.status !== 'completed' && isReviewer && (
                             <Dialog onOpenChange={(open) => !open && setFeedbackFile(null)}>
                                 <DialogTrigger asChild>
-                                    <Button className="w-full h-12 gap-3 font-semibold shadow-lg rounded-xl bg-primary text-white transition-all cursor-pointer">
+                                    <Button className="w-full h-9 gap-2 font-semibold rounded-lg bg-primary text-white transition-all cursor-pointer">
                                         <FileUp className="w-4 h-4" /> Submit Review
                                     </Button>
                                 </DialogTrigger>
@@ -346,7 +346,7 @@ export const ReviewItemCard = React.memo(({
                                         </div>
 
                                         <DialogFooter className="pt-2 border-t border-border/50">
-                                            <Button type="submit" disabled={isPending} className="w-full h-12 bg-primary text-white font-bold rounded-lg transition-all cursor-pointer">
+                                            <Button type="submit" disabled={isPending} className="w-full h-9 bg-primary text-white font-semibold rounded-lg transition-all cursor-pointer">
                                                 {isPending ? 'Submitting...' : 'Submit'}
                                             </Button>
                                         </DialogFooter>

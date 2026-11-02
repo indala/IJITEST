@@ -220,21 +220,21 @@ export const GroupedReviewCard = React.memo(({
                     <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border/50">
                         <Button
                             onClick={() => onAccept(group.submissionId)}
-                            className="w-full sm:w-auto h-11 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-emerald-600/10 cursor-pointer"
+                            className="w-full sm:w-auto h-9 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-all shadow-sm cursor-pointer"
                         >
                             <CheckCircle className="w-4 h-4 mr-2" /> Accept Manuscript
                         </Button>
                         <Button
                             onClick={handleOpenRevisionDialog}
                             disabled={completedReviews === 0}
-                            className="w-full sm:w-auto h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/10 cursor-pointer"
+                            className="w-full sm:w-auto h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all shadow-sm cursor-pointer"
                         >
                             <RefreshCw className="w-4 h-4 mr-2" /> Request Revision
                         </Button>
                         <Button
                             variant="outline"
                             onClick={() => onReject(group.submissionId)}
-                            className="w-full sm:w-auto h-11 px-5 font-bold uppercase tracking-wider border-rose-500/20 text-rose-600 bg-rose-500/5 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
+                            className="w-full sm:w-auto h-9 px-4 font-semibold border-rose-500/20 text-rose-600 bg-rose-500/5 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
                         >
                             <X className="w-4 h-4 mr-2" /> Reject
                         </Button>
@@ -277,7 +277,7 @@ export const GroupedReviewCard = React.memo(({
                             <Button 
                                 onClick={handleConfirmRevision} 
                                 disabled={isSubmittingRevision || !revisionText.trim()} 
-                                className="h-11 bg-primary text-white font-bold rounded-lg px-6 cursor-pointer"
+                                className="h-9 bg-primary text-white font-semibold rounded-lg px-4 cursor-pointer"
                             >
                                 {isSubmittingRevision ? 'Sending...' : 'Send Revision Request'}
                             </Button>

@@ -30,15 +30,15 @@ const buttonVariants = cva(
       },
       size: {
         default:
-          "text-[13px] sm:text-[14px] xl:text-[15px] 2xl:text-[16px] px-[14px] py-[6px] sm:px-[16px] sm:py-[8px] xl:px-[20px] xl:py-[9px] 2xl:px-[24px] 2xl:py-[11px]",
+          "h-9 px-4 py-2 text-xs sm:text-sm",
         xs:
-          "text-[11px] px-[8px] py-[3px] rounded-md gap-1 [&_svg:not([class*='size-'])]:size-3",
+          "h-7 text-[11px] px-2.5 py-0.5 rounded-md gap-1 [&_svg:not([class*='size-'])]:size-3",
         sm:
-          "text-[11px] sm:text-[12px] xl:text-[13px] 2xl:text-[13px] px-[10px] py-[4px] sm:px-[12px] sm:py-[5px] xl:px-[14px] xl:py-[5px] 2xl:px-[16px] 2xl:py-[6px]",
+          "h-8 text-xs px-3 py-1 rounded-md gap-1.5 [&_svg:not([class*='size-'])]:size-3.5",
         lg:
-          "text-[14px] sm:text-[15px] xl:text-[16px] 2xl:text-[17px] px-[18px] py-[8px] sm:px-[20px] sm:py-[10px] xl:px-[24px] xl:py-[11px] 2xl:px-[28px] 2xl:py-[13px]",
+          "h-10 text-sm sm:text-base px-5 py-2 rounded-lg",
         icon:
-          "p-2 aspect-square rounded-lg",
+          "size-9 p-0 rounded-lg flex items-center justify-center",
         "icon-xs":
           "size-6 rounded-md p-0 flex items-center justify-center [&_svg:not([class*='size-'])]:size-3",
         "icon-sm":

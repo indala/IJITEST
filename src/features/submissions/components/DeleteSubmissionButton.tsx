@@ -63,7 +63,7 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
         <Button
             variant="outline"
             disabled={loading || isRestricted}
-            className="w-full h-14 gap-3 border-destructive/20 text-destructive font-black tracking-[0.2em] rounded-2xl hover:bg-destructive/10 transition-all shadow-inner cursor-pointer"
+            className="w-full h-9 gap-2 border-destructive/20 text-destructive font-semibold rounded-lg hover:bg-destructive/10 transition-all cursor-pointer"
         >
             {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -77,7 +77,7 @@ export default function DeleteSubmissionButton({ submissionId, status, variant =
             variant="ghost"
             size="icon"
             disabled={loading || isRestricted}
-            className="w-12 h-12 bg-destructive/10 text-destructive rounded-xl hover:bg-destructive/20 transition-all disabled:opacity-50 shadow-inner cursor-pointer"
+            className="size-8 bg-destructive/10 text-destructive rounded-lg hover:bg-destructive/20 transition-all disabled:opacity-50 cursor-pointer"
             title={isRestricted ? "Termination Restricted" : "Terminate Node"}
             aria-label={isRestricted ? "Termination Restricted" : "Terminate Node"}
         >

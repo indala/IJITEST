@@ -105,7 +105,7 @@ const UserItemCard = React.memo(({ user, currentUserId, isUpdatingRole, onDelete
                 <div className="pt-2.5 border-t border-border/70">
                     <div className="flex flex-col gap-2">
                         {isEditingSelf ? (
-                            <Badge className="h-8 w-full justify-center px-3 text-badge font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg uppercase flex items-center gap-1.5">
+                            <Badge className="h-6 w-full justify-center px-3 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md uppercase flex items-center gap-1.5">
                                 <ShieldCheck className="w-3.5 h-3.5" /> Active Session
                             </Badge>
                         ) : (

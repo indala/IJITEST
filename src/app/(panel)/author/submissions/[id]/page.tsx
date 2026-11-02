@@ -64,7 +64,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                     </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2.5">
-                    <Badge className={`px-5 py-2 rounded-xl border text-badge font-black uppercase tracking-widest ${getStatusColor(sub.status)} `}>
+                    <Badge className={`px-2.5 py-1 rounded-md border text-xs font-semibold uppercase tracking-wider ${getStatusColor(sub.status)} `}>
                         {sub.status.replace('_', ' ')}
                     </Badge>
                     {sub.section && (
@@ -390,7 +390,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                         Volume {sub.publication.volumeNumber}, Issue {sub.publication.issueNumber}
                                     </p>
                                 </div>
-                                <Badge className="bg-white/20 text-white border-0 text-badge tracking-widest font-black h-8 px-5 rounded-full backdrop-blur-sm">VIEW ARCHIVE</Badge>
+                                <Badge className="bg-white/20 text-white border-0 text-xs tracking-wider font-semibold h-6 px-3 rounded-full backdrop-blur-sm">VIEW ARCHIVE</Badge>
                             </Link>
                             {sub.paperId && (
                                 <DownloadCertificateButton

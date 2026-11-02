@@ -75,11 +75,11 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                         <div className="space-y-4 max-w-2xl 2xl:max-w-4xl">
                             <div className="flex flex-wrap items-center gap-2.5">
-                                <Badge className={`h-5 2xl:h-9 px-2 2xl:px-4 text-badge font-semibold tracking-widest whitespace-nowrap capitalize ${getStatusVariant(submission.status)} `}>
+                                <Badge className={`h-6 px-2.5 text-xs font-semibold whitespace-nowrap capitalize ${getStatusVariant(submission.status)} `}>
                                     {submission.status.replace(/([A-Z])/g, ' $1').replace('_', ' ')}
                                 </Badge>
                                 {submission.section && (
-                                    <Badge variant="outline" className="h-5 2xl:h-9 px-2.5 2xl:px-4 text-badge font-bold bg-primary/10 text-primary border-primary/20 flex items-center gap-1.5">
+                                    <Badge variant="outline" className="h-6 px-2.5 text-xs font-semibold bg-primary/10 text-primary border-primary/20 flex items-center gap-1.5">
                                         <Bookmark className="w-3 h-3" />
                                         <span>{submission.section.title}</span>
                                         {submission.section.abbrev && <span className="opacity-60 font-mono text-meta">({submission.section.abbrev})</span>}
@@ -108,7 +108,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                         </div>
                         <div className="flex flex-col gap-2 2xl:gap-4 shrink-0">
                             {submission.filePath && (
-                                <Button asChild className="h-10 xl:h-12 2xl:h-14 px-6 gap-2 bg-primary text-white font-semibold capitalize tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.05] hover:opacity-90 transition-all cursor-pointer">
+                                <Button asChild className="h-9 px-4 gap-2 bg-primary text-white font-semibold capitalize rounded-lg shadow-sm hover:opacity-90 transition-all cursor-pointer">
                                     <a href={getSecureUrl(submission.filePath)} download>
                                         <Download className="w-4 h-4 2xl:w-6 2xl:h-6" /> Download manuscript
                                     </a>
@@ -170,7 +170,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                     <Card key={r.id} className="border-border/50 shadow-none bg-muted/5 overflow-hidden 2xl:rounded-3xl">
                                                         <CardHeader className="p-4 2xl:p-8 bg-muted/20 border-b border-border/30 flex flex-row items-center justify-between">
                                                             <div className="flex items-center gap-2 2xl:gap-4">
-                                                                <Badge variant="outline" className="h-5 2xl:h-8 px-1.5 2xl:px-4 text-badge font-semibold tracking-widest bg-background border-border text-primary uppercase">Technical Reviewer {i + 1}</Badge>
+                                                                <Badge variant="outline" className="h-5 px-2 text-xs font-semibold bg-background border-border text-primary uppercase">Technical Reviewer {i + 1}</Badge>
                                                                 <span className="text-label font-semibold text-muted-foreground tracking-widest opacity-60">{r.reviewer?.profile?.fullName || "Assigned Reviewer"}</span>
                                                             </div>
                                                             <CheckCircle className="w-4 h-4 2xl:w-7 2xl:h-7 text-emerald-500" />
@@ -322,7 +322,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                 <p className="text-label font-semibold text-orange-600 tracking-widest">Initial Assessment</p>
                                                 <p className="font-medium text-orange-600/70">Manuscript is ready for reviewer assignment.</p>
                                             </div>
-                                            <Button asChild className="w-full h-11 gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold tracking-widest rounded-xl shadow-lg shadow-orange-600/10 cursor-pointer">
+                                            <Button asChild className="w-full h-9 gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow-sm cursor-pointer">
                                                 <Link className="cursor-pointer" href={role === 'admin' ? `/admin/reviews?assign=${submission.id}` : `/editor/reviews?assign=${submission.id}`}>
                                                     Assign to Reviewer
                                                 </Link>
@@ -445,13 +445,13 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                                 />
                                                             )}
                                                         </div>
-                                                        <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-white/5 hover:bg-white/10 text-white font-semibold tracking-widest border border-white/10 rounded-xl cursor-pointer">
+                                                        <Button asChild variant="ghost" className="w-full h-9 gap-2 bg-white/5 hover:bg-white/10 text-white font-semibold border border-white/10 rounded-lg cursor-pointer">
                                                             <Link className="cursor-pointer" href={publicArchiveUrl}>
                                                                 <ExternalLink className="w-3.5 h-3.5" /> View Public Archive
                                                             </Link>
                                                         </Button>
                                                         {submission.doi && (
-                                                            <Button asChild variant="ghost" className="w-full h-10 gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold tracking-widest border border-emerald-500/20 rounded-xl cursor-pointer">
+                                                            <Button asChild variant="ghost" className="w-full h-9 gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/20 rounded-lg cursor-pointer">
                                                                 <a href={`/api/export/crossref/${submission.paperId}`} download={`crossref-${submission.paperId}.xml`}>
                                                                     <Download className="w-3.5 h-3.5" /> Export CrossRef XML
                                                                 </a>

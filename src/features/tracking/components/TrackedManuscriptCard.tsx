@@ -16,7 +16,7 @@ export function TrackedManuscriptCard({ manuscript }: TrackedManuscriptCardProps
                 <section className="mb-6 space-y-4 relative z-10">
                     <div className="flex flex-wrap items-center justify-between gap-6">
                         <div className="flex items-center gap-3">
-                            <Badge className="bg-primary/5 text-primary border-primary/20 px-4 h-8 2xl:h-9 2xl:px-5 text-label rounded-lg">
+                            <Badge className="bg-primary/5 text-primary border-primary/20 px-2.5 h-6 text-xs rounded-md">
                                 Status: {manuscript.status.replace(/([A-Z])/g, ' $1').toLowerCase()}
                             </Badge>
                             <span className="text-meta bg-muted/50 px-2.5 py-0.5 rounded border border-border/50">
