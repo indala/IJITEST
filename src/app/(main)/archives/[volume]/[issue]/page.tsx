@@ -11,9 +11,6 @@ import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import type { PublishedPaperUI } from '@/db/types';
 
-export const dynamicParams = true;
-export const revalidate = 60;
-
 export async function generateStaticParams() {
     try {
         const res = await getPublishedPapers();

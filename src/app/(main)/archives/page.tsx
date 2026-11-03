@@ -9,8 +9,6 @@ import { Rss, Radio } from 'lucide-react';
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
-export const revalidate = 60;
-
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {

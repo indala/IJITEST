@@ -12,9 +12,6 @@ import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscrip
 import { Section } from '@/components/layout/Section';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
-export const dynamicParams = true;
-export const revalidate = 60;
-
 export async function generateStaticParams() {
     try {
         const res = await getPublishedPapers();

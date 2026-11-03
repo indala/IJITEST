@@ -1,11 +1,9 @@
 import PageHeader from "@/components/layout/PageHeader";
 import ArchivesClient from '@/features/archives/components/ArchivesClient';
 import type { Metadata } from 'next';
+import { connection } from 'next/server';
 import { getSettingsData } from '@/actions/settings';
 import { getLatestIssuePapers } from '@/actions/archives';
-
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
@@ -25,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CurrentIssue() {
+    await connection();
     const res = await getLatestIssuePapers();
     const initialPapers = res.success ? res.data : [];
 

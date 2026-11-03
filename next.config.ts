@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   cacheComponents: true,
+  partialPrefetching: true,
   typescript: {
     ignoreBuildErrors: true,
   },
