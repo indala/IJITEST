@@ -14,3 +14,9 @@ test("confirms only the exact DOI returned by Crossref", () => {
     assert.equal(isCrossrefWorkForDoi({ message: {} }, "10.68139/ijitest.j2a6c1k2"), false);
     assert.equal(isCrossrefWorkForDoi(null, "10.68139/ijitest.j2a6c1k2"), false);
 });
+
+test("requires a matching Crossref title when verifying an assigned DOI", () => {
+    const record = { message: { DOI: "10.68139/ijitest.j2a6c1k2", title: ["A Test: Paper!"] } };
+    assert.equal(isCrossrefWorkForDoi(record, "10.68139/ijitest.j2a6c1k2", "A test paper"), true);
+    assert.equal(isCrossrefWorkForDoi(record, "10.68139/ijitest.j2a6c1k2", "A different paper"), false);
+});

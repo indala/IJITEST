@@ -266,6 +266,8 @@ export async function generateItemReport(params: ReportParams): Promise<CounterR
         publicationId: publications.id,
         submissionId: publications.submissionId,
         doi: publications.doi,
+        doiProvider: publications.doiProvider,
+        doiRegistrationStatus: publications.doiRegistrationStatus,
         publishedAt: publications.publishedAt,
         year: usageStats.year,
         month: usageStats.month,
@@ -280,6 +282,8 @@ export async function generateItemReport(params: ReportParams): Promise<CounterR
             publications.id,
             publications.submissionId,
             publications.doi,
+            publications.doiProvider,
+            publications.doiRegistrationStatus,
             publications.publishedAt,
             usageStats.year,
             usageStats.month,
@@ -352,7 +356,9 @@ export async function generateItemReport(params: ReportParams): Promise<CounterR
         if (!itemsMap.has(row.publicationId)) {
             itemsMap.set(row.publicationId, {
                 title: titleMap.get(row.submissionId) || `Article ${row.submissionId}`,
-                doi: row.doi,
+                doi: row.doiProvider === 'crossref' && row.doiRegistrationStatus !== 'registered'
+                    ? null
+                    : row.doi,
                 publishedAt: row.publishedAt,
                 submissionId: row.submissionId,
                 periods: new Map()

@@ -34,8 +34,10 @@ import {
 import { getStorageServiceClient, type IssueBookMetadata } from "@/lib/storage-service-client";
 import { isValidDoi, normalizeDoi, normalizeDoiPrefix } from "@/lib/doi-config";
 import { getSubmissionById } from "./submissions";
+import { getPaperById } from "./archives";
 import { createNotification, invalidateAuthorActionsCount } from "./notifications";
 import { logSubmissionEvent } from "./event-log";
+import { isCrossrefWorkForDoi } from "@/lib/crossref-status";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -973,7 +975,9 @@ export async function rebrandPaperPdf(submissionId: number): Promise<ActionRespo
             paperId: sub.paperId,
             startPage: pub.startPage,
             endPage: pub.endPage,
-            doi: pub.doi,
+            doi: pub.doiProvider === 'crossref' && pub.doiRegistrationStatus !== 'registered'
+                ? null
+                : pub.doi,
             license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
             receivedDate: formatPublicationDate(submission.submittedAt),
             acceptedDate: formatPublicationDate(submission.decisionAt),
@@ -1062,6 +1066,37 @@ export async function updatePublicationDoi(
             if (!finalDoi.toLowerCase().startsWith(`${doiPrefix.toLowerCase()}/`)) {
                 return actionError(`Crossref DOI must use the journal prefix ${doiPrefix}.`);
             }
+            const depositorEmail = process.env["CROSSREF_DEPOSITOR_EMAIL"] || "editor@ijitest.org";
+            const crossrefUrl = new URL(`https://api.crossref.org/works/${encodeURIComponent(finalDoi)}`);
+            crossrefUrl.searchParams.set("mailto", depositorEmail);
+            let crossrefResponse: Response;
+            try {
+                crossrefResponse = await fetch(crossrefUrl, {
+                    headers: { Accept: "application/json" },
+                    signal: AbortSignal.timeout(15_000),
+                });
+            } catch (error) {
+                console.error("Crossref DOI verification failed:", error);
+                return actionError("Could not verify this DOI with Crossref. Try again when Crossref is reachable.");
+            }
+            if (!crossrefResponse.ok) {
+                return actionError(
+                    crossrefResponse.status === 404
+                        ? "Crossref does not show this DOI as registered yet. Submit it first or wait for Crossref to finish processing."
+                        : `Crossref DOI verification returned HTTP ${crossrefResponse.status}. Try again later.`
+                );
+            }
+            const crossrefRecord: unknown = await crossrefResponse.json();
+            if (!sub.paperId) {
+                return actionError("Paper ID is missing; Crossref DOI metadata cannot be verified.");
+            }
+            const paperResult = await getPaperById(sub.paperId);
+            if (!paperResult.success || !paperResult.data) {
+                return actionError("Could not load the manuscript title to verify this Crossref DOI.");
+            }
+            if (!isCrossrefWorkForDoi(crossrefRecord, finalDoi, paperResult.data.title)) {
+                return actionError("Crossref does not show this DOI with the manuscript's exact title. Verify the Crossref record before assigning it.");
+            }
         }
 
         if (
@@ -1093,8 +1128,12 @@ export async function updatePublicationDoi(
                     zenodoDoi: finalDoi,
                     zenodoStatus: 'published' as const,
                 } : {}),
-                doiRegistrationStatus: resolvedProvider === 'none' ? 'none' : pub.doiRegistrationStatus,
-                doiRegistrationBatchId: resolvedProvider === 'none' ? null : pub.doiRegistrationBatchId,
+                doiRegistrationStatus: resolvedProvider === 'crossref'
+                    ? 'registered'
+                    : resolvedProvider === 'none' ? 'none' : pub.doiRegistrationStatus,
+                doiRegistrationBatchId: resolvedProvider === 'crossref' || resolvedProvider === 'none'
+                    ? null
+                    : pub.doiRegistrationBatchId,
             })
             .where(eq(publications.submissionId, submissionId));
 
@@ -1221,7 +1260,10 @@ export async function generateCompleteIssueBook(issueId: number): Promise<Action
             if (p.publication.endPage !== null) {
                 article.endPage = p.publication.endPage;
             }
-            if (p.publication.doi !== null) {
+            if (
+                p.publication.doi !== null &&
+                (p.publication.doiProvider !== 'crossref' || p.publication.doiRegistrationStatus === 'registered')
+            ) {
                 article.doi = p.publication.doi;
             }
 

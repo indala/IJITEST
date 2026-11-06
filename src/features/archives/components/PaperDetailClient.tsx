@@ -193,11 +193,11 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
 
                             {paper.doi && paper.doiProvider !== 'zenodo' && !paper.doi.includes('zenodo') && (
                                 <a
-                                    href={`https://search.crossref.org/?q=${encodeURIComponent(paper.doi)}`}
+                                    href={`https://search.crossref.org/search/works?q=${encodeURIComponent(paper.doi)}&from_ui=yes`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-meta font-bold text-amber-900 transition-colors shadow-2xs shrink-0"
-                                    title="Crossref Cited-by & Metadata Record"
+                                    title="Search Crossref metadata for this DOI"
                                 >
                                     <CrossrefLogo className="h-3.5 w-auto" />
                                     <span>Cited-by Record</span>
@@ -342,11 +342,11 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                                         <ExternalLink className="w-3 h-3" />
                                     </a>
                                     <a
-                                        href={`https://search.crossref.org/?q=${encodeURIComponent(paper.doi || paper.title)}`}
+                                        href={`https://search.crossref.org/search/works?q=${encodeURIComponent(paper.doi || paper.title)}&from_ui=yes`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold border border-amber-200 transition-colors"
-                                        title="Find on Crossref Cited-by"
+                                        title="Search Crossref works"
                                     >
                                         <span>Crossref</span>
                                         <ExternalLink className="w-3 h-3" />

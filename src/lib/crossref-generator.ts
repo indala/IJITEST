@@ -151,13 +151,10 @@ export function generateCrossRefXml({
         </pages>`
             : '';
 
-        // Crawler collection (iParadigms / Turnitin / Similarity Check)
+        // Crossref's schema identifies Similarity Check as iParadigms.
         const crawlerCollectionXml = pdfUrl
             ? `\n          <collection property="crawler-based">
             <item crawler="iParadigms">
-              <resource>${escapeXml(pdfUrl)}</resource>
-            </item>
-            <item crawler="similarity-check">
               <resource>${escapeXml(pdfUrl)}</resource>
             </item>
           </collection>`

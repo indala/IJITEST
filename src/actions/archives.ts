@@ -375,7 +375,9 @@ function mapPublicationToUI(pub: PublicationInput): PublishedPaperUI {
         authorEmail: correspondingAuthor?.email || "N/A",
         affiliation: correspondingAuthor?.institution || "N/A",
         status: (pub.submission?.status as SubmissionStatus) || "published",
-        doi: pub.doi || "",
+        doi: pub.doiProvider === 'crossref' && pub.doiRegistrationStatus !== 'registered'
+            ? ""
+            : pub.doi || "",
         doiProvider: pub.doiProvider || 'none',
         doiRegistrationStatus: pub.doiRegistrationStatus || 'none',
         doiRegistrationBatchId: pub.doiRegistrationBatchId || null,

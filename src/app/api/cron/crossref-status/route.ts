@@ -7,6 +7,8 @@ import { logSubmissionEvent } from "@/actions/event-log";
 import { revalidatePath } from "next/cache";
 import { purgeCacheTags } from "@/lib/cache-invalidation";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { rebrandPublishedPaperWithDoi } from "@/lib/publication-branding";
+import { getPaperById } from "@/actions/archives";
 
 const LOOKUP_TIMEOUT_MS = 15_000;
 const LOOKUP_BATCH_SIZE = 5;
@@ -47,6 +49,7 @@ export async function GET(request: Request) {
             registered: 0,
             stillPending: 0,
             errors: 0,
+            rebrandErrors: 0,
         };
 
         for (let offset = 0; offset < pending.length; offset += LOOKUP_BATCH_SIZE) {
@@ -72,7 +75,12 @@ export async function GET(request: Request) {
                     }
 
                     const body: unknown = await response.json();
-                    if (!isCrossrefWorkForDoi(body, publication.doi)) {
+                    const paper = await getPaperById(String(publication.submissionId));
+                    if (!paper.success || !paper.data) {
+                        throw new Error("Could not load manuscript metadata to verify the Crossref DOI title.");
+                    }
+                    if (!isCrossrefWorkForDoi(body, publication.doi, paper.data.title)) {
+                        console.warn(`Crossref DOI ${publication.doi} exists, but its title does not match the journal record.`);
                         return "pending" as const;
                     }
 
@@ -95,6 +103,12 @@ export async function GET(request: Request) {
                                 ...(publication.batchId ? { batchId: publication.batchId } : {}),
                             },
                         });
+                        try {
+                            await rebrandPublishedPaperWithDoi(publication.submissionId, publication.doi);
+                        } catch (error) {
+                            result.rebrandErrors++;
+                            console.error(`DOI ${publication.doi} registered, but PDF rebranding failed:`, error);
+                        }
                         return "registered" as const;
                     }
 
@@ -119,11 +133,11 @@ export async function GET(request: Request) {
         }
 
         return NextResponse.json({
-            success: result.errors === 0,
+            success: result.errors === 0 && result.rebrandErrors === 0,
             ...result,
             maxPerRun: MAX_DOIS_PER_RUN,
             timestamp: new Date().toISOString(),
-        }, { status: result.errors === 0 ? 200 : 503 });
+        }, { status: result.errors === 0 && result.rebrandErrors === 0 ? 200 : 503 });
     } catch (error) {
         console.error("Cron Crossref status check failed:", error);
         return NextResponse.json(

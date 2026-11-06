@@ -3,7 +3,7 @@ import "server-only";
 
 import { db } from "@/lib/db";
 import { submissions, publications, volumesIssues } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import {
@@ -24,11 +24,67 @@ import { revalidatePath } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { purgeCacheTags } from "@/lib/cache-invalidation";
 import type { DoiRegistrationStatus } from "@/db/types";
+import { rebrandPublishedPaperWithDoi } from "@/lib/publication-branding";
 
 const CROSSREF_REQUEST_TIMEOUT_MS = 60_000;
 const ZENODO_REQUEST_TIMEOUT_MS = 60_000;
 const ZENODO_UPLOAD_TIMEOUT_MS = 120_000;
 
+export async function markCrossrefDepositRejected(
+    submissionId: number,
+    batchId: string,
+): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return actionError("Unauthorized. Admin or Editor privileges required.");
+        }
+
+        const [publication] = await db.select()
+            .from(publications)
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
+        if (
+            !publication ||
+            publication.doiRegistrationStatus !== 'pending' ||
+            publication.doiRegistrationBatchId !== batchId
+        ) {
+            return actionError("The Crossref batch is no longer pending or its batch ID changed. Refresh and verify the current status.");
+        }
+
+        const update = await db.update(publications)
+            .set({ doiRegistrationStatus: 'failed' })
+            .where(and(
+                eq(publications.id, publication.id),
+                eq(publications.doiRegistrationStatus, 'pending'),
+                eq(publications.doiRegistrationBatchId, batchId),
+            ));
+        if (update[0].affectedRows === 0) {
+            return actionError("Crossref status changed while recording the rejection. Refresh the publication and verify its current status.");
+        }
+
+        await logSubmissionEvent({
+            submissionId,
+            eventType: 'doi_registration_failed',
+            userId: session.user.id,
+            description: `Crossref batch ${batchId} was marked rejected after reviewing its submission report.`,
+            metadata: {
+                batchId,
+                ...(publication.doi ? { doi: publication.doi } : {}),
+                provider: 'crossref',
+            },
+        });
+        revalidatePath('/admin/publications');
+        revalidatePath('/admin/submissions');
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE);
+        await rebrandPublishedPaperWithDoi(submissionId, null);
+        return actionSuccess();
+    } catch (error) {
+        console.error("markCrossrefDepositRejected error:", error);
+        return serverError(error, "mark Crossref deposit rejected");
+    }
+}
 
 // 1. Crossref Deposit
 // ---------------------------------------------------------------------------
@@ -40,7 +96,7 @@ const ZENODO_UPLOAD_TIMEOUT_MS = 120_000;
  * network result stays pending until the Crossref batch is verified.
  * Crossref processes the XML asynchronously; use submission-log polling to confirm.
  */
-export async function depositToCrossref(submissionId: number): Promise<ActionResponse<{
+export async function depositToCrossref(submissionId: number, requestedDoi?: string): Promise<ActionResponse<{
     batchId: string;
     status: Extract<DoiRegistrationStatus, 'pending' | 'registered' | 'failed'>;
     message: string;
@@ -65,7 +121,10 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
         }
         const pub = pubRows[0];
 
-        if (!pub.doi) {
+        const depositDoi = requestedDoi?.trim()
+            ? normalizeDoi(requestedDoi, 'crossref')
+            : pub.doi;
+        if (!depositDoi) {
             return actionError("Manuscript does not have an assigned DOI.");
         }
 
@@ -81,16 +140,23 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
         }
 
         const config = getCrossrefConfig();
-        const normalizedDoi = normalizeDoi(pub.doi);
+        const normalizedDoi = normalizeDoi(depositDoi);
         if (!isValidDoi(normalizedDoi) || !normalizedDoi.toLowerCase().startsWith(`${config.prefix.toLowerCase()}/`)) {
-            return actionError(`DOI '${pub.doi}' does not match journal CrossRef prefix '${config.prefix}'. Only official CrossRef DOIs can be deposited.`);
+            return actionError(`DOI '${normalizedDoi}' does not match journal CrossRef prefix '${config.prefix}'. Only official CrossRef DOIs can be deposited.`);
+        }
+
+        const duplicateDoi = await db.select({
+            id: publications.id,
+            submissionId: publications.submissionId,
+        })
+            .from(publications)
+            .where(eq(publications.doi, normalizedDoi))
+            .limit(1);
+        if (duplicateDoi[0] && duplicateDoi[0].submissionId !== submissionId) {
+            return actionError("That DOI is already assigned to another publication.");
         }
 
         if (!config.username || !config.password) {
-            await db.update(publications)
-                .set({ doiRegistrationStatus: 'failed' })
-                .where(eq(publications.id, pub.id));
-
             return actionError("CrossRef credentials not configured. Please set CROSSREF_USERNAME and CROSSREF_PASSWORD in .env.");
         }
 
@@ -108,6 +174,7 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
         if (!paperRes.data) return actionError("Failed to load paper metadata for CrossRef export.");
 
         const paper = paperRes.data;
+        paper.doi = normalizedDoi;
         const batchId = `cr-${Date.now()}-${paper.paperId}`;
 
         // Generate CrossRef XML
@@ -128,14 +195,13 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
             if (currentPub.doiRegistrationStatus === 'pending') {
                 return { claimed: false, batchId: currentPub.doiRegistrationBatchId };
             }
-            if (
-                currentPub.doi?.toLowerCase() !== pub.doi?.toLowerCase() ||
-                currentPub.doiProvider !== 'crossref'
-            ) {
+            if (currentPub.doiRegistrationStatus === 'registered') {
                 return { claimed: false, batchId: null, stale: true as const };
             }
             await tx.update(publications)
                 .set({
+                    doi: normalizedDoi,
+                    doiProvider: 'crossref',
                     doiRegistrationStatus: 'pending',
                     doiRegistrationBatchId: batchId,
                 })
@@ -155,6 +221,16 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
                 status: 'pending',
                 message: `Crossref batch ${claim.batchId} is already pending. It was not submitted again.`,
             });
+        }
+
+        revalidatePath('/admin/publications');
+        revalidatePath('/admin/submissions');
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE, CACHE_TAGS.PAPER(paper.paperId));
+        try {
+            await rebrandPublishedPaperWithDoi(submissionId, null);
+        } catch (error) {
+            console.error(`Crossref DOI is pending for ${paper.paperId}, but removing it from the PDF failed:`, error);
         }
 
         // Prepare multipart form data
@@ -212,27 +288,13 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
             return actionError(`CrossRef rejected deposit (${responseStatus}): ${responseText.slice(0, 200)}`);
         }
 
-        // Update DB status to pending — Crossref will process asynchronously
-        await db.update(publications)
-            .set({
-                doiProvider: 'crossref',
-                doiRegistrationStatus: 'pending',
-                doiRegistrationBatchId: batchId,
-            })
-            .where(eq(publications.id, pub.id));
-
         await logSubmissionEvent({
             submissionId,
             eventType: 'doi_deposit_submitted',
             userId: session.user.id,
             description: `CrossRef deposit queued successfully (Batch ID: ${batchId}). Awaiting Crossref processing.`,
-            metadata: { batchId, doi: pub.doi, provider: 'crossref' }
+            metadata: { batchId, doi: normalizedDoi, provider: 'crossref' }
         });
-
-        revalidatePath('/admin/publications');
-        revalidatePath('/admin/submissions');
-        revalidatePath(`/admin/submissions/${submissionId}`);
-        purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.PAPER(paper.paperId));
 
         return actionSuccess({
             batchId,
@@ -398,7 +460,7 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
                 journal_volume: paper.volumeNumber ? String(paper.volumeNumber) : undefined,
                 journal_issue: paper.issueNumber ? String(paper.issueNumber) : undefined,
                 // Link to the canonical Crossref DOI without overwriting it
-                related_identifiers: pub.doi && pub.doiProvider === 'crossref'
+                related_identifiers: pub.doi && pub.doiProvider === 'crossref' && pub.doiRegistrationStatus === 'registered'
                     ? [
                         {
                             identifier: `https://doi.org/${pub.doi}`,

@@ -32,6 +32,8 @@ interface EditDoiModalProps {
     zenodoDoi?: string | null | undefined;
     zenodoStatus?: 'none' | 'pending' | 'published' | 'failed' | null | undefined;
     zenodoRecordUrl?: string | null | undefined;
+    doiRegistrationStatus?: 'none' | 'pending' | 'registered' | 'failed' | null | undefined;
+    doiRegistrationBatchId?: string | null | undefined;
 }
 
 export default function EditDoiModal({
@@ -44,6 +46,8 @@ export default function EditDoiModal({
     zenodoDoi,
     zenodoStatus,
     zenodoRecordUrl,
+    doiRegistrationStatus,
+    doiRegistrationBatchId,
 }: EditDoiModalProps) {
     const [open, setOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -181,17 +185,11 @@ export default function EditDoiModal({
         }
         doiActionInProgress.current = true;
         setIsDepositingCrossref(true);
-        toast.info("Saving DOI and submitting deposit to Crossref...");
+        toast.info("Submitting DOI deposit to Crossref...");
         try {
-            const saveRes = await updatePublicationDoi(submissionId, finalDoi, 'crossref');
-            if (!saveRes.success) {
-                toast.error(saveRes.error || "Failed to save DOI before deposit.");
-                setIsDepositingCrossref(false);
-                return;
-            }
-            const depRes = await depositToCrossref(submissionId);
+            const depRes = await depositToCrossref(submissionId, finalDoi);
             if (depRes.success && depRes.data) {
-                toast.success(`DOI saved & Crossref deposit queued ✓ (Batch ID: ${depRes.data.batchId})`);
+                toast.success(`Crossref deposit queued. The DOI will be assigned publicly after registration (Batch ID: ${depRes.data.batchId})`);
                 queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                 queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
                 setOpen(false);
@@ -347,6 +345,16 @@ export default function EditDoiModal({
                                     className="h-9 text-meta font-mono bg-background"
                                 />
                             </div>
+                            {doiRegistrationStatus === 'pending' && (
+                                <p className="text-caption text-amber-800" role="status">
+                                    Batch {doiRegistrationBatchId || 'in progress'} is awaiting Crossref. This DOI is not shown on the public paper or applied to its PDF until Crossref registers it.
+                                </p>
+                            )}
+                            {doiRegistrationStatus === 'failed' && (
+                                <p className="text-caption text-rose-700" role="status">
+                                    The last Crossref deposit failed. Check its report before retrying or changing the DOI.
+                                </p>
+                            )}
                         </div>
                     )}
 
@@ -480,7 +488,7 @@ export default function EditDoiModal({
                                 className="h-10 text-body-sm font-semibold rounded-xl cursor-pointer"
                             >
                                 {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}
-                                Save DOI Only
+                                Verify & Assign Registered DOI
                             </Button>
                             <Button
                                 type="button"
@@ -493,7 +501,7 @@ export default function EditDoiModal({
                                 ) : (
                                     <Globe className="w-3.5 h-3.5" />
                                 )}
-                                Save & Deposit to Crossref
+                                Submit DOI for Registration
                             </Button>
                         </>
                     ) : (

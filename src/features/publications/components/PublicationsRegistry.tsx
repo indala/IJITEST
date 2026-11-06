@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useActionState } from 'react';
 import {
-    Plus, BookOpen, Clock, CheckCircle2,
+    Plus, BookOpen, Clock, CheckCircle2, CircleX,
     CheckCircle, Save, ChevronDown as ChevronDownIcon, ChevronUp, FileText, Eye, Unlink, Loader2
 } from 'lucide-react';
 import {
@@ -18,7 +18,7 @@ import {
     publishIssue,
     unassignPaperFromIssue
 } from '@/actions/publications';
-import { depositToCrossref } from '@/actions/doi-registration';
+import { depositToCrossref, markCrossrefDepositRejected } from '@/actions/doi-registration';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Issue, ActionResponse, StaffRole } from '@/db/types';
@@ -72,6 +72,28 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
             }
         } catch {
             toast.error("Failed to retry CrossRef deposit");
+        } finally {
+            setRetryingPaperId(null);
+        }
+    }
+
+    async function handleMarkCrossrefRejected(submissionId: number, batchId: string | null | undefined) {
+        if (!batchId || !window.confirm(
+            `Only continue if Crossref's report confirms this batch failed. Mark batch ${batchId} as rejected?`
+        )) return;
+        setRetryingPaperId(submissionId);
+        try {
+            const res = await markCrossrefDepositRejected(submissionId, batchId);
+            if (!res.success) {
+                toast.error(res.error || "Failed to update Crossref status");
+            } else {
+                toast.success("Crossref failure recorded. You can now update the DOI or retry the deposit.");
+                queryClient.invalidateQueries({ queryKey: publicationKeys.issuePapers(expandedIssue) });
+                queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
+                queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+            }
+        } catch {
+            toast.error("Failed to update Crossref status");
         } finally {
             setRetryingPaperId(null);
         }
@@ -427,6 +449,19 @@ export function PublicationsRegistry({ role }: PublicationsRegistryProps) {
                                                                                     >
                                                                                         {isRetrying ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
                                                                                         {regStatus === 'none' ? 'Deposit' : 'Retry'}
+                                                                                    </Button>
+                                                                                )}
+                                                                                {role === 'admin' && provider === 'crossref' && regStatus === 'pending' && (
+                                                                                    <Button
+                                                                                        size="sm"
+                                                                                        variant="outline"
+                                                                                        disabled={isRetrying || !pub?.doiRegistrationBatchId}
+                                                                                        onClick={() => handleMarkCrossrefRejected(paper.id, pub?.doiRegistrationBatchId)}
+                                                                                        className="h-7 px-2 cursor-pointer text-rose-600 hover:text-rose-700 border-rose-200 hover:bg-rose-50"
+                                                                                        title="Use only after Crossref's report confirms rejection"
+                                                                                    >
+                                                                                        {isRetrying ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <CircleX className="w-3 h-3 mr-1" />}
+                                                                                        Mark rejected
                                                                                     </Button>
                                                                                 )}
                                                                                 <Button asChild variant="ghost" size="icon" className="w-7 h-7 text-muted-foreground hover:text-primary rounded-md">

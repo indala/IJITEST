@@ -423,7 +423,9 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                                     )}
                                                                 </div>
                                                                 <p className="text-meta font-mono font-medium text-emerald-300 break-all">
-                                                                    {(submission.publication?.doiProvider === 'zenodo' ? (submission.publication?.zenodoDoi || submission.doi) : submission.doi) || <span className="text-white/40 italic font-sans text-caption">Unassigned (No DOI)</span>}
+                                                                    {submission.publication?.doiProvider === 'crossref' && submission.publication.doiRegistrationStatus !== 'registered'
+                                                                        ? <span className="text-amber-200 font-sans text-caption">Awaiting Crossref registration</span>
+                                                                        : (submission.publication?.doiProvider === 'zenodo' ? (submission.publication?.zenodoDoi || submission.doi) : submission.doi) || <span className="text-white/40 italic font-sans text-caption">Unassigned (No DOI)</span>}
                                                                 </p>
                                                             </div>
                                                             {role === 'admin' && (
@@ -436,6 +438,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                                     currentProvider={submission.publication?.doiProvider}
                                                                     zenodoDoi={submission.publication?.zenodoDoi}
                                                                     zenodoStatus={submission.publication?.zenodoStatus}
+                                                                    doiRegistrationStatus={submission.publication?.doiRegistrationStatus}
+                                                                    doiRegistrationBatchId={submission.publication?.doiRegistrationBatchId}
                                                                     zenodoRecordUrl={
                                                                         submission.publication?.zenodoRecordUrl ||
                                                                         (submission.publication?.zenodoRecordId
