@@ -314,6 +314,19 @@
     @apply font-medium text-muted-foreground text-[12px] sm:text-[12px] md:text-[14px] xl:text-[14px] 2xl:text-[16px];
   }
 
+  .panel-content {
+    @apply mx-auto w-full max-w-7xl space-y-4 px-3 py-4 sm:px-5 sm:py-5 lg:px-6 2xl:max-w-[1680px] 2xl:space-y-6 2xl:px-8 2xl:py-8;
+  }
+
+  .panel-dialog-content {
+    max-height: calc(100dvh - 2rem);
+    @apply flex flex-col overflow-hidden;
+  }
+
+  .panel-dialog-body {
+    @apply min-h-0 overflow-y-auto overscroll-contain;
+  }
+
   .card-title-brand {
     @apply font-semibold text-primary tracking-tight text-[16px] sm:text-[16px] md:text-[18px] xl:text-[18px] 2xl:text-[20px];
   }

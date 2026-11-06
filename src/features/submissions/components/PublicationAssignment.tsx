@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useActionState } from 'react'
+import { useState, useTransition, useActionState, useRef } from 'react'
 import { Plus, Globe, Loader2, Layers, Sparkles, Tag } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,7 +25,7 @@ import {
     assignPaperToIssue
 } from '@/actions/publications'
 import { depositToCrossref, depositToZenodo } from '@/actions/doi-registration'
-import { normalizeDoi, generateJackDoi } from '@/lib/doi-format'
+import { normalizeDoi, normalizeDoiPrefix, generateJackDoi } from '@/lib/doi-format'
 import { useQueryClient } from '@tanstack/react-query'
 import type { ActionResponse } from '@/db/contracts'
 import { useSettingsContext } from '@/components/providers/SettingsContext'
@@ -47,7 +47,7 @@ export default function PublicationAssignment({
 }: PublicationAssignmentProps) {
     const queryClient = useQueryClient();
     const settings = useSettingsContext();
-    const doiPrefix = settings['doiPrefix'] || '10.68139';
+    const doiPrefix = normalizeDoiPrefix(settings['doiPrefix']);
     const { data: volumes = [], isLoading: loading } = useVolumesIssues();
 
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -63,6 +63,7 @@ export default function PublicationAssignment({
         provider?: 'crossref' | 'zenodo';
     }>({ status: 'idle' });
     const [isAssigning, startAssign] = useTransition();
+    const assignmentInProgress = useRef(false);
 
     // Dynamically compute JACK pattern DOI when issue / volume / year is selected
     const selectedIssue = volumes.find((v) => String(v.id) === String(selectedIssueId));
@@ -71,10 +72,6 @@ export default function PublicationAssignment({
     const jackDoiInfo = paperId
         ? generateJackDoi(doiPrefix, paperId, effectiveVolume, effectiveYear)
         : null;
-    const legacyCrossrefDoi = paperId
-        ? `${doiPrefix}/${paperId.trim().toLowerCase().replace(/[^a-z0-9]+/g, '.')}`
-        : null;
-
     const [, createAction, isCreating] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
         const res = await createVolumeIssue(formData);
         if (res.success) {
@@ -88,6 +85,7 @@ export default function PublicationAssignment({
     }, null);
 
     async function handleAssign() {
+        if (assignmentInProgress.current) return;
         if (!selectedIssueId) {
             toast.error("Please select a target issue node");
             return;
@@ -118,6 +116,7 @@ export default function PublicationAssignment({
             provider = 'none';
         }
 
+        assignmentInProgress.current = true;
         startAssign(async () => {
             try {
                 const res = await assignPaperToIssue(
@@ -171,7 +170,7 @@ export default function PublicationAssignment({
                                 batchId: crossrefRes.data.batchId,
                                 message: crossrefRes.data.message
                             });
-                            toast.success(`Assigned & deposited to Crossref ✓ (Batch ID: ${crossrefRes.data.batchId})`);
+                            toast.success(`Assigned & queued for Crossref ✓ (Batch ID: ${crossrefRes.data.batchId})`);
                             queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                         }
                     } else {
@@ -182,6 +181,8 @@ export default function PublicationAssignment({
                 }
             } catch {
                 toast.error("Failed to assign paper to issue");
+            } finally {
+                assignmentInProgress.current = false;
             }
         });
     }
@@ -408,19 +409,6 @@ export default function PublicationAssignment({
                                             <Sparkles className="w-3 h-3 text-emerald-500" />
                                             <span>Use JACK: <code className="font-mono">{jackDoiInfo.suffix}</code></span>
                                         </Button>
-
-                                        {legacyCrossrefDoi && (
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                variant="ghost"
-                                                onClick={() => setCustomDoiValue(legacyCrossrefDoi)}
-                                                className="h-7 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer"
-                                                title="Use standard slug pattern"
-                                            >
-                                                Standard: <code className="font-mono text-[10px] ml-1">{legacyCrossrefDoi}</code>
-                                            </Button>
-                                        )}
                                     </div>
                                 </div>
                             )}

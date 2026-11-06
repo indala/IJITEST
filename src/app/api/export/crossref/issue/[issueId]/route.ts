@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getIssuePapersByIssueId } from "@/actions/archives";
 import { getSettingsData } from "@/actions/settings";
 import { generateCrossRefXml } from "@/lib/crossref-generator";
+import { normalizeDoiPrefix } from "@/lib/doi-format";
 
 export async function GET(
     _request: NextRequest,
@@ -27,7 +28,7 @@ export async function GET(
         }
 
         const { issue, papers } = issueRes.data;
-        const prefix = settings['doiPrefix'] ? settings['doiPrefix'].trim() : "10.68139";
+        const prefix = normalizeDoiPrefix(settings['doiPrefix']);
         
         // Only include papers eligible for official CrossRef deposit
         const crossrefPapers = papers.filter(p => Boolean(p.doi && (p.doiProvider === 'crossref' || p.doi.startsWith(prefix))));

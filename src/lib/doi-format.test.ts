@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isValidDoi, normalizeDoi, generateJackDoi } from "./doi-format";
+import { isValidDoi, normalizeDoi, normalizeDoiPrefix, generateJackDoi } from "./doi-format";
 
 test("normalizes DOI URLs and labels", () => {
     assert.equal(normalizeDoi(" https://doi.org/10.68139/abc-1 "), "10.68139/abc-1");
@@ -31,6 +31,14 @@ test("generates JACK tricky DOI pattern correctly", () => {
     const res2 = generateJackDoi("10.68139", "IJITEST-2026-025", 1, 2026);
     assert.equal(res2.suffix, "ijitest.j2a6c1k25");
     assert.equal(res2.fullDoi, "10.68139/ijitest.j2a6c1k25");
+});
+
+test("normalizes a journal name accidentally included in the DOI prefix", () => {
+    assert.equal(normalizeDoiPrefix("10.68139/ijitest"), "10.68139");
+    assert.equal(normalizeDoiPrefix("10.68139/ijitest/"), "10.68139");
+
+    const res = generateJackDoi("10.68139/ijitest", "IJITEST-2026-002", 1, 2026);
+    assert.equal(res.fullDoi, "10.68139/ijitest.j2a6c1k2");
 });
 
 test("validates DOI syntax", () => {

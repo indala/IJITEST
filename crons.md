@@ -21,6 +21,7 @@ All cron endpoints are secured using a Bearer token verification. When calling a
 | `/api/cron/cleanup-authors` | `src/app/api/cron/cleanup-authors/route.ts` | Deletes inactive author accounts (>28 days since decision) | **Daily** (e.g. at 02:00 UTC) |
 | `/api/cron/cleanup` | `src/app/api/cron/cleanup/route.ts` | Deletes stale submissions, files, and orphan authors | **Daily** or **Weekly** |
 | `/api/cron/cleanup-chats` | `src/app/api/cron/cleanup-chats/route.ts` | Prunes chat message logs older than 2 months | **Monthly** |
+| `/api/cron/crossref-status` | `src/app/api/cron/crossref-status/route.ts` | Checks pending Crossref DOIs and marks confirmed registrations | **Hourly** |
 
 ---
 
@@ -63,3 +64,15 @@ All cron endpoints are secured using a Bearer token verification. When calling a
 * **Frequency**: **Monthly**
 * **Detailed Behavior**:
   - Deletes all chat message records in the database where `createdAt` is older than 2 months to optimize table size and performance.
+
+### 5. Crossref DOI Registration Reconciliation
+* **Route**: `/api/cron/crossref-status`
+* **File Location**: `ijitest/src/app/api/cron/crossref-status/route.ts`
+* **Frequency**: **Hourly**
+* **Hostinger Request**: `GET https://<your-domain>/api/cron/crossref-status`
+* **Required Header**: `Authorization: Bearer <CRON_SECRET>`
+* **Detailed Behavior**:
+  - Checks up to 50 publications marked `crossref` and `pending` against the Crossref public works API, using batches of five concurrent lookups.
+  - Marks a publication `registered` only when Crossref returns the exact DOI, and logs a `doi_registered` event.
+  - Leaves missing DOIs pending because Crossref indexing can lag behind deposit acceptance. Temporary lookup failures are reported so the next scheduled run can retry.
+  - This verifies that the DOI is present in Crossref; it does not inspect Crossref deposit reports or identify why an unregistered deposit failed.

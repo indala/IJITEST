@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { Globe, Loader2, CheckCircle2, Tag, ExternalLink, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import { updatePublicationDoi } from "@/actions/publications";
 import { depositToCrossref, depositToZenodo } from "@/actions/doi-registration";
-import { normalizeDoi, generateJackDoi } from "@/lib/doi-format";
+import { normalizeDoi, normalizeDoiPrefix, generateJackDoi } from "@/lib/doi-format";
 import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { publicationKeys } from "@/features/publications";
@@ -49,17 +49,15 @@ export default function EditDoiModal({
     const [isPending, startTransition] = useTransition();
     const [isDepositingZenodo, setIsDepositingZenodo] = useState(false);
     const [isDepositingCrossref, setIsDepositingCrossref] = useState(false);
+    const doiActionInProgress = useRef(false);
     const settings = useSettingsContext();
     const queryClient = useQueryClient();
 
-    const doiPrefix = settings['doiPrefix'] || '10.68139';
+    const doiPrefix = normalizeDoiPrefix(settings['doiPrefix']);
 
     // JACK pattern suggested DOI: e.g. "ijitest.j2a6c1k11" (jack + 26 + 1 + 11)
     const jackDoiInfo = generateJackDoi(doiPrefix, paperId, volumeNumber, year);
 
-    // Standard slug DOI format generated from manuscript ID: e.g. "10.68139/ijitest.2026.011"
-    const suggestedDoiSuffix = paperId.trim().toLowerCase().replace(/[^a-z0-9]+/g, '.');
-    const legacyCrossrefDoi = `${doiPrefix}/${suggestedDoiSuffix}`;
     const suggestedCrossrefDoi = jackDoiInfo.fullDoi;
 
     const isCurrentlyOfficial = currentProvider === 'crossref';
@@ -91,6 +89,8 @@ export default function EditDoiModal({
 
     // 1-Click Zenodo Deposit via API
     const handleDepositZenodoApi = async () => {
+        if (doiActionInProgress.current) return;
+        doiActionInProgress.current = true;
         setIsDepositingZenodo(true);
         toast.info("Submitting manuscript metadata to Zenodo API...");
         try {
@@ -111,10 +111,12 @@ export default function EditDoiModal({
             toast.error("An unexpected error occurred while communicating with Zenodo.");
         } finally {
             setIsDepositingZenodo(false);
+            doiActionInProgress.current = false;
         }
     };
 
     const handleSave = () => {
+        if (doiActionInProgress.current) return;
         let finalDoi: string | null = null;
         let provider: 'none' | 'crossref' | 'zenodo' | 'custom' = 'none';
 
@@ -144,6 +146,7 @@ export default function EditDoiModal({
             provider = 'none';
         }
 
+        doiActionInProgress.current = true;
         startTransition(async () => {
             try {
                 const res = await updatePublicationDoi(submissionId, finalDoi, provider);
@@ -163,16 +166,20 @@ export default function EditDoiModal({
             } catch (err) {
                 console.error("DOI update error:", err);
                 toast.error("An unexpected error occurred while updating DOI.");
+            } finally {
+                doiActionInProgress.current = false;
             }
         });
     };
 
     const handleSaveAndDepositCrossref = async () => {
+        if (doiActionInProgress.current) return;
         const finalDoi = customDoiValue.trim() || suggestedCrossrefDoi;
         if (!finalDoi) {
             toast.error("Please enter or auto-suggest the Crossref DOI first.");
             return;
         }
+        doiActionInProgress.current = true;
         setIsDepositingCrossref(true);
         toast.info("Saving DOI and submitting deposit to Crossref...");
         try {
@@ -196,6 +203,7 @@ export default function EditDoiModal({
             toast.error("An unexpected error occurred while communicating with Crossref.");
         } finally {
             setIsDepositingCrossref(false);
+            doiActionInProgress.current = false;
         }
     };
 
@@ -211,7 +219,7 @@ export default function EditDoiModal({
                     <span>{currentDoi ? "Change DOI" : "Assign DOI"}</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg rounded-2xl p-6 bg-card border-border shadow-2xl">
+            <DialogContent className="panel-dialog-content sm:max-w-lg rounded-2xl p-4 sm:p-6 bg-card border-border shadow-2xl">
                 <DialogHeader className="space-y-2">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600">
@@ -228,20 +236,18 @@ export default function EditDoiModal({
                     </div>
                 </DialogHeader>
 
-                <div className="space-y-4 py-3">
+                <div className="panel-dialog-body space-y-4 py-3">
                     {/* Current Status */}
-                    <div className="p-3 bg-muted/40 rounded-xl border border-border/60 text-body-sm space-y-1">
-                        <div className="flex items-center justify-between">
-                            <span className="text-label font-bold text-muted-foreground uppercase tracking-wider">Current Allocation</span>
-                            <span className="text-badge px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-background border border-border/60 text-muted-foreground">
-                                Provider: {currentProvider || (currentDoi ? 'custom' : 'none')}
-                            </span>
-                        </div>
-                        <p className="font-mono font-medium text-foreground break-all">
+                    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 p-3 bg-muted/40 rounded-xl border border-border/60 text-body-sm">
+                        <span className="text-label font-bold text-muted-foreground uppercase tracking-wider">Current DOI</span>
+                        <span className="text-badge px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-background border border-border/60 text-muted-foreground">
+                            {currentProvider || (currentDoi ? 'custom' : 'none')}
+                        </span>
+                        <p className="w-full font-mono font-medium text-foreground break-all">
                             {currentDoi ? (
                                 <span className="text-emerald-700 font-semibold">{currentDoi}</span>
                             ) : (
-                                <span className="text-muted-foreground italic">No DOI assigned (Unindexed)</span>
+                                <span className="text-muted-foreground italic">No DOI assigned</span>
                             )}
                         </p>
                     </div>
@@ -249,7 +255,7 @@ export default function EditDoiModal({
                     {/* Mode Selector */}
                     <div className="space-y-2">
                         <label className="form-label-brand font-semibold text-foreground">Target DOI Allocation Provider</label>
-                        <div className="grid grid-cols-4 gap-1 p-1 bg-muted/50 rounded-xl border border-border/50 text-body-sm">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1 bg-muted/50 rounded-xl border border-border/50 text-body-sm">
                             <button
                                 type="button"
                                 onClick={() => setDoiMode('none')}
@@ -300,7 +306,7 @@ export default function EditDoiModal({
 
                     {/* Detail for CrossRef Mode */}
                     {doiMode === 'official' && (
-                        <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-body-sm space-y-3">
+                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-body-sm space-y-3">
                             <div className="flex items-center justify-between">
                                 <p className="text-label font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
                                     <Tag className="w-3.5 h-3.5" />
@@ -311,74 +317,26 @@ export default function EditDoiModal({
                                 </span>
                             </div>
 
-                            {/* Suggestion Card with Visual Breakdown of JACK pattern */}
-                            <div className="bg-background/90 border border-emerald-500/30 rounded-lg p-3 space-y-2.5 shadow-xs">
-                                <div className="flex items-center justify-between text-caption">
-                                    <span className="font-semibold text-emerald-900 flex items-center gap-1">
-                                        <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                                        Suggested Suffix Formula:
-                                    </span>
-                                    <code className="font-mono text-meta font-bold text-emerald-800">
-                                        /{jackDoiInfo.suffix}
-                                    </code>
+                            <div className="flex flex-wrap items-center justify-between gap-2 bg-background/90 border border-emerald-500/30 rounded-lg p-3">
+                                <div className="min-w-0">
+                                    <p className="text-caption font-semibold text-emerald-900">Suggested DOI</p>
+                                    <code className="font-mono text-meta font-bold text-emerald-800 break-all">{jackDoiInfo.fullDoi}</code>
+                                    <p className="text-caption mt-1">Year &apos;{jackDoiInfo.year2} · Volume {jackDoiInfo.vol} · Paper #{jackDoiInfo.paperNum}</p>
                                 </div>
-
-                                {/* Visual Breakdown: j + 2 + a + 6 + c + 1 + k + 11 */}
-                                <div className="space-y-1.5 bg-emerald-500/5 p-2 rounded-md border border-emerald-500/15">
-                                    <div className="flex flex-wrap items-center gap-1 text-meta font-mono">
-                                        <span className="font-bold text-foreground">j</span>
-                                        <span className="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[11px] font-bold" title="Year 1st digit">
-                                            {jackDoiInfo.year2[0]}
-                                        </span>
-                                        <span className="font-bold text-foreground">a</span>
-                                        <span className="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[11px] font-bold" title="Year 2nd digit">
-                                            {jackDoiInfo.year2[1]}
-                                        </span>
-                                        <span className="font-bold text-foreground">c</span>
-                                        <span className="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[11px] font-bold" title="Volume number">
-                                            {jackDoiInfo.vol}
-                                        </span>
-                                        <span className="font-bold text-foreground">k</span>
-                                        <span className="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[11px] font-bold" title="Paper sequence number">
-                                            {jackDoiInfo.paperNum}
-                                        </span>
-                                        <span className="text-muted-foreground ml-auto text-[11px] font-sans">
-                                            Formula: <b>jack</b> + <b>{jackDoiInfo.year2}</b> (yr) + <b>{jackDoiInfo.vol}</b> (vol) + <b>{jackDoiInfo.paperNum}</b> (id)
-                                        </span>
-                                    </div>
-                                    <p className="text-[11px] text-muted-foreground">
-                                        Splits into <code className="font-mono text-foreground font-semibold">jack</code> + Year &apos;{jackDoiInfo.year2} + Volume {jackDoiInfo.vol} + Paper #{jackDoiInfo.paperNum}.
-                                    </p>
-                                </div>
-
-                                {/* 1-Click Action Buttons */}
-                                <div className="flex flex-wrap items-center gap-2 pt-0.5">
-                                    <Button
-                                        type="button"
-                                        size="sm"
-                                        variant={customDoiValue === jackDoiInfo.fullDoi ? "default" : "outline"}
-                                        onClick={() => setCustomDoiValue(jackDoiInfo.fullDoi)}
-                                        className={`h-7 text-[11px] font-semibold gap-1 cursor-pointer ${
-                                            customDoiValue === jackDoiInfo.fullDoi
-                                                ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                                                : "bg-white hover:bg-emerald-50 text-emerald-700 border-emerald-300"
-                                        }`}
-                                    >
-                                        <Sparkles className="w-3 h-3 text-emerald-500" />
-                                        <span>Use JACK: <code className="font-mono">{jackDoiInfo.suffix}</code></span>
-                                    </Button>
-
-                                    <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => setCustomDoiValue(legacyCrossrefDoi)}
-                                        className="h-7 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer"
-                                        title="Use standard slug pattern"
-                                    >
-                                        Standard: <code className="font-mono text-[10px] ml-1">{legacyCrossrefDoi}</code>
-                                    </Button>
-                                </div>
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant={customDoiValue === jackDoiInfo.fullDoi ? "default" : "outline"}
+                                    onClick={() => setCustomDoiValue(jackDoiInfo.fullDoi)}
+                                    className={`h-7 text-[11px] font-semibold gap-1 cursor-pointer ${
+                                        customDoiValue === jackDoiInfo.fullDoi
+                                            ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                                            : "bg-white hover:bg-emerald-50 text-emerald-700 border-emerald-300"
+                                    }`}
+                                >
+                                    <Sparkles className="w-3 h-3" />
+                                    <span>Use suggestion</span>
+                                </Button>
                             </div>
 
                             <div className="space-y-1.5">
@@ -388,14 +346,7 @@ export default function EditDoiModal({
                                     onChange={(e) => setCustomDoiValue(e.target.value)}
                                     className="h-9 text-meta font-mono bg-background"
                                 />
-                                <div className="flex items-center justify-between text-caption text-muted-foreground">
-                                    <span>Active DOI: <code className="font-mono font-semibold text-emerald-800 break-all">{customDoiValue || "(empty)"}</code></span>
-                                </div>
                             </div>
-
-                            <p className="text-caption text-muted-foreground pt-0.5">
-                                Enter or auto-fill the Crossref DOI. Crossref metadata and landing permalink are linked to this manuscript.
-                            </p>
                         </div>
                     )}
 
@@ -404,9 +355,8 @@ export default function EditDoiModal({
                         <div className="p-3 bg-sky-500/10 border border-sky-500/20 rounded-xl text-body-sm space-y-3">
                             <div className="flex items-center justify-between">
                                 <p className="text-label font-bold text-sky-700 uppercase tracking-wider">
-                                    Zenodo REST API Integration
+                                    Zenodo Deposit
                                 </p>
-                                <span className="text-badge bg-sky-600 text-white px-1.5 py-0.2 rounded-full font-bold">1-Click API</span>
                             </div>
 
                             {zenodoStatus === 'published' && (zenodoDoi || zenodoDoiValue) && (
@@ -431,28 +381,33 @@ export default function EditDoiModal({
                             )}
                             
                             <p className="text-caption text-muted-foreground leading-relaxed">
-                                Uploads manuscript metadata and CC-BY 4.0 license directly to Zenodo via REST API to generate a <span className="font-mono font-semibold text-foreground">10.5281/zenodo</span> DOI.
+                                Deposits the published PDF and article metadata to Zenodo under a CC-BY 4.0 license.
                             </p>
 
-                            <Button
-                                type="button"
-                                onClick={handleDepositZenodoApi}
-                                disabled={isDepositingZenodo || isPending}
-                                className="w-full h-10 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-md shadow-sky-600/20 gap-2 cursor-pointer transition-all active:scale-[0.98]"
-                            >
-                                {isDepositingZenodo ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <Sparkles className="w-4 h-4" />
-                                )}
-                                {isDepositingZenodo
-                                    ? "Communicating with Zenodo..."
-                                    : zenodoStatus === 'published'
-                                        ? "Sync / Re-verify Zenodo Record"
-                                        : "Deposit to Zenodo via API (1-Click)"}
-                            </Button>
+                            {zenodoStatus === 'pending' && (
+                                <p className="text-caption text-amber-700" role="status">
+                                    Deposit is processing. Check the Zenodo record before retrying.
+                                </p>
+                            )}
 
-                            <div className="pt-2 border-t border-sky-500/20 space-y-1">
+                            {zenodoStatus !== 'published' && zenodoStatus !== 'pending' && (
+                                <Button
+                                    type="button"
+                                    onClick={handleDepositZenodoApi}
+                                    disabled={isDepositingZenodo || isPending}
+                                    className="w-full h-10 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-md shadow-sky-600/20 gap-2 cursor-pointer transition-all active:scale-[0.98]"
+                                >
+                                    {isDepositingZenodo ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <Sparkles className="w-4 h-4" />
+                                    )}
+                                    {isDepositingZenodo ? "Depositing to Zenodo..." : "Deposit to Zenodo"}
+                                </Button>
+                            )}
+
+                            {zenodoStatus !== 'published' && zenodoStatus !== 'pending' && (
+                                <div className="pt-2 border-t border-sky-500/20 space-y-1">
                                 <label className="text-caption font-medium text-muted-foreground">Or Manually Link Zenodo DOI:</label>
                                 <Input
                                     placeholder="e.g. 10.5281/zenodo.12345678"
@@ -470,7 +425,8 @@ export default function EditDoiModal({
                                         <ExternalLink className="w-3 h-3" /> View Linked Zenodo Record
                                     </a>
                                 )}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     )}
 

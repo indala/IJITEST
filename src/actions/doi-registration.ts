@@ -25,6 +25,10 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import { purgeCacheTags } from "@/lib/cache-invalidation";
 import type { DoiRegistrationStatus } from "@/db/types";
 
+const CROSSREF_REQUEST_TIMEOUT_MS = 60_000;
+const ZENODO_REQUEST_TIMEOUT_MS = 60_000;
+const ZENODO_UPLOAD_TIMEOUT_MS = 120_000;
+
 
 // 1. Crossref Deposit
 // ---------------------------------------------------------------------------
@@ -32,7 +36,8 @@ import type { DoiRegistrationStatus } from "@/db/types";
 /**
  * Live CrossRef Deposit Server Action
  * Generates CrossRef Schema 5.3.1 XML and submits it to CrossRef servlet endpoint.
- * Sets doiRegistrationStatus = 'pending' after a successful queue submission.
+ * Claims the publication before sending to prevent duplicate batches. An ambiguous
+ * network result stays pending until the Crossref batch is verified.
  * Crossref processes the XML asynchronously; use submission-log polling to confirm.
  */
 export async function depositToCrossref(submissionId: number): Promise<ActionResponse<{
@@ -62,6 +67,17 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
 
         if (!pub.doi) {
             return actionError("Manuscript does not have an assigned DOI.");
+        }
+
+        if (pub.doiRegistrationStatus === 'pending') {
+            if (!pub.doiRegistrationBatchId) {
+                return actionError("A Crossref deposit is already pending without a batch ID. Review its status before trying again.");
+            }
+            return actionSuccess({
+                batchId: pub.doiRegistrationBatchId,
+                status: 'pending',
+                message: `Crossref batch ${pub.doiRegistrationBatchId} is already pending. It was not submitted again.`,
+            });
         }
 
         const config = getCrossrefConfig();
@@ -101,6 +117,46 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
             batchId,
         });
 
+        const claim = await db.transaction(async (tx) => {
+            const [currentPub] = await tx.select()
+                .from(publications)
+                .where(eq(publications.id, pub.id))
+                .for("update");
+            if (!currentPub) {
+                throw new Error("Publication record disappeared before Crossref submission.");
+            }
+            if (currentPub.doiRegistrationStatus === 'pending') {
+                return { claimed: false, batchId: currentPub.doiRegistrationBatchId };
+            }
+            if (
+                currentPub.doi?.toLowerCase() !== pub.doi?.toLowerCase() ||
+                currentPub.doiProvider !== 'crossref'
+            ) {
+                return { claimed: false, batchId: null, stale: true as const };
+            }
+            await tx.update(publications)
+                .set({
+                    doiRegistrationStatus: 'pending',
+                    doiRegistrationBatchId: batchId,
+                })
+                .where(eq(publications.id, pub.id));
+            return { claimed: true, batchId };
+        });
+
+        if (!claim.claimed) {
+            if ('stale' in claim) {
+                return actionError("The assigned Crossref DOI changed before deposit submission. Refresh and verify the current DOI.");
+            }
+            if (!claim.batchId) {
+                return actionError("A Crossref deposit is already pending without a batch ID. Review its status before trying again.");
+            }
+            return actionSuccess({
+                batchId: claim.batchId,
+                status: 'pending',
+                message: `Crossref batch ${claim.batchId} is already pending. It was not submitted again.`,
+            });
+        }
+
         // Prepare multipart form data
         const formData = new FormData();
         formData.append("operation", "doMDUpload");
@@ -119,6 +175,7 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
             const res = await fetch(config.depositUrl, {
                 method: "POST",
                 body: formData,
+                signal: AbortSignal.timeout(CROSSREF_REQUEST_TIMEOUT_MS),
             });
             responseStatus = res.status;
             responseText = await res.text();
@@ -126,14 +183,9 @@ export async function depositToCrossref(submissionId: number): Promise<ActionRes
             const errMessage = fetchErr instanceof Error ? fetchErr.message : "Network error";
             console.error("[CrossRef Deposit] Network error:", errMessage);
 
-            await db.update(publications)
-                .set({
-                    doiRegistrationStatus: 'failed',
-                    doiRegistrationBatchId: batchId,
-                })
-                .where(eq(publications.id, pub.id));
-
-            return actionError(`Failed to reach CrossRef deposit endpoint: ${errMessage}`);
+            return actionError(
+                `Crossref did not confirm batch ${batchId} (${errMessage}). Its status remains pending to prevent a duplicate deposit; verify this batch before retrying.`
+            );
         }
 
         // Crossref returns HTTP 200 to acknowledge queue receipt.
@@ -244,6 +296,17 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
             return actionError("Published PDF not found. The paper must have a galley PDF before depositing to Zenodo.");
         }
 
+        if (pub.zenodoStatus === 'pending') {
+            return actionError(
+                `A Zenodo deposit is already pending${pub.zenodoRecordId ? ` for record ${pub.zenodoRecordId}` : ''}. It was not submitted again; verify its status before retrying.`
+            );
+        }
+        if (pub.zenodoRecordId && pub.zenodoStatus !== 'published') {
+            return actionError(
+                `Zenodo record ${pub.zenodoRecordId} already exists in ${pub.zenodoStatus} state. Verify or complete that record before creating another deposit.`
+            );
+        }
+
         // Idempotency: if already deposited and published to Zenodo, avoid creating duplicate depositions
         if (pub.zenodoStatus === 'published' && pub.zenodoDoi) {
             const shouldSetAsPrimaryDoi = pub.doiProvider !== 'crossref';
@@ -347,23 +410,70 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
             },
         };
 
+        const claim = await db.transaction(async (tx) => {
+            const [currentPub] = await tx.select()
+                .from(publications)
+                .where(eq(publications.id, pub.id))
+                .for("update");
+            if (!currentPub) {
+                throw new Error("Publication record disappeared before Zenodo deposit.");
+            }
+            if (currentPub.zenodoStatus === 'pending' || currentPub.zenodoRecordId) {
+                return {
+                    claimed: false,
+                    status: currentPub.zenodoStatus,
+                    recordId: currentPub.zenodoRecordId,
+                    zenodoDoi: currentPub.zenodoDoi,
+                    recordUrl: currentPub.zenodoRecordUrl,
+                };
+            }
+            await tx.update(publications)
+                .set({ zenodoStatus: 'pending' })
+                .where(eq(publications.id, pub.id));
+            return { claimed: true as const };
+        });
+
+        if (!claim.claimed) {
+            if (claim.status === 'published' && claim.zenodoDoi) {
+                return actionSuccess({
+                    zenodoDoi: claim.zenodoDoi,
+                    recordUrl: claim.recordUrl || `https://zenodo.org/records/${claim.recordId || claim.zenodoDoi.replace('10.5281/zenodo.', '')}`,
+                });
+            }
+            return actionError(
+                `A Zenodo deposit is already ${claim.status}${claim.recordId ? ` for record ${claim.recordId}` : ''}. It was not submitted again; verify its status before retrying.`
+            );
+        }
+
         const zenodoHeaders = {
             Authorization: `Bearer ${config.accessToken}`,
             "User-Agent": "IJITEST-Publisher/1.0 (https://ijitest.org; mailto:support@ijitest.org)",
             Accept: "application/json",
         };
 
-        const createRes = await fetch(`${config.apiUrl}/deposit/depositions`, {
-            method: "POST",
-            headers: {
-                ...zenodoHeaders,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(depositionPayload),
-        });
+        let createRes: Response;
+        try {
+            createRes = await fetch(`${config.apiUrl}/deposit/depositions`, {
+                method: "POST",
+                headers: {
+                    ...zenodoHeaders,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(depositionPayload),
+                signal: AbortSignal.timeout(ZENODO_REQUEST_TIMEOUT_MS),
+            });
+        } catch (fetchErr: unknown) {
+            const msg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+            return actionError(
+                `Zenodo did not confirm deposition creation (${msg}). The request may have reached Zenodo; the submission is marked pending to prevent a duplicate. Verify the Zenodo account before retrying.`
+            );
+        }
 
         if (!createRes.ok) {
             const errText = await createRes.text();
+            await db.update(publications)
+                .set({ zenodoStatus: 'failed' })
+                .where(eq(publications.id, pub.id));
             if (createRes.status === 403 || errText.includes("<html")) {
                 return actionError(
                     "Zenodo blocked this request due to network rate-limiting or anti-bot protection (HTTP 403). " +
@@ -421,16 +531,25 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
         }
 
         const fileName = `${paper.paperId}.pdf`;
-        const uploadRes = await fetch(`${bucketUrl}/${fileName}`, {
-            method: "PUT",
-            headers: {
-                ...zenodoHeaders,
-                "Content-Type": "application/octet-stream",
-                "Content-Length": String(pdfBuffer.byteLength),
-            },
-            // Buffer extends Uint8Array but fetch's BodyInit requires Uint8Array explicitly
-            body: new Uint8Array(pdfBuffer),
-        });
+        let uploadRes: Response;
+        try {
+            uploadRes = await fetch(`${bucketUrl}/${fileName}`, {
+                method: "PUT",
+                headers: {
+                    ...zenodoHeaders,
+                    "Content-Type": "application/octet-stream",
+                    "Content-Length": String(pdfBuffer.byteLength),
+                },
+                // Buffer extends Uint8Array but fetch's BodyInit requires Uint8Array explicitly
+                body: new Uint8Array(pdfBuffer),
+                signal: AbortSignal.timeout(ZENODO_UPLOAD_TIMEOUT_MS),
+            });
+        } catch (fetchErr: unknown) {
+            const msg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+            return actionError(
+                `Zenodo upload did not complete (${msg}). Record ${depositionId} remains pending; verify it before retrying.`
+            );
+        }
 
         if (!uploadRes.ok) {
             const errText = await uploadRes.text();
@@ -456,13 +575,22 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
         // -----------------------------------------------------------------------
         // Step 3: Publish the deposition — this registers the DOI with DataCite
         // -----------------------------------------------------------------------
-        const publishRes = await fetch(
-            `${config.apiUrl}/deposit/depositions/${depositionId}/actions/publish`,
-            {
-                method: "POST",
-                headers: zenodoHeaders,
-            }
-        );
+        let publishRes: Response;
+        try {
+            publishRes = await fetch(
+                `${config.apiUrl}/deposit/depositions/${depositionId}/actions/publish`,
+                {
+                    method: "POST",
+                    headers: zenodoHeaders,
+                    signal: AbortSignal.timeout(ZENODO_REQUEST_TIMEOUT_MS),
+                }
+            );
+        } catch (fetchErr: unknown) {
+            const msg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+            return actionError(
+                `Zenodo did not confirm publication (${msg}). Record ${depositionId} remains pending; verify it before retrying.`
+            );
+        }
 
         if (!publishRes.ok) {
             const errText = await publishRes.text();

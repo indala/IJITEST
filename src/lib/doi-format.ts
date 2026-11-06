@@ -32,6 +32,11 @@ export function isValidDoi(value: string): boolean {
     return /^10\.\d{4,9}\/\S+$/i.test(value);
 }
 
+export function normalizeDoiPrefix(value: string | null | undefined): string {
+    const cleaned = (value || "10.68139").trim().replace(/\/+$/, "");
+    return cleaned.replace(/(?:\/ijitest)+$/i, "") || "10.68139";
+}
+
 export interface JackDoiResult {
     fullDoi: string;
     suffix: string;
@@ -72,7 +77,7 @@ export function generateJackDoi(
     // Interleave "jack" with 26, 1, and paperNum: j{y1}a{y2}c{vol}k{paperNum}
     const jackPattern = `j${y1}a${y2}c${vol}k${paperNum}`;
     const suffix = `ijitest.${jackPattern}`;
-    const cleanPrefix = (doiPrefix || "10.68139").trim().replace(/\/$/, "");
+    const cleanPrefix = normalizeDoiPrefix(doiPrefix);
 
     return {
         fullDoi: `${cleanPrefix}/${suffix}`,

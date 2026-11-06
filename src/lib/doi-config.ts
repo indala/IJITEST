@@ -1,6 +1,7 @@
 import "server-only";
 
-export { isValidDoi, normalizeDoi } from "@/lib/doi-format";
+export { isValidDoi, normalizeDoi, normalizeDoiPrefix } from "@/lib/doi-format";
+import { normalizeDoiPrefix } from "@/lib/doi-format";
 
 export interface CrossrefConfig {
     username: string;
@@ -19,7 +20,7 @@ export function getCrossrefConfig(): CrossrefConfig {
         ? `${rawUsername}/${role}`
         : rawUsername;
     const password = process.env['CROSSREF_PASSWORD'] || "";
-    const prefix = process.env['CROSSREF_PREFIX'] || "10.68139";
+    const prefix = normalizeDoiPrefix(process.env['CROSSREF_PREFIX']);
     const depositorName = process.env['CROSSREF_DEPOSITOR_NAME'] || process.env['CROSSREF_MEMBER_NAME'] || "IJITEST Editorial Office";
     const depositorEmail = process.env['CROSSREF_DEPOSITOR_EMAIL'] || "editor@ijitest.org";
     const isTestMode = process.env['CROSSREF_TEST_MODE'] === "true";

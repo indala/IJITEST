@@ -32,7 +32,7 @@ import {
     getRelativePath,
 } from "@/lib/fs-utils";
 import { getStorageServiceClient, type IssueBookMetadata } from "@/lib/storage-service-client";
-import { isValidDoi, normalizeDoi } from "@/lib/doi-config";
+import { isValidDoi, normalizeDoi, normalizeDoiPrefix } from "@/lib/doi-config";
 import { getSubmissionById } from "./submissions";
 import { createNotification, invalidateAuthorActionsCount } from "./notifications";
 import { logSubmissionEvent } from "./event-log";
@@ -235,7 +235,7 @@ export async function assignPaperToIssue(
         const confirmedEndPage = finalEndPage as number;
 
         // 5. Selective DOI Resolution Logic
-        const doiPrefix = settings['doiPrefix'] ? settings['doiPrefix'].trim().replace(/\/$/, '') : "10.68139";
+        const doiPrefix = normalizeDoiPrefix(settings['doiPrefix']);
         let resolvedDoi: string | null = null;
         if (customDoi !== undefined) {
             // Admin explicitly provided or cleared DOI
@@ -281,6 +281,29 @@ export async function assignPaperToIssue(
             resolvedDoi = null;
         }
 
+        const existingPublicationRows = await db.select({
+            doi: publications.doi,
+            doiProvider: publications.doiProvider,
+            doiRegistrationStatus: publications.doiRegistrationStatus,
+            doiRegistrationBatchId: publications.doiRegistrationBatchId,
+        })
+            .from(publications)
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
+        const existingPublication = existingPublicationRows[0];
+        const isExistingCrossrefDepositPending =
+            existingPublication?.doiProvider === 'crossref' &&
+            existingPublication.doiRegistrationStatus === 'pending';
+        if (
+            isExistingCrossrefDepositPending &&
+            (
+                existingPublication.doi?.toLowerCase() !== resolvedDoi?.toLowerCase() ||
+                resolvedProvider !== existingPublication.doiProvider
+            )
+        ) {
+            return actionError("The current Crossref DOI has a deposit pending. Wait for its status to resolve before changing the DOI or provider.");
+        }
+
         // 6. Generate Branded PDF OUTSIDE transaction (IO operation)
         const brandedFileName = `${submission.paperId}-published.pdf`;
         const brandedRelativePath = `/api/files/published/${brandedFileName}`;
@@ -310,7 +333,29 @@ export async function assignPaperToIssue(
         const publishedDate = isIssuePublished ? new Date() : null;
         const targetStatus = isIssuePublished ? 'published' : 'accepted';
 
-        await db.transaction(async (tx) => {
+        const assignmentSaved = await db.transaction(async (tx) => {
+            const [currentPublication] = await tx.select({
+                doi: publications.doi,
+                doiProvider: publications.doiProvider,
+                doiRegistrationStatus: publications.doiRegistrationStatus,
+                doiRegistrationBatchId: publications.doiRegistrationBatchId,
+            })
+                .from(publications)
+                .where(eq(publications.submissionId, submissionId))
+                .for("update");
+            const currentCrossrefDepositPending =
+                currentPublication?.doiProvider === 'crossref' &&
+                currentPublication.doiRegistrationStatus === 'pending';
+            if (
+                currentCrossrefDepositPending &&
+                (
+                    currentPublication.doi?.toLowerCase() !== resolvedDoi?.toLowerCase() ||
+                    resolvedProvider !== currentPublication.doiProvider
+                )
+            ) {
+                return false;
+            }
+
             await tx.insert(publications).values({
                 submissionId,
                 issueId,
@@ -319,7 +364,10 @@ export async function assignPaperToIssue(
                 endPage: confirmedEndPage,
                 doi: resolvedDoi,
                 doiProvider: resolvedProvider,
-                doiRegistrationStatus: 'none',
+                doiRegistrationStatus: currentCrossrefDepositPending ? 'pending' : 'none',
+                doiRegistrationBatchId: currentCrossrefDepositPending
+                    ? currentPublication.doiRegistrationBatchId
+                    : null,
                 publishedAt: publishedDate
             }).onDuplicateKeyUpdate({
                 set: {
@@ -329,6 +377,10 @@ export async function assignPaperToIssue(
                     endPage: confirmedEndPage,
                     doi: resolvedDoi,
                     doiProvider: resolvedProvider,
+                    doiRegistrationStatus: currentCrossrefDepositPending ? 'pending' : 'none',
+                    doiRegistrationBatchId: currentCrossrefDepositPending
+                        ? currentPublication.doiRegistrationBatchId
+                        : null,
                     publishedAt: publishedDate
                 }
             });
@@ -336,7 +388,11 @@ export async function assignPaperToIssue(
             await tx.update(submissions)
                 .set({ status: targetStatus, issueId })
                 .where(eq(submissions.id, submissionId));
+            return true;
         });
+        if (!assignmentSaved) {
+            return actionError("The current Crossref DOI has a deposit pending. Wait for its status to resolve before changing the DOI or provider.");
+        }
 
         // 7. Notifications & Search Engine indexing (only if issue is already published)
         if (isIssuePublished) {
@@ -981,7 +1037,7 @@ export async function updatePublicationDoi(
         const { pub, sub, issue } = row;
 
         const settings = await getSettingsData();
-        const doiPrefix = (settings['doiPrefix'] || '10.68139').trim().replace(/\/$/, '');
+        const doiPrefix = normalizeDoiPrefix(settings['doiPrefix']);
 
         let resolvedProvider: 'none' | 'crossref' | 'zenodo' | 'custom' = provider || 'none';
         let finalDoi: string | null = cleanDoi;
@@ -1006,6 +1062,16 @@ export async function updatePublicationDoi(
             if (!finalDoi.toLowerCase().startsWith(`${doiPrefix.toLowerCase()}/`)) {
                 return actionError(`Crossref DOI must use the journal prefix ${doiPrefix}.`);
             }
+        }
+
+        if (
+            pub.doiRegistrationStatus === 'pending' &&
+            (
+                pub.doi?.toLowerCase() !== finalDoi?.toLowerCase() ||
+                pub.doiProvider !== resolvedProvider
+            )
+        ) {
+            return actionError("The current Crossref DOI has a deposit pending. Wait for its status to resolve before changing the DOI or provider.");
         }
 
         if (finalDoi && finalDoi !== pub.doi) {
