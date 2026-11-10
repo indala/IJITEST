@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { and, eq, isNotNull } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { publications } from "@/db/schema";
-import { isCrossrefWorkForDoi } from "@/lib/crossref-status";
+import { isCrossrefWorkForDoi, parseCrossrefSubmissionReport } from "@/lib/crossref-status";
+import { getCrossrefConfig } from "@/lib/doi-config";
 import { logSubmissionEvent } from "@/actions/event-log";
 import { revalidatePath } from "next/cache";
 import { purgeCacheTags } from "@/lib/cache-invalidation";
@@ -48,6 +49,7 @@ export async function GET(request: Request) {
             checked: pending.length,
             registered: 0,
             stillPending: 0,
+            failed: 0,
             errors: 0,
             rebrandErrors: 0,
         };
@@ -68,6 +70,55 @@ export async function GET(request: Request) {
                     });
 
                     if (response.status === 404) {
+                        // If not yet live on works API, check if Crossref deposit diagnostic reported an error
+                        if (publication.batchId) {
+                            try {
+                                const config = getCrossrefConfig();
+                                if (config.username && config.password) {
+                                    const statusUrl = config.isTestMode
+                                        ? "https://test.crossref.org/servlet/submissionDownload"
+                                        : "https://doi.crossref.org/servlet/submissionDownload";
+
+                                    const form = new URLSearchParams();
+                                    form.append("usr", config.username);
+                                    form.append("pwd", config.password);
+                                    form.append("type", "result");
+                                    form.append("doi_batch_id", publication.batchId);
+
+                                    const statusRes = await fetch(statusUrl, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                                        body: form.toString(),
+                                        signal: AbortSignal.timeout(LOOKUP_TIMEOUT_MS),
+                                    });
+
+                                    if (statusRes.ok) {
+                                        const reportText = await statusRes.text();
+                                        const parsed = parseCrossrefSubmissionReport(reportText);
+                                        if (parsed.status === "failed") {
+                                            await db.update(publications)
+                                                .set({ doiRegistrationStatus: "failed" })
+                                                .where(eq(publications.id, publication.id));
+
+                                            await logSubmissionEvent({
+                                                submissionId: publication.submissionId,
+                                                eventType: "doi_registration_failed",
+                                                description: `Crossref deposit rejected: ${parsed.message}`,
+                                                metadata: {
+                                                    batchId: publication.batchId,
+                                                    doi: publication.doi,
+                                                    error: parsed.message,
+                                                    provider: "crossref",
+                                                },
+                                            });
+                                            return "failed" as const;
+                                        }
+                                    }
+                                }
+                            } catch (diagError) {
+                                console.warn(`Could not check diagnostic report for batch ${publication.batchId}:`, diagError);
+                            }
+                        }
                         return "pending" as const;
                     }
                     if (!response.ok) {
@@ -121,12 +172,13 @@ export async function GET(request: Request) {
 
             for (const batchResult of batchResults) {
                 if (batchResult === "registered") result.registered++;
+                else if (batchResult === "failed") result.failed++;
                 else if (batchResult === "pending") result.stillPending++;
                 else result.errors++;
             }
         }
 
-        if (result.registered > 0) {
+        if (result.registered > 0 || result.failed > 0) {
             purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE);
             revalidatePath("/admin/publications");
             revalidatePath("/admin/submissions");

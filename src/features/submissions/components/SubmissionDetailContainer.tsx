@@ -14,7 +14,9 @@ import {
     Calendar,
     Bookmark,
     ThumbsUp,
-    ThumbsDown
+    ThumbsDown,
+    AlertCircle,
+    Clock
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -274,9 +276,9 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                             <div className="space-y-6">
                                 <div className="flex flex-col gap-1.5">
-                                    <h3 className="font-semibold text-muted-foreground uppercase tracking-[0.2em] opacity-60">Manuscript Processing</h3>
+                                    <h3 className="font-semibold text-muted-foreground uppercase tracking-[0.2em] opacity-60">Galley & PDF Production</h3>
                                     <p className="text-label font-semibold text-muted-foreground/40 leading-relaxed uppercase tracking-widest">
-                                        Finalize publication assets and formatting oversight.
+                                        Manage publication layout proof, DOCX conversion, and PDF assets.
                                     </p>
                                 </div>
                                 <div className="space-y-4">
@@ -293,16 +295,16 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                         <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 relative" />
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-label font-semibold text-emerald-600 uppercase tracking-widest">Active Secure Asset</span>
-                                                        <span className="text-label font-semibold text-emerald-600/50 uppercase tracking-wider">Verified for Publication</span>
+                                                        <span className="text-label font-semibold text-emerald-600 uppercase tracking-widest">Galley Proof Ready</span>
+                                                        <span className="text-label font-semibold text-emerald-600/50 uppercase tracking-wider">PDF Available for Review & Publishing</span>
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-500/3 border border-rose-500/10">
-                                                    <div className="w-2.5 h-2.5 rounded-full bg-rose-500 opacity-40" />
+                                                <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/5 border border-amber-500/10">
+                                                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500 opacity-60" />
                                                     <div className="flex flex-col">
-                                                        <span className="text-label font-semibold text-rose-600 uppercase tracking-widest">Missing Review Asset</span>
-                                                        <span className="text-label font-semibold text-rose-600/50 uppercase tracking-wider">Requires Technical Sync</span>
+                                                        <span className="text-label font-semibold text-amber-600 uppercase tracking-widest">No PDF Available</span>
+                                                        <span className="text-label font-semibold text-amber-600/50 uppercase tracking-wider">Convert from DOCX or upload PDF proof</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -423,10 +425,32 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                                     )}
                                                                 </div>
                                                                 <p className="text-meta font-mono font-medium text-emerald-300 break-all">
-                                                                    {submission.publication?.doiProvider === 'crossref' && submission.publication.doiRegistrationStatus !== 'registered'
-                                                                        ? <span className="text-amber-200 font-sans text-caption">Awaiting Crossref registration</span>
-                                                                        : (submission.publication?.doiProvider === 'zenodo' ? (submission.publication?.zenodoDoi || submission.doi) : submission.doi) || <span className="text-white/40 italic font-sans text-caption">Unassigned (No DOI)</span>}
+                                                                    {(submission.publication?.doiProvider === 'zenodo' ? (submission.publication?.zenodoDoi || submission.doi) : (submission.publication?.doi || submission.doi)) || <span className="text-white/40 italic font-sans text-caption">Unassigned (No DOI)</span>}
                                                                 </p>
+                                                                {submission.publication?.doiProvider === 'crossref' && (submission.publication?.doi || submission.doi) && (
+                                                                    <div className="flex items-center gap-1.5 pt-0.5">
+                                                                        {submission.publication.doiRegistrationStatus === 'registered' && (
+                                                                            <span className="text-badge px-1.5 py-0.2 rounded font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 flex items-center gap-1">
+                                                                                <CheckCircle className="w-2.5 h-2.5 text-emerald-400" /> Live on CrossRef
+                                                                            </span>
+                                                                        )}
+                                                                        {submission.publication.doiRegistrationStatus === 'pending' && (
+                                                                            <span className="text-badge px-1.5 py-0.2 rounded font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 flex items-center gap-1" title={submission.publication.doiRegistrationBatchId ? `Batch ID: ${submission.publication.doiRegistrationBatchId}` : undefined}>
+                                                                                <Clock className="w-2.5 h-2.5 text-amber-400" /> Pending CrossRef
+                                                                            </span>
+                                                                        )}
+                                                                        {submission.publication.doiRegistrationStatus === 'failed' && (
+                                                                            <span className="text-badge px-1.5 py-0.2 rounded font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 flex items-center gap-1">
+                                                                                <AlertCircle className="w-2.5 h-2.5 text-rose-400" /> Crossref Rejected
+                                                                            </span>
+                                                                        )}
+                                                                        {(!submission.publication.doiRegistrationStatus || submission.publication.doiRegistrationStatus === 'none') && (
+                                                                            <span className="text-badge px-1.5 py-0.2 rounded font-bold uppercase tracking-wider bg-white/10 text-white/60">
+                                                                                Unregistered
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                             {role === 'admin' && (
                                                                 <EditDoiModal

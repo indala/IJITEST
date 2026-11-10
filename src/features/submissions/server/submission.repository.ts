@@ -126,9 +126,9 @@ export async function findSubmissionById(id: number): Promise<SubmissionUI | nul
             abstract: latestVersion?.abstract || null,
             keywords: latestVersion?.keywords || null,
             filePath: mainManuscript?.fileUrl || "",
-            pdfUrl: finalPdf
-                ? `${finalPdf}?v=${publishedAt ? new Date(publishedAt).getTime() : Date.now()}`
-                : (pdfVersion?.fileUrl || ""),
+            pdfUrl: (finalPdf || pdfVersion?.fileUrl)
+                ? `${finalPdf || pdfVersion?.fileUrl}?v=${row.submission.updatedAt ? new Date(row.submission.updatedAt).getTime() : (publishedAt ? new Date(publishedAt).getTime() : Date.now())}`
+                : "",
             authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
             authorEmail: submissionData.correspondingAuthor?.email || "",
             coAuthors: submissionData.authors,

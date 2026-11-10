@@ -63,4 +63,6 @@ export async function rebrandPublishedPaperWithDoi(submissionId: number, doi: st
         firstAuthor: firstAuthor || null,
         runningTitle: title.length > 80 ? `${title.slice(0, 77)}...` : title || null,
     });
+
+    await db.update(submissions).set({ updatedAt: new Date() }).where(eq(submissions.id, submissionId));
 }

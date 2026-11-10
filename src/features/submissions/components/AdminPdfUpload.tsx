@@ -3,23 +3,27 @@
 import { useActionState, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { FileUp, FileCheck, Loader2, Download, RefreshCw, X } from "lucide-react";
+import { FileUp, FileCheck, Loader2, Download, RefreshCw, X, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { uploadManuscriptPdf, autoSyncManuscriptToPdf } from "@/actions/submissions";
 import type { ActionResponse } from "@/db/contracts";
+import { useQueryClient } from "@tanstack/react-query";
+import { submissionKeys } from "@/features/submissions";
 
 export default function AdminPdfUpload({ submissionId, currentUrl }: { submissionId: number, currentUrl?: string | null }) {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [showUpload, setShowUpload] = useState(!currentUrl);
 
     const [, uploadAction, isUploading] = useActionState<ActionResponse, FormData>(
         async (_prev, formData) => {
-            const toastId = toast.loading('Synchronizing manuscript...');
+            const toastId = toast.loading('Uploading manuscript PDF proof...');
             const result = await uploadManuscriptPdf(submissionId, formData);
             if (result.success) {
-                toast.success('Manuscript synchronized successfully', { id: toastId });
+                toast.success('Manuscript PDF updated successfully', { id: toastId });
                 setShowUpload(false);
+                queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                 router.refresh();
             } else {
                 toast.error(result.error, { id: toastId });
@@ -31,11 +35,12 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
 
     const [, convertAction, isConverting] = useActionState<ActionResponse, FormData>(
         async (_prev, _formData) => {
-            const toastId = toast.loading('Generating PDF...');
+            const toastId = toast.loading('Converting author DOCX to PDF proof...');
             const result = await autoSyncManuscriptToPdf(submissionId);
             if (result.success) {
-                toast.success('PDF generated and synced successfully', { id: toastId });
+                toast.success('PDF proof converted and synced successfully', { id: toastId });
                 setShowUpload(false);
+                queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                 router.refresh();
             } else {
                 toast.error(result.error, { id: toastId });
@@ -47,38 +52,38 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
 
     if (!showUpload && currentUrl) {
         return (
-            <div className="space-y-4">
-                <div className="flex flex-col gap-3">
-                    <Button
-                        asChild
-                        variant="outline"
-                        className="group w-full h-14 gap-3 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 font-black tracking-widest rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-sm shadow-emerald-500/5"
-                    >
-                        <a href={currentUrl} download className="flex items-center justify-center w-full">
-                            <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                            <span>Download Active Asset</span>
-                        </a>
-                    </Button>
+            <div className="space-y-3">
+                <Button
+                    asChild
+                    variant="outline"
+                    className="w-full h-11 gap-2.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-700 font-semibold rounded-xl hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-xs"
+                >
+                    <a href={currentUrl} download className="flex items-center justify-center w-full">
+                        <Download className="w-4 h-4" />
+                        <span>Download Current PDF</span>
+                    </a>
+                </Button>
 
-                    <form action={convertAction}>
+                <div className="grid grid-cols-2 gap-2">
+                    <form action={convertAction} className="w-full">
                         <Button
                             type="submit"
                             disabled={isConverting || isUploading}
-                            variant="ghost"
-                            className="w-full h-11 gap-3 text-primary hover:text-primary font-black tracking-widest rounded-xl hover:bg-primary/5 transition-all cursor-pointer border border-primary/10"
+                            variant="outline"
+                            className="w-full h-9 gap-1.5 text-xs text-foreground font-semibold rounded-lg hover:bg-muted/80 transition-all cursor-pointer border border-border/60"
                         >
-                            {isConverting ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                            <span>Update using PDF Converter</span>
+                            {isConverting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5 text-primary" />}
+                            <span>Re-convert DOCX</span>
                         </Button>
                     </form>
 
                     <Button
                         onClick={() => setShowUpload(true)}
-                        variant="ghost"
-                        className="w-full h-11 gap-3 text-muted-foreground hover:text-primary font-black tracking-widest rounded-xl hover:bg-primary/5 transition-all cursor-pointer border border-transparent hover:border-primary/10"
+                        variant="outline"
+                        className="w-full h-9 gap-1.5 text-xs text-foreground font-semibold rounded-lg hover:bg-muted/80 transition-all cursor-pointer border border-border/60"
                     >
-                        <FileUp className="w-4 h-4" />
-                        <span>Manual File Override</span>
+                        <FileUp className="w-3.5 h-3.5 text-primary" />
+                        <span>Upload New PDF</span>
                     </Button>
                 </div>
             </div>
@@ -89,14 +94,14 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
         <form action={uploadAction} className="space-y-4">
             <div className="space-y-3">
                 <div className="flex items-center justify-between px-1">
-                    <label className="form-label-brand font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">Manuscript Source</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Upload or Generate Galley</label>
                     {currentUrl && (
                         <button
                             type="button"
                             onClick={() => setShowUpload(false)}
-                            className="flex items-center gap-1 text-label font-black text-rose-500 uppercase tracking-widest hover:text-rose-600 transition-colors"
+                            className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                         >
-                            <X className="w-3 h-3" /> Close
+                            <X className="w-3.5 h-3.5" /> Cancel
                         </button>
                     )}
                 </div>
@@ -106,23 +111,18 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
                     onClick={() => convertAction(new FormData())}
                     disabled={isConverting || isUploading}
                     variant="outline"
-                    className="w-full h-16 gap-4 border-primary/20 bg-primary/5 text-primary font-black tracking-widest rounded-2xl hover:bg-primary hover:text-white transition-all shadow-xl shadow-primary/5 cursor-pointer relative overflow-hidden group"
+                    className="w-full h-12 gap-3 border-primary/20 bg-primary/5 text-primary font-semibold rounded-xl hover:bg-primary hover:text-white transition-all shadow-xs cursor-pointer group"
                 >
-                    <div className="flex flex-col items-center gap-1">
-                        <div className="flex items-center gap-3">
-                            {isConverting ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5 group-hover:rotate-180 transition-transform duration-700" />}
-                            <span>Upload using PDF Converter</span>
-                        </div>
-                        <span className="text-label opacity-60 font-medium tracking-normal">Direct Docx to PDF Translation</span>
-                    </div>
+                    {isConverting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 group-hover:scale-110 transition-transform" />}
+                    <span>Convert from Author&apos;s DOCX</span>
                 </Button>
 
-                <div className="relative py-2">
+                <div className="relative py-1">
                     <Separator className="bg-border/50" />
-                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-label font-black text-muted-foreground/40 uppercase tracking-widest">or manual upload</span>
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wider">or upload file</span>
                 </div>
 
-                <div className={`relative group border-2 border-dashed rounded-xl p-8 transition-all duration-300 flex flex-col items-center justify-center gap-4 ${isUploading ? 'bg-primary/5 border-primary/20 cursor-wait' : 'bg-muted/30 border-primary/10 hover:bg-primary/3 hover:border-primary/30 cursor-pointer'} `}>
+                <div className={`relative group border-2 border-dashed rounded-xl p-6 transition-all duration-300 flex flex-col items-center justify-center gap-2.5 ${isUploading ? 'bg-primary/5 border-primary/20 cursor-wait' : 'bg-muted/30 border-primary/10 hover:bg-primary/5 hover:border-primary/30 cursor-pointer'} `}>
                     <input
                         title="pdfFile"
                         name="pdfFile"
@@ -134,18 +134,18 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
                     />
 
                     {isUploading ? (
-                        <div className="flex flex-col items-center gap-4 animate-pulse">
-                            <div className="w-12 h-12 rounded-full border-4 border-primary/10 border-t-primary animate-spin" />
-                            <p className="text-label font-black text-primary uppercase tracking-[0.3em]">Synchronizing Archive...</p>
+                        <div className="flex flex-col items-center gap-2 animate-pulse py-2">
+                            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                            <p className="text-xs font-semibold text-primary">Uploading & Syncing PDF...</p>
                         </div>
                     ) : (
                         <>
-                            <div className="w-14 h-14 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                                <FileUp className="w-7 h-7 text-primary opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all" />
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                <FileUp className="w-5 h-5 text-primary" />
                             </div>
-                            <div className="text-center space-y-1">
-                                <p className="text-label font-black text-primary uppercase tracking-widest">Select Secure PDF</p>
-                                <p className="text-label font-bold text-muted-foreground uppercase tracking-wider opacity-40">Manual override only</p>
+                            <div className="text-center space-y-0.5">
+                                <p className="text-xs font-bold text-foreground">Click or drag formatted PDF proof</p>
+                                <p className="text-[11px] text-muted-foreground">Only .pdf format accepted</p>
                             </div>
                         </>
                     )}
@@ -155,14 +155,14 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
             <Button
                 type="submit"
                 disabled={isUploading || isConverting}
-                className="w-full h-12 gap-3 bg-primary text-white font-black tracking-widest rounded-xl transition-all shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 cursor-pointer"
+                className="w-full h-10 gap-2 bg-primary text-white font-semibold rounded-xl transition-all shadow-md shadow-primary/20 hover:opacity-90 cursor-pointer"
             >
                 {isUploading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                     <FileCheck className="w-4 h-4" />
                 )}
-                <span>Finalize Submission Asset</span>
+                <span>Save Formatted PDF</span>
             </Button>
         </form>
     );

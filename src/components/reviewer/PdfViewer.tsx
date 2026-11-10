@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { ExternalLink, FileText } from 'lucide-react'
+import { ExternalLink, FileText, RefreshCw } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -12,9 +12,18 @@ interface PdfViewerProps {
 
 export function PdfViewer({ pdfUrl, title }: PdfViewerProps) {
     const [isHovered, setIsHovered] = useState(false)
+    const [reloadCounter, setReloadCounter] = useState(0)
+
+    const effectiveUrl = reloadCounter > 0
+        ? (pdfUrl.includes('?') ? `${pdfUrl}&reload=${reloadCounter}` : `${pdfUrl}?reload=${reloadCounter}`)
+        : pdfUrl
 
     const openInNewWindow = () => {
-        window.open(pdfUrl, '_blank')
+        window.open(effectiveUrl, '_blank')
+    }
+
+    const handleReload = () => {
+        setReloadCounter(prev => prev + 1)
     }
 
     return (
@@ -23,9 +32,10 @@ export function PdfViewer({ pdfUrl, title }: PdfViewerProps) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* Main Iframe */}
+            {/* Main Iframe with dynamic key to force remount on URL update */}
             <iframe
-                src={`${pdfUrl}#toolbar=0&navpanes=0`}
+                key={effectiveUrl}
+                src={`${effectiveUrl}#toolbar=0&navpanes=0`}
                 className="w-full h-full border-none"
                 title={title}
             />
@@ -37,15 +47,23 @@ export function PdfViewer({ pdfUrl, title }: PdfViewerProps) {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl z-20"
+                        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/90 backdrop-blur-xl border border-border/40 shadow-2xl z-20"
                     >
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={openInNewWindow}
-                            className="h-10 px-6 gap-3 font-black text-label uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-all rounded-xl"
+                            onClick={handleReload}
+                            className="h-9 px-3 gap-2 font-semibold text-xs tracking-wider hover:bg-primary/10 hover:text-primary transition-all rounded-lg cursor-pointer"
                         >
-                            <ExternalLink className="w-4 h-4" /> Open in New Window
+                            <RefreshCw className="w-3.5 h-3.5" /> Reload Preview
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={openInNewWindow}
+                            className="h-9 px-3 gap-2 font-semibold text-xs tracking-wider hover:bg-primary/10 hover:text-primary transition-all rounded-lg cursor-pointer"
+                        >
+                            <ExternalLink className="w-3.5 h-3.5" /> Open in New Tab
                         </Button>
                     </motion.div>
                 )}
@@ -55,7 +73,7 @@ export function PdfViewer({ pdfUrl, title }: PdfViewerProps) {
             <div className="absolute top-4 right-4 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 backdrop-blur-md border border-primary/20">
                     <FileText className="w-3 h-3 text-primary" />
-                    <span className="text-label font-black text-primary uppercase tracking-widest">Interactive Viewer</span>
+                    <span className="text-label font-bold text-primary uppercase tracking-widest">Manuscript Preview</span>
                 </div>
             </div>
         </div>

@@ -356,9 +356,7 @@ export async function generateItemReport(params: ReportParams): Promise<CounterR
         if (!itemsMap.has(row.publicationId)) {
             itemsMap.set(row.publicationId, {
                 title: titleMap.get(row.submissionId) || `Article ${row.submissionId}`,
-                doi: row.doiProvider === 'crossref' && row.doiRegistrationStatus !== 'registered'
-                    ? null
-                    : row.doi,
+                doi: row.doi,
                 publishedAt: row.publishedAt,
                 submissionId: row.submissionId,
                 periods: new Map()

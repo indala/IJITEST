@@ -25,6 +25,7 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import { purgeCacheTags } from "@/lib/cache-invalidation";
 import type { DoiRegistrationStatus } from "@/db/types";
 import { rebrandPublishedPaperWithDoi } from "@/lib/publication-branding";
+import { isCrossrefWorkForDoi, parseCrossrefSubmissionReport } from "@/lib/crossref-status";
 
 const CROSSREF_REQUEST_TIMEOUT_MS = 60_000;
 const ZENODO_REQUEST_TIMEOUT_MS = 60_000;
@@ -96,7 +97,11 @@ export async function markCrossrefDepositRejected(
  * network result stays pending until the Crossref batch is verified.
  * Crossref processes the XML asynchronously; use submission-log polling to confirm.
  */
-export async function depositToCrossref(submissionId: number, requestedDoi?: string): Promise<ActionResponse<{
+export async function depositToCrossref(
+    submissionId: number,
+    requestedDoi?: string,
+    forceRedeposit: boolean = true
+): Promise<ActionResponse<{
     batchId: string;
     status: Extract<DoiRegistrationStatus, 'pending' | 'registered' | 'failed'>;
     message: string;
@@ -128,7 +133,7 @@ export async function depositToCrossref(submissionId: number, requestedDoi?: str
             return actionError("Manuscript does not have an assigned DOI.");
         }
 
-        if (pub.doiRegistrationStatus === 'pending') {
+        if (pub.doiRegistrationStatus === 'pending' && !forceRedeposit) {
             if (!pub.doiRegistrationBatchId) {
                 return actionError("A Crossref deposit is already pending without a batch ID. Review its status before trying again.");
             }
@@ -192,11 +197,8 @@ export async function depositToCrossref(submissionId: number, requestedDoi?: str
             if (!currentPub) {
                 throw new Error("Publication record disappeared before Crossref submission.");
             }
-            if (currentPub.doiRegistrationStatus === 'pending') {
+            if (currentPub.doiRegistrationStatus === 'pending' && !forceRedeposit) {
                 return { claimed: false, batchId: currentPub.doiRegistrationBatchId };
-            }
-            if (currentPub.doiRegistrationStatus === 'registered') {
-                return { claimed: false, batchId: null, stale: true as const };
             }
             await tx.update(publications)
                 .set({
@@ -210,16 +212,13 @@ export async function depositToCrossref(submissionId: number, requestedDoi?: str
         });
 
         if (!claim.claimed) {
-            if ('stale' in claim) {
-                return actionError("The assigned Crossref DOI changed before deposit submission. Refresh and verify the current DOI.");
-            }
             if (!claim.batchId) {
                 return actionError("A Crossref deposit is already pending without a batch ID. Review its status before trying again.");
             }
             return actionSuccess({
                 batchId: claim.batchId,
                 status: 'pending',
-                message: `Crossref batch ${claim.batchId} is already pending. It was not submitted again.`,
+                message: `Crossref batch ${claim.batchId} is already pending. Use Re-deposit to force a new submission.`,
             });
         }
 
@@ -228,9 +227,9 @@ export async function depositToCrossref(submissionId: number, requestedDoi?: str
         revalidatePath(`/admin/submissions/${submissionId}`);
         purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE, CACHE_TAGS.PAPER(paper.paperId));
         try {
-            await rebrandPublishedPaperWithDoi(submissionId, null);
+            await rebrandPublishedPaperWithDoi(submissionId, normalizedDoi);
         } catch (error) {
-            console.error(`Crossref DOI is pending for ${paper.paperId}, but removing it from the PDF failed:`, error);
+            console.error(`Branding PDF with DOI ${normalizedDoi} failed:`, error);
         }
 
         // Prepare multipart form data
@@ -305,6 +304,251 @@ export async function depositToCrossref(submissionId: number, requestedDoi?: str
     } catch (error) {
         console.error("depositToCrossref error:", error);
         return serverError(error, "deposit to CrossRef");
+    }
+}
+
+/**
+ * Checks Crossref status for a publication:
+ * 1. Queries Crossref Public Works API to see if the DOI is live.
+ * 2. If not live yet, queries Crossref submissionDownload servlet using batchId to check for queue completion or diagnostic errors.
+ */
+export async function checkCrossrefBatchStatus(submissionId: number): Promise<ActionResponse<{
+    status: 'pending' | 'registered' | 'failed';
+    message: string;
+    batchId?: string | null;
+    details?: string;
+}>> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return actionError("Unauthorized. Admin or Editor privileges required.");
+        }
+
+        const [pub] = await db.select()
+            .from(publications)
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
+
+        if (!pub || !pub.doi) {
+            return actionError("Publication or assigned DOI not found.");
+        }
+
+        const subRows = await db.select().from(submissions).where(eq(submissions.id, submissionId)).limit(1);
+        const sub = subRows[0];
+        const paperResult = sub?.paperId ? await getPaperById(sub.paperId) : null;
+        const expectedTitle = paperResult?.success && paperResult.data ? paperResult.data.title : undefined;
+
+        const config = getCrossrefConfig();
+        const depositorEmail = config.depositorEmail || "editor@ijitest.org";
+
+        // 1. First check the public works API
+        try {
+            const worksUrl = new URL(`https://api.crossref.org/works/${encodeURIComponent(pub.doi)}`);
+            worksUrl.searchParams.set("mailto", depositorEmail);
+            const worksRes = await fetch(worksUrl, {
+                headers: { Accept: "application/json" },
+                signal: AbortSignal.timeout(15_000),
+            });
+
+            if (worksRes.ok) {
+                const worksBody: unknown = await worksRes.json();
+                if (isCrossrefWorkForDoi(worksBody, pub.doi, expectedTitle)) {
+                    await db.update(publications)
+                        .set({ doiRegistrationStatus: 'registered' })
+                        .where(eq(publications.id, pub.id));
+
+                    await logSubmissionEvent({
+                        submissionId,
+                        eventType: 'doi_registered',
+                        userId: session.user.id,
+                        description: `Crossref status check confirmed DOI ${pub.doi} is registered and live.`,
+                        metadata: {
+                            doi: pub.doi,
+                            ...(pub.doiRegistrationBatchId ? { batchId: pub.doiRegistrationBatchId } : {}),
+                            provider: 'crossref',
+                        },
+                    });
+
+                    try {
+                        await rebrandPublishedPaperWithDoi(submissionId, pub.doi);
+                    } catch (e) {
+                        console.error("PDF rebranding error:", e);
+                    }
+
+                    revalidatePath('/admin/publications');
+                    revalidatePath('/admin/submissions');
+                    revalidatePath(`/admin/submissions/${submissionId}`);
+                    purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE);
+
+                    return actionSuccess({
+                        status: 'registered',
+                        message: `DOI ${pub.doi} is verified and live in the Crossref global registry!`,
+                        ...(pub.doiRegistrationBatchId ? { batchId: pub.doiRegistrationBatchId } : {}),
+                    });
+                }
+            }
+        } catch (worksErr) {
+            console.warn("Crossref works check error:", worksErr);
+        }
+
+        // 2. Query Crossref deposit report servlet if batchId is present
+        if (pub.doiRegistrationBatchId && config.username && config.password) {
+            try {
+                const statusUrl = config.isTestMode
+                    ? "https://test.crossref.org/servlet/submissionDownload"
+                    : "https://doi.crossref.org/servlet/submissionDownload";
+
+                const form = new URLSearchParams();
+                form.append("usr", config.username);
+                form.append("pwd", config.password);
+                form.append("type", "result");
+                form.append("doi_batch_id", pub.doiRegistrationBatchId);
+
+                const statusRes = await fetch(statusUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: form.toString(),
+                    signal: AbortSignal.timeout(15_000),
+                });
+
+                if (statusRes.ok) {
+                    const reportText = await statusRes.text();
+                    const parsed = parseCrossrefSubmissionReport(reportText);
+
+                    if (parsed.status === 'failed') {
+                        await db.update(publications)
+                            .set({ doiRegistrationStatus: 'failed' })
+                            .where(eq(publications.id, pub.id));
+
+                        await logSubmissionEvent({
+                            submissionId,
+                            eventType: 'doi_registration_failed',
+                            userId: session.user.id,
+                            description: `Crossref rejected deposit ${pub.doiRegistrationBatchId}: ${parsed.message}`,
+                            metadata: {
+                                ...(pub.doiRegistrationBatchId ? { batchId: pub.doiRegistrationBatchId } : {}),
+                                doi: pub.doi,
+                                ...(parsed.message ? { error: parsed.message } : {}),
+                                provider: 'crossref',
+                            },
+                        });
+
+                        revalidatePath('/admin/publications');
+                        revalidatePath('/admin/submissions');
+                        revalidatePath(`/admin/submissions/${submissionId}`);
+                        purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE);
+
+                        return actionSuccess({
+                            status: 'failed',
+                            message: `Crossref rejected batch ${pub.doiRegistrationBatchId}: ${parsed.message}`,
+                            ...(pub.doiRegistrationBatchId ? { batchId: pub.doiRegistrationBatchId } : {}),
+                            ...(parsed.message ? { details: parsed.message } : {}),
+                        });
+                    }
+
+                    if (parsed.status === 'registered') {
+                        await db.update(publications)
+                            .set({ doiRegistrationStatus: 'registered' })
+                            .where(eq(publications.id, pub.id));
+
+                        await logSubmissionEvent({
+                            submissionId,
+                            eventType: 'doi_registered',
+                            userId: session.user.id,
+                            description: `Crossref diagnostic confirmed deposit success for batch ${pub.doiRegistrationBatchId}.`,
+                            metadata: {
+                                ...(pub.doiRegistrationBatchId ? { batchId: pub.doiRegistrationBatchId } : {}),
+                                doi: pub.doi,
+                                provider: 'crossref',
+                            },
+                        });
+
+                        try {
+                            await rebrandPublishedPaperWithDoi(submissionId, pub.doi);
+                        } catch (e) {
+                            console.error("PDF rebranding error:", e);
+                        }
+
+                        revalidatePath('/admin/publications');
+                        revalidatePath('/admin/submissions');
+                        revalidatePath(`/admin/submissions/${submissionId}`);
+                        purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE);
+
+                        return actionSuccess({
+                            status: 'registered',
+                            message: `Crossref processed batch ${pub.doiRegistrationBatchId} successfully!`,
+                            ...(pub.doiRegistrationBatchId ? { batchId: pub.doiRegistrationBatchId } : {}),
+                        });
+                    }
+                }
+            } catch (statusErr) {
+                console.warn("Crossref submissionDownload check error:", statusErr);
+            }
+        }
+
+        return actionSuccess({
+            status: 'pending',
+            message: pub.doiRegistrationBatchId
+                ? `Deposit batch ${pub.doiRegistrationBatchId} is currently queued in Crossref processing.`
+                : `Awaiting Crossref deposit processing.`,
+            ...(pub.doiRegistrationBatchId ? { batchId: pub.doiRegistrationBatchId } : {}),
+        });
+    } catch (error) {
+        console.error("checkCrossrefBatchStatus error:", error);
+        return serverError(error, "check Crossref status");
+    }
+}
+
+/**
+ * Manually marks an assigned Crossref DOI as registered.
+ * Used when the editor has verified the DOI externally (e.g., in the Crossref Admin Portal).
+ */
+export async function markCrossrefAsRegistered(submissionId: number): Promise<ActionResponse> {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !['admin', 'editor'].includes(session.user.role)) {
+            return actionError("Unauthorized. Admin or Editor privileges required.");
+        }
+
+        const [pub] = await db.select()
+            .from(publications)
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
+
+        if (!pub || !pub.doi) {
+            return actionError("Publication or assigned DOI not found.");
+        }
+
+        await db.update(publications)
+            .set({
+                doiRegistrationStatus: 'registered',
+                doiProvider: 'crossref',
+            })
+            .where(eq(publications.id, pub.id));
+
+        await logSubmissionEvent({
+            submissionId,
+            eventType: 'doi_registered',
+            userId: session.user.id,
+            description: `DOI ${pub.doi} was manually verified and marked as registered by ${session.user.name || session.user.email}.`,
+            metadata: { doi: pub.doi, provider: 'crossref', manual: true },
+        });
+
+        try {
+            await rebrandPublishedPaperWithDoi(submissionId, pub.doi);
+        } catch (err) {
+            console.error("Rebranding failed:", err);
+        }
+
+        revalidatePath('/admin/publications');
+        revalidatePath('/admin/submissions');
+        revalidatePath(`/admin/submissions/${submissionId}`);
+        purgeCacheTags(CACHE_TAGS.PUBLICATIONS, CACHE_TAGS.ARCHIVES, CACHE_TAGS.LATEST_ISSUE);
+
+        return actionSuccess();
+    } catch (error) {
+        console.error("markCrossrefAsRegistered error:", error);
+        return serverError(error, "mark Crossref DOI as registered");
     }
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { Globe, Loader2, CheckCircle2, Tag, ExternalLink, Sparkles } from "lucide-react";
+import { Globe, Loader2, CheckCircle2, Tag, ExternalLink, Sparkles, RefreshCw, AlertCircle, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { updatePublicationDoi } from "@/actions/publications";
-import { depositToCrossref, depositToZenodo } from "@/actions/doi-registration";
+import { depositToCrossref, depositToZenodo, checkCrossrefBatchStatus, markCrossrefAsRegistered } from "@/actions/doi-registration";
 import { normalizeDoi, normalizeDoiPrefix, generateJackDoi } from "@/lib/doi-format";
 import { useSettingsContext } from "@/components/providers/SettingsContext";
 import { useQueryClient } from "@tanstack/react-query";
@@ -53,6 +53,8 @@ export default function EditDoiModal({
     const [isPending, startTransition] = useTransition();
     const [isDepositingZenodo, setIsDepositingZenodo] = useState(false);
     const [isDepositingCrossref, setIsDepositingCrossref] = useState(false);
+    const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+    const [isMarkingRegistered, setIsMarkingRegistered] = useState(false);
     const doiActionInProgress = useRef(false);
     const settings = useSettingsContext();
     const queryClient = useQueryClient();
@@ -176,6 +178,62 @@ export default function EditDoiModal({
         });
     };
 
+    const handleCheckCrossrefStatus = async () => {
+        if (doiActionInProgress.current) return;
+        doiActionInProgress.current = true;
+        setIsCheckingStatus(true);
+        toast.info("Checking Crossref registry and submission report...");
+        try {
+            const res = await checkCrossrefBatchStatus(submissionId);
+            if (!res.success) {
+                toast.error(res.error || "Failed to check Crossref status.");
+            } else if (res.data) {
+                if (res.data.status === 'registered') {
+                    toast.success(res.data.message, {
+                        icon: <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    });
+                } else if (res.data.status === 'failed') {
+                    toast.error(res.data.message);
+                } else {
+                    toast.info(res.data.message);
+                }
+                queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+                queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
+            }
+        } catch (err) {
+            console.error("Crossref status check error:", err);
+            toast.error("An unexpected error occurred while communicating with Crossref.");
+        } finally {
+            setIsCheckingStatus(false);
+            doiActionInProgress.current = false;
+        }
+    };
+
+    const handleMarkRegistered = async () => {
+        if (doiActionInProgress.current) return;
+        doiActionInProgress.current = true;
+        setIsMarkingRegistered(true);
+        toast.info("Marking Crossref DOI as verified and registered...");
+        try {
+            const res = await markCrossrefAsRegistered(submissionId);
+            if (!res.success) {
+                toast.error(res.error || "Failed to mark Crossref DOI as registered.");
+            } else {
+                toast.success("Crossref DOI marked as registered!", {
+                    icon: <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                });
+                queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+                queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
+            }
+        } catch (err) {
+            console.error("Mark registered error:", err);
+            toast.error("Failed to update status.");
+        } finally {
+            setIsMarkingRegistered(false);
+            doiActionInProgress.current = false;
+        }
+    };
+
     const handleSaveAndDepositCrossref = async () => {
         if (doiActionInProgress.current) return;
         const finalDoi = customDoiValue.trim() || suggestedCrossrefDoi;
@@ -185,11 +243,11 @@ export default function EditDoiModal({
         }
         doiActionInProgress.current = true;
         setIsDepositingCrossref(true);
-        toast.info("Submitting DOI deposit to Crossref...");
+        toast.info("Submitting DOI deposit batch to Crossref...");
         try {
-            const depRes = await depositToCrossref(submissionId, finalDoi);
+            const depRes = await depositToCrossref(submissionId, finalDoi, true);
             if (depRes.success && depRes.data) {
-                toast.success(`Crossref deposit queued. The DOI will be assigned publicly after registration (Batch ID: ${depRes.data.batchId})`);
+                toast.success(`Crossref deposit submitted! Batch ID: ${depRes.data.batchId}`);
                 queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                 queryClient.invalidateQueries({ queryKey: publicationKeys.issues() });
                 setOpen(false);
@@ -345,15 +403,109 @@ export default function EditDoiModal({
                                     className="h-9 text-meta font-mono bg-background"
                                 />
                             </div>
-                            {doiRegistrationStatus === 'pending' && (
-                                <p className="text-caption text-amber-800" role="status">
-                                    Batch {doiRegistrationBatchId || 'in progress'} is awaiting Crossref. This DOI is not shown on the public paper or applied to its PDF until Crossref registers it.
-                                </p>
+                            {/* Crossref Live Status Card & Diagnostics */}
+                            {doiRegistrationStatus === 'registered' && (
+                                <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-caption font-bold text-emerald-800 flex items-center gap-1.5">
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Confirmed on Crossref
+                                        </span>
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="ghost"
+                                            disabled={isCheckingStatus}
+                                            onClick={handleCheckCrossrefStatus}
+                                            className="h-6 text-[11px] px-2 text-emerald-700 hover:text-emerald-900 gap-1 cursor-pointer"
+                                        >
+                                            <RefreshCw className={`w-3 h-3 ${isCheckingStatus ? "animate-spin" : ""}`} />
+                                            Check Live Status
+                                        </Button>
+                                    </div>
+                                    <p className="text-caption text-emerald-900 leading-relaxed">
+                                        This DOI is active and resolving. If article metadata or pagination was updated, you can submit an updated XML batch below.
+                                    </p>
+                                </div>
                             )}
+
+                            {doiRegistrationStatus === 'pending' && (
+                                <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-caption font-bold text-amber-800 flex items-center gap-1.5">
+                                            <Loader2 className="w-4 h-4 text-amber-600 animate-spin" /> Crossref Deposit Pending
+                                        </span>
+                                        <span className="text-meta font-mono font-bold text-amber-800">
+                                            {doiRegistrationBatchId || "In Queue"}
+                                        </span>
+                                    </div>
+                                    <p className="text-caption text-amber-900 leading-relaxed">
+                                        Batch was submitted to Crossref. Processing usually completes within a few minutes.
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-amber-500/20">
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="outline"
+                                            disabled={isCheckingStatus}
+                                            onClick={handleCheckCrossrefStatus}
+                                            className="h-7 text-[11px] gap-1 bg-white hover:bg-amber-50 text-amber-800 border-amber-300 font-semibold cursor-pointer"
+                                        >
+                                            <RefreshCw className={`w-3 h-3 ${isCheckingStatus ? "animate-spin" : ""}`} />
+                                            {isCheckingStatus ? "Checking Crossref..." : "Check Crossref Status"}
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="ghost"
+                                            disabled={isMarkingRegistered}
+                                            onClick={handleMarkRegistered}
+                                            className="h-7 text-[11px] gap-1 text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50 font-semibold cursor-pointer ml-auto"
+                                        >
+                                            <Check className="w-3 h-3" />
+                                            {isMarkingRegistered ? "Marking..." : "Mark as Registered"}
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
                             {doiRegistrationStatus === 'failed' && (
-                                <p className="text-caption text-rose-700" role="status">
-                                    The last Crossref deposit failed. Check its report before retrying or changing the DOI.
-                                </p>
+                                <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-caption font-bold text-rose-800 flex items-center gap-1.5">
+                                            <AlertCircle className="w-4 h-4 text-rose-600" /> Crossref Deposit Rejected
+                                        </span>
+                                        <span className="text-meta font-mono text-rose-700">
+                                            {doiRegistrationBatchId || "Failed"}
+                                        </span>
+                                    </div>
+                                    <p className="text-caption text-rose-900 leading-relaxed">
+                                        Crossref reported a problem with this deposit batch. Check your metadata (author, title, ISSN, pages) and re-deposit.
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-rose-500/20">
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="outline"
+                                            disabled={isCheckingStatus}
+                                            onClick={handleCheckCrossrefStatus}
+                                            className="h-7 text-[11px] gap-1 bg-white hover:bg-rose-50 text-rose-800 border-rose-300 font-semibold cursor-pointer"
+                                        >
+                                            <RefreshCw className={`w-3 h-3 ${isCheckingStatus ? "animate-spin" : ""}`} />
+                                            {isCheckingStatus ? "Checking Report..." : "Re-check Report"}
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="ghost"
+                                            disabled={isMarkingRegistered}
+                                            onClick={handleMarkRegistered}
+                                            className="h-7 text-[11px] gap-1 text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50 font-semibold cursor-pointer ml-auto"
+                                        >
+                                            <Check className="w-3 h-3" />
+                                            {isMarkingRegistered ? "Marking..." : "Mark as Registered"}
+                                        </Button>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     )}
@@ -472,7 +624,7 @@ export default function EditDoiModal({
                         type="button"
                         variant="outline"
                         onClick={() => setOpen(false)}
-                        disabled={isPending || isDepositingZenodo || isDepositingCrossref}
+                        disabled={isPending || isDepositingZenodo || isDepositingCrossref || isCheckingStatus || isMarkingRegistered}
                         className="h-10 text-body-sm rounded-xl cursor-pointer"
                     >
                         Cancel
@@ -484,16 +636,16 @@ export default function EditDoiModal({
                                 type="button"
                                 variant="outline"
                                 onClick={handleSave}
-                                disabled={isPending || isDepositingZenodo || isDepositingCrossref}
+                                disabled={isPending || isDepositingZenodo || isDepositingCrossref || isCheckingStatus || isMarkingRegistered}
                                 className="h-10 text-body-sm font-semibold rounded-xl cursor-pointer"
                             >
                                 {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}
-                                Verify & Assign Registered DOI
+                                Save DOI Locally
                             </Button>
                             <Button
                                 type="button"
                                 onClick={handleSaveAndDepositCrossref}
-                                disabled={isPending || isDepositingZenodo || isDepositingCrossref}
+                                disabled={isPending || isDepositingZenodo || isDepositingCrossref || isCheckingStatus || isMarkingRegistered}
                                 className="h-10 text-body-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20 cursor-pointer gap-1.5"
                             >
                                 {isDepositingCrossref ? (
@@ -501,14 +653,16 @@ export default function EditDoiModal({
                                 ) : (
                                     <Globe className="w-3.5 h-3.5" />
                                 )}
-                                Submit DOI for Registration
+                                {doiRegistrationStatus === 'pending' || doiRegistrationStatus === 'registered' || doiRegistrationStatus === 'failed'
+                                    ? "Re-deposit to Crossref"
+                                    : "Submit DOI to Crossref"}
                             </Button>
                         </>
                     ) : (
                         <Button
                             type="button"
                             onClick={handleSave}
-                            disabled={isPending || isDepositingZenodo || isDepositingCrossref}
+                            disabled={isPending || isDepositingZenodo || isDepositingCrossref || isCheckingStatus || isMarkingRegistered}
                             className="h-10 text-body-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20 cursor-pointer"
                         >
                             {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />}

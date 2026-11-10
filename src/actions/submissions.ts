@@ -13,7 +13,9 @@ import {
     reviews,
     reviewAssignments,
     journalSettings,
+    publications,
 } from "@/db/schema";
+import { rebrandPublishedPaperWithDoi } from "@/lib/publication-branding";
 import { logSubmissionEvent } from "./event-log";
 import type { SubmissionUI } from "@/db/contracts";
 import type { EditorialDecision } from "@/db/types";
@@ -411,9 +413,25 @@ export async function uploadManuscriptPdf(submissionId: number, formData: FormDa
             await tx.update(submissions).set({ updatedAt: new Date() }).where(eq(submissions.id, submissionId));
         });
 
+        // If the paper is already assigned to an issue / published, re-brand the published PDF asset
+        const [pubRecord] = await db.select({ id: publications.id, doi: publications.doi })
+            .from(publications)
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
+
+        if (pubRecord) {
+            try {
+                await rebrandPublishedPaperWithDoi(submissionId, pubRecord.doi);
+            } catch (rebrandErr) {
+                console.error("Auto-rebranding published PDF failed on upload:", rebrandErr);
+            }
+        }
+
         revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath(`/editor/submissions/${submissionId}`);
         revalidatePath('/admin/submissions');
-        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId), CACHE_TAGS.SUBMISSIONS);
+        revalidatePath('/editor/submissions');
+        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId), CACHE_TAGS.SUBMISSIONS, CACHE_TAGS.PUBLICATIONS);
 
         return { success: true };
     } catch (error) {
@@ -488,9 +506,26 @@ export async function autoSyncManuscriptToPdf(submissionId: number): Promise<Act
             await tx.update(submissions).set({ updatedAt: new Date() }).where(eq(submissions.id, submissionId));
         });
 
+        // If the paper is already assigned to an issue / published, re-brand the published PDF asset
+        const [pubRecord] = await db.select({ id: publications.id, doi: publications.doi })
+            .from(publications)
+            .where(eq(publications.submissionId, submissionId))
+            .limit(1);
+
+        if (pubRecord) {
+            try {
+                await rebrandPublishedPaperWithDoi(submissionId, pubRecord.doi);
+            } catch (rebrandErr) {
+                console.error("Auto-rebranding published PDF failed on conversion:", rebrandErr);
+            }
+        }
+
         revalidatePath(`/admin/submissions/${submissionId}`);
+        revalidatePath(`/editor/submissions/${submissionId}`);
         revalidatePath(`/reviewer/submissions/${submissionId}`);
-        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId), CACHE_TAGS.SUBMISSIONS);
+        revalidatePath('/admin/submissions');
+        revalidatePath('/editor/submissions');
+        purgeCacheTags(CACHE_TAGS.SUBMISSION(submissionId), CACHE_TAGS.SUBMISSIONS, CACHE_TAGS.PUBLICATIONS);
 
         return { success: true };
     } catch (error) {
