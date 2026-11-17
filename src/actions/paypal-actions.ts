@@ -9,6 +9,7 @@ import { createNotification } from "./notifications";
 import { sendEmail } from "@/lib/mail";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { verifyPaymentToken } from "@/lib/payment-token";
 
 export interface SubmitPayPalPaymentInput {
     submissionId: number;
@@ -17,6 +18,7 @@ export interface SubmitPayPalPaymentInput {
     amount?: string;
     currency?: string;
     payerEmail?: string | undefined;
+    token?: string | undefined;
 }
 
 export type PayPalPaymentResponse = 
@@ -41,18 +43,16 @@ export async function submitPayPalPaymentReference(
             };
         }
 
-        const session = await getServerSession(authOptions);
-        if (!session?.user) {
-            return { success: false, error: "Authentication required to submit payment verification." };
-        }
-
-        // Verify the requesting user owns this submission (or is staff)
+        // Verify the requesting user owns this submission (or is staff / token holder)
         const [subRecord] = await db.select({ 
             id: submissions.id,
+            paperId: submissions.paperId,
             status: submissions.status,
-            correspondingAuthorId: submissions.correspondingAuthorId 
+            correspondingAuthorId: submissions.correspondingAuthorId,
+            authorEmail: users.email
         })
             .from(submissions)
+            .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
             .where(eq(submissions.id, submissionId))
             .limit(1);
 
@@ -60,13 +60,36 @@ export async function submitPayPalPaymentReference(
             return { success: false, error: "Submission not found." };
         }
 
-        const isAuthorized =
-            session.user.role === 'admin' ||
-            session.user.role === 'editor' ||
-            session.user.id === subRecord.correspondingAuthorId;
+        const session = await getServerSession(authOptions);
+        let isAuthorized = false;
+
+        if (session?.user) {
+            if (
+                session.user.role === 'admin' ||
+                session.user.role === 'editor' ||
+                session.user.id === subRecord.correspondingAuthorId
+            ) {
+                isAuthorized = true;
+            }
+        }
+
+        if (!isAuthorized && input.token) {
+            if (verifyPaymentToken(subRecord.paperId, subRecord.authorEmail, input.token)) {
+                isAuthorized = true;
+            }
+        }
+
+        if (!isAuthorized && input.payerEmail) {
+            if (input.payerEmail.trim().toLowerCase() === subRecord.authorEmail.trim().toLowerCase()) {
+                isAuthorized = true;
+            }
+        }
 
         if (!isAuthorized) {
-            return { success: false, error: "Unauthorized access for this manuscript." };
+            return { 
+                success: false, 
+                error: "Authentication required. Please use the secure link sent to your registered email or verify with your correspondent email." 
+            };
         }
 
         // Fetch journal USD fee setting or use input amount

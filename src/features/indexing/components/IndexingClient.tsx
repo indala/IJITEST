@@ -38,6 +38,16 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
             badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
         },
         {
+            name: "Semantic Scholar (AI2)",
+            category: "AI Research & Citation Graph",
+            status: "Active Indexing & AI Discovery",
+            isCompleted: true,
+            desc: "AI-driven scientific literature search engine and citation graph developed by the Allen Institute for AI, indexing published research for global visibility.",
+            link: "https://www.semanticscholar.org",
+            identifier: "Automated AI Discovery",
+            badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
+        },
+        {
             name: "OpenAIRE",
             category: "European Scholarly Hub",
             status: "Indexed & Disclosed",

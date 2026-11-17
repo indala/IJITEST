@@ -1,6 +1,7 @@
 import 'server-only'
 import nodemailer from 'nodemailer';
 import type { StaffRole } from '@/db/types';
+import { generatePaymentToken } from '@/lib/payment-token';
 
 interface SmtpErrorInfo {
     code?: string;
@@ -113,19 +114,23 @@ export const emailTemplates = {
         }, setupUrl ? { text: 'Activate Author Account', url: setupUrl } : { text: 'Track Manuscript Status', url: `${baseUrl}/track` });
     },
 
-    statusUpdate: async (authorName: string, paperTitle: string, status: string, paperId: string, isFree: boolean = false) => {
+    statusUpdate: async (authorName: string, paperTitle: string, status: string, paperId: string, isFree: boolean = false, authorEmail?: string) => {
         const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
         const isAccepted = status === 'accepted';
         const key = isAccepted ? "DECISION_ACCEPT" : status === 'rejected' ? "DECISION_REJECT" : "SUBMISSION_ACK";
+        const token = authorEmail ? generatePaymentToken(paperId, authorEmail) : '';
+        const paymentUrl = token 
+            ? `${baseUrl}/payment/${paperId}?token=${token}&email=${encodeURIComponent(authorEmail || '')}` 
+            : `${baseUrl}/payment/${paperId}`;
         return getCompiledEmailTemplate(key, {
             authorName,
             paperTitle,
             paperId,
-            actionUrl: isAccepted && !isFree ? `${baseUrl}/payment/${paperId}` : `${baseUrl}/author`,
+            actionUrl: isAccepted && !isFree ? paymentUrl : `${baseUrl}/author`,
             editorialFeedback: `Status updated to ${status.toUpperCase()}.`,
         }, {
             text: isAccepted && !isFree ? 'Finalize & Publish' : 'Access Author Dashboard',
-            url: isAccepted && !isFree ? `${baseUrl}/payment/${paperId}` : `${baseUrl}/author`
+            url: isAccepted && !isFree ? paymentUrl : `${baseUrl}/author`
         });
     },
 
@@ -142,16 +147,20 @@ export const emailTemplates = {
         }, setupUrl ? { text: 'Activate Reviewer Account', url: setupUrl } : { text: 'Review Manuscript & Respond', url: targetUrl });
     },
 
-    manuscriptAcceptance: async (authorName: string, paperTitle: string, paperId: string, isFree: boolean = false) => {
+    manuscriptAcceptance: async (authorName: string, paperTitle: string, paperId: string, isFree: boolean = false, authorEmail?: string) => {
         const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
+        const token = authorEmail ? generatePaymentToken(paperId, authorEmail) : '';
+        const paymentUrl = token 
+            ? `${baseUrl}/payment/${paperId}?token=${token}&email=${encodeURIComponent(authorEmail || '')}` 
+            : `${baseUrl}/payment/${paperId}`;
         return getCompiledEmailTemplate("DECISION_ACCEPT", {
             authorName,
             paperTitle,
             paperId,
-            actionUrl: !isFree ? `${baseUrl}/payment/${paperId}` : `${baseUrl}/author`,
+            actionUrl: !isFree ? paymentUrl : `${baseUrl}/author`,
         }, {
             text: !isFree ? 'Complete Publication & Payment' : 'Access Author Dashboard',
-            url: !isFree ? `${baseUrl}/payment/${paperId}` : `${baseUrl}/author`
+            url: !isFree ? paymentUrl : `${baseUrl}/author`
         });
     },
 

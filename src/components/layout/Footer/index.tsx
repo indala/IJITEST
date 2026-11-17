@@ -86,6 +86,7 @@ export default async function Footer() {
                             <li><Link href="/submit" className="hover:text-rose-300 transition-colors">Submit a Manuscript</Link></li>
                             <li><Link href="/guidelines" className="hover:text-rose-300 transition-colors">Author Guidelines</Link></li>
                             <li><Link href="/track" className="hover:text-rose-300 transition-colors">Track Manuscript</Link></li>
+                            <li><Link href="/payment" className="hover:text-rose-300 transition-colors">Pay APC Online</Link></li>
                             <li><Link href="/apc-fees" className="hover:text-rose-300 transition-colors">Publication Fees</Link></li>
                             <li><Link href="/join-us" className="hover:text-rose-300 transition-colors">Join as a Reviewer</Link></li>
                             <li><Link href="/login" className="hover:text-rose-300 transition-colors">Portal Login</Link></li>

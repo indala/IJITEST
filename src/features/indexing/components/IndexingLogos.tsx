@@ -142,6 +142,26 @@ export function OpenAireLogo({ className = "h-7 w-auto" }: { className?: string 
     );
 }
 
+export function SemanticScholarLogo({ className = "h-7 w-auto" }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 230 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-label="Semantic Scholar">
+            <g transform="translate(4, 7)">
+                {/* AI2 Semantic Scholar geometric icon */}
+                <path d="M16 2L3 11.5V26.5L16 36L29 26.5V11.5L16 2Z" fill="#185FA5" opacity="0.12" />
+                <path d="M16 4L5 12.5L16 21L27 12.5L16 4Z" fill="#185FA5" />
+                <path d="M5 14.5V25.5L16 34V23L5 14.5Z" fill="#0D3B66" />
+                <path d="M27 14.5L16 23V34L27 25.5V14.5Z" fill="#2A75C7" />
+            </g>
+            <text x="42" y="26" fontFamily="system-ui, -apple-system, sans-serif" fontSize="17" fontWeight="800" fill="#0D3B66" letterSpacing="-0.3">
+                Semantic Scholar
+            </text>
+            <text x="42" y="37" fontFamily="system-ui, -apple-system, sans-serif" fontSize="7.5" fontWeight="700" fill="#185FA5" letterSpacing="0.4">
+                AI-POWERED RESEARCH (AI2)
+            </text>
+        </svg>
+    );
+}
+
 export const INDEXING_PARTNERS = [
     {
         name: "Crossref",
@@ -157,6 +177,14 @@ export const INDEXING_PARTNERS = [
         category: "UNESCO Serial Directory",
         status: "E-ISSN: 3139-6887",
         link: "https://road.issn.org",
+        verified: true
+    },
+    {
+        name: "Semantic Scholar",
+        Component: SemanticScholarLogo,
+        category: "AI-Powered Research Graph",
+        status: "Active Indexing",
+        link: "https://www.semanticscholar.org",
         verified: true
     },
     {

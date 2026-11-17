@@ -71,6 +71,7 @@ export const navigation: NavItem[] = [
             { name: 'Revised Submission', href: '/submit?type=revised', icon: RefreshCw },
             { name: 'Final Submission', href: '/submit?type=final', icon: FileCheck },
             { name: 'Track Manuscript', href: '/track', icon: SearchCheck },
+            { name: 'Pay APC Online', href: '/payment', icon: CreditCard },
             { name: 'Publication Fees (APC)', href: '/apc-fees', icon: CreditCard },
         ]
     },

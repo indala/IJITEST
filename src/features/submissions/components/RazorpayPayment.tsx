@@ -11,6 +11,8 @@ interface RazorpayPaymentProps {
     submissionId: number;
     paperId: string;
     currency?: string;
+    token?: string;
+    authorEmail?: string;
     onSuccess?: () => void;
 }
 
@@ -64,14 +66,14 @@ declare global {
     }
 }
 
-export default function RazorpayPayment({ submissionId, paperId, currency = "INR", onSuccess }: RazorpayPaymentProps) {
+export default function RazorpayPayment({ submissionId, paperId, currency = "INR", token, authorEmail, onSuccess }: RazorpayPaymentProps) {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handlePayment = async () => {
         setLoading(true);
         try {
-            const result = await createRazorpayOrder(submissionId, paperId);
+            const result = await createRazorpayOrder(submissionId, paperId, token, authorEmail);
 
             if (!result.success) {
                 toast.error("Order Creation Failed", {

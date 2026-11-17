@@ -145,7 +145,7 @@ export async function decideSubmission(id: number, decision: EditorialDecision):
 
         // Email is fire-and-forget — SMTP failure should not rollback the decision
         const template = decision === 'accepted'
-            ? await emailTemplates.manuscriptAcceptance(submission.authorName, submission.title, submission.paperId, isFree)
+            ? await emailTemplates.manuscriptAcceptance(submission.authorName, submission.title, submission.paperId, isFree, submission.authorEmail)
             : await emailTemplates.manuscriptRejection(submission.authorName, submission.title, submission.paperId, "Does not meet editorial criteria.");
 
         sendEmail({ to: submission.authorEmail, subject: template.subject, html: template.html })

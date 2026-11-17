@@ -62,7 +62,7 @@ export function TrackedManuscriptCard({ manuscript }: TrackedManuscriptCardProps
                                     </p>
                                 </div>
                                 <Button asChild size="sm" className="h-8 px-4 bg-white text-primary hover:bg-white/90 rounded-lg shadow-xs transition-all shrink-0 text-label">
-                                    <Link href={`/payment/${manuscript.paperId}`} className="flex items-center gap-1.5">
+                                    <Link href={`/payment/${manuscript.paperId}${manuscript.authorEmail ? `?email=${encodeURIComponent(manuscript.authorEmail)}` : ''}`} className="flex items-center gap-1.5">
                                         Process Payment <CreditCard className="w-3.5 h-3.5" />
                                     </Link>
                                 </Button>

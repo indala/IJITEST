@@ -11,6 +11,8 @@ interface PayPalPaymentProps {
     submissionId: number;
     paperId: string;
     usdAmount?: string;
+    token?: string;
+    authorEmail?: string;
     onSuccess?: () => void;
 }
 
@@ -18,10 +20,12 @@ export default function PayPalPayment({
     submissionId, 
     paperId, 
     usdAmount = "50.00", 
+    token,
+    authorEmail,
     onSuccess 
 }: PayPalPaymentProps) {
     const [txId, setTxId] = useState("");
-    const [payerEmail, setPayerEmail] = useState("");
+    const [payerEmail, setPayerEmail] = useState(authorEmail || "");
     const [submitting, setSubmitting] = useState(false);
     const [step, setStep] = useState<"checkout" | "confirm">("checkout");
 
@@ -45,7 +49,8 @@ export default function PayPalPayment({
                 paypalTransactionId: txId.trim(),
                 amount: usdAmount,
                 currency: "USD",
-                payerEmail: payerEmail.trim() || undefined
+                payerEmail: payerEmail.trim() || authorEmail || undefined,
+                token,
             });
 
             if (res.success) {

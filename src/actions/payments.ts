@@ -14,6 +14,7 @@ import { authOptions } from "@/lib/auth";
 import { getAuthorizedSession } from "@/lib/auth/guards";
 import { generateInvoicePdf } from "@/lib/invoice-generator";
 import { sendEmailWithRetry } from "@/lib/mail";
+import { generatePaymentToken } from "@/lib/payment-token";
 import {
     listAcceptedUnpaidPapers,
     listPayments,
@@ -382,3 +383,83 @@ export async function sendReceiptEmail(paymentId: number): Promise<ActionRespons
         return serverError(error, "send receipt email");
     }
 }
+
+export async function verifyPaymentAccess(paperId: string, authorEmail: string): Promise<ActionResponse<{
+    paperId: string;
+    token: string;
+    title: string;
+    authorName: string;
+    amount: string;
+    currency: string;
+    status: string;
+}>> {
+    try {
+        const cleanPaperId = (paperId || "").trim();
+        const cleanEmail = (authorEmail || "").trim().toLowerCase();
+
+        if (!cleanPaperId) {
+            return { success: false, error: "Manuscript / Paper ID is required." };
+        }
+        if (!cleanEmail) {
+            return { success: false, error: "Corresponding author email is required." };
+        }
+
+        const [sub] = await db
+            .select({
+                id: submissions.id,
+                paperId: submissions.paperId,
+                status: submissions.status,
+                authorEmail: users.email,
+                authorName: userProfiles.fullName,
+                title: submissionVersions.title,
+            })
+            .from(submissions)
+            .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
+            .innerJoin(userProfiles, eq(submissions.correspondingAuthorId, userProfiles.userId))
+            .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+            .where(eq(submissions.paperId, cleanPaperId))
+            .orderBy(desc(submissionVersions.versionNumber))
+            .limit(1);
+
+        if (!sub) {
+            return { success: false, error: "No manuscript found matching this Paper ID." };
+        }
+
+        if (sub.authorEmail.toLowerCase().trim() !== cleanEmail) {
+            return { success: false, error: "Email verification failed. Please enter the registered correspondent email." };
+        }
+
+        if (!['accepted', 'paymentPending', 'published'].includes(sub.status)) {
+            return { success: false, error: `Manuscript status is currently '${sub.status}'. APC payment is only applicable after formal editorial acceptance.` };
+        }
+
+        const [paymentRecord] = await db
+            .select({
+                amount: payments.amount,
+                currency: payments.currency,
+                status: payments.status,
+            })
+            .from(payments)
+            .where(eq(payments.submissionId, sub.id))
+            .limit(1);
+
+        const token = generatePaymentToken(sub.paperId, sub.authorEmail);
+
+        return {
+            success: true,
+            data: {
+                paperId: sub.paperId,
+                token,
+                title: sub.title,
+                authorName: sub.authorName || sub.authorEmail,
+                amount: paymentRecord?.amount?.toString() || "2500",
+                currency: paymentRecord?.currency || "INR",
+                status: paymentRecord?.status || "pending",
+            }
+        };
+    } catch (error) {
+        console.error("Verify Payment Access Error:", error);
+        return serverError(error, "verify payment access");
+    }
+}
+

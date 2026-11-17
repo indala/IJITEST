@@ -12,30 +12,64 @@ import { invalidateAuthorActionsCount, createNotification } from "./notification
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { verifyPaymentToken } from "@/lib/payment-token";
 
 type CreateOrderResponse =
     | { success: true; order: { id: string; amount: number; currency: string; key: string | undefined } }
     | { success: false; error: string };
 
-export async function createRazorpayOrder(submissionId: number, paperId: string): Promise<CreateOrderResponse> {
+export async function createRazorpayOrder(
+    submissionId: number, 
+    paperId: string, 
+    token?: string, 
+    authorEmail?: string
+): Promise<CreateOrderResponse> {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user) return { success: false, error: "Authentication required" };
-
-        // Verify the requesting user owns this submission (or is staff)
-        const [subRecord] = await db.select({ correspondingAuthorId: submissions.correspondingAuthorId })
+        // Verify the submission and corresponding author
+        const [subRecord] = await db.select({
+            correspondingAuthorId: submissions.correspondingAuthorId,
+            authorEmail: users.email,
+            paperId: submissions.paperId,
+            status: submissions.status,
+        })
             .from(submissions)
+            .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
             .where(eq(submissions.id, submissionId))
             .limit(1);
 
         if (!subRecord) return { success: false, error: "Submission not found." };
 
-        const isAuthorized =
-            session.user.role === 'admin' ||
-            session.user.role === 'editor' ||
-            session.user.id === subRecord.correspondingAuthorId;
+        const session = await getServerSession(authOptions);
+        let isAuthorized = false;
 
-        if (!isAuthorized) return { success: false, error: "Unauthorized." };
+        if (session?.user) {
+            if (
+                session.user.role === 'admin' ||
+                session.user.role === 'editor' ||
+                session.user.id === subRecord.correspondingAuthorId
+            ) {
+                isAuthorized = true;
+            }
+        }
+
+        if (!isAuthorized && token) {
+            if (verifyPaymentToken(subRecord.paperId, subRecord.authorEmail, token)) {
+                isAuthorized = true;
+            }
+        }
+
+        if (!isAuthorized && authorEmail) {
+            if (authorEmail.trim().toLowerCase() === subRecord.authorEmail.trim().toLowerCase()) {
+                isAuthorized = true;
+            }
+        }
+
+        if (!isAuthorized) {
+            return { 
+                success: false, 
+                error: "Authentication required. Please open the secure payment link sent to your email or verify with your registered author email." 
+            };
+        }
 
         // 1. Check if admin already initialized a payment record with a custom/discounted amount
         const [existingPaymentRecord] = await db.select({ amount: payments.amount })
@@ -116,9 +150,6 @@ export async function verifyRazorpayPayment(data: {
     submissionId: number;
 }) {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user) return { success: false, error: "Authentication required" };
- 
         const { razorpayOrderId, razorpayPaymentId, razorpaySignature, submissionId } = data;
  
         const secret = process.env['RAZORPAY_KEY_SECRET'];
@@ -213,7 +244,7 @@ export async function verifyRazorpayPayment(data: {
                 if (authorId) {
                     await createNotification({
                         userId: authorId,
-                        createdByUserId: session.user.id,
+                        createdByUserId: authorId,
                         type: "payment_verified",
                         priority: "high",
                         message: `Payment successful and verified for manuscript ${sub.paperId}. Your paper is cleared for publication.`,

@@ -11,6 +11,7 @@ import AimAndScope from '@/features/home/components/AimAndScope';
 import AnnouncementsWidget from '@/features/home/components/AnnouncementsWidget';
 import PublisherSection from '@/features/home/components/PublisherSection';
 import TrackManuscriptWidget from '@/features/tracking/components/TrackManuscriptWidget';
+import PayApcWidget from '@/features/payments/components/PayApcWidget';
 
 import ResourceDeskWidget from '@/features/home/components/ResourceDeskWidget';
 import EthicsWidget from '@/features/home/components/EthicsWidget';
@@ -81,6 +82,7 @@ export default async function Home() {
           sidebar={
             <div className="space-y-4 sm:space-y-5">
               <TrackManuscriptWidget />
+              <PayApcWidget />
               <Suspense fallback={<AnnouncementsWidgetSkeleton />}>
                 <AnnouncementsWidgetSection />
               </Suspense>

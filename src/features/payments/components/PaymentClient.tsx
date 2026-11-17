@@ -1,14 +1,18 @@
 'use client'
 
-import { CreditCard, Loader2, CheckCircle2, AlertCircle, TrendingUp, Handshake, ShieldAlert } from 'lucide-react';
-import { useState } from 'react';
+import { CreditCard, Loader2, CheckCircle2, AlertCircle, TrendingUp, Handshake, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import PageHeader from "@/components/layout/PageHeader";
 import { useTrackManuscript } from '@/features/public';
 import Script from 'next/script';
 import dynamic from 'next/dynamic';
+import { toast } from 'sonner';
+import { verifyPaymentAccess } from '@/actions/payments';
 
 const RazorpayPayment = dynamic(() => import('@/features/submissions/components/RazorpayPayment'), { ssr: false });
 const PayPalPayment = dynamic(() => import('@/features/payments/components/PayPalPayment'), { ssr: false });
@@ -17,12 +21,37 @@ import { useSettingsContext } from '@/components/providers/SettingsContext';
 
 export default function PaymentClient({ id }: { id: string }) {
     const settings = useSettingsContext();
+    const searchParams = useSearchParams();
+    const tokenFromUrl = searchParams.get('token') || '';
+    const emailFromUrl = searchParams.get('email') || '';
+
     const { data: queryData, isLoading: loading, error: queryError } = useTrackManuscript(id, "", true);
     const manuscript = queryData?.manuscript ?? null;
     const [paid, setPaid] = useState(false);
     const [gateway, setGateway] = useState<'razorpay' | 'paypal'>(
         manuscript?.paymentCurrency === 'USD' ? 'paypal' : 'razorpay'
     );
+
+    const [verifiedToken, setVerifiedToken] = useState<string>(tokenFromUrl);
+    const [verifiedEmail, setVerifiedEmail] = useState<string>(emailFromUrl);
+    const [emailInput, setEmailInput] = useState<string>(emailFromUrl || "");
+    const [verifying, setVerifying] = useState(false);
+    const [verifyError, setVerifyError] = useState("");
+
+    const isVerified = Boolean(verifiedToken || tokenFromUrl);
+
+    useEffect(() => {
+        if (manuscript && !isVerified && emailFromUrl) {
+            verifyPaymentAccess(manuscript.paperId, emailFromUrl)
+                .then((res) => {
+                    if (res.success && res.data) {
+                        setVerifiedToken(res.data.token);
+                        setVerifiedEmail(emailFromUrl);
+                    }
+                })
+                .catch(() => {});
+        }
+    }, [manuscript, isVerified, emailFromUrl]);
 
     const defaultApc = parseFloat(settings['apcInr'] || '2500');
     const rawPaymentAmount = manuscript?.paymentAmount ? parseFloat(manuscript.paymentAmount) : NaN;
@@ -224,32 +253,99 @@ export default function PaymentClient({ id }: { id: string }) {
                                 </div>
 
                                 {apcTotal > 0 ? (
-                                    gateway === 'razorpay' ? (
-                                        <div className="space-y-4">
-                                            <RazorpayPayment
-                                                submissionId={manuscript.id}
-                                                paperId={manuscript.paperId}
-                                                currency={currency}
-                                                onSuccess={() => setPaid(true)}
-                                            />
-                                            <div className="flex items-center justify-center gap-4 pt-1 opacity-40">
-                                                <span className="text-label">UPI</span>
-                                                <span className="text-label">GPay</span>
-                                                <span className="text-label">Cards</span>
-                                                <span className="text-label">NetBanking</span>
+                                    !isVerified ? (
+                                        <div className="p-4 bg-muted/40 border border-primary/20 rounded-xl space-y-3 text-left">
+                                            <div className="flex items-center gap-2 text-primary font-bold text-body-sm">
+                                                <ShieldCheck className="w-4 h-4 text-secondary" />
+                                                <span>Author Verification Required</span>
+                                            </div>
+                                            <p className="text-meta text-muted-foreground m-0 leading-relaxed">
+                                                To initiate settlement securely, enter the corresponding author email registered with manuscript <strong>{manuscript.paperId}</strong>:
+                                            </p>
+                                            <div className="space-y-2">
+                                                <Input
+                                                    type="email"
+                                                    placeholder="author@example.com"
+                                                    value={emailInput}
+                                                    onChange={(e) => {
+                                                        setEmailInput(e.target.value);
+                                                        setVerifyError("");
+                                                    }}
+                                                    className="bg-card text-body-sm"
+                                                />
+                                                {verifyError && (
+                                                    <p className="text-meta text-destructive font-semibold m-0">{verifyError}</p>
+                                                )}
+                                                <Button
+                                                    type="button"
+                                                    disabled={verifying || !emailInput.trim()}
+                                                    onClick={async () => {
+                                                        setVerifying(true);
+                                                        setVerifyError("");
+                                                        try {
+                                                            const res = await verifyPaymentAccess(manuscript.paperId, emailInput.trim());
+                                                            if (res.success && res.data) {
+                                                                setVerifiedToken(res.data.token);
+                                                                setVerifiedEmail(emailInput.trim());
+                                                                toast.success("Author email verified successfully!");
+                                                            } else {
+                                                                setVerifyError(!res.success ? res.error : "Email does not match registered author.");
+                                                            }
+                                                        } catch {
+                                                            setVerifyError("Verification failed. Please try again.");
+                                                        } finally {
+                                                            setVerifying(false);
+                                                        }
+                                                    }}
+                                                    className="w-full bg-primary hover:bg-primary/90 text-white font-semibold text-label h-9 rounded-lg cursor-pointer"
+                                                >
+                                                    {verifying ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
+                                                    Verify Email & Unlock Payment
+                                                </Button>
                                             </div>
                                         </div>
                                     ) : (
-                                        <PayPalPayment
-                                            submissionId={manuscript.id}
-                                            paperId={manuscript.paperId}
-                                            usdAmount={
-                                                (currency === 'USD' && !isNaN(rawPaymentAmount))
-                                                    ? rawPaymentAmount.toFixed(2)
-                                                    : (settings['apcUsd'] || "50.00")
-                                            }
-                                            onSuccess={() => setPaid(true)}
-                                        />
+                                        gateway === 'razorpay' ? (
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-center gap-1.5 text-meta text-emerald-700 bg-emerald-50 border border-emerald-200 py-1 px-2.5 rounded-md">
+                                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                                    <span>Verified Author Session Active</span>
+                                                </div>
+                                                <RazorpayPayment
+                                                    submissionId={manuscript.id}
+                                                    paperId={manuscript.paperId}
+                                                    currency={currency}
+                                                    token={verifiedToken || tokenFromUrl}
+                                                    authorEmail={verifiedEmail || emailFromUrl}
+                                                    onSuccess={() => setPaid(true)}
+                                                />
+                                                <div className="flex items-center justify-center gap-4 pt-1 opacity-40">
+                                                    <span className="text-label">UPI</span>
+                                                    <span className="text-label">GPay</span>
+                                                    <span className="text-label">Cards</span>
+                                                    <span className="text-label">NetBanking</span>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-center gap-1.5 text-meta text-emerald-700 bg-emerald-50 border border-emerald-200 py-1 px-2.5 rounded-md">
+                                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                                    <span>Verified Author Session Active</span>
+                                                </div>
+                                                <PayPalPayment
+                                                    submissionId={manuscript.id}
+                                                    paperId={manuscript.paperId}
+                                                    usdAmount={
+                                                        (currency === 'USD' && !isNaN(rawPaymentAmount))
+                                                            ? rawPaymentAmount.toFixed(2)
+                                                            : (settings['apcUsd'] || "50.00")
+                                                    }
+                                                    token={verifiedToken || tokenFromUrl}
+                                                    authorEmail={verifiedEmail || emailFromUrl}
+                                                    onSuccess={() => setPaid(true)}
+                                                />
+                                            </div>
+                                        )
                                     )
                                 ) : (
                                     <p className="font-semibold text-muted-foreground m-0">No payment required.</p>

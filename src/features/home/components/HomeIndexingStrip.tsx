@@ -10,7 +10,8 @@ import {
     CiteSeerXLogo,
     DoajLogo,
     CiteFactorLogo,
-    OpenAireLogo
+    OpenAireLogo,
+    SemanticScholarLogo
 } from '@/features/indexing/components/IndexingLogos';
 
 const indexingAgencies = [
@@ -29,6 +30,14 @@ const indexingAgencies = [
         isVerified: true,
         link: "https://road.issn.org",
         Component: IssnLogo,
+    },
+    {
+        name: "Semantic Scholar",
+        role: "AI Research & Citation Graph",
+        status: "Active Indexing",
+        isVerified: true,
+        link: "https://www.semanticscholar.org",
+        Component: SemanticScholarLogo,
     },
     {
         name: "Google Scholar",
