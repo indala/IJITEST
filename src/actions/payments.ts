@@ -13,7 +13,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { getAuthorizedSession } from "@/lib/auth/guards";
 import { generateInvoicePdf } from "@/lib/invoice-generator";
-import { sendEmailWithRetry } from "@/lib/mail";
+import { sendEmailWithRetry, emailTemplates } from "@/lib/mail";
 import { generatePaymentToken } from "@/lib/payment-token";
 import {
     listAcceptedUnpaidPapers,
@@ -127,17 +127,19 @@ export async function updatePaymentStatus(paymentId: number, status: PaymentStat
     }
 }
 
-export async function initializePayment(submissionId: number, amount: number, currency: string = 'INR'): Promise<ActionResponse> {
+export async function initializePayment(submissionId: number, amount: number, currency: string = 'INR'): Promise<ActionResponse<{ isResend: boolean; message: string; paymentUrl?: string }>> {
     try {
         const session = await getAuthorizedSession(["admin", "editor"]);
         if (!session) {
             return { success: false, error: "Unauthorized" };
         }
 
-        const [existing] = await db.select({ id: payments.id })
+        const [existing] = await db.select({ id: payments.id, amount: payments.amount, currency: payments.currency, status: payments.status })
             .from(payments)
             .where(eq(payments.submissionId, submissionId))
             .limit(1);
+
+        const isResend = Boolean(existing);
 
         if (existing) {
             await db.update(payments)
@@ -156,33 +158,167 @@ export async function initializePayment(submissionId: number, amount: number, cu
             });
         }
 
-        // Trigger payment_pending notification
-        const [sub] = await db.select({ correspondingAuthorId: submissions.correspondingAuthorId, paperId: submissions.paperId })
+        // Fetch submission details with author email and latest title
+        const [sub] = await db
+            .select({
+                id: submissions.id,
+                correspondingAuthorId: submissions.correspondingAuthorId,
+                paperId: submissions.paperId,
+                authorEmail: users.email,
+                authorName: userProfiles.fullName,
+                title: submissionVersions.title,
+            })
             .from(submissions)
+            .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
+            .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
             .where(eq(submissions.id, submissionId))
+            .orderBy(desc(submissionVersions.versionNumber))
             .limit(1);
 
-        if (sub) {
+        let paymentUrl = '';
+        if (sub && sub.authorEmail) {
+            const emailData = await emailTemplates.paymentRequestReminder(
+                sub.authorName || 'Author',
+                sub.title || 'Manuscript',
+                sub.paperId,
+                amount,
+                currency,
+                sub.authorEmail,
+                isResend
+            );
+            paymentUrl = emailData.paymentUrl;
+
+            sendEmailWithRetry({
+                to: sub.authorEmail,
+                subject: emailData.subject,
+                html: emailData.html
+            }, `payment-req-${submissionId}-${Date.now()}`).catch(e => console.error("Payment email dispatch failed:", e));
+
             await createNotification({
                 userId: sub.correspondingAuthorId,
                 createdByUserId: session.user.id,
                 type: "payment_pending",
                 priority: "high",
-                message: `Publication fee payment of ${amount} ${currency} is pending for manuscript ${sub.paperId}.`,
+                message: isResend
+                    ? `⚠️ Reminder: Article processing charge of ${amount} ${currency} is pending for manuscript ${sub.paperId}.`
+                    : `Publication fee payment of ${amount} ${currency} is pending for manuscript ${sub.paperId}.`,
                 actionLink: `/author/submissions/${submissionId}`,
                 metadata: { submissionId, paperId: sub.paperId }
             });
             await invalidateAuthorActionsCount(sub.correspondingAuthorId);
         }
 
+        // Also ensure submission status reflects paymentPending
+        await db.update(submissions)
+            .set({ status: 'paymentPending' })
+            .where(eq(submissions.id, submissionId));
+
         updateTag(CACHE_TAGS.SUBMISSION(submissionId));
         updateTag(CACHE_TAGS.SUBMISSIONS);
         revalidatePath('/admin/payments');
         revalidatePath(`/admin/submissions/${submissionId}`);
-        return { success: true };
+        return actionSuccess({
+            isResend,
+            message: isResend
+                ? `Payment request link resent successfully to ${sub?.authorEmail || 'author'}`
+                : `Payment request initialized and link sent to ${sub?.authorEmail || 'author'}`,
+            paymentUrl,
+        });
     } catch (error) {
         console.error("Initialize Payment Error:", error);
         return serverError(error, "initialize payment");
+    }
+}
+
+export async function resendPaymentRequest(paymentId: number): Promise<ActionResponse<{ message: string; paymentUrl: string }>> {
+    try {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const [payment] = await db
+            .select({
+                id: payments.id,
+                submissionId: payments.submissionId,
+                amount: payments.amount,
+                currency: payments.currency,
+                status: payments.status,
+                paperId: submissions.paperId,
+                correspondingAuthorId: submissions.correspondingAuthorId,
+                authorEmail: users.email,
+                authorName: userProfiles.fullName,
+                title: submissionVersions.title,
+            })
+            .from(payments)
+            .innerJoin(submissions, eq(payments.submissionId, submissions.id))
+            .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
+            .innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+            .innerJoin(submissionVersions, eq(submissions.id, submissionVersions.submissionId))
+            .where(eq(payments.id, paymentId))
+            .orderBy(desc(submissionVersions.versionNumber))
+            .limit(1);
+
+        if (!payment) {
+            return { success: false, error: "Payment record not found." };
+        }
+
+        if (payment.status === 'paid' || payment.status === 'verified') {
+            return { success: false, error: `Payment is already ${payment.status}. Cannot resend a request for a settled fee.` };
+        }
+
+        const emailData = await emailTemplates.paymentRequestReminder(
+            payment.authorName || 'Author',
+            payment.title || 'Manuscript',
+            payment.paperId,
+            payment.amount,
+            payment.currency,
+            payment.authorEmail,
+            true // isResend
+        );
+
+        sendEmailWithRetry({
+            to: payment.authorEmail,
+            subject: emailData.subject,
+            html: emailData.html
+        }, `payment-resend-${paymentId}-${Date.now()}`).catch(e => console.error("Payment resend email failed:", e));
+
+        await createNotification({
+            userId: payment.correspondingAuthorId,
+            createdByUserId: session.user.id,
+            type: "payment_pending",
+            priority: "high",
+            message: `⚠️ Reminder: Article processing charge of ${payment.amount} ${payment.currency} is pending for manuscript ${payment.paperId}.`,
+            actionLink: `/author/submissions/${payment.submissionId}`,
+            metadata: { submissionId: payment.submissionId, paperId: payment.paperId }
+        });
+
+        revalidatePath('/admin/payments');
+        revalidatePath(`/admin/submissions/${payment.submissionId}`);
+
+        return actionSuccess({
+            message: `Payment request link successfully resent to ${payment.authorEmail}`,
+            paymentUrl: emailData.paymentUrl,
+        });
+    } catch (error) {
+        console.error("Resend Payment Request Error:", error);
+        return serverError(error, "resend payment request");
+    }
+}
+
+export async function getPaymentSecureLink(paperId: string, authorEmail: string): Promise<ActionResponse<{ paymentUrl: string }>> {
+    try {
+        const session = await getAuthorizedSession(["admin", "editor"]);
+        if (!session) {
+            return { success: false, error: "Unauthorized" };
+        }
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
+        const token = generatePaymentToken(paperId, authorEmail);
+        const paymentUrl = `${baseUrl}/payment/${paperId}?token=${token}&email=${encodeURIComponent(authorEmail)}`;
+        return actionSuccess({ paymentUrl });
+    } catch (error) {
+        return serverError(error, "generate secure payment link");
     }
 }
 

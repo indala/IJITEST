@@ -2,8 +2,8 @@ import { mutationOptions, type QueryClient } from "@tanstack/react-query";
 import {
     initializePayment,
     updatePaymentStatus,
+    resendPaymentRequest,
 } from "@/actions/payments";
-import type { ActionResponse } from "@/db/contracts";
 import { paymentKeys } from "./payment.keys";
 import type {
     InitializePaymentInput,
@@ -19,7 +19,7 @@ export const paymentMutationOptions = {
     initialize: (queryClient: QueryClient) => mutationOptions({
         mutationFn: ({ submissionId, amount, currency }: InitializePaymentInput) =>
             initializePayment(submissionId, amount, currency),
-        onSuccess: (result: ActionResponse) => {
+        onSuccess: (result) => {
             if (result.success) invalidatePayments(queryClient);
         },
     }),
@@ -27,10 +27,20 @@ export const paymentMutationOptions = {
     updateStatus: (queryClient: QueryClient) => mutationOptions({
         mutationFn: ({ id, status, transactionId }: UpdatePaymentStatusInput) =>
             updatePaymentStatus(id, status, transactionId),
-        onSuccess: (result: ActionResponse) => {
+        onSuccess: (result) => {
             if (result.success) {
                 invalidatePayments(queryClient);
                 void queryClient.invalidateQueries({ queryKey: paymentKeys.submissions() });
+            }
+        },
+    }),
+
+    resend: (queryClient: QueryClient) => mutationOptions({
+        mutationFn: (paymentId: number) =>
+            resendPaymentRequest(paymentId),
+        onSuccess: (result) => {
+            if (result.success) {
+                invalidatePayments(queryClient);
             }
         },
     }),

@@ -169,6 +169,11 @@ export type PaymentRow = Payment & {
 export type UnpaidPaperRow = Pick<Submission, 'id' | 'paperId'> & {
     title: Pick<Version, 'title'>['title'];
     authorName: UserProfile['fullName'];
+    authorEmail?: string;
+    hasPaymentRequest?: boolean;
+    existingAmount?: string | null;
+    existingCurrency?: string | null;
+    existingStatus?: string | null;
 };
 
 // 📚 Publications

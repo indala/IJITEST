@@ -3,6 +3,7 @@ export {
     useUnpaidPapers,
     useInitializePayment,
     useUpdatePaymentStatus,
+    useResendPaymentRequest,
 } from "./hooks/use-payments";
 export { paymentKeys } from "./queries/payment.keys";
 export { paymentQueryOptions } from "./queries/payment.options";

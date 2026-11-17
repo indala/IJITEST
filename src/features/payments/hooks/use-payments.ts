@@ -23,3 +23,9 @@ export function useUpdatePaymentStatus() {
 
     return useMutation(paymentMutationOptions.updateStatus(queryClient));
 }
+
+export function useResendPaymentRequest() {
+    const queryClient = useQueryClient();
+
+    return useMutation(paymentMutationOptions.resend(queryClient));
+}

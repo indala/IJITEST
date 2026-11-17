@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, or, inArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
     payments,
@@ -53,12 +53,17 @@ export async function listPayments(): Promise<PaymentRow[]> {
 }
 
 export async function listAcceptedUnpaidPapers(): Promise<UnpaidPaperRow[]> {
-    return db
+    const rows = await db
         .select({
             id: submissions.id,
             paperId: submissions.paperId,
             title: submissionVersions.title,
             authorName: userProfiles.fullName,
+            authorEmail: users.email,
+            paymentId: payments.id,
+            paymentAmount: payments.amount,
+            paymentCurrency: payments.currency,
+            paymentStatus: payments.status,
         })
         .from(submissions)
         .innerJoin(users, eq(submissions.correspondingAuthorId, users.id))
@@ -72,5 +77,27 @@ export async function listAcceptedUnpaidPapers(): Promise<UnpaidPaperRow[]> {
             ),
         )
         .leftJoin(payments, eq(submissions.id, payments.submissionId))
-        .where(and(eq(submissions.status, "accepted"), isNull(payments.id)));
+        .where(
+            and(
+                inArray(submissions.status, ["accepted", "paymentPending"]),
+                or(
+                    isNull(payments.id),
+                    eq(payments.status, "pending"),
+                    eq(payments.status, "failed")
+                )
+            )
+        )
+        .orderBy(desc(submissions.updatedAt));
+
+    return rows.map(r => ({
+        id: r.id,
+        paperId: r.paperId,
+        title: r.title,
+        authorName: r.authorName,
+        authorEmail: r.authorEmail,
+        hasPaymentRequest: Boolean(r.paymentId),
+        existingAmount: r.paymentAmount,
+        existingCurrency: r.paymentCurrency,
+        existingStatus: r.paymentStatus,
+    }));
 }

@@ -473,5 +473,76 @@ export const emailTemplates = {
             text: 'Inspect Submission in Editorial Desk',
             url: dashUrl
         });
+    },
+
+    paymentRequestReminder: async (
+        authorName: string,
+        paperTitle: string,
+        paperId: string,
+        amount: string | number,
+        currency: string,
+        authorEmail: string,
+        isResend: boolean = false
+    ) => {
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
+        const token = generatePaymentToken(paperId, authorEmail);
+        const paymentUrl = `${baseUrl}/payment/${paperId}?token=${token}&email=${encodeURIComponent(authorEmail)}`;
+        const currencySymbol = currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : `${currency} `);
+        const formattedAmount = `${currencySymbol}${amount}`;
+
+        const html = `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+    <div style="border-bottom: 2px solid #0f766e; padding-bottom: 12px; margin-bottom: 20px;">
+        <span style="font-size: 12px; font-weight: bold; color: ${isResend ? '#d97706' : '#0f766e'}; text-transform: uppercase; letter-spacing: 0.5px;">
+            ${isResend ? '⚠️ Payment Request Reminder' : 'Official Publication Notice'}
+        </span>
+        <h2 style="color: #0f172a; margin: 6px 0 0 0; font-size: 20px;">
+            Article Processing Charge (APC) Request
+        </h2>
+    </div>
+    
+    <p>Dear <strong>${authorName}</strong>,</p>
+    <p>
+        ${isResend 
+            ? `This is an official reminder regarding the pending Article Processing Charge (APC) for your accepted manuscript:` 
+            : `We are pleased to confirm that your manuscript has been formally accepted for publication in IJITEST. Please complete the standardized Article Processing Charge (APC) to clear your paper for volume scheduling:`}
+    </p>
+
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid ${isResend ? '#d97706' : '#0f766e'}; padding: 16px; margin: 20px 0; border-radius: 6px;">
+        <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Manuscript ID:</strong> <span style="font-family: monospace; color: #0f766e; font-weight: bold;">${paperId}</span></p>
+        <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Title:</strong> ${paperTitle}</p>
+        <p style="margin: 0; font-size: 15px; font-weight: bold; color: #0f172a;">
+            <strong>Total Amount Due:</strong> ${formattedAmount} (${currency})
+        </p>
+    </div>
+
+    <p style="margin: 24px 0 16px 0;">
+        Click the button below to complete your payment directly via UPI, Cards, NetBanking, or PayPal:
+    </p>
+
+    <div style="text-align: center; margin: 24px 0;">
+        <a href="${paymentUrl}" style="background-color: #0f766e; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 15px; display: inline-block;">
+            Complete APC Payment &rarr;
+        </a>
+    </div>
+
+    <p style="font-size: 12px; color: #64748b; margin-top: 24px; word-break: break-all;">
+        Or access directly via this secure authenticated link:<br/>
+        <a href="${paymentUrl}" style="color: #0284c7;">${paymentUrl}</a>
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+    <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+        International Journal of Innovative Trends in Engineering Science and Technology (IJITEST)<br/>
+        For billing questions or assistance: <a href="mailto:support@ijitest.org" style="color: #64748b;">support@ijitest.org</a>
+    </p>
+</div>
+        `;
+
+        return {
+            subject: `${isResend ? '[REMINDER] ' : ''}[IJITEST] APC Payment Request: ${paperId}`,
+            html,
+            paymentUrl,
+        };
     }
 };

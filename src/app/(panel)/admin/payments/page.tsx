@@ -1,13 +1,15 @@
 "use client";
 
-import { CreditCard, DollarSign, CheckCircle, Clock, Search, Plus, User, ShieldCheck, Mail, ArrowRight, AlertTriangle, History, Eye, Globe, Download, Copy } from 'lucide-react';
+import { CreditCard, DollarSign, CheckCircle, Clock, Search, Plus, User, ShieldCheck, Mail, ArrowRight, AlertTriangle, History, Eye, Globe, Download, Copy, Send, Loader2 } from 'lucide-react';
 import SendReceiptButton from "@/features/submissions/components/SendReceiptButton";
 import {
     usePayments,
     useUnpaidPapers,
     useInitializePayment,
-    useUpdatePaymentStatus
+    useUpdatePaymentStatus,
+    useResendPaymentRequest
 } from '@/features/payments';
+import { getPaymentSecureLink } from '@/actions/payments';
 import type { PaymentStatus } from '@/features/payments';
 import Link from 'next/link';
 import React, { useState, useCallback, useMemo, useActionState, useDeferredValue } from 'react';
@@ -47,7 +49,114 @@ const getStatusVariant = (status: string) => {
     }
 };
 
-import type { PaymentRow, ActionResponse } from '@/db/types';
+import type { PaymentRow } from '@/db/types';
+
+function ResendPaymentModal({ item }: { item: PaymentRow }) {
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const resendMutation = useResendPaymentRequest();
+
+    const handleResend = async () => {
+        setLoading(true);
+        try {
+            const res = await resendMutation.mutateAsync(item.id);
+            if (res.success) {
+                toast.success("Payment Link Resent", {
+                    description: res.data?.message || `Notification dispatched to ${item.authorEmail}`,
+                });
+                setOpen(false);
+            } else {
+                toast.error("Failed to resend", { description: res.error });
+            }
+        } catch {
+            toast.error("Failed to resend payment link");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2.5 text-amber-700 bg-amber-50 hover:bg-amber-100 hover:text-amber-800 border-amber-300 gap-1.5 rounded-lg text-meta font-bold cursor-pointer"
+                    title="Resend payment request link with warning"
+                >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Resend Link</span>
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md rounded-2xl p-5 sm:p-6 bg-card border-border/70 shadow-2xl">
+                <DialogHeader className="space-y-2">
+                    <DialogTitle className="flex items-center gap-2 text-amber-800 font-bold">
+                        <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+                        <span>Warning ⚠️: Resend Payment Request</span>
+                    </DialogTitle>
+                    <DialogDescription className="text-body-sm text-foreground/80 leading-relaxed pt-1">
+                        A payment request was already previously initialized for manuscript <strong className="text-foreground">{item.paperId}</strong>.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-2 text-body-sm">
+                    <div className="flex items-center justify-between text-meta">
+                        <span className="text-muted-foreground">Recipient Author:</span>
+                        <span className="font-semibold text-foreground">{item.authorName}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-meta">
+                        <span className="text-muted-foreground">Author Email:</span>
+                        <span className="font-mono text-foreground">{item.authorEmail}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-meta">
+                        <span className="text-muted-foreground">Remittance Due:</span>
+                        <span className="font-bold text-emerald-700">{item.amount} {item.currency}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-meta">
+                        <span className="text-muted-foreground">Current Status:</span>
+                        <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-badge font-bold">
+                            {item.status.toUpperCase()}
+                        </Badge>
+                    </div>
+                </div>
+
+                <p className="text-meta text-muted-foreground m-0 leading-relaxed">
+                    Resending will dispatch a fresh email notification with the secure payment token directly to <strong>{item.authorEmail}</strong> and log an updated reminder event.
+                </p>
+
+                <DialogFooter className="gap-2 sm:gap-0 pt-2">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setOpen(false)}
+                        disabled={loading}
+                        className="rounded-lg"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="button"
+                        onClick={handleResend}
+                        disabled={loading}
+                        className="bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg cursor-pointer"
+                    >
+                        {loading ? (
+                            <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
+                                <span>Resending...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>⚠️ Confirm Resend</span>
+                            </>
+                        )}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow, onUpdateStatus: (id: number, status: PaymentStatus, txId: string) => Promise<void> }) => (
     <Card key={item.id} className="border-border/70 shadow-2xs hover:border-primary/30 transition-all group overflow-hidden bg-card relative rounded-xl">
@@ -97,15 +206,22 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                             variant="ghost"
                             size="icon"
                             aria-label="Copy Payment Link"
-                            title="Copy requested payment link to clipboard"
+                            title="Copy authenticated payment link to clipboard"
                             className="w-8 h-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
-                            onClick={() => {
-                                const origin = typeof window !== 'undefined' ? window.location.origin : 'https://ijitest.org';
-                                const payUrl = `${origin}/payment/${item.paperId}`;
-                                navigator.clipboard.writeText(payUrl);
-                                toast.success("Payment Link Copied", {
-                                    description: payUrl
-                                });
+                            onClick={async () => {
+                                try {
+                                    const res = await getPaymentSecureLink(item.paperId, item.authorEmail);
+                                    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://ijitest.org';
+                                    const payUrl = res.success && res.data ? res.data.paymentUrl : `${origin}/payment/${item.paperId}`;
+                                    await navigator.clipboard.writeText(payUrl);
+                                    toast.success("Authenticated Payment Link Copied", {
+                                        description: payUrl
+                                    });
+                                } catch {
+                                    const fallback = `${typeof window !== 'undefined' ? window.location.origin : 'https://ijitest.org'}/payment/${item.paperId}`;
+                                    await navigator.clipboard.writeText(fallback);
+                                    toast.success("Payment Link Copied", { description: fallback });
+                                }
                             }}
                         >
                             <Copy className="w-4 h-4" />
@@ -120,6 +236,9 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                                 <span className="sr-only">Contact {item.authorName}</span>
                             </a>
                         </Button>
+                        {item.status === 'pending' && (
+                            <ResendPaymentModal item={item} />
+                        )}
                         {['paid', 'verified'].includes(item.status) && (
                             <SendReceiptButton
                                 paymentId={item.id}
@@ -187,8 +306,13 @@ export default function PaymentManagement() {
     const [showInitModal, setShowInitModal] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState<'INR' | 'USD'>('INR');
     const [amountValue, setAmountValue] = useState<string>(defaultApcInr);
+    const [selectedPaperId, setSelectedPaperId] = useState<string>('');
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+
+    const selectedPaper = useMemo(() => {
+        return unpaidPapers.find(p => p.id.toString() === selectedPaperId);
+    }, [unpaidPapers, selectedPaperId]);
 
     const handleCurrencyChange = (curr: 'INR' | 'USD') => {
         setSelectedCurrency(curr);
@@ -203,6 +327,7 @@ export default function PaymentManagement() {
         if (open) {
             setSelectedCurrency('INR');
             setAmountValue(defaultApcInr);
+            setSelectedPaperId('');
         }
         setShowInitModal(open);
     };
@@ -211,7 +336,7 @@ export default function PaymentManagement() {
     const deferredSearchQuery = useDeferredValue(searchQuery);
 
     const [, initPaymentAction, isInitPaymentPending] = useActionState(
-        async (_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse | null> => {
+        async (_prevState: any, formData: FormData): Promise<any> => {
             const submissionId = parseInt(formData.get('submissionId') as string);
             const amount = parseFloat(formData.get('amount') as string);
             const currency = formData.get('currency') as string;
@@ -220,14 +345,18 @@ export default function PaymentManagement() {
                 const res = await initMutation.mutateAsync({ submissionId, amount, currency });
                 if (res.success) {
                     setShowInitModal(false);
-                    toast.success("Transaction initialized");
+                    setSelectedPaperId('');
+                    const isResend = res.data?.isResend;
+                    toast.success(isResend ? "Payment Link Resent" : "Transaction Initialized", {
+                        description: res.data?.message || (isResend ? "Updated notification sent to author" : "Payment link generated"),
+                    });
                 } else {
                     toast.error(res.error);
                 }
                 return res;
             } catch {
-                toast.error("Failed to initialize transaction");
-                return { success: false, error: "Failed to initialize transaction" };
+                toast.error("Failed to process transaction");
+                return { success: false, error: "Failed to process transaction" };
             }
         },
         null
@@ -308,19 +437,63 @@ export default function PaymentManagement() {
                             <form action={initPaymentAction} className="space-y-4 pt-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="init-payment-paper" className="text-label text-foreground">Accepted Paper</Label>
-                                    <Select name="submissionId" required>
+                                    <Select 
+                                        name="submissionId" 
+                                        required
+                                        value={selectedPaperId}
+                                        onValueChange={(val) => {
+                                            setSelectedPaperId(val);
+                                            const p = unpaidPapers.find(paper => paper.id.toString() === val);
+                                            if (p?.hasPaymentRequest && p.existingAmount) {
+                                                setAmountValue(p.existingAmount);
+                                                if (p.existingCurrency === 'INR' || p.existingCurrency === 'USD') {
+                                                    setSelectedCurrency(p.existingCurrency);
+                                                }
+                                            }
+                                        }}
+                                    >
                                         <SelectTrigger id="init-payment-paper" className="h-10 w-full rounded-lg bg-background border-border/70">
                                             <SelectValue placeholder="Select target paper..." />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-xl border-border/70 bg-card">
+                                        <SelectContent className="rounded-xl border-border/70 bg-card max-h-72">
                                             {unpaidPapers.map(paper => (
-                                                <SelectItem key={paper.id} value={paper.id.toString()} className="">
-                                                    {paper.paperId} | {paper.title.slice(0, 50)}...
+                                                <SelectItem key={paper.id} value={paper.id.toString()}>
+                                                    <div className="flex items-center justify-between w-full gap-2 text-left">
+                                                        <span className="truncate">{paper.paperId} | {paper.title.slice(0, 36)}...</span>
+                                                        {paper.hasPaymentRequest ? (
+                                                            <span className="shrink-0 text-badge font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
+                                                                ⚠️ Sent ({paper.existingAmount} {paper.existingCurrency})
+                                                            </span>
+                                                        ) : (
+                                                            <span className="shrink-0 text-badge font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                                                                New
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
+
+                                {selectedPaper?.hasPaymentRequest && (
+                                    <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-1.5 text-amber-950">
+                                        <div className="flex items-center gap-1.5 font-bold text-body-sm text-amber-800">
+                                            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                                            <span>Warning ⚠️: Payment Link Already Sent</span>
+                                        </div>
+                                        <p className="text-meta text-amber-900 m-0 leading-relaxed">
+                                            A payment request was already created for manuscript <strong>{selectedPaper.paperId}</strong> to <strong>{selectedPaper.authorName}</strong> ({selectedPaper.authorEmail}).
+                                        </p>
+                                        <div className="text-caption text-amber-800 font-medium pt-0.5 flex flex-wrap items-center gap-3">
+                                            <span>• Existing Amount: {selectedPaper.existingAmount} {selectedPaper.existingCurrency}</span>
+                                            <span>• Status: {selectedPaper.existingStatus?.toUpperCase()}</span>
+                                        </div>
+                                        <p className="text-caption text-amber-700 italic m-0 pt-0.5">
+                                            Submitting will update the amount and <strong>resend</strong> the payment link email to the author.
+                                        </p>
+                                    </div>
+                                )}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="init-payment-amount" className="text-label text-foreground">Amount</Label>
@@ -354,8 +527,18 @@ export default function PaymentManagement() {
                                     </div>
                                 </div>
                                 <DialogFooter className="pt-4">
-                                    <Button type="submit" disabled={isInitPaymentPending} className="w-full h-10 btn-primary rounded-lg cursor-pointer">
-                                        {isInitPaymentPending ? "Creating Request..." : "Create Payment Request"}
+                                    <Button 
+                                        type="submit" 
+                                        disabled={isInitPaymentPending} 
+                                        className={`w-full h-10 rounded-lg cursor-pointer font-bold ${
+                                            selectedPaper?.hasPaymentRequest 
+                                                ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-xs' 
+                                                : 'btn-primary'
+                                        }`}
+                                    >
+                                        {isInitPaymentPending 
+                                            ? "Processing..." 
+                                            : (selectedPaper?.hasPaymentRequest ? "⚠️ Resend Payment Request" : "Create Payment Request")}
                                     </Button>
                                 </DialogFooter>
                             </form>
