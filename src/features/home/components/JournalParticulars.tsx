@@ -19,8 +19,8 @@ export const JournalParticulars = ({ settings, variant = 'sidebar' }: JournalPar
         { label: "Language", value: (settings['journalLanguage'] || 'English') },
         { label: "Subject", value: (settings['journalSubject'] || 'Engineering, Science & Technology') },
         { label: "Publisher", value: (settings['publisherName'] || 'Felix Academic Publications') },
-        { label: "UDYAM Reg.", value: (settings['udyamRegistration'] || 'UDYAM-AP-03-0056972') },
-        { label: "Email", value: (settings['supportEmail'] || 'felixtecsolutions@gmail.com') },
+        { label: "UDYAM Reg.", value: (settings['udyamRegistration'] || 'UDYAM-AP-10-0125617') },
+        { label: "Email", value: (settings['supportEmail'] || 'support@ijitest.org') },
         { label: "Website", value: (settings['journalWebsite'] || 'https://ijitest.org') },
     ];
 

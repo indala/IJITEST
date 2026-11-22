@@ -143,7 +143,7 @@ function parseDateRange(begin?: string, end?: string) {
 export async function generateTitleReport(params: ReportParams): Promise<CounterR5Response> {
     const reportId = params.report_id || "TR";
     const settings = await getSettingsData();
-    const journalName = settings['journalName'] || "International Journal of Innovative Trends in Engineering, Science and Technology";
+    const journalName = settings['journalName'] || "International Journal of Innovative Trends in Engineering Science and Technology";
     const platformName = settings['journalShortName'] || "IJITEST";
     const publisherName = settings['publisherName'] || "Felix Academic Publications";
     const issn = settings['issnNumber'] || "3139-6887";
@@ -242,7 +242,7 @@ export async function generateTitleReport(params: ReportParams): Promise<Counter
 export async function generateItemReport(params: ReportParams): Promise<CounterR5Response> {
     const reportId = params.report_id || "IR";
     const settings = await getSettingsData();
-    const journalName = settings['journalName'] || "International Journal of Innovative Trends in Engineering, Science and Technology";
+    const journalName = settings['journalName'] || "International Journal of Innovative Trends in Engineering Science and Technology";
     const platformName = settings['journalShortName'] || "IJITEST";
     const publisherName = settings['publisherName'] || "Felix Academic Publications";
     const customerId = params.customer_id || "0";

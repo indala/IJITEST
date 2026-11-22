@@ -7,7 +7,7 @@ interface AimAndScopeProps {
 
 export default function AimAndScope({ settings, shortName }: AimAndScopeProps) {
     const displayShortName = shortName || settings?.['journalShortName'] || 'IJITEST';
-    const journalName = settings?.['journalName'] || 'International Journal of Innovative Trends in Engineering, Science and Technology';
+    const journalName = settings?.['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
 
     return (
         <section className="space-y-3.5 pt-1 animate-in fade-in duration-500" aria-labelledby="research-areas-heading">

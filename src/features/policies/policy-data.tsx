@@ -169,7 +169,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                 {journalShort} follows a {publicationFrequency.toLowerCase()} publication schedule. Accepted manuscripts are published online as the Version of Record after editorial approval and final proof verification.
                             </p>
                             <p>
-                                Articles are aggregated into 12 regular monthly issues per annual volume. Each published paper receives a persistent digital object identifier (DOI) minted through CrossRef and full-text JATS XML archival deposit.
+                                Articles are aggregated into 12 regular monthly issues per annual volume. Each published paper receives a persistent digital object identifier (DOI)—allocated via official Crossref metadata deposits (Prefix: 10.68139) or CERN Zenodo permanent preservation—along with full-text JATS XML archival metadata.
                             </p>
                         </div>
                     )
@@ -271,7 +271,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                             <div className="p-3.5 rounded-xl bg-muted/30 border border-border font-mono text-meta space-y-1">
                                 <p className="m-0 text-foreground font-semibold">Standard Citation Format:</p>
                                 <p className="m-0 text-muted-foreground">
-                                    Author(s), &quot;Article Title,&quot; <em>{journalName}</em>, Vol. X, No. Y, pp. XX-YY, Year. https://doi.org/10.XXXXX/...
+                                    Author(s), &quot;Article Title,&quot; <em>{journalName}</em>, Vol. X, No. Y, pp. XX-YY, Year. https://doi.org/10.68139/ijitest....
                                 </p>
                             </div>
                         </div>
@@ -438,7 +438,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                     content: (
                         <div className="space-y-4">
                             <p>
-                                To cover operational costs—including platform hosting, cloud storage, plagiarism checking, CrossRef DOI minting, JATS XML conversion, and permanent archiving—an <strong>Article Processing Charge (APC)</strong> is invoiced <em>only after</em> a manuscript has successfully passed double-blind peer review and received formal acceptance by the Editor-in-Chief.
+                                To cover operational costs—including platform hosting, cloud storage, plagiarism checking, persistent DOI minting (Crossref / Zenodo), JATS XML conversion, and permanent archiving—an <strong>Article Processing Charge (APC)</strong> is invoiced <em>only after</em> a manuscript has successfully passed double-blind peer review and received formal acceptance by the Editor-in-Chief.
                             </p>
                             <div className="p-4 rounded-xl bg-card border border-border space-y-3 shadow-2xs">
                                 <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-border/50">
@@ -448,7 +448,7 @@ export function getPolicyDefinitions(settings: Record<string, string>): Record<s
                                     </span>
                                 </div>
                                 <ul className="space-y-1.5 text-caption text-muted-foreground list-none p-0 m-0">
-                                    <li>• Covers full copyediting, formatting, and CrossRef DOI generation.</li>
+                                    <li>• Covers full copyediting, formatting, and persistent DOI allocation (Crossref / Zenodo).</li>
                                     <li>• Immediate unrestricted Gold Open Access under CC BY 4.0.</li>
                                     <li>• No additional fees for color figures, supplementary data files, or co-authors.</li>
                                     <li>• Applicable taxes (e.g. GST in India) are itemized transparently on formal receipts.</li>

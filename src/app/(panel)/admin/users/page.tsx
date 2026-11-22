@@ -393,10 +393,10 @@ export default function UserManagement() {
                     <h2>Role overview</h2>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 2xl:gap-8 transition-all duration-500">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 2xl:gap-8 transition-all duration-500">
                     {ROLE_GUIDE_DATA.map((guide) => (
                         <Card key={guide.role} className="border-border/50 shadow-sm">
-                            <CardContent className="p-6">
+                            <CardContent className="p-3.5 sm:p-6">
                                 <div className="flex flex-col gap-3 mb-5">
                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg ${guide.variant === 'primary' ? 'bg-primary shadow-primary/20' : guide.variant === 'blue' ? 'bg-blue-600 shadow-blue-600/20' : 'bg-emerald-600 shadow-emerald-600/20'} `}>
                                         {guide.role === 'Admin' ? <Shield className="w-6 h-6" /> : guide.role === 'Editor' ? <UserCog className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}

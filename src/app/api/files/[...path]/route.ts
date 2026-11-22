@@ -112,6 +112,8 @@ async function serveFile(relativePath: string) {
             const responseHeaders: Record<string, string> = {
                 'Content-Type': mimeTypes[ext] || storageRes.headers.get('content-type') || 'application/octet-stream',
                 'Content-Disposition': `inline; filename="${safeFilename}"`,
+                'X-Frame-Options': 'SAMEORIGIN',
+                'Content-Security-Policy': "frame-ancestors 'self' https://indala.vercel.app",
             };
 
             const contentLength = storageRes.headers.get('content-length');
@@ -146,6 +148,8 @@ async function serveFile(relativePath: string) {
             headers: {
                 'Content-Type': mimeTypes[ext] || 'application/octet-stream',
                 'Content-Disposition': `inline; filename="${safeFilename}"`,
+                'X-Frame-Options': 'SAMEORIGIN',
+                'Content-Security-Policy': "frame-ancestors 'self' https://indala.vercel.app",
                 ...(ext === '.pdf' ? {
                     'Cache-Control': 'private, no-store, no-cache, must-revalidate, max-age=0',
                     'Pragma': 'no-cache',

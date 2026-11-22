@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { PdfViewer } from "@/components/reviewer/PdfViewer";
 import { applicationKeys } from "@/features/applications";
 import {
     getRejectionReasonError,
@@ -181,11 +182,12 @@ export function ApplicationDetailReview({
                         </CardHeader>
                         <CardContent className="p-0">
                             {application.cvUrl?.toLowerCase().includes(".pdf") ? (
-                                <iframe
-                                    src={application.cvUrl}
-                                    title={`CV document for ${application.fullName}`}
-                                    className="h-[65vh] min-h-[480px] w-full border-0 bg-muted"
-                                />
+                                <div className="h-[65vh] min-h-[420px] w-full">
+                                    <PdfViewer
+                                        pdfUrl={application.cvUrl}
+                                        title={`CV document for ${application.fullName}`}
+                                    />
+                                </div>
                             ) : application.cvUrl ? (
                                 <div className="flex min-h-52 flex-col items-center justify-center gap-4 p-8 text-center">
                                     <FileText className="h-10 w-10 text-muted-foreground" aria-hidden="true" />

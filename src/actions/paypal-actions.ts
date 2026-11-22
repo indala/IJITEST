@@ -201,7 +201,7 @@ export async function submitPayPalPaymentReference(
                     subject: `[IJITEST] Payment Receipt: ${paperId} (PayPal: ${cleanTxId})`,
                     html: `
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                            <h2 style="color: #1e3a8a;">International Journal of Innovative Trends in Engineering, Science and Technology (IJITEST)</h2>
+                            <h2 style="color: #1e3a8a;">International Journal of Innovative Trends in Engineering Science and Technology (IJITEST)</h2>
                             <p>Dear ${authorName},</p>
                             <p>We have successfully registered your Article Processing Charge (APC) payment via <strong>PayPal</strong> for your accepted manuscript.</p>
                             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">

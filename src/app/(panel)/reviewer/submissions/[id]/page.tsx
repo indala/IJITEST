@@ -82,19 +82,19 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
                 {/* Left Column: Metadata (4 Cols) */}
-                <div className="lg:col-span-4 space-y-6">
-                    <Card className="border-primary/5 shadow-vip overflow-hidden sticky top-24 rounded-xl pb-10 2xl:rounded-3xl bg-white">
-                        <CardHeader className="p-6 bg-primary/5 border-b border-primary/10">
+                <div className="lg:col-span-4 space-y-4 sm:space-y-6">
+                    <Card className="border-primary/5 shadow-vip overflow-hidden lg:sticky lg:top-24 rounded-xl pb-6 sm:pb-10 2xl:rounded-3xl bg-white">
+                        <CardHeader className="p-4 sm:p-6 bg-primary/5 border-b border-primary/10">
                             <div className="space-y-3">
                                 <Badge className="h-6 px-2.5 text-badge font-bold tracking-wide bg-emerald-600 text-white border-none shadow-xs rounded-md uppercase w-fit">
                                     Assigned for Review
                                 </Badge>
-                                <CardTitle className="font-bold tracking-tight text-foreground leading-snug">
+                                <CardTitle className="font-bold tracking-tight text-foreground leading-snug text-base sm:text-lg">
                                     {submission.title}
                                 </CardTitle>
-                                <div className="flex flex-wrap items-center gap-4 text-caption font-medium text-muted-foreground">
+                                <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-caption font-medium text-muted-foreground">
                                     <div className="flex items-center gap-1.5 font-semibold text-primary">
                                         <Shield className="w-4 h-4" />
                                         <span>{submission.paperId}</span>
@@ -106,12 +106,12 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-8 2xl:p-14 space-y-8 2xl:space-y-12">
-                            <div className="space-y-4 2xl:space-y-8">
-                                <h4 className="flex items-center gap-3">
-                                    <FileText className="w-5 h-5 2xl:w-9 2xl:h-9" /> Abstract
+                        <CardContent className="p-4 sm:p-6 2xl:p-10 space-y-4 sm:space-y-6 2xl:space-y-8">
+                            <div className="space-y-3 sm:space-y-4 2xl:space-y-8">
+                                <h4 className="flex items-center gap-2 sm:gap-3 text-sm sm:text-base font-semibold">
+                                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary" /> Abstract
                                 </h4>
-                                <p className="opacity-70 italic">
+                                <p className="text-body-sm opacity-70 italic leading-relaxed">
                                     &quot;{submission.abstract || "No abstract provided."}&quot;
                                 </p>
                             </div>
@@ -173,7 +173,7 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                 </div>
 
                 <div className="lg:col-span-8">
-                    <Card className="border-border/50 shadow-sm overflow-hidden h-[calc(100vh-140px)] min-h-[600px] sticky top-24 bg-muted/10">
+                    <Card className="border-border/50 shadow-sm overflow-hidden h-[60vh] sm:h-[75vh] lg:h-[calc(100vh-140px)] min-h-[420px] lg:sticky lg:top-24 bg-muted/10">
                         <CardContent className="p-0 h-full flex flex-col">
                             {submission.pdfUrl ? (
                                 <div className="flex-1 h-full relative group">

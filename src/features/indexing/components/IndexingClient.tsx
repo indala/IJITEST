@@ -22,7 +22,7 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
             category: "Digital Object Identifier (DOI)",
             status: "Active Registration",
             isCompleted: true,
-            desc: "Official Crossref member prefix allocating persistent DOIs and depositing bibliographic metadata for all published articles.",
+            desc: "Official Crossref member prefix allocating persistent DOIs and depositing bibliographic metadata for peer-reviewed research publications.",
             link: "https://www.crossref.org",
             identifier: "DOI Prefix: 10.68139",
             badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
@@ -70,7 +70,7 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
         {
             name: "OpenAlex",
             category: "Global Research Graph",
-            status: "Registered Partner",
+            status: "Indexing Integration",
             isCompleted: false,
             desc: "Next-generation, fully open global index of millions of scholarly publications, authors, and citation networks.",
             identifier: "Evaluation in Progress",
@@ -79,10 +79,20 @@ export default function IndexingClient({ settings }: IndexingClientProps) {
         {
             name: "CiteFactor",
             category: "Academic Journal Indexing",
-            status: "Registered Partner",
+            status: "Under Evaluation",
             isCompleted: false,
             desc: "Indexing service providing access to quality scholarly publications to expand international citations.",
-            identifier: "Evaluation in Progress",
+            identifier: "Application Submitted",
+            badgeColor: "bg-blue-100 text-blue-800 border-blue-200"
+        },
+        {
+            name: "SJIFactor",
+            category: "Scientific Journal Impact Factor",
+            status: "Under Evaluation (2026)",
+            isCompleted: false,
+            desc: "Comprehensive evaluation database assessing editorial quality, citations, and scholarly standing with an official journal passport.",
+            link: "https://sjifactor.com/passport.php?id=25877",
+            identifier: "SJIF ID: 25877",
             badgeColor: "bg-blue-100 text-blue-800 border-blue-200"
         },
         {

@@ -10,6 +10,7 @@ import {
     CiteSeerXLogo,
     DoajLogo,
     CiteFactorLogo,
+    SjifLogo,
     OpenAireLogo,
     SemanticScholarLogo
 } from '@/features/indexing/components/IndexingLogos';
@@ -72,10 +73,18 @@ const indexingAgencies = [
     {
         name: "CiteFactor",
         role: "Academic Journal Indexing",
-        status: "Registered Partner",
+        status: "Under Evaluation",
         isVerified: false,
         link: "https://www.citefactor.org",
         Component: CiteFactorLogo,
+    },
+    {
+        name: "SJIFactor",
+        role: "Impact Factor Evaluation",
+        status: "Under Evaluation (2026)",
+        isVerified: false,
+        link: "https://sjifactor.com/passport.php?id=25877",
+        Component: SjifLogo,
     },
     {
         name: "OpenAIRE",

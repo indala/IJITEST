@@ -17,7 +17,7 @@ const csp = [
   "font-src 'self' data: https:",
   "style-src 'self' 'unsafe-inline' https:",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://api.razorpay.com",
-  "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
+  `frame-src 'self' ${storageUrl} https://api.ijitest.org https://docs.google.com https://api.razorpay.com https://checkout.razorpay.com blob: data:`,
   `connect-src 'self' https: wss: ${storageUrl} ${wsStorageUrl}`,
   "worker-src 'self' blob:",
   "child-src 'self' blob:",

@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "IJITEST Editorial Board" }],
   creator: "IJITEST",
-  publisher: "IJITEST",
+  publisher: "Felix Academic Publications",
   formatDetection: {
     email: false,
     address: false,

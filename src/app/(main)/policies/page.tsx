@@ -5,7 +5,7 @@ import { getSettingsData } from '@/actions/settings';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
-    const journalName = settings.journalName || 'International Journal of Innovative Technology and Exploring Science';
+    const journalName = settings.journalName || 'International Journal of Innovative Trends in Engineering Science and Technology';
     const journalShort = settings.journalShortName || 'IJITEST';
 
     return {

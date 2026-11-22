@@ -2,7 +2,7 @@ import { getSettingsData } from '@/actions/settings';
 
 export default async function TopBar() {
     const settings = await getSettingsData();
-    const journalName = settings['journalName'] || 'International Journal of Innovative Trends in Engineering, Science and Technology';
+    const journalName = settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
     const publisherName = settings['publisherName'];
     const issnNumber = settings['issnNumber'];
     const cleanIssn = (issnNumber || '3139-6887').replace(/\s*\(online\)/i, '').trim();

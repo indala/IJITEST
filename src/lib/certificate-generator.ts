@@ -98,7 +98,7 @@ export async function generatePublicationCertificate(data: CertificateData): Pro
     drawCenteredText(journalTitle, currentY, fontBold, 13, primaryColor);
 
     currentY -= 16;
-    const subheader = `ISSN: ${data.issn || "2584-XXXX"} (Online)  |  CrossRef Official Prefix: 10.68139  |  Open Access Peer-Reviewed Journal`;
+    const subheader = `ISSN: ${data.issn || "3139-6887"} (Online)  |  CrossRef Official Prefix: 10.68139  |  Open Access Peer-Reviewed Journal`;
     drawCenteredText(subheader, currentY, fontRegular, 9, goldColor);
 
     // Separator line

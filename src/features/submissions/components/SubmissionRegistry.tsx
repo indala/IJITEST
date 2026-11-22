@@ -31,19 +31,19 @@ export default function SubmissionRegistry({
     }, [selectedStatus, submissions]);
 
     return (
-        <section className="space-y-4">
+        <section className="space-y-3 sm:space-y-4">
             {/* Header Section */}
-            <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-3 border-b border-border/70 pb-3 sm:pb-4">
+            <header className="panel-header">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 text-primary shadow-xs">
+                    <div className="flex items-center gap-2 sm:gap-2.5">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 text-primary shadow-xs shrink-0">
                             <Plus className="w-4 h-4" />
                         </div>
                         <h1 className="panel-title m-0 font-bold text-primary">
                             {role === 'admin' ? 'Manuscript Registry' : 'Editorial Hub'}
                         </h1>
                     </div>
-                    <p className="panel-subtitle border-l-2 border-primary/20 pl-3 py-0.5 max-w-2xl leading-relaxed m-0 text-body-sm text-muted-foreground">
+                    <p className="panel-subtitle border-l-2 border-primary/20 pl-2.5 sm:pl-3 py-0.5 max-w-2xl leading-relaxed m-0 text-body-sm text-muted-foreground">
                         {role === 'admin' 
                             ? 'Review and manage submitted manuscripts.'
                             : 'Manage peer review and editorial decisions.'}
@@ -57,7 +57,7 @@ export default function SubmissionRegistry({
             {/* Main Content Area */}
             <Card className="border-border/70 shadow-2xs overflow-hidden bg-card rounded-xl">
                 <CardContent className="p-0">
-                    <div className="p-3 sm:p-4 border-b border-border/70 bg-muted/20">
+                    <div className="p-2.5 sm:p-4 border-b border-border/70 bg-muted/20">
                         <SubmissionTabs
                             currentStatus={selectedStatus}
                             onStatusChange={setSelectedStatus}
@@ -69,7 +69,7 @@ export default function SubmissionRegistry({
                         role={role}
                     />
 
-                    <div className="p-3 sm:p-4 border-t border-border/70 flex items-center justify-center bg-muted/20">
+                    <div className="p-2.5 sm:p-4 border-t border-border/70 flex items-center justify-center bg-muted/20">
                         <p className="text-meta">
                             Registry Total: <span className="font-semibold text-foreground">{filteredSubmissions.length}</span> records in selection
                         </p>

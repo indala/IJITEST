@@ -97,15 +97,15 @@ export interface DashboardRegistryProps {
 
 export function DashboardStatsGrid({ stats }: { stats: Stat[] }) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             {stats.map((stat) => (
-                <Card key={stat.label} className="border-border/50 shadow-xs bg-card transition-all rounded-xl">
-                    <CardContent className="p-4 sm:p-5">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center border border-border/5 ${
+                <Card key={stat.label} className="border-border/50 shadow-2xs bg-card transition-all rounded-xl">
+                    <CardContent className="p-3 sm:p-4 2xl:p-5">
+                        <div className="flex items-center justify-between mb-2 sm:mb-3">
+                            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center border border-border/5 ${
                                 stat.variant === 'primary' ? 'bg-primary/5 text-primary' : 'bg-muted/50 text-muted-foreground'
                             } `}>
-                                <div className="[&>svg]:w-5 [&>svg]:h-5">
+                                <div className="[&>svg]:w-4 sm:[&>svg]:w-5 [&>svg]:h-4 sm:[&>svg]:h-5">
                                     {(() => {
                                         const Icon = ICON_MAP[stat.icon] || Box;
                                         return <Icon />;
@@ -114,8 +114,8 @@ export function DashboardStatsGrid({ stats }: { stats: Stat[] }) {
                             </div>
                         </div>
                         <div className="space-y-0.5">
-                            <p className="text-caption font-medium text-muted-foreground">{stat.label}</p>
-                            <h3 className="font-bold text-foreground">
+                            <p className="text-caption font-medium text-muted-foreground truncate">{stat.label}</p>
+                            <h3 className="text-base sm:text-lg 2xl:text-xl font-bold text-foreground">
                                 {typeof stat.value === 'number' ? <NumberTicker value={stat.value} prefix={stat.prefix || ""} /> : stat.value}
                             </h3>
                         </div>
@@ -405,12 +405,12 @@ export function DashboardRegistry({
     children
 }: DashboardRegistryProps) {
     return (
-        <section className="space-y-4">
+        <section className="space-y-3 sm:space-y-4">
             {/* Header Section - Renders instantly */}
-            <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-3 sm:pb-4 border-b border-border/70">
+            <header className="panel-header">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                        <Badge variant="outline" className="badge-brand font-medium px-2.5 py-0.5 rounded-md capitalize">
+                    <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="badge-brand font-medium px-2 py-0.5 rounded-md capitalize text-2xs sm:text-xs">
                             {role}
                         </Badge>
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -418,14 +418,14 @@ export function DashboardRegistry({
                             {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric', day: 'numeric' })}
                         </span>
                     </div>
-                    <h1 className="panel-title font-bold text-primary">
+                    <h1 className="panel-title font-bold text-primary m-0">
                         {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard
                     </h1>
-                    <p className="text-body-sm text-muted-foreground">
+                    <p className="text-body-sm text-muted-foreground m-0">
                         Logged in as <span className="font-medium text-foreground">{user?.profile?.fullName || user?.name || user?.email}</span>
                     </p>
                 </div>
-                <div className="flex flex-wrap sm:flex-nowrap gap-2.5">
+                <div className="flex flex-wrap sm:flex-nowrap gap-2">
                     {extraActions}
                 </div>
             </header>
@@ -437,11 +437,11 @@ export function DashboardRegistry({
                 <DashboardStatsSkeleton />
             )}
 
-            <Tabs defaultValue="overview" className="space-y-3 sm:space-y-4">
+            <Tabs defaultValue="overview" className="space-y-2.5 sm:space-y-4">
                 <TabsList className="bg-muted/50 flex flex-wrap sm:inline-flex justify-start h-auto gap-1 rounded-xl border border-border/70 p-1">
-                    <TabsTrigger value="overview" className="px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-body-sm">Overview</TabsTrigger>
-                    <TabsTrigger value="my-papers" className="px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-body-sm">My Papers</TabsTrigger>
-                    <TabsTrigger value="infrastructure" className="px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-body-sm">Health</TabsTrigger>
+                    <TabsTrigger value="overview" className="px-3 sm:px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-xs sm:text-body-sm">Overview</TabsTrigger>
+                    <TabsTrigger value="my-papers" className="px-3 sm:px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-xs sm:text-body-sm">My Papers</TabsTrigger>
+                    <TabsTrigger value="infrastructure" className="px-3 sm:px-4 py-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all text-xs sm:text-body-sm">Health</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-3 sm:space-y-4">

@@ -220,37 +220,37 @@ export default function SystemSettings() {
             initial="hidden"
             animate="visible"
             variants={containerVariants}
-            className="pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-6"
+            className="pb-8 max-w-6xl mx-auto space-y-4 sm:space-y-6"
         >
             {/* Header Section */}
             <motion.header 
                 variants={itemVariants}
-                className="relative group p-6 sm:p-8 bg-white/40 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+                className="relative group p-4 sm:p-6 lg:p-8 bg-white/40 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
             >
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
                 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
-                    <div className="space-y-2">
-                        <Badge variant="outline" className="px-3 py-1 rounded-full border-primary/20 text-primary bg-primary/5 text-badge font-bold tracking-wider uppercase">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 relative z-10">
+                    <div className="space-y-1.5 sm:space-y-2">
+                        <Badge variant="outline" className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border-primary/20 text-primary bg-primary/5 text-2xs sm:text-badge font-bold tracking-wider uppercase">
                             Root Administrator Console
                         </Badge>
-                        <h1 className="m-0">
+                        <h1 className="m-0 text-xl sm:text-2xl 2xl:text-3xl font-bold">
                             System <span className="text-primary underline decoration-primary/10 underline-offset-8">Settings</span>
                         </h1>
-                        <p className="text-muted-foreground m-0">
+                        <p className="text-muted-foreground m-0 text-xs sm:text-body-sm">
                             Configure the bedrock parameters of your journal environment.
                         </p>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                        <div className="flex items-center gap-2.5 px-4 py-2.5 bg-white/80 border border-slate-200/90 rounded-xl shadow-xs text-body-sm">
+                        <div className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-white/80 border border-slate-200/90 rounded-xl shadow-xs text-xs sm:text-body-sm">
                             {isSavingAny ? (
                                 <>
-                                    <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary animate-spin" />
                                     <span className="font-bold text-primary">Saving changes...</span>
                                 </>
                             ) : (
                                 <>
-                                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                                     <span className="font-semibold text-slate-700">Auto-saved in real-time</span>
                                 </>
                             )}
@@ -259,7 +259,7 @@ export default function SystemSettings() {
                 </div>
             </motion.header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 2xl:gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 2xl:gap-8">
                 {/* Journal Identity */}
                 <motion.div variants={itemVariants}>
                     <Card className="group relative overflow-hidden bg-white/60 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-2xl p-2 transition-all hover:shadow-2xl hover:shadow-primary/5">

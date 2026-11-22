@@ -128,6 +128,27 @@ export function CiteFactorLogo({ className = "h-7 w-auto" }: { className?: strin
     );
 }
 
+export function SjifLogo({ className = "h-7 w-auto" }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-label="SJIF Scientific Journal Impact Factor">
+            <g transform="translate(4, 8)">
+                <rect width="32" height="32" rx="6" fill="#800000" />
+                <path d="M8 24 L16 10 L24 24" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="16" cy="18" r="2.5" fill="#E5B32E" />
+            </g>
+            <text x="44" y="27" fontFamily="system-ui, -apple-system, sans-serif" fontSize="22" fontWeight="900" fill="#800000" letterSpacing="-0.5">
+                SJIF
+            </text>
+            <text x="96" y="27" fontFamily="system-ui, -apple-system, sans-serif" fontSize="13" fontWeight="700" fill="#2B4C7E">
+                actor.com
+            </text>
+            <text x="44" y="38" fontFamily="system-ui, sans-serif" fontSize="7" fontWeight="600" fill="#64748B" letterSpacing="0.2">
+                SCIENTIFIC JOURNAL IMPACT FACTOR
+            </text>
+        </svg>
+    );
+}
+
 export function OpenAireLogo({ className = "h-7 w-auto" }: { className?: string }) {
     return (
         <svg viewBox="0 0 220 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-label="OpenAIRE EXPLORE">
@@ -221,8 +242,16 @@ export const INDEXING_PARTNERS = [
         name: "CiteFactor",
         Component: CiteFactorLogo,
         category: "Academic Scientific Journals",
-        status: "Indexed Partner",
+        status: "Under Evaluation",
         link: "https://www.citefactor.org",
+        verified: false
+    },
+    {
+        name: "SJIFactor",
+        Component: SjifLogo,
+        category: "Scientific Journal Impact Factor",
+        status: "SJIF ID: 25877",
+        link: "https://sjifactor.com/passport.php?id=25877",
         verified: false
     },
     {

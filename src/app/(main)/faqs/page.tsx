@@ -28,11 +28,11 @@ export default async function FaqsPage() {
         },
         {
             question: "Is IJITEST indexed in major databases?",
-            answer: "As a new scholarly startup, IJITEST is currently in the process of being indexed with major databases like Google Scholar and Crossref. We are committed to ensuring maximum visibility for all published research as we grow."
+            answer: "IJITEST publications are indexed, registered, and preserved across recognized scholarly repositories and databases, including the ISSN International Centre (ROAD), Crossref (Official Member Prefix 10.68139), Zenodo (CERN), OpenAIRE EXPLORE, Semantic Scholar (AI2), Google Scholar, and SJIFactor (Passport ID 25877). Additional indexation evaluations (DOAJ, OpenAlex, CiteFactor) are in progress."
         },
         {
             question: "Does the journal have an ISSN number?",
-            answer: "We have initiated the application process for the International Standard Serial Number (ISSN). Authors will be updated as soon as the formal registration is completed, which will apply retrospectively to all published volumes."
+            answer: "Yes. IJITEST is formally registered with the ISSN International Centre with official E-ISSN: 3139-6887 (Online), recognized by UNESCO ROAD for open access scientific resources."
         },
         {
             question: "What are the submission guidelines for authors?",
@@ -55,8 +55,8 @@ export default async function FaqsPage() {
             answer: "You can track your paper in real-time on our Track Manuscript portal using your Submission ID and registered email."
         },
         {
-            question: "Can I submit my manuscript in DOCX format?",
-            answer: "Yes, we accept manuscripts in both DOCX and PDF formats. Our server automatically handles the layout conversion, and authors can review the generated PDF inside their dashboards."
+            question: "What file format is required for manuscript submission?",
+            answer: "Research manuscripts must be submitted in Microsoft Word (.docx) format formatted according to the official journal template. This enables editorial copyediting, double-blind review anonymization, and automatic generation of standard PDF proofs and JATS 1.3 XML. Supporting documents such as signed copyright agreements and reviewer rebuttals accept both DOCX and PDF formats."
         }
     ];
 

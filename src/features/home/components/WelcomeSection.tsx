@@ -5,7 +5,7 @@ interface WelcomeSectionProps {
 }
 
 export default function WelcomeSection({ settings }: WelcomeSectionProps) {
-    const name = settings['journalName'] || 'International Journal of Innovative Trends in Engineering, Science and Technology';
+    const name = settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
     const shortName = settings['journalShortName'] || 'IJITEST';
     const issn = settings['issnNumber'] || '3139-6887';
     const publicationFrequency = settings['publicationFrequency'] || 'Monthly';

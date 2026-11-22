@@ -22,7 +22,7 @@ const FAQS: FAQ[] = [
   },
   {
     question: "Is IJITEST indexed in major databases?",
-    answer: "As a new scholarly startup, IJITEST is currently in the process of being indexed with major databases like Google Scholar and Crossref. We are committed to ensuring maximum visibility for all published research as we grow."
+    answer: "IJITEST research is indexed and preserved across recognized scholarly repositories and databases, including the ISSN International Centre (ROAD), Crossref (Official Member Prefix 10.68139), Zenodo (CERN), OpenAIRE EXPLORE, Semantic Scholar (AI2), Google Scholar, and SJIFactor (Passport ID 25877). Additional indexation evaluations (DOAJ, OpenAlex) are actively in progress."
   },
   {
     question: "Does the journal have an ISSN number?",
@@ -54,6 +54,10 @@ const FAQS: FAQ[] = [
   {
     question: "Do you provide Open Access publication?",
     answer: "Yes, IJITEST is a Gold Open Access journal. All published articles are immediately available to the global research community without any subscription barriers."
+  },
+  {
+    question: "What file format is required for manuscript submission?",
+    answer: "Research manuscripts must be submitted in Microsoft Word (.docx) format using the official journal template. This allows our editorial team to perform double-blind anonymization, copyediting, and automatic JATS XML and PDF proof generation. Supporting documents (copyright agreements and author rebuttals) accept both DOCX and PDF."
   },
   {
     question: "How can I join the Editorial Board or become a Reviewer?",

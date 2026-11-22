@@ -9,8 +9,9 @@ interface EthicsClientProps {
 }
 
 export default function EthicsClient({ settings }: EthicsClientProps) {
-    const journalName = settings.journalName || '';
-    const supportEmail = settings.supportEmail || '';
+    const journalName = settings.journalName || 'International Journal of Innovative Trends in Engineering Science and Technology';
+    const journalShortName = settings.journalShortName || 'IJITEST';
+    const supportEmail = settings.supportEmail || 'support@ijitest.org';
 
     const sections = [
         {
@@ -41,7 +42,7 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
             content: (
                 <div className="space-y-4">
                     <p className="leading-relaxed">
-                        International Journal of Innovative Trends in Engineering Science and Technology ({journalName || 'IJITEST'}) is a fully Open Access journal. All published articles are immediately and permanently available online to readers free of charge, without subscription, registration, or payment. The journal does not restrict access to its published research based on institutional membership or subscription status.
+                        {journalName} ({journalShortName}) is a fully Open Access journal. All published articles are immediately and permanently available online to readers free of charge, without subscription, registration, or payment. The journal does not restrict access to its published research based on institutional membership or subscription status.
                     </p>
                     <p className="leading-relaxed">
                         Readers may access, read, download, copy, distribute, print, search, and link to the full text of published articles, subject to the terms of the applicable Creative Commons Licence. All articles are published under the <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> licence, unless otherwise stated on the individual article.
@@ -109,7 +110,7 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
                         "Authors should not use tables, diagrams, photos or ideas from other works without proper references / citations",
                         "Authors should not publish the same paper in more than one journal",
                         "Authors should acknowledge any type of financial support of others if appropriate",
-                        "Financial support and conflict of interest for the project/research work if any should be dsclosed."
+                        "Financial support and conflict of interest for the project/research work if any should be disclosed."
                     ].map((item, i) => (
                         <li key={i} className="flex items-start gap-4">
                             <div className="mt-2 w-1.5 h-1.5 bg-secondary rounded-full shrink-0" />
@@ -127,7 +128,7 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
                         "Editors have complete responsibility and authority to accept/reject a manuscript submitted.",
                         "Editors have the responsibility to evaluate manuscripts exclusively on the basis of their academic merit.",
                         "Editors are one who act in a balanced, objective and fair way while carrying out their expected duties",
-                        "Editors has the rights to accept the paper when reasonably certain.",
+                        "Editors have the right to accept the paper when reasonably certain.",
                         "Editors are not supposed to add or delete information in the paper without the express written consent of the author.",
                         "Editor reserves the right to refuse any manuscript , whether on invitation or otherwise, and to make suggestions and/or modifications before publication.",
                         "Editors will strive to prevent any conflict of interest between the author and editorial/review personnel.",
@@ -146,9 +147,9 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
             content: (
                 <ul className="space-y-3 list-none pl-0">
                     {[
-                        "Reviewers has the responsibility to have a good rapid with Assistance to Editors.",
+                        "Reviewers have the responsibility to provide prompt, constructive, and objective evaluations to assist Editors.",
                         "Reviewers should maintain confidentiality, point out relevant published work which is not cited in the paper, point out whether any content from other published works are used",
-                        "Reviewers are responsible to send the review reports in prompt to the editors and Disclosure and conflict of interest."
+                        "Reviewers are responsible to submit review reports promptly to the editors and declare any potential conflicts of interest."
                     ].map((item, i) => (
                         <li key={i} className="flex items-start gap-4">
                             <div className="mt-2 w-1.5 h-1.5 bg-secondary rounded-full shrink-0" />
@@ -254,7 +255,7 @@ export default function EthicsClient({ settings }: EthicsClientProps) {
             title: "Informed Consent Policy",
             content: (
                 <p>
-                    Individual participants in studies have their rights to decide what happens to the personal data gathered. This is especially true concerning images of vulnerable people or the use of images in sensitive contexts. authors are needed to secure written consent before including images, hide the identities, or any type of details as per International Publication Ethics and Best Practices.
+                    Individual participants in studies have their rights to decide what happens to the personal data gathered. This is especially true concerning images of vulnerable people or the use of images in sensitive contexts. Authors must secure written consent before including images, anonymize identities, and protect personal details as per International Publication Ethics and Best Practices.
                 </p>
             )
         },

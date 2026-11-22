@@ -1,4 +1,4 @@
-# International Journal of Innovative Trends in Engineering, Science and Technology (IJITEST)
+# International Journal of Innovative Trends in Engineering Science and Technology (IJITEST)
 
 > Elite International Peer-Reviewed Journal for High-Quality Research in Engineering, Science, and Technology.
 
@@ -8,7 +8,7 @@
 - **Focus**: Multidisciplinary (Engineering, Science, Technology, Healthcare, Management)
 - **Publication Frequency**: Monthly (12 Issues per year)
 - **Access Model**: Gold Open Access
-- **ISSN (Online)**: XXXX-XXXX (In-Process)
+- **ISSN (Online)**: 3139-6887
 
 ## Key Pages
 - [Submit Manuscript](https://ijitest.org/submit)

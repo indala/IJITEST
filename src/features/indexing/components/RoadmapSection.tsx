@@ -81,7 +81,12 @@ const roadmapPhases: RoadmapPhase[] = [
         items: [
             { title: "Crossref Publisher DOI Prefix", status: "In Progress", badgeText: "Onboarding" },
             { title: "Google Scholar Discovery", status: "In Progress", badgeText: "Automated Metadata" },
-            { title: "SJIF Impact Factor Evaluation", status: "In Progress" },
+            { 
+                title: "SJIF Impact Factor Evaluation", 
+                status: "In Progress", 
+                badgeText: "SJIF ID: 25877", 
+                linkUrl: "https://sjifactor.com/passport.php?id=25877" 
+            },
             { title: "Directory of Research Journals Indexing", status: "Pending" }
         ],
         icon: Globe,
@@ -178,10 +183,23 @@ function RoadmapSection() {
                                     )}
 
                                     {sub.status === "In Progress" && sub.badgeText && (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-badge font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                                            <Clock className="w-2.5 h-2.5 text-blue-600" />
-                                            {sub.badgeText}
-                                        </span>
+                                        sub.linkUrl ? (
+                                            <a 
+                                                href={sub.linkUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-badge font-bold bg-blue-100 text-blue-800 hover:bg-blue-200 border border-blue-300 shadow-2xs transition-colors"
+                                            >
+                                                <Clock className="w-2.5 h-2.5 text-blue-600" />
+                                                {sub.badgeText}
+                                                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                                            </a>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-badge font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                                <Clock className="w-2.5 h-2.5 text-blue-600" />
+                                                {sub.badgeText}
+                                            </span>
+                                        )
                                     )}
                                 </li>
                             ))}

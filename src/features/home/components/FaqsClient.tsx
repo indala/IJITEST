@@ -66,8 +66,8 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
     {
       category: 'fees',
       question: "Is IJITEST indexed in major databases?",
-      answer: "As a new scholarly startup, IJITEST is currently in the process of being indexed with major databases like Google Scholar and Crossref. We are committed to ensuring maximum visibility for all published research as we grow.",
-      plainTextAnswer: "As a new scholarly startup, IJITEST is currently in the process of being indexed with major databases like Google Scholar and Crossref. We are committed to ensuring maximum visibility for all published research as we grow."
+      answer: "IJITEST publications are indexed, registered, and preserved across recognized scholarly repositories and databases, including the ISSN International Centre (ROAD), Crossref (Official Member Prefix 10.68139), Zenodo (CERN), OpenAIRE EXPLORE, Semantic Scholar (AI2), Google Scholar, and SJIFactor (Passport ID 25877). Formal evaluations for DOAJ, OpenAlex, and CiteFactor are underway.",
+      plainTextAnswer: "IJITEST publications are indexed, registered, and preserved across recognized scholarly repositories and databases, including the ISSN International Centre (ROAD), Crossref (Official Member Prefix 10.68139), Zenodo (CERN), OpenAIRE EXPLORE, Semantic Scholar (AI2), Google Scholar, and SJIFactor (Passport ID 25877). Formal evaluations for DOAJ, OpenAlex, and CiteFactor are underway."
     },
     {
       category: 'fees',
@@ -144,9 +144,13 @@ export default function FaqsClient({ apcInr, apcUsd }: FaqsClientProps) {
     },
     {
       category: 'author',
-      question: "Can I submit my manuscript in DOCX format?",
-      answer: "Yes, we accept manuscripts in both DOCX and PDF formats. Our server automatically handles the layout conversion, and authors can review the generated PDF inside their dashboards.",
-      plainTextAnswer: "Yes, we accept manuscripts in both DOCX and PDF formats. Our server automatically handles the layout conversion, and authors can review the generated PDF inside their dashboards."
+      question: "What file format is required for manuscript submission?",
+      answer: (
+        <span>
+          Research manuscripts must be submitted in <strong>Microsoft Word (.docx)</strong> format formatted according to the official journal template. This enables our editorial team to perform double-blind anonymization, copyediting, and automatic JATS XML and PDF proof generation. Supporting documents (such as signed copyright agreements and reviewer rebuttals) accept both <strong>DOCX and PDF</strong> formats.
+        </span>
+      ),
+      plainTextAnswer: "Research manuscripts must be submitted in Microsoft Word (.docx) format formatted according to the official journal template. This enables our editorial team to perform double-blind anonymization, copyediting, and automatic JATS XML and PDF proof generation. Supporting documents (such as signed copyright agreements and reviewer rebuttals) accept both DOCX and PDF formats."
     }
   ], [apcInr, apcUsd]);
 

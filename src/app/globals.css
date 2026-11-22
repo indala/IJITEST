@@ -307,7 +307,7 @@
 
   /* Standardized Panel & Card Utilities */
   .panel-title {
-    @apply font-bold tracking-tight text-primary text-[22px] sm:text-[24px] md:text-[26px] xl:text-[30px] 2xl:text-[32px];
+    @apply font-bold tracking-tight text-primary text-[18px] sm:text-[22px] md:text-[26px] xl:text-[30px] 2xl:text-[32px];
   }
 
   .panel-subtitle {
@@ -315,7 +315,23 @@
   }
 
   .panel-content {
-    @apply mx-auto w-full max-w-7xl space-y-4 px-3 py-4 sm:px-5 sm:py-5 lg:px-6 2xl:max-w-[1680px] 2xl:space-y-6 2xl:px-8 2xl:py-8;
+    @apply mx-auto w-full max-w-7xl space-y-3 px-2.5 py-3 sm:space-y-4 sm:px-5 sm:py-5 lg:px-6 2xl:max-w-[1680px] 2xl:space-y-6 2xl:px-8 2xl:py-8;
+  }
+
+  .panel-header {
+    @apply flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 sm:gap-3 pb-2.5 sm:pb-4 border-b border-border/70;
+  }
+
+  .panel-card {
+    @apply border-border/70 shadow-2xs overflow-hidden bg-card rounded-xl;
+  }
+
+  .panel-card-header {
+    @apply p-3 sm:p-4 border-b border-border/70 bg-muted/20;
+  }
+
+  .panel-card-content {
+    @apply p-3 sm:p-5;
   }
 
   .panel-dialog-content {

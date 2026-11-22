@@ -374,7 +374,7 @@ export default function PaperDetailClient({ paper, mode = 'archive', relatedArti
                                             Full Bibliography &amp; In-Text References
                                         </p>
                                         <p className="text-muted-foreground text-caption m-0">
-                                            The complete bibliographic citations, reference numbering, and figure annotations are archived directly in the authoritative published galley PDF.
+                                            The complete bibliographic citations, reference numbering, and figure annotations are authoritatively preserved in the published galley PDF and syndicated via JATS 1.3 XML.
                                         </p>
                                     </div>
                                 </div>

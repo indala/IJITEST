@@ -52,23 +52,23 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+        <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-6 pb-2.5 sm:pb-4 border-b border-border/70">
                 <div className="space-y-1">
-                    <h1 className="font-black tracking-tight text-primary">Manuscript Details</h1>
-                    <div className="flex items-center gap-3 text-label text-muted-foreground font-semibold uppercase tracking-widest leading-none">
+                    <h1 className="font-black tracking-tight text-primary m-0">Manuscript Details</h1>
+                    <div className="flex items-center gap-2.5 sm:gap-3 text-label text-muted-foreground font-semibold uppercase tracking-widest leading-none">
                         <span>{sub.paperId}</span>
                         <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
                         <span>Submitted on {dayjs(sub.submittedAt).format("MMMM DD, YYYY")}</span>
                     </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex flex-wrap items-center gap-2">
                     <Badge className={`px-2.5 py-1 rounded-md border text-xs font-semibold uppercase tracking-wider ${getStatusColor(sub.status)} `}>
                         {sub.status.replace('_', ' ')}
                     </Badge>
                     {sub.section && (
-                        <Badge variant="outline" className="px-3.5 py-1.5 rounded-xl border text-badge font-bold bg-primary/5 text-primary border-primary/20 flex items-center gap-1.5">
+                        <Badge variant="outline" className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl border text-badge font-bold bg-primary/5 text-primary border-primary/20 flex items-center gap-1.5">
                             <Bookmark className="w-3.5 h-3.5" />
                             <span>{sub.section.title}</span>
                             {sub.section.abbrev && <span className="opacity-60 font-mono text-meta">({sub.section.abbrev})</span>}
@@ -77,15 +77,15 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                 </div>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {/* Main Details (Left Col) */}
-                <div className="lg:col-span-2 space-y-8">
-                    <Card className="border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
-                        <CardHeader className="bg-primary/1 border-b border-primary/5">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
+                    <Card className="border-primary/10 shadow-sm sm:shadow-xl shadow-primary/5 overflow-hidden">
+                        <CardHeader className="bg-primary/5 border-b border-primary/5 p-4 sm:p-6">
                             <CardTitle className="font-black text-primary">Abstract & Metadata</CardTitle>
                             <CardDescription>Current version metadata for your manuscript.</CardDescription>
                         </CardHeader>
-                        <CardContent className="pt-6 space-y-6">
+                        <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                             <div className="space-y-2">
                                 <h3 className="font-black text-primary leading-tight">{sub.title}</h3>
                                 <p className="text-caption text-primary/60 italic leading-relaxed">{sub.abstract}</p>
@@ -229,13 +229,13 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                 </div>
 
                 {/* Sidebar (Right Col) */}
-                <div className="space-y-8">
+                <div className="space-y-4 sm:space-y-6 lg:space-y-8">
                     {/* File Links */}
-                    <Card className="border-primary/10 shadow-xl shadow-primary/5">
-                        <CardHeader className="bg-primary/5 border-b border-primary/5">
-                            <CardTitle className="font-black text-primary uppercase tracking-widest">Submitted Files</CardTitle>
+                    <Card className="border-primary/10 shadow-sm sm:shadow-xl shadow-primary/5">
+                        <CardHeader className="bg-primary/5 border-b border-primary/5 p-4 sm:p-6">
+                            <CardTitle className="font-black text-primary uppercase tracking-widest text-sm sm:text-base">Submitted Files</CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-6 space-y-3">
+                        <CardContent className="p-4 sm:p-6 space-y-3">
                             {sub.files.map((file: SubmissionFile) => (
                                 <Link
                                     key={file.id}

@@ -62,7 +62,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
         : "/archives";
 
     return (
-        <section className="space-y-6 pb-20">
+        <section className="space-y-4 sm:space-y-6 pb-12 sm:pb-20">
             {/* Breadcrumb / Top Bar */}
             <div className="flex items-center justify-between gap-4">
                 <Button asChild variant="ghost" size="sm" className="h-9 gap-2 text-muted-foreground hover:text-primary font-semibold tracking-widest -ml-2 cursor-pointer capitalize">
@@ -72,11 +72,11 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                 </Button>
             </div>
 
-            <Card className="border-border/50 shadow-lg overflow-hidden bg-background 2xl:rounded-3xl">
-                <CardHeader className="p-8 bg-muted/20 border-b border-border/50">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                        <div className="space-y-4 max-w-2xl 2xl:max-w-4xl">
-                            <div className="flex flex-wrap items-center gap-2.5">
+            <Card className="border-border/50 shadow-sm sm:shadow-lg overflow-hidden bg-background 2xl:rounded-3xl">
+                <CardHeader className="p-4 sm:p-6 lg:p-8 bg-muted/20 border-b border-border/50">
+                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 sm:gap-6">
+                        <div className="space-y-2.5 sm:space-y-4 max-w-2xl 2xl:max-w-4xl">
+                            <div className="flex flex-wrap items-center gap-2">
                                 <Badge className={`h-6 px-2.5 text-xs font-semibold whitespace-nowrap capitalize ${getStatusVariant(submission.status)} `}>
                                     {submission.status.replace(/([A-Z])/g, ' $1').replace('_', ' ')}
                                 </Badge>
@@ -88,20 +88,20 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                     </Badge>
                                 )}
                             </div>
-                            <h1 className="heading-academic capitalize leading-none">
+                            <h1 className="text-lg sm:text-2xl 2xl:text-3xl font-bold font-serif capitalize leading-snug">
                                 {submission.title}
                             </h1>
-                            <div className="flex flex-wrap items-center gap-6 2xl:gap-10 text-meta tracking-widest capitalize">
-                                <div className="flex items-center gap-2 2xl:gap-4">
+                            <div className="flex flex-wrap items-center gap-3 sm:gap-6 2xl:gap-10 text-meta tracking-widest capitalize">
+                                <div className="flex items-center gap-1.5 sm:gap-2 2xl:gap-4">
                                     <Calendar className="w-3.5 h-3.5 2xl:w-5 2xl:h-5 opacity-50" />
                                     <span>{submission.submittedAt ? new Date(submission.submittedAt).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'Unknown Date'}</span>
                                 </div>
-                                <div className="flex items-center gap-2 2xl:gap-4 text-primary">
+                                <div className="flex items-center gap-1.5 sm:gap-2 2xl:gap-4 text-primary">
                                     <Shield className="w-3.5 h-3.5 2xl:w-5 2xl:h-5" />
                                     <span>{submission.paperId}</span>
                                 </div>
                                 {submission.keywords && (
-                                    <div className="flex items-center gap-2 2xl:gap-4">
+                                    <div className="flex items-center gap-1.5 sm:gap-2 2xl:gap-4">
                                         <Tag className="w-3.5 h-3.5 2xl:w-6 2xl:h-6 opacity-50" />
                                         <span className="truncate max-w-[200px] 2xl:max-w-md">{submission.keywords}</span>
                                     </div>
@@ -124,12 +124,12 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                 <CardContent className="p-0">
                     <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-border/50">
                         {/* Main Content (8 cols) */}
-                        <div className="lg:col-span-8 p-8 space-y-12">
-                            <div className="space-y-4 2xl:space-y-6">
+                        <div className="lg:col-span-8 p-3.5 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-12">
+                            <div className="space-y-3 sm:space-y-4 2xl:space-y-6">
                                 <div className="flex items-center gap-2 2xl:gap-4 text-label font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
                                     <FileText className="w-3.5 h-3.5 2xl:w-5 2xl:h-5" /> Abstract overview
                                 </div>
-                                <div className="p-6 bg-muted/5 rounded-xl 2xl:rounded-3xl border border-border/30">
+                                <div className="p-3.5 sm:p-6 bg-muted/5 rounded-xl 2xl:rounded-3xl border border-border/30">
                                     <p className="text-foreground leading-relaxed text-justify font-medium selection:bg-primary/20">
                                         {submission.abstract || "No abstract provided."}
                                     </p>
@@ -137,11 +137,11 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                             </div>
 
                             {submission.pdfUrl && (
-                                <div className="space-y-4 pt-4 border-t border-border/30">
+                                <div className="space-y-3 sm:space-y-4 pt-4 border-t border-border/30">
                                     <div className="flex items-center gap-2 text-label font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
                                         <Shield className="w-4 h-4" /> Secure manuscript preview
                                     </div>
-                                    <div className="rounded-2xl border border-border/50 overflow-hidden shadow-vip-hover h-screen bg-muted/10 relative group">
+                                    <div className="rounded-2xl border border-border/50 overflow-hidden shadow-vip-hover h-[60vh] sm:h-[75vh] lg:h-screen min-h-[420px] bg-muted/10 relative group">
                                         <PdfViewer
                                             pdfUrl={getSecureUrl(submission.pdfUrl)}
                                             title={submission.title}
@@ -161,7 +161,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                     </div>
                                     <div className="grid grid-cols-1 gap-4">
                                         {submission.allReviews && submission.allReviews.filter((r: ReviewWithReviewer) => r.status === 'completed').length === 0 ? (
-                                            <div className="p-12 2xl:p-20 text-center bg-muted/10 rounded-xl 2xl:rounded-3xl border border-dashed border-border/50 flex flex-col items-center gap-4 2xl:gap-8">
+                                            <div className="p-6 sm:p-12 2xl:p-20 text-center bg-muted/10 rounded-xl 2xl:rounded-3xl border border-dashed border-border/50 flex flex-col items-center gap-3 sm:gap-4 2xl:gap-8">
                                                 <History className="w-8 h-8 2xl:w-14 2xl:h-14 text-muted-foreground/10" />
                                                 <p className="text-label font-semibold text-muted-foreground tracking-widest">Awaiting technical evaluation from assigned reviewers</p>
                                             </div>
@@ -170,14 +170,14 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                 .filter((r: ReviewWithReviewer) => r.status === 'completed')
                                                 .map((r, i) => (
                                                     <Card key={r.id} className="border-border/50 shadow-none bg-muted/5 overflow-hidden 2xl:rounded-3xl">
-                                                        <CardHeader className="p-4 2xl:p-8 bg-muted/20 border-b border-border/30 flex flex-row items-center justify-between">
+                                                        <CardHeader className="p-3.5 sm:p-4 2xl:p-8 bg-muted/20 border-b border-border/30 flex flex-row items-center justify-between">
                                                             <div className="flex items-center gap-2 2xl:gap-4">
                                                                 <Badge variant="outline" className="h-5 px-2 text-xs font-semibold bg-background border-border text-primary uppercase">Technical Reviewer {i + 1}</Badge>
                                                                 <span className="text-label font-semibold text-muted-foreground tracking-widest opacity-60">{r.reviewer?.profile?.fullName || "Assigned Reviewer"}</span>
                                                             </div>
                                                             <CheckCircle className="w-4 h-4 2xl:w-7 2xl:h-7 text-emerald-500" />
                                                         </CardHeader>
-                                                        <CardContent className="p-4 2xl:p-8">
+                                                        <CardContent className="p-3.5 sm:p-4 2xl:p-8">
                                                             <p className="text-caption text-muted-foreground font-medium leading-relaxed whitespace-pre-wrap">&quot;{r.review?.commentsToAuthor || "Feedback in progress..."}&quot;</p>
                                                         </CardContent>
                                                     </Card>
@@ -194,11 +194,11 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                         </div>
 
                         {/* Sidebar (4 cols) */}
-                        <div className="lg:col-span-4 p-8 bg-muted/20 space-y-10">
-                            <div className="space-y-4 2xl:space-y-6">
-                                <h3 className="font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Author Credentials</h3>
+                        <div className="lg:col-span-4 p-3.5 sm:p-6 lg:p-8 bg-muted/20 space-y-6 sm:space-y-10">
+                            <div className="space-y-3 sm:space-y-4 2xl:space-y-6">
+                                <h3 className="font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase text-xs sm:text-sm">Author Credentials</h3>
                                 <Card className="border-border/50 shadow-sm bg-background 2xl:rounded-3xl">
-                                    <CardContent className="p-5 space-y-4 2xl:space-y-8">
+                                    <CardContent className="p-3.5 sm:p-5 space-y-3 sm:space-y-4 2xl:space-y-8">
                                         <div className="flex items-start gap-3 2xl:gap-6">
                                             <div className="w-8 h-8 2xl:w-14 2xl:h-14 rounded-lg 2xl:rounded-2xl bg-primary/5 flex items-center justify-center shrink-0">
                                                 <User className="w-4 h-4 2xl:w-8 2xl:h-8 text-primary" />
