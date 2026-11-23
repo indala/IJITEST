@@ -129,7 +129,10 @@ export async function findSubmissionById(id: number): Promise<SubmissionUI | nul
             pdfUrl: (finalPdf || pdfVersion?.fileUrl)
                 ? `${finalPdf || pdfVersion?.fileUrl}?v=${row.submission.updatedAt ? new Date(row.submission.updatedAt).getTime() : (publishedAt ? new Date(publishedAt).getTime() : Date.now())}`
                 : "",
-            authorName: submissionData.correspondingAuthor?.profile?.fullName || "Unknown Author",
+            authorName: authors.find((a) => a.isCorresponding)?.name
+                || authors[0]?.name
+                || submissionData.correspondingAuthor?.profile?.fullName
+                || "Unknown Author",
             authorEmail: submissionData.correspondingAuthor?.email || "",
             coAuthors: submissionData.authors,
             doi: submissionData.publication?.doi || null,
@@ -218,7 +221,10 @@ export async function listSubmissions(filters?: SubmissionListFilters): Promise<
             keywords: row.latestVersion?.keywords || "",
             filePath: mainManuscript?.fileUrl || "",
             pdfUrl: row.publication?.finalPdfUrl || pdfVersion?.fileUrl || "",
-            authorName: row.authorProfile?.fullName || "Unknown Author",
+            authorName: submissionAuthorsForRow.find((a) => a.isCorresponding)?.name
+                || submissionAuthorsForRow[0]?.name
+                || row.authorProfile?.fullName
+                || "Unknown Author",
             authorEmail: row.author?.email || "",
             coAuthors: submissionAuthorsForRow,
             doi: row.publication?.doi || null,
