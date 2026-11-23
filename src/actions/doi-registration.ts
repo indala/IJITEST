@@ -700,6 +700,8 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
                     ? paper.keywords.split(",").map((k: string) => k.trim())
                     : [],
                 creators,
+                publisher: settings['publisherName'] || "Felix Academic Publications",
+                imprint_publisher: settings['publisherName'] || "Felix Academic Publications",
                 journal_title: settings['journalName'] || "IJITEST",
                 journal_volume: paper.volumeNumber ? String(paper.volumeNumber) : undefined,
                 journal_issue: paper.issueNumber ? String(paper.issueNumber) : undefined,

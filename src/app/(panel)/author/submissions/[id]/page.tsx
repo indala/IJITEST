@@ -148,6 +148,49 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                                 </p>
                                             </div>
                                         ))}
+
+                                        {/* Reviewer Annotated Feedback Files */}
+                                        {sub.files?.filter((f: SubmissionFile) => f.fileType === 'feedback').length > 0 && (
+                                            <div className="space-y-3 pt-3 border-t border-primary/10">
+                                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                                    Reviewer Annotated Comments & Proof Files
+                                                </h4>
+                                                <div className="grid gap-2">
+                                                    {sub.files
+                                                        .filter((f: SubmissionFile) => f.fileType === 'feedback')
+                                                        .map((file: SubmissionFile) => (
+                                                            <div
+                                                                key={file.id}
+                                                                className="flex items-center justify-between p-3.5 rounded-xl border border-primary/15 bg-primary/5 hover:bg-primary/10 transition-colors"
+                                                            >
+                                                                <div className="flex items-center gap-3 min-w-0">
+                                                                    <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                                                        <Download className="w-4 h-4" />
+                                                                    </div>
+                                                                    <div className="min-w-0">
+                                                                        <p className="text-xs font-bold text-foreground truncate max-w-[200px] sm:max-w-md">
+                                                                            {file.originalName || "Reviewer_Annotated_Comments.pdf"}
+                                                                        </p>
+                                                                        <p className="text-[11px] text-muted-foreground font-mono">
+                                                                            {file.fileSize ? `${(file.fileSize / (1024 * 1024)).toFixed(2)} MB` : "PDF Proof"} · Reviewer Annotated Document
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <Button
+                                                                    asChild
+                                                                    size="sm"
+                                                                    className="h-8 gap-1.5 bg-primary text-white hover:bg-primary/90 rounded-lg text-xs font-semibold cursor-pointer shrink-0"
+                                                                >
+                                                                    <a href={getSecureUrl(file.fileUrl)} download target="_blank" rel="noopener noreferrer">
+                                                                        <Download className="w-3.5 h-3.5" />
+                                                                        <span>Download File</span>
+                                                                    </a>
+                                                                </Button>
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </CardContent>

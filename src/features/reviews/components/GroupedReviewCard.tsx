@@ -252,6 +252,15 @@ export const GroupedReviewCard = React.memo(({
                         </DialogHeader>
 
                         <div className="space-y-4 pt-2">
+                            {group.assignments.some(a => a.feedbackFilePath) && (
+                                <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2.5 text-xs">
+                                    <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                                    <span className="font-medium text-emerald-800">
+                                        Reviewer annotated PDF comments file(s) will be automatically attached to the author&apos;s email and available on their dashboard.
+                                    </span>
+                                </div>
+                            )}
+
                             <div className="space-y-1.5">
                                 <label className="form-label-brand font-bold text-muted-foreground uppercase tracking-wider">
                                     Concatenated Comments to Author

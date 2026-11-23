@@ -160,7 +160,7 @@ export async function getAuthorSubmission(submissionId: number): Promise<ActionR
                 .from(submissionFiles)
                 .where(and(
                     eq(submissionFiles.versionId, sub.versionId),
-                    inArray(submissionFiles.fileType, ['mainManuscript', 'copyrightForm'])
+                    inArray(submissionFiles.fileType, ['mainManuscript', 'copyrightForm', 'feedback'])
                 )),
             db.select()
                 .from(submissionAuthors)

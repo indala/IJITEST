@@ -36,6 +36,7 @@ import { authOptions } from "@/lib/auth";
 import { 
     safeDeleteFile, 
     uploadFileToStorage, 
+    downloadFileFromStorage,
     triggerDocxToPdfConversion 
 } from "@/lib/fs-utils";
 import {
@@ -227,14 +228,65 @@ export async function requestResubmissionWithComments(
             .set({ status: 'revisionRequested' })
             .where(eq(submissions.id, submissionId));
 
+        // 1. Fetch any feedback files associated with this submission's current version
+        const feedbackFiles = await db.select({
+            id: submissionFiles.id,
+            fileUrl: submissionFiles.fileUrl,
+            originalName: submissionFiles.originalName,
+            fileSize: submissionFiles.fileSize,
+        })
+        .from(submissionFiles)
+        .innerJoin(submissionVersions, eq(submissionFiles.versionId, submissionVersions.id))
+        .where(and(
+            eq(submissionVersions.submissionId, submissionId),
+            eq(submissionFiles.fileType, 'feedback')
+        ));
+
+        // 2. Download files to attach directly to the author's notification email
+        const emailAttachments: Array<{
+            filename: string;
+            content: Buffer;
+            contentType: string;
+        }> = [];
+
+        for (const f of feedbackFiles) {
+            try {
+                const fileBuf = await downloadFileFromStorage(f.fileUrl);
+                if (fileBuf && fileBuf.length > 0) {
+                    emailAttachments.push({
+                        filename: f.originalName || `Reviewer_Comments_${submission.paperId}.pdf`,
+                        content: fileBuf,
+                        contentType: 'application/pdf',
+                    });
+                }
+            } catch (attachErr) {
+                console.warn(`Could not download feedback file ${f.fileUrl} for email attachment:`, attachErr);
+            }
+        }
+
+        // 3. Build email message with feedback download link if files exist
+        const baseUrl = process.env["NEXT_PUBLIC_APP_URL"] || 'https://ijitest.org';
+        let enrichedComments = comments;
+        if (feedbackFiles.length > 0) {
+            const filesList = feedbackFiles
+                .map(f => `• ${f.originalName || 'Reviewer Comments PDF'}: ${baseUrl}${f.fileUrl}`)
+                .join('\n');
+            enrichedComments = `${comments}\n\nReviewer Annotated Files (also attached to this email):\n${filesList}`;
+        }
+
         const emailData = await emailTemplates.resubmissionRequest(
             submission.authorName,
             submission.title,
             submission.paperId,
-            comments,
+            enrichedComments,
             submissionId
         );
-        await sendEmail({ to: submission.authorEmail, subject: emailData.subject, html: emailData.html });
+        await sendEmail({
+            to: submission.authorEmail,
+            subject: emailData.subject,
+            html: emailData.html,
+            ...(emailAttachments.length > 0 ? { attachments: emailAttachments } : {}),
+        });
 
         await createNotification({
             userId: submission.correspondingAuthorId,

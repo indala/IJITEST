@@ -1,9 +1,9 @@
 'use client'
 
-import { useActionState, useState } from 'react';
+import { useActionState, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { FileUp, FileCheck, Loader2, Download, RefreshCw, X, Sparkles } from "lucide-react";
+import { FileUp, FileCheck, Loader2, Download, RefreshCw, X, Sparkles, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { uploadManuscriptPdf, autoSyncManuscriptToPdf } from "@/actions/submissions";
@@ -15,6 +15,8 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
     const router = useRouter();
     const queryClient = useQueryClient();
     const [showUpload, setShowUpload] = useState(!currentUrl);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [, uploadAction, isUploading] = useActionState<ActionResponse, FormData>(
         async (_prev, formData) => {
@@ -22,6 +24,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
             const result = await uploadManuscriptPdf(submissionId, formData);
             if (result.success) {
                 toast.success('Manuscript PDF updated successfully', { id: toastId });
+                setSelectedFile(null);
                 setShowUpload(false);
                 queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                 router.refresh();
@@ -39,6 +42,7 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
             const result = await autoSyncManuscriptToPdf(submissionId);
             if (result.success) {
                 toast.success('PDF proof converted and synced successfully', { id: toastId });
+                setSelectedFile(null);
                 setShowUpload(false);
                 queryClient.invalidateQueries({ queryKey: submissionKeys.all });
                 router.refresh();
@@ -49,6 +53,28 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
         },
         { success: false, error: "" }
     );
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+                toast.error('Only .pdf files are accepted.');
+                if (fileInputRef.current) fileInputRef.current.value = '';
+                setSelectedFile(null);
+                return;
+            }
+            setSelectedFile(file);
+        }
+    };
+
+    const handleClearSelected = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setSelectedFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
 
     if (!showUpload && currentUrl) {
         return (
@@ -78,7 +104,10 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
                     </form>
 
                     <Button
-                        onClick={() => setShowUpload(true)}
+                        onClick={() => {
+                            setSelectedFile(null);
+                            setShowUpload(true);
+                        }}
                         variant="outline"
                         className="w-full h-9 gap-1.5 text-xs text-foreground font-semibold rounded-lg hover:bg-muted/80 transition-all cursor-pointer border border-border/60"
                     >
@@ -98,7 +127,10 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
                     {currentUrl && (
                         <button
                             type="button"
-                            onClick={() => setShowUpload(false)}
+                            onClick={() => {
+                                setSelectedFile(null);
+                                setShowUpload(false);
+                            }}
                             className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                         >
                             <X className="w-3.5 h-3.5" /> Cancel
@@ -122,21 +154,55 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
                     <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wider">or upload file</span>
                 </div>
 
-                <div className={`relative group border-2 border-dashed rounded-xl p-6 transition-all duration-300 flex flex-col items-center justify-center gap-2.5 ${isUploading ? 'bg-primary/5 border-primary/20 cursor-wait' : 'bg-muted/30 border-primary/10 hover:bg-primary/5 hover:border-primary/30 cursor-pointer'} `}>
+                <div className={`relative group border-2 border-dashed rounded-xl p-5 transition-all duration-300 flex flex-col items-center justify-center gap-2.5 ${
+                    isUploading 
+                        ? 'bg-primary/5 border-primary/20 cursor-wait' 
+                        : selectedFile 
+                            ? 'bg-emerald-500/5 border-emerald-500/30' 
+                            : 'bg-muted/30 border-primary/10 hover:bg-primary/5 hover:border-primary/30 cursor-pointer'
+                }`}>
                     <input
+                        ref={fileInputRef}
                         title="pdfFile"
                         name="pdfFile"
                         type="file"
                         accept=".pdf"
                         required
-                        className="absolute inset-0 opacity-0 cursor-pointer z-10 disabled:cursor-wait"
+                        onChange={handleFileChange}
+                        className={`absolute inset-0 z-10 cursor-pointer disabled:cursor-wait ${selectedFile ? 'hidden' : 'opacity-0'}`}
                         disabled={isUploading || isConverting}
                     />
 
                     {isUploading ? (
                         <div className="flex flex-col items-center gap-2 animate-pulse py-2">
                             <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                            <p className="text-xs font-semibold text-primary">Uploading & Syncing PDF...</p>
+                            <p className="text-xs font-semibold text-primary">Uploading & Syncing Galley PDF...</p>
+                        </div>
+                    ) : selectedFile ? (
+                        <div className="flex items-center justify-between w-full p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-9 h-9 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0 text-emerald-700">
+                                    <FileText className="w-5 h-5" />
+                                </div>
+                                <div className="min-w-0 text-left">
+                                    <p className="text-xs font-bold text-foreground truncate max-w-[190px] sm:max-w-[240px]">
+                                        {selectedFile.name}
+                                    </p>
+                                    <p className="text-[11px] text-emerald-700 font-medium font-mono">
+                                        {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · Ready to upload
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                onClick={handleClearSelected}
+                                className="h-7 w-7 p-0 rounded-full hover:bg-rose-500/15 hover:text-rose-600 text-muted-foreground cursor-pointer shrink-0"
+                                title="Remove selected file"
+                            >
+                                <X className="w-4 h-4" />
+                            </Button>
                         </div>
                     ) : (
                         <>
@@ -154,15 +220,15 @@ export default function AdminPdfUpload({ submissionId, currentUrl }: { submissio
 
             <Button
                 type="submit"
-                disabled={isUploading || isConverting}
-                className="w-full h-10 gap-2 bg-primary text-white font-semibold rounded-xl transition-all shadow-md shadow-primary/20 hover:opacity-90 cursor-pointer"
+                disabled={!selectedFile || isUploading || isConverting}
+                className="w-full h-10 gap-2 bg-primary text-white font-semibold rounded-xl transition-all shadow-md shadow-primary/20 hover:opacity-90 cursor-pointer disabled:opacity-50"
             >
                 {isUploading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                     <FileCheck className="w-4 h-4" />
                 )}
-                <span>Save Formatted PDF</span>
+                <span>{selectedFile ? 'Upload & Save Galley PDF' : 'Select a PDF File'}</span>
             </Button>
         </form>
     );
