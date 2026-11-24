@@ -25,6 +25,21 @@ All cron endpoints are secured using a Bearer token verification. When calling a
 
 ---
 
+## 🛠️ On-Demand Admin Webhooks (Not Scheduled)
+
+These endpoints are **NOT recurring cron jobs** and should not be set on a timer. They are meant to be triggered **on-demand** by administrators or automated CLI / CI migration scripts.
+
+| Endpoint Route | Target File | Purpose | Trigger Timing |
+| :--- | :--- | :--- | :--- |
+| `/api/admin/purge-cache` | `src/app/api/admin/purge-cache/route.ts` | Flushes all Next.js 16 cache tags, route trees, and React Query caches | **Manually / Scripted** whenever you perform direct database manipulation in MySQL |
+
+**Example CLI usage after running SQL queries:**
+```bash
+curl -X POST "http://localhost:3000/api/admin/purge-cache?secret=ijitest-cron-2026-secure"
+```
+
+---
+
 ## 🔍 Detailed Cron Job Descriptions
 
 ### 1. Peer Review Deadline Reminders

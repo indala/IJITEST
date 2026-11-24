@@ -1,6 +1,7 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator";
 import NotificationCenter from '@/features/notifications/components/NotificationCenter';
+import PurgeCacheButton from '@/components/admin/PurgeCacheButton';
 import { UserNav } from './UserNav';
 
 import type { Session } from "next-auth";
@@ -23,6 +24,8 @@ export function PanelHeader({
         (i.fullHref !== '/author' && i.fullHref !== '/editor' && i.fullHref !== '/reviewer' && i.fullHref !== '/admin' && pathname.startsWith(i.fullHref + '/'))
     );
 
+    const isStaff = user?.role === 'admin' || user?.role === 'editor';
+
     return (
         <header className="bg-background/95 backdrop-blur-sm border-b border-border/70 flex items-center justify-between px-3 sm:px-6 2xl:px-8 h-14 sm:h-16 2xl:h-20 sticky top-0 z-30 transition-colors">
             <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
@@ -34,9 +37,10 @@ export function PanelHeader({
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
+                {isStaff && <PurgeCacheButton />}
                 <NotificationCenter />
-                <Separator orientation="vertical" className="mx-1 sm:mx-2 h-5 sm:h-6 hidden sm:block bg-primary/10" />
+                <Separator orientation="vertical" className="mx-0.5 sm:mx-1 h-5 sm:h-6 hidden sm:block bg-primary/10" />
                 <UserNav
                     user={user}
                     handleLogout={handleLogout}

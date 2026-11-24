@@ -16,10 +16,12 @@ import {
     Activity,
     BarChart3,
     Copy,
-    Check
+    Check,
+    Database
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from "@/lib/utils";
+import PurgeCacheButton from "@/components/admin/PurgeCacheButton";
 import { useSettings } from '@/features/settings';
 import { settingsKeys } from '@/features/settings';
 import { useState, useEffect } from 'react';
@@ -926,6 +928,35 @@ export default function SystemSettings() {
                     </div>
                 </motion.div>
             </div>
+
+            {/* 6.0 System Cache & Direct Database Synchronization */}
+            <motion.div variants={itemVariants} className="pt-2">
+                <Card className="bg-gradient-to-r from-slate-50 via-emerald-50/20 to-teal-50/30 border border-emerald-200/60 shadow-sm rounded-2xl overflow-hidden">
+                    <CardContent className="p-6 sm:p-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                        <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center shrink-0 shadow-xs border border-emerald-500/20 mt-0.5">
+                                <Database className="w-6 h-6" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                    <h3 className="font-bold text-slate-900 m-0">System Cache & Direct Database Sync</h3>
+                                    <Badge className="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5">Next.js 16 On-Demand</Badge>
+                                </div>
+                                <p className="text-slate-600 m-0 text-sm leading-relaxed max-w-2xl">
+                                    Did you modify rows directly in MySQL, run an SQL script, or restore a database dump? Next.js cache layers (Data Cache, <code className="text-xs font-mono font-bold bg-white px-1.5 py-0.5 rounded border border-slate-200">&apos;use cache&apos;</code>, and Route Trees) may retain stale records. Click to purge all system tags and refresh live data immediately.
+                                </p>
+                                <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500 font-mono">
+                                    <span className="text-slate-400">Terminal / Script Webhook:</span>
+                                    <code className="bg-white/80 px-2 py-1 rounded border border-slate-200 text-slate-700 select-all">
+                                        curl -X POST &quot;http://localhost:3000/api/admin/purge-cache?secret=ijitest-cron-2026-secure&quot;
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                        <PurgeCacheButton variant="card" className="shrink-0 h-11 px-6 font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20 cursor-pointer" />
+                    </CardContent>
+                </Card>
+            </motion.div>
 
             {/* 6.1 Email Templates Management Link */}
             <motion.div variants={itemVariants} className="pt-2">
