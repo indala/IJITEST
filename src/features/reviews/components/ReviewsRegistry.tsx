@@ -66,7 +66,7 @@ export function ReviewsRegistry({ role }: { role: ReviewsRegistryRole }) {
                 toast.error(res.error || "Conversion failed", { id: tid });
             }
         } catch {
-            toast.error("Failed to connect to conversion engine", { id: tid });
+            toast.error("Failed to connect to conversion service", { id: tid });
         } finally {
             setIsConverting(false);
         }

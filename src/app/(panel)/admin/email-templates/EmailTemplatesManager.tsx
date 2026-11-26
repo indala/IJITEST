@@ -565,7 +565,7 @@ export default function EmailTemplatesManager() {
                         </div>
                         <div>
                             <CardTitle className="font-bold text-slate-900 m-0">
-                                Customizable Email Templates (OJS Parity)
+                                Email Templates
                             </CardTitle>
                             <CardDescription className="text-body-sm text-slate-500 m-0 mt-0.5">
                                 Customize automated notification subjects, bodies, and placeholder variables.

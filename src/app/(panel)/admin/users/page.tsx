@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, UserPlus, Shield, Mail, Trash2, ShieldCheck, UserCog, CheckCircle, AlertCircle, ShieldAlert, Search } from 'lucide-react';
+import { Users, UserPlus, Mail, Trash2, ShieldCheck, UserCog, AlertCircle, ShieldAlert, Search } from 'lucide-react';
 import { useUsers } from '@/features/users';
 import { userKeys } from '@/features/users';
 import { useSession } from 'next-auth/react';
@@ -23,14 +23,6 @@ import {
     DialogTrigger,
     DialogFooter
 } from "@/components/ui/dialog";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 
 const getRoleVariant = (role: string) => {
     switch (role) {
@@ -40,36 +32,6 @@ const getRoleVariant = (role: string) => {
         default: return 'bg-muted text-muted-foreground border-none';
     }
 };
-
-const ROLE_GUIDE_DATA = [
-    {
-        role: 'Admin',
-        title: 'The Architect',
-        desc: 'Configuration and system oversight.',
-        variant: 'primary',
-        actions: ['Creating accounts', 'Site security', 'Metadata (ISSN)', 'Bug fixing']
-    },
-    {
-        role: 'Editor',
-        title: 'The Decision-Maker',
-        desc: 'Content Flow & Life Cycle management.',
-        variant: 'blue',
-        actions: ['Screening', 'Assigning reviewers', 'Final decisions', 'Scheduling releases']
-    },
-    {
-        role: 'Reviewer',
-        title: 'The Expert Witness',
-        desc: 'Technical evaluation & control.',
-        variant: 'emerald',
-        actions: ['Reading manuscripts', 'Error/Plagiarism check', 'Providing advice']
-    }
-] as const;
-
-const PERMISSIONS_TABLE_DATA = [
-    { role: 'Admin', focus: 'Infrastructure', publish: true, staff: true },
-    { role: 'Editor', focus: 'Workflow', publish: true, staff: false },
-    { role: 'Reviewer', focus: 'Accuracy', publish: false, staff: false },
-] as const;
 
 const UserItemCard = React.memo(({ user, currentUserId, isUpdatingRole, onDelete, onUpdateRole }: { user: SafeUserWithProfile, currentUserId: string | null, isUpdatingRole: boolean, onDelete: (user: SafeUserWithProfile) => void, onUpdateRole: (userId: string, newRole: "admin" | "editor" | "reviewer" | "author") => void }) => {
     const isEditingSelf = currentUserId === String(user.id);
@@ -386,67 +348,6 @@ export default function UserManagement() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-
-            {/* Role Reference Guide */}
-            <div className="mt-8 space-y-4">
-                <div className="flex items-center gap-3 border-b border-border pb-3">
-                    <h2>Role overview</h2>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 2xl:gap-8 transition-all duration-500">
-                    {ROLE_GUIDE_DATA.map((guide) => (
-                        <Card key={guide.role} className="border-border/50 shadow-sm">
-                            <CardContent className="p-3.5 sm:p-6">
-                                <div className="flex flex-col gap-3 mb-5">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg ${guide.variant === 'primary' ? 'bg-primary shadow-primary/20' : guide.variant === 'blue' ? 'bg-blue-600 shadow-blue-600/20' : 'bg-emerald-600 shadow-emerald-600/20'} `}>
-                                        {guide.role === 'Admin' ? <Shield className="w-6 h-6" /> : guide.role === 'Editor' ? <UserCog className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
-                                    </div>
-                                    <div>
-                                        <h3>{guide.role} <span className="text-muted-foreground text-sm font-normal block mt-1">{guide.title}</span></h3>
-                                    </div>
-                                </div>
-                                <p className="mb-6">{guide.desc}</p>
-                                <div className="space-y-2">
-                                    <p className="text-label font-semibold text-muted-foreground tracking-widest mb-3 uppercase">Key Actions</p>
-                                    {guide.actions.map((action, i) => (
-                                        <div key={i} className="flex items-center gap-3 text-body-sm font-semibold text-foreground bg-muted/30 px-3 py-2 rounded-xl">
-                                            <CheckCircle className={`w-4 h-4 ${guide.variant === 'primary' ? 'text-primary' : guide.variant === 'blue' ? 'text-blue-600' : 'text-emerald-600'} `} />
-                                            {action}
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-
-                <div className="border border-border/50 rounded-xl 2xl:rounded-4xl overflow-hidden mt-6 shadow-sm overflow-x-auto">
-                    <Table>
-                        <TableHeader className="bg-muted/30">
-                            <TableRow className="border-border/50">
-                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-label font-semibold text-muted-foreground tracking-widest">Level</TableHead>
-                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-label font-semibold text-muted-foreground tracking-widest">Focus</TableHead>
-                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-label font-semibold text-muted-foreground tracking-widest text-center">Publish?</TableHead>
-                                <TableHead className="h-10 2xl:h-20 px-6 2xl:px-10 text-label font-semibold text-muted-foreground tracking-widest text-center">Manage Staff?</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {PERMISSIONS_TABLE_DATA.map((row) => (
-                                <TableRow key={row.role} className="border-border/50 hover:bg-muted/20 transition-colors">
-                                    <TableCell className="px-6 py-4 2xl:px-10 2xl:py-8 font-semibold text-foreground">{row.role}</TableCell>
-                                    <TableCell className="px-6 py-4 2xl:px-10 2xl:py-8 font-semibold text-muted-foreground uppercase">{row.focus}</TableCell>
-                                    <TableCell className="px-6 py-4 2xl:px-10 2xl:py-8 text-center">
-                                        <div className={`w-2.5 h-2.5 2xl:w-5 2xl:h-5 rounded-full mx-auto ${row.publish ? 'bg-emerald-500' : 'bg-muted'} `} />
-                                    </TableCell>
-                                    <TableCell className="px-6 py-4 2xl:px-10 2xl:py-8 text-center">
-                                        <div className={`w-2.5 h-2.5 2xl:w-5 2xl:h-5 rounded-full mx-auto ${row.staff ? 'bg-emerald-500' : 'bg-muted'} `} />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </div>
         </section >
     );
 }

@@ -187,7 +187,7 @@ async function ReviewerMySubmissionsSection() {
                 <Card className="md:col-span-2 lg:col-span-3 border-dashed border border-border/70 bg-muted/10 py-10 text-center rounded-xl">
                     <div className="flex flex-col items-center gap-2 max-w-xs mx-auto text-muted-foreground">
                         <FileText className="w-7 h-7 opacity-30" />
-                        <span className="font-semibold text-body-sm">No Personal Records</span>
+                        <span className="font-semibold text-body-sm">No Submissions</span>
                         <Button asChild size="sm" className="btn-primary mt-1.5 h-8 font-semibold rounded-lg shadow-2xs">
                             <Link href="/submit">Start Submission</Link>
                         </Button>
@@ -265,7 +265,7 @@ async function ReviewerDashboardContent() {
                         <Badge variant="outline" className="badge-brand font-medium px-2.5 py-0.5 rounded-md">Reviewer Portal</Badge>
                     </div>
                     <h1 className="panel-title font-bold text-primary">
-                        Reviewer Intel Center
+                        Reviewer Dashboard
                     </h1>
                     <p className="panel-subtitle text-body-sm text-muted-foreground">
                         Logged in as <span className="font-semibold text-foreground">{user.name || user.email}</span>
@@ -273,7 +273,7 @@ async function ReviewerDashboardContent() {
                 </div>
                 <div className="flex items-center gap-2.5">
                     <Button asChild size="sm" className="btn-primary h-9 font-semibold rounded-lg shadow-2xs">
-                        <Link href="/reviewer/reviews">Open Assignment Hub</Link>
+                        <Link href="/reviewer/reviews">View Assignments</Link>
                     </Button>
                 </div>
             </header>
@@ -287,7 +287,7 @@ async function ReviewerDashboardContent() {
             <Tabs defaultValue="active-tasks" className="space-y-3 sm:space-y-4">
                 <TabsList className="bg-muted/40 p-1 rounded-lg border border-border/70">
                     <TabsTrigger value="active-tasks" className="rounded-md font-medium text-body-sm px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-2xs">Evaluation Queue</TabsTrigger>
-                    <TabsTrigger value="my-papers" className="rounded-md font-medium text-body-sm px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-2xs">Personal Records</TabsTrigger>
+                    <TabsTrigger value="my-papers" className="rounded-md font-medium text-body-sm px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-2xs">My Submissions</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="active-tasks" className="space-y-3 sm:space-y-4">
@@ -314,7 +314,7 @@ async function ReviewerDashboardContent() {
                                 </div>
                                 <h3 className="card-title-brand font-semibold">Editorial Guidelines</h3>
                                 <p className="text-caption text-muted-foreground leading-relaxed">
-                                    Please ensure all evaluations are completed within the designated timeframe. Your intelligence directly impacts the journal&apos;s publication cycle.
+                                    Please ensure all evaluations are completed within the designated timeframe. Your feedback directly supports the journal&apos;s publication cycle.
                                 </p>
                                 <div className="space-y-2 pt-1">
                                     <div className="flex items-center gap-2 text-body-sm font-medium text-foreground">
@@ -332,7 +332,7 @@ async function ReviewerDashboardContent() {
                                 </div>
                             </div>
                             <Button asChild variant="outline" className="btn-outline mt-4 w-full h-8 font-semibold rounded-lg">
-                                <Link href="/reviewer/reviews">Access Management Hub</Link>
+                                <Link href="/reviewer/reviews">View All Assignments</Link>
                             </Button>
                         </Card>
                     </div>

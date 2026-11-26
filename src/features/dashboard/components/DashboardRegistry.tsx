@@ -201,7 +201,7 @@ export function DashboardApplicationsCard({ pendingApplications }: { pendingAppl
                             </div>
                             <h5 className="font-medium">{app.fullName}</h5>
                             <Button asChild size="sm" variant="outline" className="w-full h-8 rounded-lg hover:bg-muted font-medium">
-                                <Link href="/admin/reviewer-applications">Review</Link>
+                                <Link href="/admin/applications">Review</Link>
                             </Button>
                         </div>
                     ))}

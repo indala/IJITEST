@@ -28,7 +28,7 @@ export function RelatedArticlesPanel({ articles }: RelatedArticlesPanelProps) {
                     </div>
                 </div>
                 <Badge variant="outline" className="text-badge text-primary border-primary/20">
-                    OJS Similarity Engine
+                    Similarity Match
                 </Badge>
             </div>
 

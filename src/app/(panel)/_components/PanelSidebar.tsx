@@ -50,7 +50,7 @@ export function PanelSidebar({
                             variant="ghost"
                             size="icon"
                             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                            className={cn("absolute -right-4 top-1/2 -translate-y-1/2 z-50 rounded-full border border-border bg-background shadow-lg hover:bg-accent transition-all hidden lg:flex items-center justify-center cursor-pointer", isCollapsed ? "bg-primary text-white" : "bg-primary text-white")}
+                            className="absolute -right-4 top-1/2 -translate-y-1/2 z-50 rounded-full border border-border bg-primary text-white shadow-lg hover:bg-primary/90 hover:text-white transition-all hidden lg:flex items-center justify-center cursor-pointer"
                             onClick={toggleSidebar}
                         >
                             {isCollapsed ? (
@@ -73,8 +73,8 @@ export function PanelSidebar({
                     </div>
                     {!isCollapsed && (
                         <div className="space-y-0.5 whitespace-nowrap opacity-100 transition-opacity duration-300">
-                            <span className="font-serif font-bold text-primary text-label leading-none block tracking-tight">IJITEST</span>
-                            <span className="text-label uppercase font-semibold tracking-wider text-muted-foreground block">Portal</span>
+                            <span className="font-serif font-bold text-primary text-sm leading-none block tracking-tight">IJITEST</span>
+                            <span className="text-2xs uppercase font-semibold tracking-wider text-muted-foreground block">Portal</span>
                         </div>
                     )}
                 </Link>

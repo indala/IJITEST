@@ -31,7 +31,7 @@ export function PanelHeader({
             <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
                 <SidebarTrigger className="lg:hidden h-9 w-9 sm:h-10 sm:w-10 cursor-pointer text-primary shrink-0" />
                 <div className="flex flex-col min-w-0">
-                    <h1 className="text-base sm:text-xl 2xl:text-2xl font-bold tracking-tight text-primary truncate max-w-[190px] sm:max-w-none m-0">
+                    <h1 className="font-sans text-base sm:text-xl 2xl:text-2xl font-bold tracking-tight text-primary truncate max-w-[190px] sm:max-w-none m-0">
                         {activeItem?.name || 'Overview'}
                     </h1>
                 </div>

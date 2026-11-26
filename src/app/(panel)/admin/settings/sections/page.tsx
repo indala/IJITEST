@@ -276,7 +276,7 @@ export default function AdminSectionsPage() {
                         Journal Sections Management
                     </h2>
                     <p className="text-caption text-muted-foreground">
-                        Configure manuscript classifications, word count restrictions, peer-review mandates, and indexing metadata (OJS Section Classification).
+                        Configure manuscript classifications, word count restrictions, peer-review mandates, and indexing metadata.
                     </p>
                 </div>
                 <Button
@@ -531,7 +531,7 @@ export default function AdminSectionsPage() {
                 <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                         <Label htmlFor="sec-identify-type" className="font-semibold">
-                            Content Identification Genre (OJS identifyType)
+                            Content Identification Type
                         </Label>
                         <span className="text-caption text-muted-foreground">Used in JATS & CrossRef metadata</span>
                     </div>
