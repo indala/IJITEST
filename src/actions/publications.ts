@@ -167,6 +167,53 @@ export async function getLatestPublishedIssue(): Promise<ActionResponse<Issue>> 
 }
 
 /**
+ * Calculate the next start and end page for a manuscript in an issue
+ */
+export async function getIssueNextPages(
+    issueId: number,
+    submissionId?: number
+): Promise<ActionResponse<{ startPage: number; endPage: number; pageCount: number; previousEndPage: number }>> {
+    try {
+        const [maxPageRow] = await db.select({
+            lastPage: sql<number>`MAX(${publications.endPage})`
+        }).from(publications).where(eq(publications.issueId, issueId));
+
+        const previousEndPage = maxPageRow?.lastPage || 0;
+        const startPage = previousEndPage + 1;
+        let pageCount = 1;
+
+        if (submissionId) {
+            const subRes = await getSubmissionById(submissionId);
+            if (subRes.success && subRes.data) {
+                const latestPdf = subRes.data.allFiles.find(f => f.fileType === 'pdfVersion') ||
+                                  subRes.data.allFiles.find(f => f.fileType === 'mainManuscript');
+                if (latestPdf?.fileUrl) {
+                    try {
+                        const pdfBytes = await downloadFileFromStorage(latestPdf.fileUrl);
+                        const { PDFDocument } = await import('pdf-lib');
+                        const pdfDoc = await PDFDocument.load(pdfBytes);
+                        pageCount = Math.max(1, pdfDoc.getPageCount());
+                    } catch (err) {
+                        console.error("Failed to read PDF for page count preview:", err);
+                    }
+                }
+            }
+        }
+
+        const endPage = startPage + pageCount - 1;
+        return actionSuccess({
+            startPage,
+            endPage,
+            pageCount,
+            previousEndPage
+        });
+    } catch (error) {
+        console.error("Failed to calculate issue pages:", error);
+        return actionError("Failed to calculate issue pages");
+    }
+}
+
+/**
  * Assign a paper to an issue, brand its PDF, and update its status appropriately
  */
 export async function assignPaperToIssue(

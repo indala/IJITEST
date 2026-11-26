@@ -661,6 +661,20 @@ export async function depositToZenodo(submissionId: number): Promise<ActionRespo
         ]);
 
         if (!paperRes.success || !paperRes.data) {
+            if (submission.issueId) {
+                const [issue] = await db.select({
+                    status: volumesIssues.status,
+                    volume: volumesIssues.volumeNumber,
+                    issue: volumesIssues.issueNumber
+                })
+                    .from(volumesIssues)
+                    .where(eq(volumesIssues.id, submission.issueId))
+                    .limit(1);
+
+                if (issue && issue.status !== 'published') {
+                    return actionError(`Volume ${issue.volume}, Issue ${issue.issue} is currently '${issue.status}'. Zenodo requires a published issue with an official publication date.`);
+                }
+            }
             return actionError("Failed to load published paper metadata.");
         }
 
