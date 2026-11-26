@@ -240,14 +240,23 @@ const PaymentItemCard = React.memo(({ item, onUpdateStatus }: { item: PaymentRow
                             <ResendPaymentModal item={item} />
                         )}
                         {['paid', 'verified'].includes(item.status) && (
-                            <SendReceiptButton
-                                paymentId={item.id}
-                                className="w-8 h-8 rounded-lg text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
-                                aria-label="Email APC Receipt / Tax Invoice"
-                            >
-                                <Download className="w-4 h-4" />
-                                <span className="sr-only">Email APC Receipt</span>
-                            </SendReceiptButton>
+                            <>
+                                <Button asChild variant="ghost" size="icon" aria-label="Download Tax Invoice PDF" title="Download Tax Invoice PDF" className="w-8 h-8 rounded-lg text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer">
+                                    <a href={`/api/payments/invoice/${item.id}`} download target="_blank" rel="noopener noreferrer">
+                                        <Download className="w-4 h-4" />
+                                        <span className="sr-only">Download Invoice PDF</span>
+                                    </a>
+                                </Button>
+                                <SendReceiptButton
+                                    paymentId={item.id}
+                                    className="w-8 h-8 rounded-lg text-muted-foreground hover:text-sky-600 hover:bg-sky-50 transition-colors cursor-pointer"
+                                    aria-label="Email APC Receipt to Author"
+                                    title="Email APC Receipt to Author"
+                                >
+                                    <Send className="w-4 h-4" />
+                                    <span className="sr-only">Email APC Receipt to Author</span>
+                                </SendReceiptButton>
+                            </>
                         )}
                     </div>
                     <Separator orientation="vertical" className="h-6 mx-1 bg-border/70 hidden lg:block" />

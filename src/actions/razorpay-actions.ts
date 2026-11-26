@@ -13,6 +13,7 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { verifyPaymentToken } from "@/lib/payment-token";
+import { sendReceiptEmail } from "@/actions/payments";
 
 type CreateOrderResponse =
     | { success: true; order: { id: string; amount: number; currency: string; key: string | undefined } }
@@ -260,9 +261,17 @@ export async function verifyRazorpayPayment(data: {
 
                 // Notify Editorial & Finance Staff
                 const [payRow] = await db.select({
+                    id: payments.id,
                     amount: payments.amount,
                     currency: payments.currency,
                 }).from(payments).where(eq(payments.submissionId, submissionId)).limit(1);
+
+                // Automatically email official PDF Tax Invoice & APC Receipt to author
+                if (payRow?.id) {
+                    sendReceiptEmail(payRow.id).catch(e =>
+                        console.error("Automatic Razorpay invoice receipt email failed:", e)
+                    );
+                }
 
                 const staff = await db.select({ email: users.email }).from(users).where(inArray(users.role, ['admin', 'editor']));
                 const alertTemplate = await emailTemplates.paymentReceivedAlert(

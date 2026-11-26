@@ -7,6 +7,7 @@ import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "./notifications";
 import { sendEmail } from "@/lib/mail";
+import { sendReceiptEmail } from "@/actions/payments";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { verifyPaymentToken } from "@/lib/payment-token";
@@ -220,6 +221,14 @@ export async function submitPayPalPaymentReference(
             } catch (mailErr) {
                 console.error("Failed to send PayPal confirmation email:", mailErr);
             }
+        }
+
+        // Automatically email official PDF Tax Invoice & APC Receipt to author
+        const [payRow] = await db.select({ id: payments.id }).from(payments).where(eq(payments.submissionId, submissionId)).limit(1);
+        if (payRow?.id) {
+            sendReceiptEmail(payRow.id).catch(e =>
+                console.error("Automatic PayPal invoice receipt email failed:", e)
+            );
         }
 
         revalidatePath(`/payment/${paperId}`);

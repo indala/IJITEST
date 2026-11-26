@@ -9,10 +9,11 @@ import { sendReceiptEmail } from "@/actions/payments";
 interface SendReceiptButtonProps {
     paymentId: number;
     className?: string;
+    title?: string;
     children?: React.ReactNode;
 }
 
-export default function SendReceiptButton({ paymentId, className, children }: SendReceiptButtonProps) {
+export default function SendReceiptButton({ paymentId, className, title, children }: SendReceiptButtonProps) {
     const [isPending, startTransition] = useTransition();
 
     const handleClick = () => {
@@ -33,6 +34,7 @@ export default function SendReceiptButton({ paymentId, className, children }: Se
             disabled={isPending}
             onClick={handleClick}
             className={className}
+            title={title}
             aria-label="Email Tax Invoice & Receipt"
         >
             {isPending ? (

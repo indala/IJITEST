@@ -105,6 +105,13 @@ export async function updatePaymentStatus(paymentId: number, status: PaymentStat
                         actionLink: `/author/submissions/${payInfo[0].submissionId}`,
                         metadata: { submissionId: payInfo[0].submissionId, paperId: payInfo[0].paperId }
                     });
+
+                    // Automatically email official PDF Tax Invoice & APC Receipt to author upon verification
+                    if (status === 'verified') {
+                        sendReceiptEmail(paymentId).catch((err) =>
+                            console.error("Automatic invoice receipt email failed:", err)
+                        );
+                    }
                 }
             }
         }
