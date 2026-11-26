@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useActionState, useRef, useEffect, useCallback } from 'react'
+import { useState, useTransition, useActionState, useRef, useEffect } from 'react'
 import { Plus, Globe, Loader2, Layers, Sparkles, Tag, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -78,7 +78,7 @@ export default function PublicationAssignment({
         : null;
 
     // Auto-calculate start and end page for a selected issue
-    const calculatePages = useCallback(async (issueIdStr: string) => {
+    const calculatePages = async (issueIdStr: string) => {
         const issueIdNum = parseInt(issueIdStr);
         if (isNaN(issueIdNum)) {
             setPageCalcInfo(null);
@@ -103,13 +103,13 @@ export default function PublicationAssignment({
         } finally {
             setIsCalculatingPages(false);
         }
-    }, [submissionId]);
+    };
 
     // Handle issue selection change
     const handleIssueChange = (newIssueId: string) => {
         setSelectedIssueId(newIssueId);
         if (newIssueId) {
-            calculatePages(newIssueId);
+            void calculatePages(newIssueId);
         } else {
             setPageCalcInfo(null);
             setStartPage("");
@@ -119,10 +119,25 @@ export default function PublicationAssignment({
 
     // Calculate on initial mount if an issue is already assigned but pages are empty
     useEffect(() => {
-        if (currentIssueId && !startPage) {
-            calculatePages(String(currentIssueId));
-        }
-    }, [currentIssueId, calculatePages, startPage]);
+        if (!currentIssueId || startPage) return;
+        let cancelled = false;
+        getIssueNextPages(currentIssueId, submissionId)
+            .then((res) => {
+                if (cancelled || !res.success || !res.data) return;
+                setStartPage(String(res.data.startPage));
+                setEndPage(String(res.data.endPage));
+                setPageCalcInfo({
+                    previousEndPage: res.data.previousEndPage,
+                    pageCount: res.data.pageCount,
+                });
+            })
+            .catch((err) => {
+                console.error("Auto page calculation failed:", err);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [currentIssueId, submissionId, startPage]);
 
     const [, createAction, isCreating] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
         const res = await createVolumeIssue(formData);

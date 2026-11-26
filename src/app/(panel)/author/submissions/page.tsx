@@ -74,7 +74,7 @@ export default async function AuthorSubmissionsList() {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-2.5 sm:gap-3">
                     {withEligibility.map((sub) => {
                         const eligibilityResponse = sub.eligibility as ActionResponse<Eligibility> | null;
                         const eligibility = eligibilityResponse?.success ? eligibilityResponse.data : undefined;
@@ -84,8 +84,8 @@ export default async function AuthorSubmissionsList() {
                         const isUrgent = !!(eligible && daysLeft !== undefined && daysLeft <= 5);
 
                         return (
-                            <Card key={sub.id} className={`border-border/50 bg-background hover:shadow-md transition-all group ${isUrgent ? 'ring-1 ring-orange-400/40' : ''} `}>
-                                <CardContent className="p-6">
+                            <Card key={sub.id} className={`border-border/50 bg-background hover:shadow-md transition-all group py-0 ${isUrgent ? 'ring-1 ring-orange-400/40' : ''} `}>
+                                <CardContent className="p-3 sm:p-4">
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
                                         <div className="flex-1 min-w-0 space-y-2">
                                             <div className="flex flex-wrap items-center gap-2">

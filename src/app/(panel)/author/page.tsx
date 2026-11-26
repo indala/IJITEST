@@ -12,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SubmissionProgress } from '@/features/author/components/SubmissionProgress';
-import { cn } from '@/lib/utils';
+import { cn, getSecureUrl } from '@/lib/utils';
 import React, { Suspense, cache } from 'react';
 import { type AuthorDashboardSubmission } from '@/db/types';
 import {
@@ -169,13 +169,13 @@ async function AuthorSubmissionsSection() {
                                         <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-border/50">
                                             {sub.status === 'published' && sub.finalPdfUrl ? (
                                                 <Button asChild size="sm" className="h-8 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-2xs">
-                                                    <Link href={sub.finalPdfUrl} target="_blank" className="flex items-center gap-1.5">
+                                                    <Link href={getSecureUrl(sub.finalPdfUrl)} target="_blank" className="flex items-center gap-1.5">
                                                         <BookOpen className="w-3.5 h-3.5" /> PDF
                                                     </Link>
                                                 </Button>
                                             ) : (sub.status === 'accepted' || sub.status === 'paymentPending') && !['paid', 'verified', 'waived'].includes(sub.paymentStatus || '') ? (
                                                 <Button asChild size="sm" className="h-8 px-3 btn-primary font-semibold rounded-lg shadow-2xs">
-                                                    <Link href={`/author/payments`} className="flex items-center gap-1.5">
+                                                    <Link href={`/payment/${sub.paperId}`} className="flex items-center gap-1.5">
                                                         <CreditCard className="w-3.5 h-3.5" /> Pay Fee
                                                     </Link>
                                                 </Button>

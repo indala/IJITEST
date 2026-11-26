@@ -242,11 +242,11 @@
   }
 
   .panel-content {
-    @apply mx-auto w-full max-w-7xl space-y-3 px-2.5 py-3 sm:space-y-4 sm:px-5 sm:py-5 lg:px-6 2xl:max-w-[1680px] 2xl:space-y-6 2xl:px-8 2xl:py-8;
+    @apply mx-auto w-full max-w-7xl space-y-2.5 px-2 py-2.5 sm:space-y-3.5 sm:px-4 sm:py-4 lg:px-5 2xl:max-w-[1680px] 2xl:space-y-5 2xl:px-6 2xl:py-6;
   }
 
   .panel-header {
-    @apply flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 sm:gap-3 pb-2.5 sm:pb-4 border-b border-border/70;
+    @apply flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-3 pb-2 sm:pb-3 border-b border-border/70;
   }
 
   .panel-dialog-content {

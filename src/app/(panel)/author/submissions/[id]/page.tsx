@@ -99,7 +99,7 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                 ))}
                             </div>
 
-                            <div className="pt-6 border-t border-primary/5 grid grid-cols-2 gap-6">
+                            <div className="pt-3 border-t border-primary/5 grid grid-cols-2 gap-3">
                                 <div className="space-y-1">
                                     <span className="text-label font-black uppercase tracking-widest text-primary/30">Current Version</span>
                                     <p className="font-bold text-primary">v{sub.versionNumber}</p>
@@ -126,15 +126,15 @@ export default async function AuthorSubmissionDetailsPage({ params }: { params: 
                                     </div>
                                 </div>
                             </CardHeader>
-                            <CardContent className="pt-6 space-y-6">
+                            <CardContent className="pt-3 sm:pt-4 space-y-3 sm:space-y-4">
                                 {!sub.reviewComments || sub.reviewComments.length === 0 ? (
-                                    <div className="text-center py-8 bg-muted/10 rounded-2xl border border-dashed border-primary/10">
+                                    <div className="text-center py-6 bg-muted/10 rounded-xl border border-dashed border-primary/10">
                                         <p className="text-label font-bold text-muted-foreground uppercase tracking-widest">No review comments recorded for this decision round.</p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-4">
+                                    <div className="space-y-3">
                                         {sub.reviewComments.map((comment, index) => (
-                                            <div key={index} className="p-5 rounded-2xl border border-primary/5 bg-primary/5 space-y-3">
+                                            <div key={index} className="p-3 sm:p-4 rounded-xl border border-primary/5 bg-primary/5 space-y-2">
                                                 <div className="flex items-center justify-between gap-4">
                                                     <Badge className="bg-primary/5 text-primary border-none text-badge font-black uppercase tracking-widest px-3 py-1">
                                                         Evaluation Comment #{index + 1}

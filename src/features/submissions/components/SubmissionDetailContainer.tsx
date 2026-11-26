@@ -62,19 +62,19 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
         : "/archives";
 
     return (
-        <section className="space-y-4 sm:space-y-6 pb-12 sm:pb-20">
+        <section className="space-y-3 sm:space-y-4 pb-8 sm:pb-12">
             {/* Breadcrumb / Top Bar */}
-            <div className="flex items-center justify-between gap-4">
-                <Button asChild variant="ghost" size="sm" className="h-9 gap-2 text-muted-foreground hover:text-primary font-semibold tracking-widest -ml-2 cursor-pointer capitalize">
+            <div className="flex items-center justify-between gap-3">
+                <Button asChild variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-primary font-semibold tracking-widest -ml-2 cursor-pointer capitalize">
                     <Link className="cursor-pointer" href={role === 'admin' ? "/admin/submissions" : "/editor/submissions"}>
                         <ChevronLeft className="w-4 h-4" /> {role === 'admin' ? "Submissions Console" : "Editorial queue"}
                     </Link>
                 </Button>
             </div>
 
-            <Card className="border-border/50 shadow-sm sm:shadow-lg overflow-hidden bg-background 2xl:rounded-3xl">
-                <CardHeader className="p-4 sm:p-6 lg:p-8 bg-muted/20 border-b border-border/50">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 sm:gap-6">
+            <Card className="border-border/50 shadow-sm sm:shadow-lg overflow-hidden bg-background py-0 gap-0 2xl:rounded-2xl">
+                <CardHeader className="p-3 sm:p-4 lg:p-5 bg-muted/20 border-b border-border/50">
+                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 sm:gap-4">
                         <div className="space-y-2.5 sm:space-y-4 max-w-2xl 2xl:max-w-4xl">
                             <div className="flex flex-wrap items-center gap-2">
                                 <Badge className={`h-6 px-2.5 text-xs font-semibold whitespace-nowrap capitalize ${getStatusVariant(submission.status)} `}>
@@ -124,12 +124,12 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                 <CardContent className="p-0">
                     <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-border/50">
                         {/* Main Content (8 cols) */}
-                        <div className="lg:col-span-8 p-3.5 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-12">
-                            <div className="space-y-3 sm:space-y-4 2xl:space-y-6">
-                                <div className="flex items-center gap-2 2xl:gap-4 text-label font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
-                                    <FileText className="w-3.5 h-3.5 2xl:w-5 2xl:h-5" /> Abstract overview
+                        <div className="lg:col-span-8 p-3 sm:p-4 lg:p-5 space-y-4 sm:space-y-5">
+                            <div className="space-y-2 sm:space-y-3">
+                                <div className="flex items-center gap-2 text-label font-semibold text-muted-foreground tracking-widest opacity-60 capitalize">
+                                    <FileText className="w-3.5 h-3.5" /> Abstract overview
                                 </div>
-                                <div className="p-3.5 sm:p-6 bg-muted/5 rounded-xl 2xl:rounded-3xl border border-border/30">
+                                <div className="p-3 sm:p-4 bg-muted/5 rounded-xl border border-border/30">
                                     <p className="text-foreground leading-relaxed text-justify font-medium selection:bg-primary/20">
                                         {submission.abstract || "No abstract provided."}
                                     </p>
@@ -274,16 +274,16 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                             <Separator className="bg-border/50" />
 
-                            <div className="space-y-6">
-                                <div className="flex flex-col gap-1.5">
+                            <div className="space-y-3">
+                                <div className="flex flex-col gap-1">
                                     <h3 className="font-semibold text-muted-foreground uppercase tracking-[0.2em] opacity-60">Galley & PDF Production</h3>
                                     <p className="text-label font-semibold text-muted-foreground/40 leading-relaxed uppercase tracking-widest">
                                         Manage publication layout proof, DOCX conversion, and PDF assets.
                                     </p>
                                 </div>
-                                <div className="space-y-4">
-                                    <Card className="border-primary/10 shadow-sm bg-card/50 overflow-hidden">
-                                        <CardContent className="p-6 space-y-6">
+                                <div className="space-y-3">
+                                    <Card className="border-primary/10 shadow-sm bg-card/50 overflow-hidden py-0">
+                                        <CardContent className="p-3 sm:p-4 space-y-3.5">
                                             <AdminPdfUpload submissionId={submission.id} currentUrl={getSecureUrl(submission.pdfUrl)} />
 
                                             <ExpertiseDossier bio={submission.correspondingAuthor?.profile?.bio || "No biography provided."} />
@@ -389,8 +389,8 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                     </CardContent>
                                                 </Card>
                                             )}
-                                            <Card className="bg-emerald-950 text-white border-none overflow-hidden rounded-xl shadow-2xl">
-                                                <CardContent className="p-8 space-y-6 relative">
+                                            <Card className="bg-emerald-950 text-white border-none overflow-hidden rounded-xl shadow-2xl py-0">
+                                                <CardContent className="p-4 sm:p-5 space-y-3.5 relative">
                                                     <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-400 opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                                                     <div className="flex items-center gap-4">
                                                         <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0 border border-white/10">

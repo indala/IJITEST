@@ -345,7 +345,7 @@ export default function PaymentManagement() {
     const deferredSearchQuery = useDeferredValue(searchQuery);
 
     const [, initPaymentAction, isInitPaymentPending] = useActionState(
-        async (_prevState: any, formData: FormData): Promise<any> => {
+        async (_prevState: unknown, formData: FormData): Promise<unknown> => {
             const submissionId = parseInt(formData.get('submissionId') as string);
             const amount = parseFloat(formData.get('amount') as string);
             const currency = formData.get('currency') as string;

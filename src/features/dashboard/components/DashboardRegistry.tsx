@@ -97,11 +97,11 @@ export interface DashboardRegistryProps {
 
 export function DashboardStatsGrid({ stats }: { stats: Stat[] }) {
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             {stats.map((stat) => (
-                <Card key={stat.label} className="border-border/50 shadow-2xs bg-card transition-all rounded-xl">
-                    <CardContent className="p-3 sm:p-4 2xl:p-5">
-                        <div className="flex items-center justify-between mb-2 sm:mb-3">
+                <Card key={stat.label} className="border-border/50 shadow-2xs bg-card transition-all rounded-xl py-0">
+                    <CardContent className="p-2.5 sm:p-3.5">
+                        <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                             <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center border border-border/5 ${
                                 stat.variant === 'primary' ? 'bg-primary/5 text-primary' : 'bg-muted/50 text-muted-foreground'
                             } `}>
@@ -136,8 +136,8 @@ export function DashboardRecentSubmissionsCard({
     role: string;
 }) {
     return (
-        <Card className="border-border/70 shadow-2xs bg-card rounded-xl">
-            <CardHeader className="flex flex-row items-center justify-between p-3.5 sm:p-4 border-b border-border/70">
+        <Card className="border-border/70 shadow-2xs bg-card rounded-xl py-0 gap-0">
+            <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-3.5 border-b border-border/70">
                 <CardTitle className="card-title-brand">
                     {recentSubmissionsTitle}
                 </CardTitle>
@@ -213,22 +213,22 @@ export function DashboardApplicationsCard({ pendingApplications }: { pendingAppl
 
 export function DashboardMySubmissionsGrid({ mySubmissions }: { mySubmissions: DashboardSubmission[] }) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {mySubmissions.length === 0 ? (
-                <Card className="md:col-span-2 lg:col-span-3 border-dashed border bg-muted/20 py-12 text-center rounded-xl border-border/70">
-                    <div className="max-w-xs mx-auto space-y-4">
-                        <div className="w-12 h-12 rounded-xl bg-card border border-border/70 flex items-center justify-center mx-auto">
-                            <FileText className="w-6 h-6 text-muted-foreground/40" />
+                <Card className="md:col-span-2 lg:col-span-3 border-dashed border bg-muted/20 py-8 text-center rounded-xl border-border/70">
+                    <div className="max-w-xs mx-auto space-y-3">
+                        <div className="w-10 h-10 rounded-xl bg-card border border-border/70 flex items-center justify-center mx-auto">
+                            <FileText className="w-5 h-5 text-muted-foreground/40" />
                         </div>
-                        <p className="text-caption text-muted-foreground px-6">Submit and track your own manuscripts from the portal.</p>
+                        <p className="text-caption text-muted-foreground px-4">Submit and track your own manuscripts from the portal.</p>
                         <Button asChild className="btn-primary">
                             <Link href="/submit">Submit Paper</Link>
                         </Button>
                     </div>
                 </Card>
             ) : mySubmissions.map((paper) => (
-                <Card key={paper.id} className="border-border/70 shadow-2xs bg-card hover:border-primary/30 transition-all group overflow-hidden rounded-xl">
-                    <div className="p-4 sm:p-5 space-y-4">
+                <Card key={paper.id} className="border-border/70 shadow-2xs bg-card hover:border-primary/30 transition-all group overflow-hidden rounded-xl py-0 gap-0">
+                    <div className="p-3 sm:p-4 space-y-2.5">
                         <div className="flex items-center justify-between">
                             <Badge variant="outline" className="text-meta px-2 py-0.5 rounded border-border/70">ID: {paper.paperId}</Badge>
                             <Badge className={`text-meta py-0.5 px-2.5 border-none rounded ${
@@ -313,9 +313,9 @@ export function DashboardHealthSectionView({
     role: string;
 }) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2 border-border/70 shadow-2xs bg-card overflow-hidden rounded-xl">
-                <CardHeader className="p-4 border-b border-border/70 flex flex-row items-center justify-between bg-muted/20">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+            <Card className="lg:col-span-2 border-border/70 shadow-2xs bg-card overflow-hidden rounded-xl py-0 gap-0">
+                <CardHeader className="p-3 sm:p-3.5 border-b border-border/70 flex flex-row items-center justify-between bg-muted/20">
                     <CardTitle className="font-semibold flex items-center gap-2 text-foreground">
                         <Users className="w-4 h-4 text-primary" /> Active Users
                     </CardTitle>

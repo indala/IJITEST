@@ -72,21 +72,21 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
     }
 
     return (
-        <section className="space-y-6 pb-20">
+        <section className="space-y-3 sm:space-y-4 pb-10">
             {/* Breadcrumb / Top Bar */}
-            <div className="flex items-center justify-between gap-4">
-                <Button asChild variant="ghost" size="sm" className="h-9 px-3 gap-2 text-muted-foreground font-bold uppercase tracking-widest -ml-2 rounded-lg transition-all cursor-pointer">
+            <div className="flex items-center justify-between gap-3">
+                <Button asChild variant="ghost" size="sm" className="h-8 px-2.5 gap-2 text-muted-foreground font-bold uppercase tracking-widest -ml-2 rounded-lg transition-all cursor-pointer">
                     <Link className="cursor-pointer" href="/reviewer/reviews">
                         <ChevronLeft className="w-4 h-4" /> Back to My Assignments
                     </Link>
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
                 {/* Left Column: Metadata (4 Cols) */}
-                <div className="lg:col-span-4 space-y-4 sm:space-y-6">
-                    <Card className="border-primary/5 shadow-vip overflow-hidden lg:sticky lg:top-24 rounded-xl pb-6 sm:pb-10 2xl:rounded-3xl bg-white">
-                        <CardHeader className="p-4 sm:p-6 bg-primary/5 border-b border-primary/10">
+                <div className="lg:col-span-4 space-y-3 sm:space-y-4">
+                    <Card className="border-primary/5 shadow-vip overflow-hidden lg:sticky lg:top-24 rounded-xl py-0 gap-0 bg-white">
+                        <CardHeader className="p-3 sm:p-4 bg-primary/5 border-b border-primary/10">
                             <div className="space-y-3">
                                 <Badge className="h-6 px-2.5 text-badge font-bold tracking-wide bg-emerald-600 text-white border-none shadow-xs rounded-md uppercase w-fit">
                                     Assigned for Review
@@ -106,8 +106,8 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-4 sm:p-6 2xl:p-10 space-y-4 sm:space-y-6 2xl:space-y-8">
-                            <div className="space-y-3 sm:space-y-4 2xl:space-y-8">
+                        <CardContent className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+                            <div className="space-y-2 sm:space-y-3">
                                 <h4 className="flex items-center gap-2 sm:gap-3 text-sm sm:text-base font-semibold">
                                     <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary" /> Abstract
                                 </h4>
