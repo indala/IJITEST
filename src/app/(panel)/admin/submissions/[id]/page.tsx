@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 function SubmissionDetailSkeleton() {
     return (
-        <div className="space-y-6 animate-pulse p-4 sm:p-6 max-w-7xl mx-auto">
+        <div className="space-y-6 animate-pulse p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border/60">
                 <div className="space-y-2">
                     <div className="h-4 w-32 bg-muted rounded-md" />
@@ -65,7 +65,7 @@ async function SubmissionDetailsContent({ params }: { params: Promise<Submission
                     <FileText className="w-8 h-8 text-muted-foreground/30" />
                 </div>
                 <h2 className="font-semibold text-foreground tracking-wider mb-2">Manuscript Not Found</h2>
-                <p className="text-caption font-medium text-muted-foreground mb-6 max-w-sm">The requested manuscript (Ref: {id}) could not be located in the primary database node.</p>
+                <p className="text-caption font-medium text-muted-foreground mb-6 max-w-sm">The requested manuscript (Ref: {id}) could not be found.</p>
                 <Button asChild variant="outline" className="h-9 px-4 font-medium rounded-lg cursor-pointer">
                     <Link className="cursor-pointer" href="/admin/submissions">Back to Submissions</Link>
                 </Button>

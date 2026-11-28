@@ -6,7 +6,7 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Contact Us | ${settings['journalName']}`,
+        title: 'Contact Us',
         description: `Get in touch with the editorial team of ${settings['journalShortName']}. We are available 24/7 for technical support and general inquiries regarding manuscript submissions.`,
         alternates: {
             canonical: '/contact',
@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
         openGraph: {
             title: `Contact ${settings['journalShortName']}`,
             description: `Author support and editorial desk contact information.`,
+            url: '/contact',
             type: 'website',
         }
     };

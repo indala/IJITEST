@@ -8,7 +8,7 @@ import { getLatestIssuePapers } from '@/actions/archives';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Current Issue | ${settings['journalName']}`,
+        title: 'Current Issue',
         description: `Explore the latest research and technical papers published in the current issue of ${settings['journalShortName']}.`,
         alternates: {
             canonical: '/current-issue',

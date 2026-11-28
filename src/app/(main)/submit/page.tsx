@@ -7,7 +7,7 @@ import { getSectionsData } from '@/actions/sections';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Submit Manuscript | ${settings['journalName']}`,
+        title: 'Submit Manuscript',
         description: `Submit your original research technical papers to ${settings['journalShortName']} for high-impact peer review and fast-track publication.`,
         alternates: {
             canonical: '/submit',
@@ -15,6 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
         openGraph: {
             title: `Manuscript Submission - ${settings['journalShortName']}`,
             description: `Global call for papers in Engineering and Technology.`,
+            url: '/submit',
             type: 'website',
         }
     };

@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAnnouncementById, getAnnouncements } from "@/actions/announcements";
-import { getSettingsData } from "@/actions/settings";
 import PageHeader from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, ArrowLeft, Send, FileText } from "lucide-react";
@@ -33,11 +32,8 @@ export async function generateMetadata({
     const res = await getAnnouncementById(numId);
     if (!res.success || !res.data) return { title: "Announcement Not Found" };
 
-    const settings = await getSettingsData();
-    const journalShort = settings["journalShortName"] || "IJITEST";
-
     return {
-        title: `${res.data.title} | ${journalShort}`,
+        title: res.data.title,
         description: res.data.descriptionShort || res.data.description.slice(0, 160),
         alternates: {
             canonical: `/announcements/${res.data.id}`,
@@ -45,6 +41,7 @@ export async function generateMetadata({
         openGraph: {
             title: res.data.title,
             description: res.data.descriptionShort || res.data.description.slice(0, 160),
+            url: `/announcements/${res.data.id}`,
             images: res.data.imageUrl ? [res.data.imageUrl] : [],
             type: "article",
         },

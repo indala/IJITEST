@@ -222,7 +222,7 @@ export default function SystemSettings() {
             initial="hidden"
             animate="visible"
             variants={containerVariants}
-            className="pb-8 max-w-6xl mx-auto space-y-4 sm:space-y-6"
+            className="pb-8 w-full space-y-4 sm:space-y-6 2xl:space-y-8"
         >
             {/* Header Section */}
             <motion.header 

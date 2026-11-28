@@ -8,14 +8,15 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Track Your Manuscript | ${settings['journalName']}`,
-        description: `Check the real-time status of your research submission at ${settings['journalShortName']}. Transparent tracking of editorial screening, peer review, and publication journey.`,
+        title: 'Track Your Manuscript',
+        description: `Check the real-time status of your research submission at ${settings['journalShortName']}. Transparent tracking of editorial screening, peer review, and publication.`,
         alternates: {
             canonical: '/track',
         },
         openGraph: {
             title: `Submission Tracking - ${settings['journalShortName']}`,
             description: `Real-time transparency for research submissions.`,
+            url: '/track',
             type: 'website',
         }
     };

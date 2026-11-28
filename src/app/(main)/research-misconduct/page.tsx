@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const journalShort = settings['journalShortName'] || 'IJITEST';
 
     return {
-        title: `${policy.title} | ${journalShort}`,
+        title: policy.title,
         description: policy.metaDescription,
         alternates: {
             canonical: `/${SLUG}`,

@@ -10,14 +10,15 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Editorial Board | ${settings['journalName']}`,
-        description: `Meet the esteemed editorial board of ${settings['journalShortName']}. Our panel of global academic experts is committed to scientific excellence and rigorous peer review in engineering and technology.`,
+        title: 'Editorial Board',
+        description: `Meet the esteemed editorial board of ${settings['journalShortName']}. Our panel of global academic experts is committed to scientific excellence and rigorous peer review.`,
         alternates: {
             canonical: '/editorial-board',
         },
         openGraph: {
             title: `Editorial Board - ${settings['journalShortName']}`,
             description: `Global academic experts steering the ${settings['journalName']}.`,
+            url: '/editorial-board',
             type: 'website',
         }
     };

@@ -15,7 +15,7 @@ import { SidebarLayout } from '@/components/layout/SidebarLayout';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `About the Journal | ${settings['journalName']}`,
+        title: 'About the Journal',
         description: `Learn about ${settings['journalName']} (${settings['journalShortName']}). We focus on rapid yet rigorous peer review for technically sound research in engineering, science, and technology.`,
         alternates: {
             canonical: '/about',
@@ -23,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
         openGraph: {
             title: `About ${settings['journalShortName']}`,
             description: `Quality academic publishing for the modern era.`,
+            url: '/about',
             type: 'website',
         }
     };

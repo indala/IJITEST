@@ -6,7 +6,7 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Privacy Policy | ${settings['journalName']}`,
+        title: 'Privacy Policy',
         description: `Learn how ${settings['journalShortName']} protects your personal data and scholarly contributions. Our privacy protocols ensure a secure and confidential research environment.`,
         alternates: {
             canonical: '/privacy',
@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
         openGraph: {
             title: `Data Protection - ${settings['journalShortName']}`,
             description: `Scholarly data privacy and security benchmarks.`,
+            url: '/privacy',
             type: 'website',
         }
     };

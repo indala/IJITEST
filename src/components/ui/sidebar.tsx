@@ -124,15 +124,6 @@ function SidebarProvider({
     [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
   )
 
-  const [is2xl, setIs2xl] = React.useState(false)
-
-  React.useEffect(() => {
-    const check2xl = () => setIs2xl(window.innerWidth >= 1536)
-    check2xl()
-    window.addEventListener("resize", check2xl)
-    return () => window.removeEventListener("resize", check2xl)
-  }, [])
-
   return (
     <SidebarContext value={contextValue}>
       <TooltipProvider delayDuration={0}>
@@ -140,7 +131,7 @@ function SidebarProvider({
           data-slot="sidebar-wrapper"
           className={cn(
             "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
-            is2xl ? "[--sidebar-width:16.5rem]" : "[--sidebar-width:15rem]",
+            "[--sidebar-width:15rem] 2xl:[--sidebar-width:16.5rem]",
             "[--sidebar-width-icon:4.5rem]",
             className
           )}

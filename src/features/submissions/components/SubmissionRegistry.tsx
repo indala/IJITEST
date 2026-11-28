@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import SubmissionContainer from '@/features/submissions/components/SubmissionContainer';
@@ -68,21 +68,8 @@ export default function SubmissionRegistry({
                         submissions={filteredSubmissions}
                         role={role}
                     />
-
-                    <div className="p-2.5 sm:p-4 border-t border-border/70 flex items-center justify-center bg-muted/20">
-                        <p className="text-meta">
-                            Registry Total: <span className="font-semibold text-foreground">{filteredSubmissions.length}</span> records in selection
-                        </p>
-                    </div>
                 </CardContent>
             </Card>
-
-            {filteredSubmissions.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-24 bg-card border border-dashed border-border/70 rounded-2xl space-y-4">
-                    <AlertTriangle className="w-12 h-12 text-muted-foreground/30" />
-                    <p className="text-body-sm text-muted-foreground">No active records in this database segment</p>
-                </div>
-            )}
         </section>
     );
 }

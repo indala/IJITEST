@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
-import { getSettingsData } from '@/actions/settings';
 import PageHeader from '@/components/layout/PageHeader';
 import PaymentLookupClient from '@/features/payments/components/PaymentLookupClient';
 
 export async function generateMetadata(): Promise<Metadata> {
-    const settings = await getSettingsData();
-    const shortName = settings['journalShortName'] || 'IJITEST';
     return {
-        title: `Online APC Payment | ${shortName}`,
-        description: `Disclose your Manuscript ID and registered correspondent email to access your official invoice and settle Article Processing Charges (APC).`,
+        title: 'Online APC Payment',
+        description: `Enter your Manuscript ID and registered email to access your official invoice and settle Article Processing Charges (APC).`,
         alternates: {
             canonical: '/payment',
+        },
+        openGraph: {
+            title: 'Online APC Payment',
+            description: 'Official invoice lookup and Article Processing Charges (APC) payment portal.',
+            url: '/payment',
+            type: 'website',
         },
     };
 }

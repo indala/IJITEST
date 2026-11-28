@@ -149,18 +149,13 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                 </div>
                             )}
 
-                            <div className="pt-4 2xl:pt-8">
+                            <div className="pt-4 2xl:pt-6">
                                 {submission.pdfUrl ? (
-                                    <>
-                                        <Button asChild className="w-full h-11 gap-2.5 font-bold uppercase tracking-wider shadow-md rounded-lg bg-primary hover:bg-primary/90 transition-all cursor-pointer text-white">
-                                            <a href={getSecureUrl(submission.pdfUrl)} download>
-                                                <Download className="w-4 h-4" /> Download PDF
-                                            </a>
-                                        </Button>
-                                        <p className="text-caption text-muted-foreground text-center mt-2.5 font-medium">
-                                            Official Review Version (Protected)
-                                        </p>
-                                    </>
+                                    <Button asChild className="w-full h-11 gap-2.5 font-bold uppercase tracking-wider shadow-md rounded-lg bg-primary hover:bg-primary/90 transition-all cursor-pointer text-white">
+                                        <a href={getSecureUrl(submission.pdfUrl)} download>
+                                            <Download className="w-4 h-4" /> Download PDF
+                                        </a>
+                                    </Button>
                                 ) : (
                                     <AdminPdfUpload
                                         submissionId={submission.id}
@@ -189,14 +184,10 @@ export default async function ReviewerSubmissionView({ params }: { params: Promi
                                         <Shield className="w-10 h-10 text-primary/30" />
                                     </div>
                                     <div className="space-y-2">
-                                        <h3>Secure Preview Pending</h3>
+                                        <h3>PDF Preview Unavailable</h3>
                                         <p className="opacity-60 max-w-xs mx-auto">
-                                            The editorial board has not yet synchronized the secure PDF version for this manuscript.
+                                            The PDF version of this manuscript is not available yet.
                                         </p>
-                                    </div>
-                                    <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-lg border border-border">
-                                        <History className="w-3.5 h-3.5 text-muted-foreground animate-spin-slow" />
-                                        <span className="text-label font-bold text-muted-foreground uppercase tracking-[0.2em]">Synchronization in Progress</span>
                                     </div>
                                 </div>
                             )}

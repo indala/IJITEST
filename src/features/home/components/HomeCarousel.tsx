@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -49,6 +49,7 @@ export default function HomeCarousel() {
                             src={slide.image}
                             alt={`Journal Hero Slide ${index + 1}`}
                             fill
+                            sizes="100vw"
                             priority={index === 0}
                             loading={index === 0 ? "eager" : "lazy"}
                             fetchPriority={index === 0 ? "high" : "low"}
@@ -65,58 +66,38 @@ export default function HomeCarousel() {
 
             {/* Content Container */}
             <div className="container-responsive h-full relative z-20 flex items-center">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentIndex}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1, ease: "easeInOut" }}
-                        className="max-w-4xl 2xl:max-w-5xl space-y-3 2xl:space-y-4"
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3, duration: 0.8 }}
-                        >
-                            <h1 className="drop-shadow-md text-white m-0">
-                                {TOP_TITLE}<br />{BOTTOM_TITLE}
-                            </h1>
-                        </motion.div>
+                <div className="max-w-4xl 2xl:max-w-5xl space-y-3 2xl:space-y-4">
+                    <h1 className="drop-shadow-md text-white m-0">
+                        {TOP_TITLE}<br />{BOTTOM_TITLE}
+                    </h1>
 
+                    <div className="flex flex-wrap items-center gap-3 pt-1">
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.5, duration: 0.8 }}
-                            className="flex flex-wrap items-center gap-3 pt-1"
+                            animate={{
+                                boxShadow: ["0px 0px 0px rgba(220,103,38,0)", "0px 10px 30px rgba(220,103,38,0.5)", "0px 0px 0px rgba(220,103,38,0)"]
+                            }}
+                            transition={{ duration: 3, repeat: Infinity }}
+                            className="rounded-lg overflow-hidden"
                         >
-                            <motion.div
-                                animate={{
-                                    boxShadow: ["0px 0px 0px rgba(220,103,38,0)", "0px 10px 30px rgba(220,103,38,0.5)", "0px 0px 0px rgba(220,103,38,0)"]
-                                }}
-                                transition={{ duration: 3, repeat: Infinity }}
-                                className="rounded-lg overflow-hidden"
-                            >
-                                <Button
-                                    asChild
-                                    variant="secondary"
-                                >
-                                    <Link href="/submit">
-                                        Submit Manuscript
-                                    </Link>
-                                </Button>
-                            </motion.div>
                             <Button
                                 asChild
-                                variant="outline-white"
+                                variant="secondary"
                             >
-                                <Link href="/archives">
-                                    Explore Archives
+                                <Link href="/submit">
+                                    Submit Manuscript
                                 </Link>
                             </Button>
                         </motion.div>
-                    </motion.div>
-                </AnimatePresence>
+                        <Button
+                            asChild
+                            variant="outline-white"
+                        >
+                            <Link href="/archives">
+                                Explore Archives
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
             </div>
 
             {/* Slide Indicators */}

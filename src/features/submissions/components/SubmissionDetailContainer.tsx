@@ -220,6 +220,10 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                     </CardContent>
                                 </Card>
 
+                                {submission.correspondingAuthor?.profile?.bio && (
+                                    <ExpertiseDossier bio={submission.correspondingAuthor.profile.bio} />
+                                )}
+
                                 {submission.coAuthors && submission.coAuthors.length > 0 && (
                                     <div className="space-y-3 pt-2">
                                         <h4 className="font-semibold text-muted-foreground tracking-[0.2em] opacity-60 uppercase">Collaborating Authors</h4>
@@ -286,8 +290,6 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                         <CardContent className="p-3 sm:p-4 space-y-3.5">
                                             <AdminPdfUpload submissionId={submission.id} currentUrl={getSecureUrl(submission.pdfUrl)} />
 
-                                            <ExpertiseDossier bio={submission.correspondingAuthor?.profile?.bio || "No biography provided."} />
-
                                             {submission.pdfUrl ? (
                                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/3 border border-emerald-500/10 transition-all">
                                                     <div className="relative">
@@ -334,12 +336,6 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                                     {(submission.status === 'underReview' || submission.status === 'paymentPending' || (submission.status === 'accepted' && submission.payment && !['paid', 'verified', 'waived'].includes(submission.payment.status))) && (
                                         <div className="space-y-4">
-                                            {submission.status === 'underReview' && (
-                                                <div className="p-4 2xl:p-6 bg-primary/5 border border-primary/20 rounded-xl 2xl:rounded-2xl space-y-1 2xl:space-y-3">
-                                                    <p className="text-label font-semibold text-primary tracking-widest">Editorial Threshold</p>
-                                                    <p className="font-medium text-primary/70">Final authorization required</p>
-                                                </div>
-                                            )}
                                             {(submission.status === 'accepted' || submission.status === 'paymentPending') && (
                                                 <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-xl text-center space-y-3">
                                                     <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center mx-auto">
@@ -397,14 +393,14 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                             <Globe className="w-5 h-5 text-emerald-400" />
                                                         </div>
                                                         <div className="space-y-0.5">
-                                                            <p className="text-label font-semibold text-emerald-400 tracking-widest">In Archive</p>
-                                                            <h3 className="font-semibold tracking-wider text-white">Live Index</h3>
+                                                            <p className="text-label font-semibold text-emerald-400 tracking-widest">Published</p>
+                                                            <h3 className="font-semibold tracking-wider text-white">Archive Details</h3>
                                                         </div>
                                                     </div>
                                                     <Separator className="bg-white/10" />
                                                     <div className="space-y-3">
                                                         <div className="flex items-center justify-between">
-                                                            <p className="text-label font-semibold text-white/40 tracking-widest uppercase">Archive Node</p>
+                                                            <p className="text-label font-semibold text-white/40 tracking-widest uppercase">Issue</p>
                                                             <p className="font-semibold text-white">
                                                                 {submission.volumeNumber && `Vol ${submission.volumeNumber}, Issue ${submission.issueNumber}`}
                                                                 {submission.startPage && `, pp. ${submission.startPage}-${submission.endPage}`}
@@ -530,13 +526,6 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
                                                         volumeNumber={submission.volumeNumber || submission.issue?.volumeNumber}
                                                         year={submission.issue?.year}
                                                     />
-
-                                                    <Link
-                                                        href="/admin/publications"
-                                                        className="block text-label font-semibold text-center text-emerald-600 hover:underline tracking-widest opacity-60 pt-4"
-                                                    >
-                                                        Access Volumes Terminal
-                                                    </Link>
                                                 </div>
                                             ) : (
                                                 <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-xl space-y-4">
@@ -559,12 +548,7 @@ export default function SubmissionDetailContainer({ role, submission }: Submissi
 
                                     <div className="pt-4 mt-6 border-t border-border/50">
                                         {!['paid', 'verified', 'waived'].includes(submission.payment?.status || '') && submission.status !== 'published' ? (
-                                            <div className="space-y-3">
-                                                <h4 className="font-semibold text-muted-foreground tracking-widest opacity-50 px-1">
-                                                    {role === 'admin' ? "Dangerous Territory" : "Infrastructure Control"}
-                                                </h4>
-                                                <DeleteSubmissionButton submissionId={submission.id} status={submission.status} variant="full" />
-                                            </div>
+                                            <DeleteSubmissionButton submissionId={submission.id} status={submission.status} variant="full" />
                                         ) : (
                                             <div className="bg-muted p-4 rounded-xl border border-border/50 text-label text-muted-foreground/60 font-semibold tracking-widest text-center">
                                                 Records Locked (Archived)

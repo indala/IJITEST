@@ -32,7 +32,7 @@ function BreadcrumbJsonLd({ items, baseUrl }: { items: BreadcrumbItem[]; baseUrl
                     '@context': 'https://schema.org',
                     '@type': 'BreadcrumbList',
                     itemListElement,
-                }),
+                }).replace(/</g, '\\u003c'),
             }}
         />
     );

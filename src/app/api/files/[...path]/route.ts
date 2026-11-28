@@ -121,12 +121,13 @@ async function serveFile(relativePath: string) {
                 responseHeaders['Content-Length'] = contentLength;
             }
 
-            if (ext === '.pdf') {
+            const isPublicAsset = cleanRelativePath.startsWith('published/') || cleanRelativePath.startsWith('issues/');
+            if (isPublicAsset) {
+                responseHeaders['Cache-Control'] = 'public, max-age=86400, stale-while-revalidate=604800';
+            } else if (ext === '.pdf') {
                 responseHeaders['Cache-Control'] = 'private, no-store, no-cache, must-revalidate, max-age=0';
                 responseHeaders['Pragma'] = 'no-cache';
                 responseHeaders['Expires'] = '0';
-            } else if (cleanRelativePath.startsWith('published/') || cleanRelativePath.startsWith('issues/')) {
-                responseHeaders['Cache-Control'] = 'public, max-age=86400, stale-while-revalidate=604800';
             }
 
             return new NextResponse(storageRes.body, {
@@ -150,11 +151,15 @@ async function serveFile(relativePath: string) {
                 'Content-Disposition': `inline; filename="${safeFilename}"`,
                 'X-Frame-Options': 'SAMEORIGIN',
                 'Content-Security-Policy': "frame-ancestors 'self' https://indala.vercel.app",
-                ...(ext === '.pdf' ? {
-                    'Cache-Control': 'private, no-store, no-cache, must-revalidate, max-age=0',
-                    'Pragma': 'no-cache',
-                    'Expires': '0',
-                } : {}),
+                ...((cleanRelativePath.startsWith('published/') || cleanRelativePath.startsWith('issues/'))
+                    ? { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800' }
+                    : ext === '.pdf'
+                        ? {
+                            'Cache-Control': 'private, no-store, no-cache, must-revalidate, max-age=0',
+                            'Pragma': 'no-cache',
+                            'Expires': '0',
+                        }
+                        : {}),
             },
         });
     } catch (err) {

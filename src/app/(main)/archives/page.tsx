@@ -12,13 +12,13 @@ import { SidebarLayout } from '@/components/layout/SidebarLayout';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Journal Archives | ${settings['journalName']}`,
-        description: `Browse the digital repository of ${settings['journalShortName']}. Explore peer-reviewed research, technical reports, and innovative trends in engineering and science since ${settings['journalName']}'s inception.`,
+        title: 'Journal Archives',
+        description: `Browse the digital repository of ${settings['journalShortName']}. Explore peer-reviewed research, technical reports, and innovative trends in engineering and science.`,
         alternates: {
             canonical: '/archives',
         },
         openGraph: {
-            title: `Research repository - ${settings['journalShortName']}`,
+            title: `Research Repository - ${settings['journalShortName']}`,
             description: `Global access to peer-reviewed technical manuscripts.`,
             url: '/archives',
             type: 'website',

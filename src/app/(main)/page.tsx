@@ -41,23 +41,29 @@ async function AnnouncementsWidgetSection() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettingsData();
+  const shortName = settings['journalShortName'] || 'IJITEST';
+  const journalName = settings['journalName'] || 'International Journal of Innovative Trends in Engineering Science and Technology';
+  const description = `${shortName} (${journalName}) is a peer-reviewed, open-access journal for engineering, science, and technology research.`;
   return {
-    title: settings['journalName'],
-    description: `Welcome to ${settings['journalName']} (${settings['journalShortName']}). We provide a global platform for breakthrough research in engineering, science, and technology with rapid, high-quality peer review.`,
+    title: {
+      absolute: `${shortName} | ${journalName}`,
+    },
+    description,
     alternates: {
       canonical: '/',
     },
     openGraph: {
-      title: settings['journalName'],
-      description: `Advancing scientific excellence through innovative trends. Explore peer-reviewed research and elite academic publishing at ${settings['journalShortName']}.`,
+      title: `${shortName} | ${journalName}`,
+      description,
+      url: '/',
       type: 'website',
-      siteName: settings['journalName'],
+      siteName: shortName,
       images: [
         {
           url: '/open_graph_img.png',
           width: 1200,
           height: 630,
-          alt: `${settings['journalShortName']} - Global Research Platform`,
+          alt: `${shortName} - Global Research Platform`,
         },
       ],
     }

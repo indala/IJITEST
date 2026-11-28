@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useActionState, useRef, useEffect } from 'react'
+import { useState, useTransition, useActionState, useRef } from 'react'
 import { Plus, Globe, Loader2, Layers, Sparkles, Tag, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,8 +22,7 @@ import { publicationKeys } from '@/features/publications'
 import { submissionKeys } from '@/features/submissions'
 import {
     createVolumeIssue,
-    assignPaperToIssue,
-    getIssueNextPages
+    assignPaperToIssue
 } from '@/actions/publications'
 import { depositToCrossref, depositToZenodo } from '@/actions/doi-registration'
 import { normalizeDoi, normalizeDoiPrefix, generateJackDoi } from '@/lib/doi-format'
@@ -53,10 +52,6 @@ export default function PublicationAssignment({
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedIssueId, setSelectedIssueId] = useState<string>(currentIssueId?.toString() || "");
-    const [startPage, setStartPage] = useState<string>("");
-    const [endPage, setEndPage] = useState<string>("");
-    const [isCalculatingPages, setIsCalculatingPages] = useState<boolean>(false);
-    const [pageCalcInfo, setPageCalcInfo] = useState<{ previousEndPage: number; pageCount: number } | null>(null);
 
     const [doiChoice, setDoiChoice] = useState<'none' | 'official' | 'zenodo' | 'custom'>('none');
     const [customDoiValue, setCustomDoiValue] = useState<string>("");
@@ -76,68 +71,6 @@ export default function PublicationAssignment({
     const jackDoiInfo = paperId
         ? generateJackDoi(doiPrefix, paperId, effectiveVolume, effectiveYear)
         : null;
-
-    // Auto-calculate start and end page for a selected issue
-    const calculatePages = async (issueIdStr: string) => {
-        const issueIdNum = parseInt(issueIdStr);
-        if (isNaN(issueIdNum)) {
-            setPageCalcInfo(null);
-            setStartPage("");
-            setEndPage("");
-            return;
-        }
-
-        setIsCalculatingPages(true);
-        try {
-            const res = await getIssueNextPages(issueIdNum, submissionId);
-            if (res.success && res.data) {
-                setStartPage(String(res.data.startPage));
-                setEndPage(String(res.data.endPage));
-                setPageCalcInfo({
-                    previousEndPage: res.data.previousEndPage,
-                    pageCount: res.data.pageCount,
-                });
-            }
-        } catch (err) {
-            console.error("Auto page calculation failed:", err);
-        } finally {
-            setIsCalculatingPages(false);
-        }
-    };
-
-    // Handle issue selection change
-    const handleIssueChange = (newIssueId: string) => {
-        setSelectedIssueId(newIssueId);
-        if (newIssueId) {
-            void calculatePages(newIssueId);
-        } else {
-            setPageCalcInfo(null);
-            setStartPage("");
-            setEndPage("");
-        }
-    };
-
-    // Calculate on initial mount if an issue is already assigned but pages are empty
-    useEffect(() => {
-        if (!currentIssueId || startPage) return;
-        let cancelled = false;
-        getIssueNextPages(currentIssueId, submissionId)
-            .then((res) => {
-                if (cancelled || !res.success || !res.data) return;
-                setStartPage(String(res.data.startPage));
-                setEndPage(String(res.data.endPage));
-                setPageCalcInfo({
-                    previousEndPage: res.data.previousEndPage,
-                    pageCount: res.data.pageCount,
-                });
-            })
-            .catch((err) => {
-                console.error("Auto page calculation failed:", err);
-            });
-        return () => {
-            cancelled = true;
-        };
-    }, [currentIssueId, submissionId, startPage]);
 
     const [, createAction, isCreating] = useActionState(async (_prev: ActionResponse | null, formData: FormData) => {
         const res = await createVolumeIssue(formData);
@@ -189,8 +122,8 @@ export default function PublicationAssignment({
                 const res = await assignPaperToIssue(
                     submissionId,
                     parseInt(selectedIssueId),
-                    startPage ? parseInt(startPage) : undefined,
-                    endPage ? parseInt(endPage) : undefined,
+                    undefined,
+                    undefined,
                     targetDoi,
                     provider
                 );
@@ -283,9 +216,9 @@ export default function PublicationAssignment({
                             <DialogContent className="sm:max-w-md rounded-xl p-8 bg-card border-primary/5 shadow-2xl overflow-hidden">
                                 <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500/10" />
                                 <DialogHeader className="space-y-2">
-                                    <DialogTitle className="text-foreground">Quick Terminal</DialogTitle>
+                                    <DialogTitle className="text-foreground">Create New Issue</DialogTitle>
                                     <DialogDescription className="opacity-60 leading-relaxed">
-                                        Instantly define a new publication node for immediate manuscript archival.
+                                        Create a new volume and issue cycle for publishing manuscripts.
                                     </DialogDescription>
                                 </DialogHeader>
                                 <form action={createAction} className="space-y-5 mt-4">
@@ -344,10 +277,10 @@ export default function PublicationAssignment({
                         <select
                             title="issueId"
                             value={selectedIssueId}
-                            onChange={(e) => handleIssueChange(e.target.value)}
+                            onChange={(e) => setSelectedIssueId(e.target.value)}
                             className="w-full h-11 bg-background border border-emerald-500/20 rounded-xl px-4 appearance-none outline-none focus:ring-4 focus:ring-emerald-500/5 transition-all text-emerald-950 font-medium cursor-pointer"
                         >
-                            <option value="">Select Target Issue...</option>
+                            <option value="">Select Issue...</option>
                             {volumes.map((vi) => (
                                 <option key={vi.id} value={vi.id}>
                                     VOL {vi.volumeNumber} ISSUE {vi.issueNumber} ({vi.year}) • {vi.status === 'published' ? 'Published' : 'Open'}
@@ -366,73 +299,16 @@ export default function PublicationAssignment({
                         <Layers className="w-5 h-5 mx-auto text-emerald-600/60 mb-1" />
                         <p className="font-semibold text-foreground text-xs uppercase tracking-wider">Select an Issue First</p>
                         <p className="text-caption text-muted-foreground/80 max-w-xs mx-auto">
-                            Choose or create a volume and issue cycle above to reveal automatic page numbering and DOI assignment options.
+                            Choose or create a volume and issue cycle above to configure DOI assignment.
                         </p>
                     </div>
                 ) : (
                     <>
-                        {/* Step 2: Page Numbering (Auto-calculated) */}
-                        <div className="space-y-2.5 pt-2 border-t border-emerald-500/10">
-                            <div className="flex items-center justify-between">
-                                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Step 2: Pagination (Auto-Calculated)
-                                </label>
-                                {isCalculatingPages ? (
-                                    <span className="flex items-center gap-1 text-[11px] text-emerald-600 font-semibold">
-                                        <Loader2 className="w-3 h-3 animate-spin" /> Calculating...
-                                    </span>
-                                ) : pageCalcInfo ? (
-                                    <span className="flex items-center gap-1 text-[11px] text-emerald-700 font-semibold">
-                                        <Sparkles className="w-3 h-3 text-emerald-600" />
-                                        Auto-sequenced ({pageCalcInfo.pageCount} pp.)
-                                    </span>
-                                ) : null}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-1.5">
-                                    <Label className="text-caption text-muted-foreground">Start Page</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="e.g. 1"
-                                        value={startPage}
-                                        onChange={(e) => setStartPage(e.target.value)}
-                                        className="h-10 bg-background border-emerald-500/20 rounded-lg font-mono font-medium"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <Label className="text-caption text-muted-foreground">End Page</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="e.g. 10"
-                                        value={endPage}
-                                        onChange={(e) => setEndPage(e.target.value)}
-                                        className="h-10 bg-background border-emerald-500/20 rounded-lg font-mono font-medium"
-                                    />
-                                </div>
-                            </div>
-
-                            {pageCalcInfo && (
-                                <div className="flex items-center justify-between text-caption text-emerald-800 bg-emerald-500/10 px-2.5 py-1.5 rounded-lg border border-emerald-500/15">
-                                    <span>
-                                        Sequenced from Issue {selectedIssue?.issueNumber} (previous last page: <strong className="font-mono">{pageCalcInfo.previousEndPage || 0}</strong>)
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => calculatePages(selectedIssueId)}
-                                        className="text-emerald-700 hover:text-emerald-900 underline text-xs font-semibold cursor-pointer"
-                                    >
-                                        Recalculate
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Step 3: DOI Allocation Protocol */}
+                        {/* Step 2: DOI Assignment */}
                         <div className="space-y-2.5 pt-3 border-t border-emerald-500/10">
                             <div className="flex items-center justify-between">
                                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Step 3: DOI Assignment
+                                    Step 2: DOI Assignment
                                 </label>
                                 <span className="text-meta text-muted-foreground font-mono">Prefix: {doiPrefix}</span>
                             </div>

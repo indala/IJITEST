@@ -48,7 +48,10 @@ export async function generateMetadata({ params }: { params: Promise<PaperDetail
         ? new Date(paper.publishedAt).toISOString().split('T')[0]
         : pubYearStr) as string;
 
-    const description = paper.abstract ? paper.abstract.substring(0, 160) : '';
+    const rawAbstract = (paper.abstract || '').trim();
+    const description = rawAbstract.length > 155
+        ? `${rawAbstract.slice(0, 155).replace(/\s+\S*$/, '')}...`
+        : rawAbstract;
     const canonicalUrl = `${baseUrl}/archives/${volume}/${issue}/${canonicalPaperId}`;
     const pdfFullUrl = paper.pdfUrl ? (paper.pdfUrl.startsWith('http') ? paper.pdfUrl : `${baseUrl}${paper.pdfUrl}`) : '';
     const authorInstitutions = Array.isArray(paper.coAuthors) && paper.coAuthors.length > 0
@@ -289,8 +292,14 @@ export default async function PaperDetailPage({ params }: { params: Promise<Pape
                         {
                             "@type": "ListItem",
                             "position": 3,
+                            "name": `Vol. ${paper.volumeNumber || 1}, Issue ${paper.issueNumber || 1}`,
+                            "item": `${baseUrl}/archives/${volume}/${issue}`
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 4,
                             "name": paper.paperId,
-                            "item": `${baseUrl}/archives/${volume}/${issue}/${paperId}`
+                            "item": canonicalUrl
                         }
                     ]
                 }}

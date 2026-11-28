@@ -29,6 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/apc-fees', priority: 0.75, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
     { path: '/peer-review', priority: 0.75, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
     { path: '/aims-scope', priority: 0.75, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
+    { path: '/policies', priority: 0.75, changeFrequency: 'monthly' as const, lastModified: staticRevisionDate },
     { path: '/ethics', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
     { path: '/copyright-policy', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },
     { path: '/licensing-policy', priority: 0.7, changeFrequency: 'yearly' as const, lastModified: staticRevisionDate },

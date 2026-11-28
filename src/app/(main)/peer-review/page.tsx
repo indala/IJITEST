@@ -6,7 +6,7 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Peer Review Process | ${settings['journalName']}`,
+        title: 'Peer Review Process',
         description: `Explore the rigorous double-blind peer review process at ${settings['journalShortName']}. We ensure technical accuracy, originality, and scientific impact in all published research.`,
         alternates: {
             canonical: '/peer-review',
@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
         openGraph: {
             title: `Peer Review Excellence - ${settings['journalShortName']}`,
             description: `Quality assurance protocol for scientific manuscripts.`,
+            url: '/peer-review',
             type: 'website',
         }
     };

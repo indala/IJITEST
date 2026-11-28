@@ -5,18 +5,18 @@ import { getSettingsData } from '@/actions/settings';
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
-    const journalName = settings.journalName || 'International Journal of Innovative Trends in Engineering Science and Technology';
     const journalShort = settings.journalShortName || 'IJITEST';
 
     return {
-        title: `Policies | ${journalName}`,
-        description: `Explore the complete policy framework of ${journalShort}, including peer review guidelines, publication ethics, open access licensing, plagiarism thresholds, and digital archiving protocols.`,
+        title: 'Policies',
+        description: `Explore the complete policy framework of ${journalShort}, including peer review guidelines, publication ethics, open access licensing, plagiarism, and archiving.`,
         alternates: {
             canonical: '/policies',
         },
         openGraph: {
             title: `Journal Policies - ${journalShort}`,
             description: `Quality assurance benchmarks, COPE ethics, open access licensing, and preservation standards.`,
+            url: '/policies',
             type: 'website',
         }
     };

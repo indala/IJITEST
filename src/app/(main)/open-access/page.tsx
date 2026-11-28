@@ -6,7 +6,7 @@ import { getSettingsData } from '@/actions/settings';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Open Access Policy | ${settings['journalName']}`,
+        title: 'Open Access Policy',
         description: `Explore ${settings['journalShortName']}'s Open Access policy. All research articles are published under CC BY 4.0 license with immediate, unrestricted, and permanent global access.`,
         alternates: {
             canonical: '/open-access',

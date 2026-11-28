@@ -11,10 +11,16 @@ export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     const journalName = settings["journalName"] || "IJITEST";
     return {
-        title: `Announcements & Notices | ${journalName}`,
+        title: 'Announcements & Notices',
         description: `Official announcements, calls for papers, editorial decisions, and scholarly updates from ${journalName}.`,
         alternates: {
             canonical: "/announcements",
+        },
+        openGraph: {
+            title: `Announcements & Notices - ${settings["journalShortName"] || "IJITEST"}`,
+            description: `Official calls for papers, editorial updates, and scholarly notices.`,
+            url: "/announcements",
+            type: "website",
         },
     };
 }

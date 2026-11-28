@@ -5,8 +5,8 @@ import type { Metadata } from 'next';
 export async function generateMetadata(): Promise<Metadata> {
     const settings = await getSettingsData();
     return {
-        title: `Author Guidelines | ${settings['journalName']}`,
-        description: `Comprehensive protocol for submitting manuscripts to ${settings['journalShortName']}. Detailed instructions on formatting, templates, and ethical requirements for global research publication.`,
+        title: 'Author Guidelines',
+        description: `Comprehensive protocol for submitting manuscripts to ${settings['journalShortName']}. Detailed instructions on formatting, templates, and ethical requirements.`,
         alternates: {
             canonical: '/guidelines',
         },

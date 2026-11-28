@@ -39,7 +39,7 @@ export function DossierProgress({
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className={cn("p-2 rounded-xl transition-all", getTextColor(percentage))}>
-                        {percentage === 100 ? <CheckCircle2 className="w-5 h-5 2xl:w-8 2xl:h-8" /> : <AlertCircle className="w-5 h-5 2xl:w-8 2xl:h-8" />}
+                        {percentage === 100 ? <CheckCircle2 className="w-5 h-5 2xl:w-6 2xl:h-6" /> : <AlertCircle className="w-5 h-5 2xl:w-6 2xl:h-6" />}
                     </div>
                     <div>
                         <h4 className="font-serif font-black">{percentage}% COMPLETE</h4>
@@ -54,7 +54,7 @@ export function DossierProgress({
                 )}
             </div>
 
-            <div className="relative h-2 2xl:h-4 w-full bg-muted/30 rounded-full overflow-hidden border border-white/5 shadow-inner">
+            <div className="relative h-2 2xl:h-2.5 w-full bg-muted/30 rounded-full overflow-hidden border border-white/5 shadow-inner">
                 <div 
                     className={cn("h-full transition-all duration-1000 ease-out rounded-full shadow-lg w-(--dossier-progress)", getStatusColor(percentage))} 
                     style={{ '--dossier-progress': `${progress}%` } as React.CSSProperties}
@@ -68,7 +68,7 @@ export function DossierProgress({
                         <button
                             key={field}
                             onClick={() => onChipClick(field)}
-                            className="bg-muted hover:bg-primary/10 hover:text-primary border border-white/10 px-3 2xl:px-5 py-1.5 2xl:py-2.5 rounded-full text-badge font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                            className="bg-muted hover:bg-primary/10 hover:text-primary border border-white/10 px-3 2xl:px-4 py-1.5 2xl:py-2 rounded-full text-badge font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         >
                             {field}
                         </button>

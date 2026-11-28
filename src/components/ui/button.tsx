@@ -30,21 +30,21 @@ const buttonVariants = cva(
       },
       size: {
         default:
-          "h-9 px-4 py-2 text-xs sm:text-sm",
+          "h-9 px-4 py-2 text-xs sm:text-sm 2xl:h-10 2xl:px-5 2xl:text-base",
         xs:
-          "h-7 text-[11px] px-2.5 py-0.5 rounded-md gap-1 [&_svg:not([class*='size-'])]:size-3",
+          "h-7 text-[11px] px-2.5 py-0.5 rounded-md gap-1 [&_svg:not([class*='size-'])]:size-3 2xl:h-8 2xl:text-xs",
         sm:
-          "h-8 text-xs px-3 py-1 rounded-md gap-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+          "h-8 text-xs px-3 py-1 rounded-md gap-1.5 [&_svg:not([class*='size-'])]:size-3.5 2xl:h-9 2xl:text-sm",
         lg:
-          "h-10 text-sm sm:text-base px-5 py-2 rounded-lg",
+          "h-10 text-sm sm:text-base px-5 py-2 rounded-lg 2xl:h-11 2xl:px-6",
         icon:
-          "size-9 p-0 rounded-lg flex items-center justify-center",
+          "size-9 p-0 rounded-lg flex items-center justify-center 2xl:size-10",
         "icon-xs":
-          "size-6 rounded-md p-0 flex items-center justify-center [&_svg:not([class*='size-'])]:size-3",
+          "size-6 rounded-md p-0 flex items-center justify-center [&_svg:not([class*='size-'])]:size-3 2xl:size-7",
         "icon-sm":
-          "size-8 rounded-md p-0 flex items-center justify-center",
+          "size-8 rounded-md p-0 flex items-center justify-center 2xl:size-9",
         "icon-lg":
-          "size-10 rounded-lg p-0 flex items-center justify-center",
+          "size-10 rounded-lg p-0 flex items-center justify-center 2xl:size-11",
       },
     },
     defaultVariants: {
